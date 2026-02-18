@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import CommandPalette from '@/components/CommandPalette';
+import MusicPlayer from '@/components/MusicPlayer';
 import { API_URL } from '@/lib/utils';
 
 const navItems = [
@@ -86,13 +87,15 @@ export default function AppShell() {
       {/* Sidebar */}
       <aside className={`app-sidebar ${collapsed ? 'collapsed' : ''}`} data-testid="app-sidebar">
         {/* Logo */}
-        <div className="flex items-center justify-between h-14 px-4 border-b border-white/10">
+        <div className="flex items-center justify-between h-16 px-5 border-b border-white/10">
           {!collapsed && (
-            <span className="logo-text" data-testid="app-logo">SAMSON</span>
+            <span className="logo-text" data-testid="app-logo">
+              SAMS<span className="logo-accent">O</span>N
+            </span>
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-md text-white/40 hover:text-white/80 hover:bg-white/5 transition-colors"
+            className="p-2 rounded-lg text-white/40 hover:text-white/80 hover:bg-white/5 transition-colors"
             data-testid="sidebar-toggle"
           >
             {collapsed ? <Menu className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
@@ -126,11 +129,11 @@ export default function AppShell() {
 
         {/* User Section */}
         {!collapsed && (
-          <div className="p-4 border-t border-white/10">
+          <div className="p-5 border-t border-white/10">
             <div className="flex items-center gap-3">
-              <Avatar className="w-8 h-8">
+              <Avatar className="w-9 h-9 ring-2 ring-white/20">
                 <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=admin" />
-                <AvatarFallback>AD</AvatarFallback>
+                <AvatarFallback className="bg-[#D4AF37] text-[#1D3A2F] text-sm font-semibold">AD</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">Admin User</p>
@@ -146,7 +149,11 @@ export default function AppShell() {
         {/* Top Bar */}
         <header className="app-topbar" data-testid="app-topbar">
           <div className="flex items-center gap-4">
-            {collapsed && <span className="logo-text text-slate-900">SAMSON</span>}
+            {collapsed && (
+              <span className="logo-text" style={{ color: '#1D3A2F' }}>
+                SAMS<span style={{ color: '#D4AF37' }}>O</span>N
+              </span>
+            )}
           </div>
 
           {/* Search */}
@@ -167,17 +174,17 @@ export default function AppShell() {
           <div className="flex items-center gap-4">
             {/* Notifications */}
             <button 
-              className="relative p-2 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              className="relative p-2.5 rounded-lg text-slate-500 hover:text-[#2D5A47] hover:bg-[#2D5A47]/5 transition-colors"
               data-testid="notifications-btn"
             >
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#D4AF37] rounded-full"></span>
             </button>
 
             {/* Tenant Switcher */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-100">
-              <Building2 className="w-4 h-4 text-slate-500" />
-              <span className="text-sm font-medium text-slate-700">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2D5A47]/5 border border-[#2D5A47]/10">
+              <Building2 className="w-4 h-4 text-[#2D5A47]" />
+              <span className="text-sm font-medium text-[#1D3A2F]">
                 {tenant?.name || 'Abundant Church'}
               </span>
             </div>
@@ -186,9 +193,9 @@ export default function AppShell() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2" data-testid="user-menu-btn">
-                  <Avatar className="w-8 h-8">
+                  <Avatar className="w-9 h-9 ring-2 ring-[#2D5A47]/20">
                     <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=admin" />
-                    <AvatarFallback>AD</AvatarFallback>
+                    <AvatarFallback className="bg-[#2D5A47] text-white text-sm">AD</AvatarFallback>
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
@@ -209,6 +216,9 @@ export default function AppShell() {
           <Outlet context={{ tenant, greeting: getGreeting() }} />
         </main>
       </div>
+
+      {/* Music Player */}
+      <MusicPlayer />
 
       {/* Command Palette */}
       {commandOpen && (
