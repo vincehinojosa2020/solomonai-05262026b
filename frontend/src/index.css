@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,94 +6,93 @@
 
 @layer base {
   :root {
-    /* Samson Brand Colors */
-    --brand-primary: 230 33% 14%;
-    --brand-accent: 226 91% 64%;
-    --brand-accent-2: 162 100% 39%;
-    --brand-warm: 38 91% 55%;
+    /* ═══ SANCTUARY GREEN PALETTE ═══ */
+    --sanctuary-green: #2D5A47;
+    --sanctuary-green-light: #3D7A5F;
+    --sanctuary-green-dark: #1D3A2F;
+    --sanctuary-gold: #D4AF37;
+    --sanctuary-gold-light: #E8C55A;
+    --sanctuary-cream: #F5F9F7;
+    --sanctuary-warm: #FAF8F5;
     
-    /* Base Colors */
-    --background: 210 20% 98%;
-    --foreground: 222 47% 11%;
+    /* ═══ BASE COLORS ═══ */
+    --background: 140 20% 98%;
+    --foreground: 150 30% 15%;
     --surface: 0 0% 100%;
     
     /* Card */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 150 30% 15%;
     
     /* Popover */
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 150 30% 15%;
     
-    /* Primary - Electric Blue */
-    --primary: 226 91% 64%;
+    /* Primary - Sanctuary Green */
+    --primary: 152 34% 26%;
     --primary-foreground: 0 0% 100%;
     
     /* Secondary */
-    --secondary: 210 20% 96%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 140 20% 96%;
+    --secondary-foreground: 150 30% 15%;
     
     /* Muted */
-    --muted: 210 20% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 140 15% 95%;
+    --muted-foreground: 150 10% 45%;
     
-    /* Accent */
-    --accent: 210 20% 96%;
-    --accent-foreground: 222 47% 11%;
+    /* Accent - Gold */
+    --accent: 43 70% 52%;
+    --accent-foreground: 150 30% 15%;
     
     /* Destructive */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
     /* Success */
-    --success: 162 100% 39%;
+    --success: 152 34% 26%;
     --success-foreground: 0 0% 100%;
     
     /* Warning */
-    --warning: 38 91% 55%;
-    --warning-foreground: 0 0% 100%;
+    --warning: 43 70% 52%;
+    --warning-foreground: 150 30% 15%;
     
     /* Border & Input */
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 226 91% 64%;
+    --border: 140 20% 88%;
+    --input: 140 20% 88%;
+    --ring: 152 34% 26%;
     
-    /* Sidebar */
-    --sidebar: 230 33% 14%;
+    /* Sidebar - Deep Green */
+    --sidebar: 152 34% 20%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-muted: 0 0% 100% / 0.6;
     --sidebar-accent: 0 0% 100% / 0.1;
     
     /* Chart Colors */
-    --chart-1: 226 91% 64%;
-    --chart-2: 162 100% 39%;
-    --chart-3: 38 91% 55%;
-    --chart-4: 271 81% 56%;
-    --chart-5: 0 84% 60%;
+    --chart-1: 152 34% 26%;
+    --chart-2: 43 70% 52%;
+    --chart-3: 152 34% 40%;
+    --chart-4: 43 70% 65%;
+    --chart-5: 152 34% 55%;
     
-    --radius: 0.375rem;
+    --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222 47% 6%;
-    --foreground: 210 20% 98%;
-    --card: 222 47% 8%;
-    --card-foreground: 210 20% 98%;
-    --popover: 222 47% 8%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 226 91% 64%;
+    --background: 150 30% 6%;
+    --foreground: 140 20% 98%;
+    --card: 150 30% 8%;
+    --card-foreground: 140 20% 98%;
+    --primary: 152 34% 35%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 222 47% 14%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 222 47% 14%;
-    --muted-foreground: 215 16% 60%;
-    --accent: 222 47% 14%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 222 47% 20%;
-    --input: 222 47% 20%;
-    --ring: 226 91% 64%;
+    --secondary: 150 30% 14%;
+    --secondary-foreground: 140 20% 98%;
+    --muted: 150 30% 14%;
+    --muted-foreground: 140 15% 60%;
+    --accent: 43 70% 52%;
+    --accent-foreground: 150 30% 15%;
+    --border: 150 30% 20%;
+    --input: 150 30% 20%;
+    --ring: 152 34% 35%;
   }
 }
 
@@ -105,137 +104,283 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    letter-spacing: -0.01em;
   }
   
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Sora', sans-serif;
-    @apply tracking-tight;
+  /* Luxury Typography - Cormorant Garamond for headings */
+  h1, h2, h3 {
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  
+  h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
   
   .font-display {
-    font-family: 'Sora', sans-serif;
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
   }
   
-  .font-mono {
-    font-family: 'JetBrains Mono', monospace;
+  .font-sans {
+    font-family: 'Inter', sans-serif;
   }
   
-  /* Data/Financial Numbers */
-  .font-data {
+  .font-mono, .font-data {
     font-family: 'JetBrains Mono', monospace;
     font-feature-settings: 'tnum' 1;
   }
 }
 
 @layer utilities {
-  /* Sidebar styles */
+  /* ═══ SANCTUARY DESIGN SYSTEM ═══ */
+  
+  /* Sidebar styles - Deep Forest Green */
   .sidebar-nav-item {
-    @apply flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200;
-    @apply text-white/60 hover:text-white/90 hover:bg-white/5;
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200;
+    color: rgba(255, 255, 255, 0.65);
+  }
+  
+  .sidebar-nav-item:hover {
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.08);
   }
   
   .sidebar-nav-item.active {
-    @apply text-white bg-white/10 border-l-[3px] border-[#4f6ef7] -ml-[3px] pl-[calc(0.75rem+3px)];
+    color: #D4AF37;
+    background: rgba(212, 175, 55, 0.12);
+    border-left: 3px solid #D4AF37;
+    margin-left: -3px;
+    padding-left: calc(0.75rem + 3px);
   }
   
   .sidebar-nav-item .icon {
-    @apply w-5 h-5 text-white/40;
+    @apply w-5 h-5;
+    color: rgba(255, 255, 255, 0.45);
   }
   
   .sidebar-nav-item.active .icon {
-    @apply text-[#4f6ef7];
+    color: #D4AF37;
   }
   
   .sidebar-nav-item:hover .icon {
-    @apply text-white/70;
+    color: rgba(255, 255, 255, 0.75);
   }
   
-  /* Section Labels */
+  /* Section Labels - Luxury Spacing */
   .sidebar-section-label {
-    @apply text-[11px] font-semibold uppercase tracking-[0.1em] text-white/30 px-3 mt-6 mb-2;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.35);
+    padding: 0 12px;
+    margin-top: 28px;
+    margin-bottom: 10px;
   }
   
-  /* Stat Cards */
+  /* Stat Cards - Refined */
   .stat-card {
-    @apply bg-white border border-slate-200 rounded-lg p-5 transition-all duration-200;
-    @apply hover:border-blue-200 hover:shadow-sm;
+    @apply bg-white rounded-xl p-6 transition-all duration-300;
+    border: 1px solid rgba(45, 90, 71, 0.08);
+    box-shadow: 0 1px 3px rgba(45, 90, 71, 0.04);
+  }
+  
+  .stat-card:hover {
+    border-color: rgba(45, 90, 71, 0.15);
+    box-shadow: 0 4px 12px rgba(45, 90, 71, 0.08);
+    transform: translateY(-1px);
   }
   
   .stat-card .stat-value {
-    @apply text-3xl font-extrabold tracking-tight text-slate-900;
     font-family: 'JetBrains Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #1D3A2F;
   }
   
   .stat-card .stat-label {
-    @apply text-sm text-slate-500 mt-1;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #5A7A6A;
+    margin-top: 4px;
   }
   
   .stat-card .stat-change {
-    @apply text-xs font-medium mt-2;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 8px;
   }
   
   .stat-card .stat-change.positive {
-    @apply text-emerald-600;
+    color: #2D5A47;
   }
   
   .stat-card .stat-change.negative {
-    @apply text-red-500;
+    color: #DC2626;
   }
   
-  /* Data Tables */
+  /* Data Tables - Elegant */
   .data-table {
     @apply w-full;
   }
   
   .data-table th {
-    @apply text-xs font-semibold uppercase tracking-wider text-slate-500 bg-slate-50/50 px-4 py-3 text-left;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #5A7A6A;
+    background: rgba(45, 90, 71, 0.03);
+    padding: 14px 16px;
+    text-align: left;
   }
   
   .data-table td {
-    @apply text-sm text-slate-700 border-b border-slate-100 px-4 py-3;
+    font-size: 14px;
+    color: #374151;
+    border-bottom: 1px solid rgba(45, 90, 71, 0.06);
+    padding: 14px 16px;
   }
   
   .data-table tr:hover td {
-    @apply bg-slate-50;
+    background: rgba(45, 90, 71, 0.02);
   }
   
-  /* Status Badges */
+  /* Status Badges - Refined */
   .badge-member {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-    @apply bg-blue-50 text-blue-700;
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
+    background: rgba(45, 90, 71, 0.1);
+    color: #2D5A47;
   }
   
   .badge-visitor {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-    @apply bg-amber-50 text-amber-700;
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
+    background: rgba(212, 175, 55, 0.15);
+    color: #9A7B1A;
   }
   
   .badge-inactive {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-    @apply bg-slate-100 text-slate-500;
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
+    background: rgba(107, 114, 128, 0.1);
+    color: #6B7280;
   }
   
   .badge-regular {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-    @apply bg-emerald-50 text-emerald-700;
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
+    background: rgba(45, 90, 71, 0.08);
+    color: #3D7A5F;
   }
   
-  /* Button Active States */
+  /* Primary Button - Sanctuary Green */
   .btn-primary {
-    @apply bg-[#4f6ef7] hover:bg-[#3b5bdb] text-white shadow-sm;
-    @apply font-medium rounded-md h-9 px-4 text-sm;
-    @apply transition-all duration-150 active:scale-[0.98];
+    background: linear-gradient(135deg, #2D5A47 0%, #3D7A5F 100%);
+    color: white;
+    font-weight: 500;
+    border-radius: 8px;
+    height: 40px;
+    padding: 0 20px;
+    font-size: 14px;
+    letter-spacing: -0.01em;
+    box-shadow: 0 2px 8px rgba(45, 90, 71, 0.25);
+    transition: all 0.2s ease;
   }
   
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #3D7A5F 0%, #4D8A6F 100%);
+    box-shadow: 0 4px 12px rgba(45, 90, 71, 0.35);
+    transform: translateY(-1px);
+  }
+  
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+  
+  /* Secondary Button */
   .btn-secondary {
-    @apply bg-white border border-slate-200 text-slate-700;
-    @apply hover:bg-slate-50 font-medium rounded-md h-9 px-4 text-sm;
-    @apply transition-all duration-150 active:scale-[0.98];
+    @apply bg-white border text-slate-700;
+    border-color: rgba(45, 90, 71, 0.2);
+    font-weight: 500;
+    border-radius: 8px;
+    height: 40px;
+    padding: 0 20px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-secondary:hover {
+    border-color: rgba(45, 90, 71, 0.4);
+    background: rgba(45, 90, 71, 0.03);
+  }
+  
+  /* Gold Accent Button */
+  .btn-gold {
+    background: linear-gradient(135deg, #D4AF37 0%, #E8C55A 100%);
+    color: #1D3A2F;
+    font-weight: 600;
+    border-radius: 8px;
+    height: 44px;
+    padding: 0 24px;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.35);
+    transition: all 0.2s ease;
+  }
+  
+  .btn-gold:hover {
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.5);
+    transform: translateY(-1px);
+  }
+  
+  /* Join Online Button - Prominent */
+  .btn-join-online {
+    background: linear-gradient(135deg, #2D5A47 0%, #1D3A2F 100%);
+    color: white;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+    border-radius: 12px;
+    height: 56px;
+    padding: 0 32px;
+    box-shadow: 0 4px 20px rgba(45, 90, 71, 0.35);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-join-online::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .btn-join-online:hover::before {
+    opacity: 1;
+  }
+  
+  .btn-join-online:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(45, 90, 71, 0.45);
   }
   
   /* Currency formatting */
   .currency {
-    @apply font-data tabular-nums text-right;
+    font-family: 'JetBrains Mono', monospace;
+    font-feature-settings: 'tnum' 1;
+    text-align: right;
   }
   
   /* Scrollbar styling */
@@ -245,28 +390,29 @@
   }
   
   .scrollbar-thin::-webkit-scrollbar-track {
-    @apply bg-transparent;
+    background: transparent;
   }
   
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-slate-300 rounded-full;
+    background: rgba(45, 90, 71, 0.2);
+    border-radius: 3px;
   }
   
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    @apply bg-slate-400;
+    background: rgba(45, 90, 71, 0.35);
   }
   
   /* Animation utilities */
   .animate-fade-in {
-    animation: fadeIn 0.2s ease-out;
+    animation: fadeIn 0.3s ease-out;
   }
   
   .animate-slide-up {
-    animation: slideUp 0.25s ease-out;
+    animation: slideUp 0.35s ease-out;
   }
   
   .animate-scale-in {
-    animation: scaleIn 0.2s ease-out;
+    animation: scaleIn 0.25s ease-out;
   }
   
   @keyframes fadeIn {
@@ -275,23 +421,23 @@
   }
   
   @keyframes slideUp {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
   
   @keyframes scaleIn {
-    from { opacity: 0; transform: scale(0.96); }
+    from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
   }
   
-  /* Count up animation for stats */
-  .count-up {
-    animation: countUp 0.8s ease-out;
+  /* Pulse animation for live indicator */
+  .pulse-live {
+    animation: pulse 2s infinite;
   }
   
-  @keyframes countUp {
-    from { opacity: 0.5; }
-    to { opacity: 1; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
   }
 }
 
@@ -309,9 +455,9 @@
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
-    hsl(var(--muted)) 0%,
-    hsl(var(--muted) / 0.5) 50%,
-    hsl(var(--muted)) 100%
+    rgba(45, 90, 71, 0.05) 0%,
+    rgba(45, 90, 71, 0.1) 50%,
+    rgba(45, 90, 71, 0.05) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
@@ -322,19 +468,107 @@
   100% { background-position: -200% 0; }
 }
 
-/* Chart tooltip customization */
+/* Recharts tooltip customization */
 .recharts-tooltip-wrapper {
   outline: none !important;
 }
 
 .custom-tooltip {
-  @apply bg-white rounded-lg shadow-lg border border-slate-200 p-3;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(45, 90, 71, 0.15);
+  border: 1px solid rgba(45, 90, 71, 0.08);
+  padding: 12px 16px;
 }
 
 .custom-tooltip .label {
-  @apply text-sm font-medium text-slate-900 mb-1;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1D3A2F;
+  margin-bottom: 6px;
 }
 
 .custom-tooltip .value {
-  @apply text-xs text-slate-600;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #5A7A6A;
+}
+
+/* Music Player */
+.music-player {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: rgba(29, 58, 47, 0.95);
+  backdrop-filter: blur(12px);
+  border-radius: 50px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.music-player:hover {
+  background: rgba(29, 58, 47, 1);
+}
+
+.music-player-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.15);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.music-player-btn:hover {
+  background: rgba(212, 175, 55, 0.3);
+}
+
+.music-player-btn svg {
+  width: 16px;
+  height: 16px;
+  color: #D4AF37;
+}
+
+.music-player-info {
+  color: white;
+  font-size: 12px;
+}
+
+.music-player-title {
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.music-player-artist {
+  opacity: 0.6;
+  font-size: 11px;
+}
+
+/* Volume slider */
+.volume-slider {
+  width: 60px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  appearance: none;
+  cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #D4AF37;
+  border-radius: 50%;
+  cursor: pointer;
 }
