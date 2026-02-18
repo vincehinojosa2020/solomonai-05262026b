@@ -1,0 +1,117 @@
+{
+  "brand": {
+    "name": "Samson",
+    "tagline": "The operating system for the modern church",
+    "tone": "Enterprise, Precise, Stewardship, Data-Driven, Trustworthy",
+    "archetype": "The Performance Pro"
+  },
+  "typography": {
+    "headings": {
+      "family": "Sora, sans-serif",
+      "weights": [400, 600, 800],
+      "usage": "All page titles, card headers, and modal titles. Use tracking-tight for sizes above 24px."
+    },
+    "body": {
+      "family": "Inter, sans-serif",
+      "weights": [400, 500],
+      "usage": "General UI text, labels, form inputs."
+    },
+    "data": {
+      "family": "JetBrains Mono, monospace",
+      "weights": [400, 500],
+      "usage": "All financial figures, ID numbers, phone numbers, and dates in tables."
+    }
+  },
+  "colors": {
+    "base": {
+      "background": "#F8FAFC",
+      "surface": "#FFFFFF",
+      "sidebar": "#1a1a2e",
+      "sidebar_foreground": "#FFFFFF",
+      "border": "#E2E8F0"
+    },
+    "primary": {
+      "default": "#4f6ef7",
+      "hover": "#3b5bdb",
+      "foreground": "#FFFFFF",
+      "subtle": "#eff3ff"
+    },
+    "status": {
+      "success": "#00c896",
+      "success_subtle": "#ecfdf5",
+      "warning": "#f5a623",
+      "warning_subtle": "#fffbeb",
+      "error": "#ef4444",
+      "error_subtle": "#fef2f2"
+    },
+    "text": {
+      "primary": "#0f172a",
+      "secondary": "#64748b",
+      "tertiary": "#94a3b8"
+    }
+  },
+  "layout": {
+    "grid_system": "The 'Samson' Grid",
+    "sidebar_width": "260px",
+    "max_content_width": "1600px",
+    "spacing": {
+      "page_padding": "p-6 md:p-8",
+      "card_padding": "p-5",
+      "section_gap": "gap-8"
+    },
+    "density": "High. Use h-9 for inputs and buttons by default to allow more data on screen.",
+    "tables": {
+      "style": "Bloomberg meets Notion",
+      "row_height": "40px",
+      "header_style": "text-xs uppercase tracking-wider text-slate-500 font-semibold bg-slate-50/50",
+      "cell_style": "text-sm text-slate-700 border-b border-slate-100"
+    }
+  },
+  "components": {
+    "cards": {
+      "style": "Flat with subtle border, no shadow by default.",
+      "classes": "bg-white border border-slate-200 rounded-lg",
+      "hover": "hover:border-blue-200 transition-colors duration-200"
+    },
+    "buttons": {
+      "primary": "bg-[#4f6ef7] hover:bg-[#3b5bdb] text-white shadow-sm font-medium rounded-md h-9 px-4 text-sm transition-all active:scale-[0.98]",
+      "secondary": "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-medium rounded-md h-9 px-4 text-sm",
+      "ghost": "hover:bg-slate-100 text-slate-600 hover:text-slate-900"
+    },
+    "badges": {
+      "style": "Soft/Subtle background with dark text. No outlines.",
+      "success": "bg-[#ecfdf5] text-[#00c896]",
+      "warning": "bg-[#fffbeb] text-[#f5a623]",
+      "neutral": "bg-slate-100 text-slate-600"
+    }
+  },
+  "assets": {
+    "images": {
+      "login_bg": "https://images.unsplash.com/photo-1762967033455-627ca98f2c03",
+      "dashboard_widget_bg": "https://images.unsplash.com/photo-1764257241003-e3464685770f",
+      "avatars": [
+        "https://images.unsplash.com/photo-1758526348403-b729c700d675",
+        "https://images.pexels.com/photos/26728099/pexels-photo-26728099.jpeg",
+        "https://images.pexels.com/photos/33716449/pexels-photo-33716449.jpeg"
+      ]
+    },
+    "icons": "lucide-react"
+  },
+  "universal_guidelines": [
+    "Design for Density: This is an enterprise tool. 50k members means pagination, virtual scrolling, and compact rows.",
+    "Keyboard First: All primary actions (Save, Search, Close) should have hotkeys or be tab-accessible.",
+    "Financial Precision: Always right-align currency. Use JetBrains Mono for all dollar amounts.",
+    "No Gradients: Use solid colors and subtle transparency (glassmorphism) in headers only.",
+    "Micro-Animations: Buttons scale down slightly on click. Modals spring open. Rows highlight instantly on hover.",
+    "Data-Test-IDs: Every button, input, and link MUST have a data-testid attribute for testing."
+  ],
+  "instructions_to_main_agent": [
+    "1. Setup Shadcn UI with the custom colors defined above. Override the default 'radius' to 0.3rem for a sharper, more professional look.",
+    "2. Implement the Sidebar with the dark navy background (#1a1a2e).",
+    "3. Create a 'Shell' layout component that handles the sidebar, sticky header, and main content area.",
+    "4. For the Dashboard, use a Bento Grid layout (CSS Grid). Don't just stack cards vertically.",
+    "5. Use Recharts for all data visualization. Customize the tooltips to be clean and minimal (white bg, shadow-lg, no border).",
+    "6. Ensure the 'People List' table supports 50 columns effectively (use horizontal scroll with sticky first column).",
+    "7. Use 'sonner' for all toast notifications."
+  ]
+}
