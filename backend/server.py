@@ -732,6 +732,112 @@ async def get_available_groups(request: Request):
     
     return [serialize_doc(g) for g in groups]
 
+# ============== WATCH PROGRESS ROUTES ==============
+
+@api_router.post("/portal/watch/progress")
+async def update_watch_progress(request: Request, progress: WatchProgressUpdate):
+    """Save or update video watch progress for a user"""
+    # Get user from session
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user_id = session.get("user_id")
+    
+    # Calculate progress percentage
+    progress_percent = (progress.position_seconds / progress.duration_seconds * 100) if progress.duration_seconds > 0 else 0
+    completed = progress_percent >= 90  # Mark as completed if watched 90%+
+    
+    # Upsert watch progress
+    watch_data = {
+        "user_id": user_id,
+        "video_id": progress.video_id,
+        "youtube_id": progress.youtube_id,
+        "title": progress.title,
+        "thumbnail": progress.thumbnail,
+        "instructor": progress.instructor,
+        "position_seconds": progress.position_seconds,
+        "duration_seconds": progress.duration_seconds,
+        "progress_percent": round(progress_percent, 1),
+        "completed": completed,
+        "last_watched": datetime.now(timezone.utc).isoformat()
+    }
+    
+    # Check if entry exists
+    existing = await db.watch_progress.find_one(
+        {"user_id": user_id, "video_id": progress.video_id},
+        {"_id": 0}
+    )
+    
+    if existing:
+        await db.watch_progress.update_one(
+            {"user_id": user_id, "video_id": progress.video_id},
+            {"$set": watch_data}
+        )
+    else:
+        watch_data["id"] = str(uuid.uuid4())
+        await db.watch_progress.insert_one(watch_data)
+    
+    return {"status": "saved", "progress_percent": watch_data["progress_percent"], "completed": completed}
+
+@api_router.get("/portal/watch/progress")
+async def get_watch_progress(request: Request):
+    """Get all watch progress for current user (for Continue Watching)"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user_id = session.get("user_id")
+    
+    # Get in-progress videos (not completed, sorted by last watched)
+    in_progress = await db.watch_progress.find(
+        {"user_id": user_id, "completed": False, "progress_percent": {"$gt": 0}},
+        {"_id": 0}
+    ).sort("last_watched", -1).to_list(20)
+    
+    # Get completed videos
+    completed = await db.watch_progress.find(
+        {"user_id": user_id, "completed": True},
+        {"_id": 0}
+    ).sort("last_watched", -1).to_list(50)
+    
+    return {
+        "continue_watching": [serialize_doc(p) for p in in_progress],
+        "completed": [serialize_doc(p) for p in completed],
+        "total_watched": len(completed)
+    }
+
+@api_router.get("/portal/watch/progress/{video_id}")
+async def get_video_progress(request: Request, video_id: str):
+    """Get watch progress for a specific video"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        return {"position_seconds": 0, "progress_percent": 0, "completed": False}
+    
+    session = await db.sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        return {"position_seconds": 0, "progress_percent": 0, "completed": False}
+    
+    user_id = session.get("user_id")
+    
+    progress = await db.watch_progress.find_one(
+        {"user_id": user_id, "video_id": video_id},
+        {"_id": 0}
+    )
+    
+    if progress:
+        return serialize_doc(progress)
+    
+    return {"position_seconds": 0, "progress_percent": 0, "completed": False}
+
 # ============== STRIPE PAYMENT ROUTES ==============
 
 # Donation packages (FIXED - never accept amounts from frontend)
