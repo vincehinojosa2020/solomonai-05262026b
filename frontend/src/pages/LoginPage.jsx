@@ -1,4 +1,8 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff, Copy, Check, Loader2 } from 'lucide-react';
+import { API_URL } from '@/lib/utils';
+import { toast } from 'sonner';
 
 // Google SVG Icon
 const GoogleIcon = () => (
@@ -12,11 +16,81 @@ const GoogleIcon = () => (
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [copiedAdmin, setCopiedAdmin] = useState(false);
+  const [copiedMember, setCopiedMember] = useState(false);
 
   const handleGoogleLogin = () => {
-    // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
     const redirectUrl = window.location.origin + '/dashboard';
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+  };
+
+  const handleEmailLogin = async (e) => {
+    e.preventDefault();
+    if (!email || !password) {
+      toast.error('Please enter email and password');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Login failed');
+      }
+
+      const data = await response.json();
+      
+      // Route based on role
+      if (data.role === 'member') {
+        navigate('/portal', { state: { user: data } });
+      } else {
+        navigate('/dashboard', { state: { user: data } });
+      }
+      
+      toast.success(`Welcome, ${data.name}!`);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const copyCredentials = async (type) => {
+    const creds = type === 'admin' 
+      ? 'admin@abundant.org / Demo2026!'
+      : 'member@abundant.org / Demo2026!';
+    
+    await navigator.clipboard.writeText(creds);
+    
+    if (type === 'admin') {
+      setCopiedAdmin(true);
+      setTimeout(() => setCopiedAdmin(false), 2000);
+    } else {
+      setCopiedMember(true);
+      setTimeout(() => setCopiedMember(false), 2000);
+    }
+    toast.success('Credentials copied!');
+  };
+
+  const fillCredentials = (type) => {
+    if (type === 'admin') {
+      setEmail('admin@abundant.org');
+      setPassword('Demo2026!');
+    } else {
+      setEmail('member@abundant.org');
+      setPassword('Demo2026!');
+    }
   };
 
   return (
@@ -79,12 +153,74 @@ export default function LoginPage() {
 
       {/* Right Panel - Login */}
       <div className="login-main">
-        <div className="login-box">
-          <h1 className="login-title">Sign in to continue</h1>
+        <div className="login-box" style={{ maxWidth: '400px' }}>
+          <h1 className="login-title">Sign in to Solomon AI</h1>
           <p className="login-subtitle">
-            Access your church management dashboard
+            Access your church management platform
           </p>
           
+          {/* Email/Password Form */}
+          <form onSubmit={handleEmailLogin} className="space-y-4 mt-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Email address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="login-input"
+                placeholder="you@church.org"
+                data-testid="email-input"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="login-input pr-10"
+                  placeholder="••••••••"
+                  data-testid="password-input"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="btn-primary w-full"
+              data-testid="login-submit-btn"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Signing in...
+                </>
+              ) : (
+                'Sign In →'
+              )}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="login-divider">
+            <span>or</span>
+          </div>
+
+          {/* Google OAuth */}
           <button 
             onClick={handleGoogleLogin}
             className="btn-google"
@@ -93,11 +229,49 @@ export default function LoginPage() {
             <GoogleIcon />
             Continue with Google
           </button>
+
+          {/* Demo Credentials Box */}
+          <div className="demo-credentials-box" data-testid="demo-credentials-box">
+            <div className="demo-credentials-label">
+              <span className="demo-key-icon">🔑</span>
+              Demo Accounts
+            </div>
+            
+            <div className="demo-credential-row">
+              <div className="demo-credential-info">
+                <span className="demo-role">Admin:</span>
+                <code className="demo-creds" onClick={() => fillCredentials('admin')}>
+                  admin@abundant.org / Demo2026!
+                </code>
+              </div>
+              <button 
+                onClick={() => copyCredentials('admin')}
+                className="demo-copy-btn"
+                title="Copy credentials"
+              >
+                {copiedAdmin ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+            
+            <div className="demo-credential-row">
+              <div className="demo-credential-info">
+                <span className="demo-role">Member:</span>
+                <code className="demo-creds" onClick={() => fillCredentials('member')}>
+                  member@abundant.org / Demo2026!
+                </code>
+              </div>
+              <button 
+                onClick={() => copyCredentials('member')}
+                className="demo-copy-btn"
+                title="Copy credentials"
+              >
+                {copiedMember ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+          </div>
           
           <div className="login-footer">
-            By signing in, you agree to our Terms of Service and Privacy Policy.
-            <br />
-            <span className="text-slate-500">Protected by enterprise-grade encryption.</span>
+            Don't have an account? <a href="#" className="text-blue-600 hover:underline">Request access →</a>
           </div>
         </div>
       </div>
