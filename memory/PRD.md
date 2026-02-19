@@ -6,7 +6,7 @@
 **Tagline:** "Enterprise Church Management System"  
 **Demo Tenant:** Abundant Church (El Paso, TX)  
 **Target Scale:** 50,000+ members per tenant  
-**Demo URL:** https://sermon-cinema.preview.emergentagent.com
+**Demo URL:** https://abundant-media.preview.emergentagent.com
 
 ---
 
