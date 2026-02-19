@@ -383,6 +383,13 @@ export default function GivingDashboard() {
           batches={batches.filter(b => b.status === 'open')}
         />
       )}
+
+      {/* Stripe Checkout */}
+      {showStripeCheckout && (
+        <DonationCheckout 
+          onClose={() => setShowStripeCheckout(false)}
+        />
+      )}
     </div>
   );
 }
