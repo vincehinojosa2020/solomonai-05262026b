@@ -494,7 +494,10 @@ async def get_current_user(request: Request):
     if not user_doc:
         raise HTTPException(status_code=401, detail="User not found")
     
-    return serialize_doc(user_doc)
+    result = serialize_doc(user_doc)
+    # Ensure role is included
+    result["role"] = user_doc.get("role", "admin")  # Default to admin for Google OAuth users
+    return result
 
 @api_router.post("/auth/logout")
 async def logout(request: Request, response: Response):
