@@ -1319,23 +1319,6 @@ async def get_attendance_trend():
     ]
 
 @api_router.get("/dashboard/activity")
-            }},
-            {"$unwind": "$service"},
-            {"$match": {"service.date": sunday_str}},
-            {"$count": "total"}
-        ]
-        result = await db.attendance.aggregate(pipeline).to_list(1)
-        count = result[0]["total"] if result else 0
-        
-        weeks.append({
-            "week": sunday.strftime("%b %d"),
-            "attendance": count,
-            "date": sunday_str
-        })
-    
-    return weeks
-
-@api_router.get("/dashboard/activity")
 async def get_recent_activity(limit: int = 15):
     tenant_id = DEFAULT_TENANT_ID
     
