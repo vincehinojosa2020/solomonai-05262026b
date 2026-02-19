@@ -3,6 +3,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import AppShell from "@/components/layout/AppShell";
+import PortalLayout from "@/components/layout/PortalLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import LoginPage from "@/pages/LoginPage";
 import AuthCallback from "@/pages/AuthCallback";
@@ -18,6 +19,12 @@ import ReportsPage from "@/pages/ReportsPage";
 import SettingsPage from "@/pages/SettingsPage";
 import EventsPage from "@/pages/EventsPage";
 import IntegrationsPage from "@/pages/IntegrationsPage";
+// Portal Pages
+import PortalHome from "@/pages/portal/PortalHome";
+import PortalGive from "@/pages/portal/PortalGive";
+import PortalGroups from "@/pages/portal/PortalGroups";
+import PortalEvents from "@/pages/portal/PortalEvents";
+import PortalMe from "@/pages/portal/PortalMe";
 import { API_URL } from "@/lib/utils";
 
 // Router wrapper to detect session_id in URL
@@ -66,9 +73,9 @@ function AppRouter() {
       {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
       
-      {/* Protected routes */}
+      {/* Admin Protected routes */}
       <Route element={
-        <ProtectedRoute>
+        <ProtectedRoute requiredRole="admin">
           <AppShell />
         </ProtectedRoute>
       }>
@@ -86,6 +93,15 @@ function AppRouter() {
         <Route path="/reports" element={<ReportsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/integrations" element={<IntegrationsPage />} />
+      </Route>
+      
+      {/* Member Portal routes */}
+      <Route path="/portal" element={<PortalLayout />}>
+        <Route index element={<PortalHome />} />
+        <Route path="give" element={<PortalGive />} />
+        <Route path="groups" element={<PortalGroups />} />
+        <Route path="events" element={<PortalEvents />} />
+        <Route path="me" element={<PortalMe />} />
       </Route>
       
       {/* Catch-all redirect */}
