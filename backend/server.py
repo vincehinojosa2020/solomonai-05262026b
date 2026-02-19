@@ -2421,7 +2421,114 @@ async def seed_database():
     people = []
     households = []
     
-    # Create 80 households with 200 people
+    # ============== SPECIAL SEED: Maria Gonzalez (Demo Member Account) ==============
+    maria_household_id = str(uuid.uuid4())
+    maria_person_id = "person_maria_gonzalez"
+    
+    maria_household = {
+        "id": maria_household_id,
+        "tenant_id": tenant_id,
+        "name": "The Gonzalez Family",
+        "address_line1": "4521 Dyer St",
+        "city": "El Paso",
+        "state": "TX",
+        "zip": "79930",
+        "country": "US",
+        "phone": "(915) 555-0142",
+        "envelope_num": 1001,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    households.append(maria_household)
+    
+    maria_person = {
+        "id": maria_person_id,
+        "tenant_id": tenant_id,
+        "household_id": maria_household_id,
+        "first_name": "Maria",
+        "last_name": "Gonzalez",
+        "email": "member@abundant.org",
+        "mobile_phone": "(915) 555-0142",
+        "date_of_birth": "1985-06-14",
+        "gender": "female",
+        "marital_status": "married",
+        "membership_status": "member",
+        "membership_date": "2019-03-15",
+        "photo_url": f"https://api.dicebear.com/7.x/avataaars/svg?seed={maria_person_id}",
+        "is_head_of_household": False,
+        "campus": "East Campus",
+        "engagement_score": 88,
+        "ytd_giving": 1200.0,
+        "lifetime_giving": 18500.0,
+        "custom_fields": {},
+        "giving_anonymous": False,
+        "paperless_statements": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    people.append(maria_person)
+    
+    # ============== SEED: 10 El Paso-specific named members ==============
+    el_paso_members = [
+        {"first": "Carlos", "last": "Rivera", "gender": "male"},
+        {"first": "Sofia", "last": "Martinez", "gender": "female"},
+        {"first": "Juan", "last": "Hernandez", "gender": "male"},
+        {"first": "Isabella", "last": "Lopez", "gender": "female"},
+        {"first": "Miguel", "last": "Torres", "gender": "male"},
+        {"first": "Valentina", "last": "Ramirez", "gender": "female"},
+        {"first": "Diego", "last": "Castillo", "gender": "male"},
+        {"first": "Ana", "last": "Reyes", "gender": "female"},
+        {"first": "Roberto", "last": "Vega", "gender": "male"},
+        {"first": "Pastor David", "last": "Rivera", "gender": "male"},
+    ]
+    
+    el_paso_streets = ["Montana Ave", "Alameda Ave", "Mesa St", "Dyer St", "Lee Trevino Dr", 
+                       "Gateway Blvd", "Viscount Blvd", "Zaragoza Rd", "Transmountain Dr", "Paisano Dr"]
+    
+    for i, ep_member in enumerate(el_paso_members):
+        ep_household_id = str(uuid.uuid4())
+        ep_person_id = str(uuid.uuid4())
+        
+        ep_household = {
+            "id": ep_household_id,
+            "tenant_id": tenant_id,
+            "name": f"The {ep_member['last']} Family",
+            "address_line1": f"{random.randint(1000, 9999)} {random.choice(el_paso_streets)}",
+            "city": "El Paso",
+            "state": "TX",
+            "zip": f"799{random.randint(10, 99)}",
+            "country": "US",
+            "phone": f"(915) {random.randint(200, 999)}-{random.randint(1000, 9999)}",
+            "envelope_num": 1002 + i,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        households.append(ep_household)
+        
+        ep_person = {
+            "id": ep_person_id,
+            "tenant_id": tenant_id,
+            "household_id": ep_household_id,
+            "first_name": ep_member["first"],
+            "last_name": ep_member["last"],
+            "email": f"{ep_member['first'].lower()}.{ep_member['last'].lower()}@email.com",
+            "mobile_phone": f"(915) {random.randint(200, 999)}-{random.randint(1000, 9999)}",
+            "date_of_birth": f"{random.randint(1960, 2000)}-{random.randint(1, 12):02d}-{random.randint(1, 28):02d}",
+            "gender": ep_member["gender"],
+            "marital_status": "married",
+            "membership_status": "member",
+            "membership_date": f"20{random.randint(15, 24)}-{random.randint(1, 12):02d}-01",
+            "photo_url": f"https://api.dicebear.com/7.x/avataaars/svg?seed={ep_person_id}",
+            "is_head_of_household": True,
+            "campus": random.choice(["Main Campus", "East Campus", "West Campus"]),
+            "engagement_score": random.randint(60, 100),
+            "ytd_giving": random.randint(500, 5000) * 1.0,
+            "lifetime_giving": random.randint(5000, 50000) * 1.0,
+            "custom_fields": {},
+            "giving_anonymous": False,
+            "paperless_statements": True,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        people.append(ep_person)
+    
+    # Create 80 households with 200 people (remaining generic)
     for h in range(80):
         household_id = str(uuid.uuid4())
         last_name = random.choice(last_names)
