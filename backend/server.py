@@ -2446,39 +2446,54 @@ async def seed_database():
     # Check if already seeded
     existing = await db.tenants.find_one({"id": tenant_id})
     if existing:
+        # Still seed demo accounts if they don't exist
+        await seed_demo_accounts(tenant_id)
         return {"message": "Database already seeded", "seeded": False}
     
     # ============== SEED DEMO ACCOUNTS ==============
+    await seed_demo_accounts(tenant_id)
+    
+    # Create tenant
+
+async def seed_demo_accounts(tenant_id: str):
+    """Seed or update demo accounts"""
+    import hashlib
     demo_password_hash = hashlib.sha256("Demo2026!".encode()).hexdigest()
     
     # Admin account
-    admin_user = {
-        "user_id": "user_admin_demo",
-        "email": "admin@abundant.org",
-        "name": "Pastor David Rivera",
-        "picture": None,
-        "role": "admin",
-        "password_hash": demo_password_hash,
-        "church_id": tenant_id,
-        "created_at": datetime.now(timezone.utc)
-    }
-    await db.users.insert_one(admin_user)
+    await db.users.update_one(
+        {"email": "admin@abundant.org"},
+        {"$set": {
+            "user_id": "user_admin_demo",
+            "email": "admin@abundant.org",
+            "name": "Pastor David Rivera",
+            "picture": None,
+            "role": "admin",
+            "password_hash": demo_password_hash,
+            "church_id": tenant_id,
+            "created_at": datetime.now(timezone.utc)
+        }},
+        upsert=True
+    )
     
     # Member account - Maria Gonzalez
-    member_user = {
-        "user_id": "user_member_demo",
-        "email": "member@abundant.org", 
-        "name": "Maria Gonzalez",
-        "picture": None,
-        "role": "member",
-        "password_hash": demo_password_hash,
-        "church_id": tenant_id,
-        "member_since": "2019-03-15",
-        "created_at": datetime.now(timezone.utc)
-    }
-    await db.users.insert_one(member_user)
-    
-    # Create tenant
+    await db.users.update_one(
+        {"email": "member@abundant.org"},
+        {"$set": {
+            "user_id": "user_member_demo",
+            "email": "member@abundant.org", 
+            "name": "Maria Gonzalez",
+            "picture": None,
+            "role": "member",
+            "password_hash": demo_password_hash,
+            "church_id": tenant_id,
+            "member_since": "2019-03-15",
+            "created_at": datetime.now(timezone.utc)
+        }},
+        upsert=True
+    )
+
+# --- SEED DATA ROUTE ---
     tenant = {
         "id": tenant_id,
         "name": "Abundant Church",
