@@ -42,6 +42,7 @@ const navItems = [
   ]},
   { section: 'ADMIN', items: [
     { name: 'Settings', path: '/settings', icon: Settings },
+    { name: 'Integrations', path: '/integrations', icon: Plug },
   ]},
 ];
 
