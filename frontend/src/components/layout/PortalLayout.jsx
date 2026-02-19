@@ -10,6 +10,9 @@ export default function PortalLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  
+  // Check if we're on the Watch page for dark mode
+  const isWatchPage = location.pathname === '/portal/watch';
 
   useEffect(() => {
     fetchMemberData();
