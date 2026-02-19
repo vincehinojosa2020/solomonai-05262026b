@@ -171,14 +171,17 @@ Church Info Updated:
 │   │   │       ├── PortalGive.jsx
 │   │   │       ├── PortalGroups.jsx
 │   │   │       ├── PortalEvents.jsx
-│   │   │       └── PortalMe.jsx
+│   │   │       ├── PortalMe.jsx
+│   │   │       └── PortalWatch.jsx # ✅ MasterClass-style Abundant TV
 │   │   ├── components/
 │   │   │   ├── layout/
 │   │   │   │   ├── AppShell.jsx    # Admin layout
-│   │   │   │   └── PortalLayout.jsx # Member portal layout
+│   │   │   │   └── PortalLayout.jsx # Member portal layout (dark mode on Watch)
 │   │   │   ├── ProtectedRoute.jsx  # Role-based routing
 │   │   │   └── SolomonChat.jsx     # AI chat widget
-│   │   └── App.js                  # Routes
+│   │   ├── App.js                  # Routes
+│   │   ├── App.css                 # Main styles + portal dark mode
+│   │   └── masterclass.css         # ✅ MasterClass premium dark theme
 └── memory/
     └── PRD.md
 ```
