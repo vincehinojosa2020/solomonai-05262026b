@@ -11,11 +11,11 @@ import {
 // MASTERCLASS-STYLE ABUNDANT TV - Premium Dark Cinematic Experience
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// Placeholder video URLs - using publicly accessible sample videos
-const PLACEHOLDER_VIDEOS = [
-  'https://www.w3schools.com/html/mov_bbb.mp4',
-  'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
-  'https://www.w3schools.com/html/movie.mp4',
+// Placeholder video URLs - using YouTube embed IDs for better compatibility
+const YOUTUBE_VIDEO_IDS = [
+  'dQw4w9WgXcQ', // Sample video
+  'jNQXAC9IVRw', // Sample video
+  'M7lc1UVf-VE', // Sample video
 ];
 
 // Get a consistent video URL for each course
