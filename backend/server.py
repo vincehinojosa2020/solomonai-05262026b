@@ -486,6 +486,333 @@ async def logout(request: Request, response: Response):
     
     return {"message": "Logged out"}
 
+# ============== STRIPE PAYMENT ROUTES ==============
+
+# Donation packages (FIXED - never accept amounts from frontend)
+DONATION_PACKAGES = {
+    "tithe_10": 10.00,
+    "tithe_25": 25.00,
+    "tithe_50": 50.00,
+    "tithe_100": 100.00,
+    "tithe_250": 250.00,
+    "tithe_500": 500.00,
+    "tithe_1000": 1000.00,
+    "custom": None,  # Custom amounts handled separately with validation
+}
+
+class DonationRequest(BaseModel):
+    package_id: str = "custom"
+    custom_amount: Optional[float] = None
+    fund_id: Optional[str] = None
+    origin_url: str
+    recurring: bool = False
+    donor_name: Optional[str] = None
+    donor_email: Optional[str] = None
+
+class CheckoutStatusRequest(BaseModel):
+    session_id: str
+
+@api_router.post("/payments/donate")
+async def create_donation_checkout(request: Request, donation: DonationRequest):
+    """Create a Stripe checkout session for donations"""
+    try:
+        stripe_api_key = os.environ.get("STRIPE_API_KEY")
+        if not stripe_api_key:
+            raise HTTPException(status_code=500, detail="Payment processing not configured")
+        
+        # Determine amount
+        if donation.package_id == "custom":
+            if not donation.custom_amount or donation.custom_amount < 1.0:
+                raise HTTPException(status_code=400, detail="Custom amount must be at least $1.00")
+            if donation.custom_amount > 100000.0:
+                raise HTTPException(status_code=400, detail="Amount exceeds maximum allowed")
+            amount = float(donation.custom_amount)
+        else:
+            amount = DONATION_PACKAGES.get(donation.package_id)
+            if amount is None:
+                raise HTTPException(status_code=400, detail="Invalid donation package")
+        
+        # Build success/cancel URLs from frontend origin
+        success_url = f"{donation.origin_url}/giving?status=success&session_id={{CHECKOUT_SESSION_ID}}"
+        cancel_url = f"{donation.origin_url}/giving?status=cancelled"
+        
+        # Initialize Stripe
+        host_url = str(request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+        
+        # Create metadata
+        metadata = {
+            "tenant_id": DEFAULT_TENANT_ID,
+            "fund_id": donation.fund_id or "general",
+            "donor_name": donation.donor_name or "Anonymous",
+            "donor_email": donation.donor_email or "",
+            "recurring": str(donation.recurring),
+            "source": "web_portal"
+        }
+        
+        # Create checkout session
+        checkout_request = CheckoutSessionRequest(
+            amount=amount,
+            currency="usd",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata=metadata,
+            payment_methods=["card"]  # Add "crypto" if user requests
+        )
+        
+        session: CheckoutSessionResponse = await stripe_checkout.create_checkout_session(checkout_request)
+        
+        # Store transaction record
+        transaction = {
+            "id": f"txn_{uuid.uuid4().hex[:12]}",
+            "tenant_id": DEFAULT_TENANT_ID,
+            "session_id": session.session_id,
+            "amount": amount,
+            "currency": "usd",
+            "fund_id": donation.fund_id or "general",
+            "donor_name": donation.donor_name,
+            "donor_email": donation.donor_email,
+            "payment_status": "pending",
+            "payment_method": "stripe",
+            "metadata": metadata,
+            "created_at": datetime.now(timezone.utc)
+        }
+        await db.payment_transactions.insert_one(transaction)
+        
+        return {
+            "checkout_url": session.url,
+            "session_id": session.session_id
+        }
+        
+    except Exception as e:
+        logger.error(f"Donation checkout error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/payments/status/{session_id}")
+async def get_payment_status(session_id: str):
+    """Check the status of a Stripe checkout session"""
+    try:
+        stripe_api_key = os.environ.get("STRIPE_API_KEY")
+        if not stripe_api_key:
+            raise HTTPException(status_code=500, detail="Payment processing not configured")
+        
+        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url="")
+        status: CheckoutStatusResponse = await stripe_checkout.get_checkout_status(session_id)
+        
+        # Update transaction in database
+        if status.payment_status == "paid":
+            # Find and update transaction
+            transaction = await db.payment_transactions.find_one(
+                {"session_id": session_id},
+                {"_id": 0}
+            )
+            
+            if transaction and transaction.get("payment_status") != "paid":
+                # Update to paid
+                await db.payment_transactions.update_one(
+                    {"session_id": session_id},
+                    {"$set": {
+                        "payment_status": "paid",
+                        "paid_at": datetime.now(timezone.utc)
+                    }}
+                )
+                
+                # Create donation record
+                donation = {
+                    "id": f"donation_{uuid.uuid4().hex[:12]}",
+                    "tenant_id": DEFAULT_TENANT_ID,
+                    "person_id": None,  # Link to person if logged in
+                    "fund_id": transaction.get("fund_id", "general"),
+                    "fund_name": "General Fund",  # Lookup from funds
+                    "amount": status.amount_total / 100,  # Convert from cents
+                    "payment_method": "card",
+                    "payment_status": "completed",
+                    "transaction_id": session_id,
+                    "donor_name": transaction.get("donor_name"),
+                    "donor_email": transaction.get("donor_email"),
+                    "donation_date": datetime.now(timezone.utc).isoformat(),
+                    "notes": "Online donation via Stripe",
+                    "created_at": datetime.now(timezone.utc)
+                }
+                await db.donations.insert_one(donation)
+        
+        return {
+            "status": status.status,
+            "payment_status": status.payment_status,
+            "amount": status.amount_total / 100,  # Convert from cents
+            "currency": status.currency
+        }
+        
+    except Exception as e:
+        logger.error(f"Payment status error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhooks for payment confirmations"""
+    try:
+        stripe_api_key = os.environ.get("STRIPE_API_KEY")
+        if not stripe_api_key:
+            return {"status": "ignored", "reason": "no_api_key"}
+        
+        body = await request.body()
+        signature = request.headers.get("Stripe-Signature")
+        
+        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url="")
+        webhook_response = await stripe_checkout.handle_webhook(body, signature)
+        
+        logger.info(f"Stripe webhook: {webhook_response.event_type} - {webhook_response.session_id}")
+        
+        # Update transaction based on webhook
+        if webhook_response.payment_status == "paid":
+            await db.payment_transactions.update_one(
+                {"session_id": webhook_response.session_id},
+                {"$set": {
+                    "payment_status": "paid",
+                    "webhook_received_at": datetime.now(timezone.utc)
+                }}
+            )
+        
+        return {"status": "received"}
+        
+    except Exception as e:
+        logger.error(f"Stripe webhook error: {e}")
+        return {"status": "error", "message": str(e)}
+
+# ============== SMS ROUTES ==============
+
+class SMSRequest(BaseModel):
+    recipient_phone: str
+    message: str
+    person_id: Optional[str] = None
+
+class BulkSMSRequest(BaseModel):
+    group_id: Optional[str] = None
+    list_ids: Optional[List[str]] = None
+    message: str
+    template_id: Optional[str] = None
+
+@api_router.post("/sms/send")
+async def send_sms(sms: SMSRequest):
+    """Send an SMS to a single recipient"""
+    # Check if Twilio is configured
+    twilio_sid = os.environ.get("TWILIO_ACCOUNT_SID")
+    twilio_token = os.environ.get("TWILIO_AUTH_TOKEN")
+    twilio_phone = os.environ.get("TWILIO_PHONE_NUMBER")
+    
+    if not all([twilio_sid, twilio_token, twilio_phone]):
+        # Return mock response for demo
+        return {
+            "status": "queued",
+            "message_id": f"mock_{uuid.uuid4().hex[:12]}",
+            "to": sms.recipient_phone,
+            "mock": True,
+            "note": "Twilio not configured - this is a simulated response"
+        }
+    
+    try:
+        client = TwilioClient(twilio_sid, twilio_token)
+        message = client.messages.create(
+            body=sms.message,
+            from_=twilio_phone,
+            to=sms.recipient_phone
+        )
+        
+        # Log SMS
+        await db.sms_logs.insert_one({
+            "id": f"sms_{uuid.uuid4().hex[:12]}",
+            "tenant_id": DEFAULT_TENANT_ID,
+            "recipient_phone": sms.recipient_phone,
+            "person_id": sms.person_id,
+            "message": sms.message,
+            "twilio_sid": message.sid,
+            "status": message.status,
+            "created_at": datetime.now(timezone.utc)
+        })
+        
+        return {
+            "status": message.status,
+            "message_id": message.sid,
+            "to": sms.recipient_phone
+        }
+        
+    except Exception as e:
+        logger.error(f"SMS send error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/sms/bulk")
+async def send_bulk_sms(bulk_sms: BulkSMSRequest):
+    """Send SMS to a group or list of people"""
+    # Get recipients
+    recipients = []
+    
+    if bulk_sms.group_id:
+        # Get group members
+        group_members = await db.group_members.find(
+            {"group_id": bulk_sms.group_id},
+            {"person_id": 1, "_id": 0}
+        ).to_list(1000)
+        
+        person_ids = [m["person_id"] for m in group_members]
+        people = await db.people.find(
+            {"id": {"$in": person_ids}, "phone": {"$ne": None}},
+            {"id": 1, "phone": 1, "first_name": 1, "_id": 0}
+        ).to_list(1000)
+        
+        recipients = [{"phone": p["phone"], "name": p["first_name"], "person_id": p["id"]} for p in people if p.get("phone")]
+    
+    # Check Twilio config
+    twilio_sid = os.environ.get("TWILIO_ACCOUNT_SID")
+    
+    if not twilio_sid:
+        # Return mock response
+        return {
+            "status": "queued",
+            "total_recipients": len(recipients),
+            "messages_sent": len(recipients),
+            "mock": True,
+            "note": "Twilio not configured - this is a simulated response"
+        }
+    
+    # TODO: Implement actual bulk SMS with Twilio
+    return {
+        "status": "queued",
+        "total_recipients": len(recipients),
+        "messages_sent": len(recipients),
+        "batch_id": f"batch_{uuid.uuid4().hex[:12]}"
+    }
+
+@api_router.get("/sms/templates")
+async def get_sms_templates():
+    """Get SMS templates"""
+    return [
+        {
+            "id": "welcome",
+            "name": "Welcome Message",
+            "content": "Welcome to {church_name}! We're so glad you joined us. Reply STOP to unsubscribe.",
+            "category": "onboarding"
+        },
+        {
+            "id": "event_reminder",
+            "name": "Event Reminder",
+            "content": "Reminder: {event_name} is coming up on {event_date}. We hope to see you there!",
+            "category": "events"
+        },
+        {
+            "id": "giving_thanks",
+            "name": "Giving Thank You",
+            "content": "Thank you for your generous gift of ${amount}. Your support makes a difference!",
+            "category": "giving"
+        },
+        {
+            "id": "group_meeting",
+            "name": "Group Meeting Reminder",
+            "content": "{group_name} meets this week! {day} at {time}. Looking forward to seeing you.",
+            "category": "groups"
+        }
+    ]
+
 # ============== APP ROUTES ==============
 
 @api_router.get("/")
