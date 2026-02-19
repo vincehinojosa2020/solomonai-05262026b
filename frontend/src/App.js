@@ -27,7 +27,6 @@ import PortalGive from "@/pages/portal/PortalGive";
 import PortalGroups from "@/pages/portal/PortalGroups";
 import PortalEvents from "@/pages/portal/PortalEvents";
 import PortalMe from "@/pages/portal/PortalMe";
-import PortalWatch from "@/pages/portal/PortalWatch";
 import PortalLibrary from "@/pages/portal/PortalLibrary";
 import { API_URL } from "@/lib/utils";
 
