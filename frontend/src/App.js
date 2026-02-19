@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "@/App.css";
+import "@/masterclass.css";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import AppShell from "@/components/layout/AppShell";
