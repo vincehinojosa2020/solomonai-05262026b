@@ -89,8 +89,9 @@ export default function PortalLayout() {
 
   return (
     <div className={`portal-layout ${isDarkPage ? 'portal-dark-mode' : ''}`}>
-      {/* Top Navigation */}
-      <header className={`portal-header ${isDarkPage ? 'portal-header-dark' : ''}`}>
+      {/* Top Navigation - Hidden on Library page which has its own nav */}
+      {!isLibraryPage && (
+        <header className={`portal-header ${isDarkPage ? 'portal-header-dark' : ''}`}>
         <div className="portal-header-content">
           {/* Logo */}
           <div className="portal-logo" data-testid="portal-logo">
