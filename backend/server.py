@@ -1281,41 +1281,6 @@ async def get_dashboard_stats():
         "new_this_week": 8,
         "recurring_givers": 47
     }
-        "tenant_id": tenant_id,
-        "created_at": {"$gte": week_ago}
-    })
-    
-    # Recurring givers
-    recurring_count = await db.recurring_giving.count_documents({
-        "tenant_id": tenant_id,
-        "is_active": True
-    })
-    
-    # ============== DEMO SCALE: Abundant Church (500 members, El Paso TX) ==============
-    DEMO_TOTAL_MEMBERS = 487
-    DEMO_ACTIVE_GROUPS = 12
-    DEMO_LAST_ATTENDANCE = 312
-    DEMO_MTD_GIVING = 24750
-    DEMO_YTD_GIVING = 87303
-    DEMO_MTD_GOAL = 95000
-    DEMO_RECURRING = 47
-    DEMO_NEW_THIS_MONTH = 8
-    DEMO_OPEN_GROUPS = 4
-    
-    return {
-        "total_members": DEMO_TOTAL_MEMBERS,
-        "active_members": int(DEMO_TOTAL_MEMBERS * 0.85),
-        "visitors": int(DEMO_TOTAL_MEMBERS * 0.03),
-        "active_groups": DEMO_ACTIVE_GROUPS,
-        "open_groups": DEMO_OPEN_GROUPS,
-        "mtd_giving": DEMO_MTD_GIVING,
-        "ytd_giving": DEMO_YTD_GIVING,
-        "mtd_goal": DEMO_MTD_GOAL,
-        "last_attendance": DEMO_LAST_ATTENDANCE,
-        "last_attendance_change": 24,
-        "new_this_week": DEMO_NEW_THIS_MONTH,
-        "recurring_givers": DEMO_RECURRING
-    }
 
 @api_router.get("/dashboard/giving-trend")
 async def get_giving_trend():
