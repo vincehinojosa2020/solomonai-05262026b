@@ -103,7 +103,7 @@ function AppRouter() {
       <Route path="/portal" element={<PortalLayout />}>
         <Route index element={<PortalHome />} />
         <Route path="give" element={<PortalGive />} />
-        <Route path="watch" element={<PortalWatch />} />
+        <Route path="watch" element={<Navigate to="/portal/library" replace />} />
         <Route path="library" element={<PortalLibrary />} />
         <Route path="groups" element={<PortalGroups />} />
         <Route path="events" element={<PortalEvents />} />
