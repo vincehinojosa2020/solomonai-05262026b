@@ -354,6 +354,32 @@ class SolomonChatResponse(BaseModel):
     data: Optional[Dict[str, Any]] = None  # For chart/table data
     actions: Optional[List[Dict[str, str]]] = None  # Suggested actions
 
+# ============== WATCH PROGRESS MODELS ==============
+
+class WatchProgressUpdate(BaseModel):
+    video_id: str
+    youtube_id: str
+    position_seconds: int
+    duration_seconds: int
+    title: Optional[str] = None
+    thumbnail: Optional[str] = None
+    instructor: Optional[str] = None
+
+class WatchProgress(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    video_id: str
+    youtube_id: str
+    title: Optional[str] = None
+    thumbnail: Optional[str] = None
+    instructor: Optional[str] = None
+    position_seconds: int = 0
+    duration_seconds: int = 0
+    progress_percent: float = 0.0
+    completed: bool = False
+    last_watched: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 # ============== HELPER FUNCTIONS ==============
 
 def serialize_doc(doc: dict) -> dict:
