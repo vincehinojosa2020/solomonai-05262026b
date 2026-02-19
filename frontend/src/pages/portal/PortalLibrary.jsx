@@ -809,6 +809,21 @@ export default function PortalLibrary() {
                 </motion.button>
               );
             })}
+          </div>
+          
+          {/* Search in categories row */}
+          <div className={`prem-search ${isSearchFocused ? 'focused' : ''}`}>
+            <Search className="prem-search-icon" />
+            <input 
+              type="text"
+              placeholder="Search sermons..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+              data-testid="search-input"
+            />
+          </div>
         </div>
       </motion.nav>
 
