@@ -2,16 +2,22 @@ import { useState, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { API_URL } from '@/lib/utils';
 
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute({ children, requiredRole }) {
   const location = useLocation();
-  const [isAuthenticated, setIsAuthenticated] = useState(location.state?.user ? true : null);
-  const [user, setUser] = useState(location.state?.user || null);
+  const [authState, setAuthState] = useState({
+    isAuthenticated: location.state?.user ? true : null,
+    user: location.state?.user || null,
+    isLoading: !location.state?.user
+  });
 
   useEffect(() => {
-    // Skip if user data was passed from AuthCallback
+    // Skip if user data was passed from login
     if (location.state?.user) {
-      setIsAuthenticated(true);
-      setUser(location.state.user);
+      setAuthState({
+        isAuthenticated: true,
+        user: location.state.user,
+        isLoading: false
+      });
       return;
     }
 
@@ -26,18 +32,27 @@ export default function ProtectedRoute({ children }) {
         }
 
         const userData = await response.json();
-        setIsAuthenticated(true);
-        setUser(userData);
+        setAuthState({
+          isAuthenticated: true,
+          user: userData,
+          isLoading: false
+        });
       } catch (error) {
-        setIsAuthenticated(false);
+        setAuthState({
+          isAuthenticated: false,
+          user: null,
+          isLoading: false
+        });
       }
     };
 
     checkAuth();
   }, [location.state]);
 
+  const { isAuthenticated, user, isLoading } = authState;
+
   // Still checking auth
-  if (isAuthenticated === null) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
@@ -51,6 +66,16 @@ export default function ProtectedRoute({ children }) {
   // Not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Check role if required
+  if (requiredRole) {
+    const userRole = user?.role || 'admin'; // Default to admin for backwards compatibility
+    
+    if (requiredRole === 'admin' && userRole === 'member') {
+      // Member trying to access admin routes - redirect to portal
+      return <Navigate to="/portal" replace />;
+    }
   }
 
   // Authenticated - render children with user context
