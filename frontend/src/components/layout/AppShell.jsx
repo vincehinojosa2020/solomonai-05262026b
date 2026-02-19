@@ -1,14 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { 
-  LayoutDashboard, Users, Home, Link2, UsersRound, Calendar, 
-  CheckSquare, DollarSign, RefreshCw, FileText, Coins, 
-  Mail, ClipboardList, BarChart3, TrendingUp, Settings, 
-  UserCog, Building2, Search, Bell, ChevronLeft, Menu,
-  Command
+  LayoutDashboard, Users, Home, UsersRound, Calendar, 
+  CheckSquare, DollarSign, Mail, BarChart3, Settings, 
+  Building2, Search, Bell, ChevronLeft, Menu, Command
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +15,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import CommandPalette from '@/components/CommandPalette';
-import MusicPlayer from '@/components/MusicPlayer';
 import { API_URL } from '@/lib/utils';
 
 const navItems = [
@@ -55,7 +51,6 @@ export default function AppShell() {
   const location = useLocation();
 
   useEffect(() => {
-    // Fetch tenant info
     fetch(`${API_URL}/tenant`)
       .then(res => res.json())
       .then(data => setTenant(data))
@@ -63,7 +58,6 @@ export default function AppShell() {
   }, []);
 
   useEffect(() => {
-    // Handle keyboard shortcut for command palette
     const handleKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
@@ -87,7 +81,7 @@ export default function AppShell() {
       {/* Sidebar */}
       <aside className={`app-sidebar ${collapsed ? 'collapsed' : ''}`} data-testid="app-sidebar">
         {/* Logo */}
-        <div className="flex items-center justify-between h-16 px-5 border-b border-white/10">
+        <div className="flex items-center justify-between h-14 px-4 border-b border-white/10">
           {!collapsed && (
             <span className="logo-text" data-testid="app-logo">
               SAMS<span className="logo-accent">O</span>N
@@ -95,15 +89,15 @@ export default function AppShell() {
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-2 rounded-lg text-white/40 hover:text-white/80 hover:bg-white/5 transition-colors"
+            className="p-2 rounded text-white/50 hover:text-white hover:bg-white/10 transition-colors"
             data-testid="sidebar-toggle"
           >
-            {collapsed ? <Menu className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+            {collapsed ? <Menu className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-4 scrollbar-thin">
+        <nav className="flex-1 overflow-y-auto py-3 scrollbar-thin">
           {navItems.map((section, idx) => (
             <div key={idx} className="nav-section">
               {!collapsed && (
@@ -129,11 +123,11 @@ export default function AppShell() {
 
         {/* User Section */}
         {!collapsed && (
-          <div className="p-5 border-t border-white/10">
+          <div className="p-4 border-t border-white/10">
             <div className="flex items-center gap-3">
-              <Avatar className="w-9 h-9 ring-2 ring-white/20">
+              <Avatar className="w-8 h-8">
                 <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=admin" />
-                <AvatarFallback className="bg-[#D4AF37] text-[#1D3A2F] text-sm font-semibold">AD</AvatarFallback>
+                <AvatarFallback className="bg-[#2d7a6b] text-white text-xs font-medium">AD</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">Admin User</p>
@@ -150,8 +144,8 @@ export default function AppShell() {
         <header className="app-topbar" data-testid="app-topbar">
           <div className="flex items-center gap-4">
             {collapsed && (
-              <span className="logo-text" style={{ color: '#1D3A2F' }}>
-                SAMS<span style={{ color: '#D4AF37' }}>O</span>N
+              <span className="logo-text" style={{ color: '#1a1a1a' }}>
+                SAMS<span style={{ color: '#2d7a6b' }}>O</span>N
               </span>
             )}
           </div>
@@ -163,7 +157,7 @@ export default function AppShell() {
             data-testid="global-search-btn"
           >
             <Search className="search-icon" />
-            <span className="flex-1 text-left text-slate-400 text-sm">Search...</span>
+            <span className="flex-1 text-left text-[#8a8a8a] text-sm">Search...</span>
             <span className="kbd">
               <Command className="w-3 h-3" />
               <span>K</span>
@@ -171,20 +165,20 @@ export default function AppShell() {
           </button>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {/* Notifications */}
             <button 
-              className="relative p-2.5 rounded-lg text-slate-500 hover:text-[#2D5A47] hover:bg-[#2D5A47]/5 transition-colors"
+              className="relative p-2 rounded text-[#8a8a8a] hover:text-[#2d7a6b] hover:bg-[#f7f7f5] transition-colors"
               data-testid="notifications-btn"
             >
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#D4AF37] rounded-full"></span>
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#2d7a6b] rounded-full"></span>
             </button>
 
-            {/* Tenant Switcher */}
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2D5A47]/5 border border-[#2D5A47]/10">
-              <Building2 className="w-4 h-4 text-[#2D5A47]" />
-              <span className="text-sm font-medium text-[#1D3A2F]">
+            {/* Tenant Badge */}
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-[#f7f7f5] border border-[#e8e8e5]">
+              <Building2 className="w-4 h-4 text-[#8a8a8a]" />
+              <span className="text-sm font-medium text-[#4a4a4a]">
                 {tenant?.name || 'Abundant Church'}
               </span>
             </div>
@@ -193,13 +187,13 @@ export default function AppShell() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2" data-testid="user-menu-btn">
-                  <Avatar className="w-9 h-9 ring-2 ring-[#2D5A47]/20">
+                  <Avatar className="w-8 h-8">
                     <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=admin" />
-                    <AvatarFallback className="bg-[#2D5A47] text-white text-sm">AD</AvatarFallback>
+                    <AvatarFallback className="bg-[#2d7a6b] text-white text-xs">AD</AvatarFallback>
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Profile</DropdownMenuItem>
@@ -216,9 +210,6 @@ export default function AppShell() {
           <Outlet context={{ tenant, greeting: getGreeting() }} />
         </main>
       </div>
-
-      {/* Music Player */}
-      <MusicPlayer />
 
       {/* Command Palette */}
       {commandOpen && (
