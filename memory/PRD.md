@@ -43,7 +43,7 @@ Church Info Updated:
    - Upcoming events list
    - Solomon AI widget with personalized message
 
-2. **Portal Watch / Abundant TV** (`/portal/watch`) - ✅ **MASTERCLASS REDESIGN COMPLETE**
+2. **Portal Watch / Abundant TV** (`/portal/watch`) - ✅ **MASTERCLASS REDESIGN + VIDEO PLAYER**
    - **Cinematic dark mode** premium streaming experience
    - Full-bleed hero with auto-rotating featured content (3 items, 8-sec interval)
    - Instructor avatars, lesson counts, duration metadata
@@ -55,6 +55,8 @@ Church Info Updated:
    - Footer CTA: "Every Lesson. Every Teacher. All Access."
    - Typography: Playfair Display (titles) + DM Sans (body)
    - Framer Motion animations throughout
+   - ✅ **Video Player Modal** - Cinema-style fullscreen player with YouTube embeds
+   - ✅ **Playlist Sidebar** - Shows all lessons with active state highlighting
 
 3. **Portal Give** (`/portal/give`)
    - Amount input with quick amounts ($25, $50, $100, $250)
