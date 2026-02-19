@@ -64,6 +64,7 @@ export default function PortalLayout() {
   const navItems = [
     { name: 'Home', path: '/portal', icon: Home, exact: true },
     { name: 'Watch', path: '/portal/watch', icon: Tv },
+    { name: 'Library', path: '/portal/library', icon: BookOpen },
     { name: 'Give', path: '/portal/give', icon: DollarSign },
     { name: 'Groups', path: '/portal/groups', icon: Users },
     { name: 'Events', path: '/portal/events', icon: Calendar },
