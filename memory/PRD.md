@@ -35,6 +35,7 @@ Dashboard stats scaled to 50,000-member mega-church (NOTE: Currently hardcoded d
 2. **Portal Watch** (`/portal/library`) - ✅ **PREMIUM LUXURY MEDIA EXPERIENCE**
    - **Consolidated from separate Watch + Library pages into ONE unified experience**
    - **Premium Prada/Eden-X.io inspired luxury design**
+   - ✅ **Integrated Portal Navigation** - Home | Watch | Give | Groups | Events | Me in header
    - Sora font family for refined typography
    - Cinematic hero section with auto-rotating featured content
    - Gold accent colors + elegant category pills
