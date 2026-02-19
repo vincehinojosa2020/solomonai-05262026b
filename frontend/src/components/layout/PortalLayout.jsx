@@ -12,7 +12,7 @@ export default function PortalLayout() {
   const navigate = useNavigate();
   
   // Check if we're on the Watch or Library page for dark mode
-  const isDarkPage = location.pathname === '/portal/watch' || location.pathname === '/portal/library';
+  const isDarkPage = location.pathname === '/portal/library';
   
   // Library page has its own full navigation, so hide portal header
   const isLibraryPage = location.pathname === '/portal/library';
