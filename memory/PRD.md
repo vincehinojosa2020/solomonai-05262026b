@@ -35,7 +35,7 @@ Church Info Updated:
 - Timezone: America/Denver
 
 ### ✅ BUILD 3: Member Portal (COMPLETED)
-5-page member-facing portal (Church Center equivalent):
+6-page member-facing portal (Church Center equivalent):
 
 1. **Portal Home** (`/portal`)
    - Welcome banner with greeting + date
@@ -43,24 +43,37 @@ Church Info Updated:
    - Upcoming events list
    - Solomon AI widget with personalized message
 
-2. **Portal Give** (`/portal/give`)
+2. **Portal Watch / Abundant TV** (`/portal/watch`) - ✅ **MASTERCLASS REDESIGN COMPLETE**
+   - **Cinematic dark mode** premium streaming experience
+   - Full-bleed hero with auto-rotating featured content (3 items, 8-sec interval)
+   - Instructor avatars, lesson counts, duration metadata
+   - Sticky category filter bar (All Classes, Faith, Worship, Prayer, etc.)
+   - Search toggle with animated search bar
+   - **4 horizontal carousels**: Popular Classes, Trending, New Releases, Deep Dives
+   - **Course cards** with hover play overlay, duration badges, instructor info
+   - **Instructor Spotlight** section with stats (12 Classes, 156 Lessons, 40h+)
+   - Footer CTA: "Every Lesson. Every Teacher. All Access."
+   - Typography: Playfair Display (titles) + DM Sans (body)
+   - Framer Motion animations throughout
+
+3. **Portal Give** (`/portal/give`)
    - Amount input with quick amounts ($25, $50, $100, $250)
    - Fund selector (General, Building, Missions, etc.)
    - Frequency (One-time, Weekly, Monthly, etc.)
    - Payment methods (Card/ACH, PayPal, Venmo, Zelle)
    - YTD giving summary + giving history
 
-3. **Portal Groups** (`/portal/groups`)
+4. **Portal Groups** (`/portal/groups`)
    - My Groups section
    - Discover Groups with search/filter
    - Request to Join / Get Notified buttons
 
-4. **Portal Events** (`/portal/events`)
+5. **Portal Events** (`/portal/events`)
    - Filter tabs (All, This Week, This Month, Registered)
    - Event cards with date, location, registration
    - Registration functionality
 
-5. **Portal Me** (`/portal/me`)
+6. **Portal Me** (`/portal/me`)
    - Profile header with avatar
    - Tabs: Overview, My Giving, My Groups, Communications
    - Email preferences toggles
