@@ -3,13 +3,28 @@ import { useOutletContext } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Play, ChevronLeft, ChevronRight, Clock, Search, 
-  BookmarkPlus, Share2, Volume2, VolumeX, Pause,
-  ChevronDown, X, Info
+  BookmarkPlus, Volume2, VolumeX, Pause, Maximize,
+  X, Info, List, SkipBack, SkipForward, Settings
 } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // MASTERCLASS-STYLE ABUNDANT TV - Premium Dark Cinematic Experience
 // ═══════════════════════════════════════════════════════════════════════════════
+
+// Placeholder video URLs (public domain / creative commons)
+const PLACEHOLDER_VIDEOS = [
+  'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+  'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+  'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+  'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+];
+
+// Get a consistent video URL for each course
+const getVideoUrl = (courseId) => {
+  const index = parseInt(courseId) % PLACEHOLDER_VIDEOS.length;
+  return PLACEHOLDER_VIDEOS[index];
+};
 
 // Featured hero content (rotating)
 const HERO_CONTENT = [
@@ -23,6 +38,7 @@ const HERO_CONTENT = [
     backgroundImg: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=1920&q=80',
     lessons: 24,
     duration: '6h 10m',
+    videoUrl: PLACEHOLDER_VIDEOS[0],
   },
   {
     id: 'hero-2',
@@ -34,6 +50,7 @@ const HERO_CONTENT = [
     backgroundImg: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=1920&q=80',
     lessons: 18,
     duration: '4h 30m',
+    videoUrl: PLACEHOLDER_VIDEOS[1],
   },
   {
     id: 'hero-3',
@@ -45,6 +62,7 @@ const HERO_CONTENT = [
     backgroundImg: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=1920&q=80',
     lessons: 16,
     duration: '3h 45m',
+    videoUrl: PLACEHOLDER_VIDEOS[2],
   },
 ];
 
@@ -87,11 +105,338 @@ const COURSES = {
 const CATEGORIES = ['All Classes', 'Faith', 'Worship', 'Prayer', 'Family', 'Leadership', 'Bible Study'];
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// COMPONENTS
+// VIDEO PLAYER MODAL COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const VideoPlayerModal = ({ isOpen, onClose, course }) => {
+  const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [showControls, setShowControls] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showPlaylist, setShowPlaylist] = useState(false);
+  const controlsTimeoutRef = useRef(null);
+  const containerRef = useRef(null);
+
+  // Format time helper
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Play/Pause toggle
+  const togglePlay = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  // Mute toggle
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  // Fullscreen toggle
+  const toggleFullscreen = () => {
+    if (containerRef.current) {
+      if (!isFullscreen) {
+        if (containerRef.current.requestFullscreen) {
+          containerRef.current.requestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+      setIsFullscreen(!isFullscreen);
+    }
+  };
+
+  // Progress update
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      const current = videoRef.current.currentTime;
+      const dur = videoRef.current.duration;
+      setCurrentTime(current);
+      setDuration(dur);
+      setProgress((current / dur) * 100);
+    }
+  };
+
+  // Seek
+  const handleSeek = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pos = (e.clientX - rect.left) / rect.width;
+    if (videoRef.current) {
+      videoRef.current.currentTime = pos * videoRef.current.duration;
+    }
+  };
+
+  // Skip forward/back
+  const skip = (seconds) => {
+    if (videoRef.current) {
+      videoRef.current.currentTime += seconds;
+    }
+  };
+
+  // Auto-hide controls
+  const handleMouseMove = () => {
+    setShowControls(true);
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+    controlsTimeoutRef.current = setTimeout(() => {
+      if (isPlaying) {
+        setShowControls(false);
+      }
+    }, 3000);
+  };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!isOpen) return;
+      switch (e.key) {
+        case ' ':
+        case 'k':
+          e.preventDefault();
+          togglePlay();
+          break;
+        case 'm':
+          toggleMute();
+          break;
+        case 'f':
+          toggleFullscreen();
+          break;
+        case 'ArrowLeft':
+          skip(-10);
+          break;
+        case 'ArrowRight':
+          skip(10);
+          break;
+        case 'Escape':
+          onClose();
+          break;
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isPlaying]);
+
+  // Auto-play on open
+  useEffect(() => {
+    if (isOpen && videoRef.current) {
+      videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+    }
+  }, [isOpen, course]);
+
+  // Cleanup on close
+  useEffect(() => {
+    if (!isOpen && videoRef.current) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  }, [isOpen]);
+
+  if (!isOpen || !course) return null;
+
+  const videoUrl = course.videoUrl || getVideoUrl(course.id);
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="video-modal-backdrop"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+      >
+        <motion.div
+          ref={containerRef}
+          className="video-modal-container"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.3 }}
+          onClick={(e) => e.stopPropagation()}
+          onMouseMove={handleMouseMove}
+          data-testid="video-player-modal"
+        >
+          {/* Video Element */}
+          <video
+            ref={videoRef}
+            src={videoUrl}
+            className="video-element"
+            onTimeUpdate={handleTimeUpdate}
+            onEnded={() => setIsPlaying(false)}
+            onClick={togglePlay}
+            playsInline
+          />
+
+          {/* Center Play Button (when paused) */}
+          <AnimatePresence>
+            {!isPlaying && (
+              <motion.button
+                className="video-center-play"
+                onClick={togglePlay}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Play className="w-16 h-16" fill="currentColor" />
+              </motion.button>
+            )}
+          </AnimatePresence>
+
+          {/* Top Bar */}
+          <motion.div
+            className="video-top-bar"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: showControls ? 1 : 0, y: showControls ? 0 : -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            <button className="video-close-btn" onClick={onClose} data-testid="video-close-btn">
+              <X className="w-6 h-6" />
+            </button>
+            <div className="video-title-info">
+              <h2 className="video-title">{course.title}</h2>
+              <p className="video-instructor">{course.instructor}</p>
+            </div>
+            <button 
+              className="video-playlist-btn"
+              onClick={() => setShowPlaylist(!showPlaylist)}
+            >
+              <List className="w-5 h-5" />
+              <span>Lessons</span>
+            </button>
+          </motion.div>
+
+          {/* Bottom Controls */}
+          <motion.div
+            className="video-controls"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: showControls ? 1 : 0, y: showControls ? 0 : 20 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* Progress Bar */}
+            <div className="video-progress-container" onClick={handleSeek}>
+              <div className="video-progress-bar">
+                <div 
+                  className="video-progress-fill" 
+                  style={{ width: `${progress}%` }}
+                />
+                <div 
+                  className="video-progress-handle"
+                  style={{ left: `${progress}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Controls Row */}
+            <div className="video-controls-row">
+              <div className="video-controls-left">
+                <button className="video-control-btn" onClick={() => skip(-10)}>
+                  <SkipBack className="w-5 h-5" />
+                </button>
+                <button 
+                  className="video-control-btn play-pause" 
+                  onClick={togglePlay}
+                  data-testid="video-play-pause"
+                >
+                  {isPlaying ? (
+                    <Pause className="w-6 h-6" fill="currentColor" />
+                  ) : (
+                    <Play className="w-6 h-6" fill="currentColor" />
+                  )}
+                </button>
+                <button className="video-control-btn" onClick={() => skip(10)}>
+                  <SkipForward className="w-5 h-5" />
+                </button>
+                <button className="video-control-btn" onClick={toggleMute}>
+                  {isMuted ? (
+                    <VolumeX className="w-5 h-5" />
+                  ) : (
+                    <Volume2 className="w-5 h-5" />
+                  )}
+                </button>
+                <span className="video-time">
+                  {formatTime(currentTime)} / {formatTime(duration || 0)}
+                </span>
+              </div>
+              <div className="video-controls-right">
+                <button className="video-control-btn">
+                  <Settings className="w-5 h-5" />
+                </button>
+                <button className="video-control-btn" onClick={toggleFullscreen}>
+                  <Maximize className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Playlist Sidebar */}
+          <AnimatePresence>
+            {showPlaylist && (
+              <motion.div
+                className="video-playlist-sidebar"
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 100 }}
+              >
+                <div className="playlist-header">
+                  <h3>Lessons</h3>
+                  <button onClick={() => setShowPlaylist(false)}>
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="playlist-items">
+                  {Array.from({ length: course.lessons || 8 }, (_, i) => (
+                    <div 
+                      key={i} 
+                      className={`playlist-item ${i === 0 ? 'active' : ''}`}
+                    >
+                      <span className="playlist-item-num">{i + 1}</span>
+                      <div className="playlist-item-info">
+                        <p className="playlist-item-title">
+                          {i === 0 ? 'Introduction' : `Lesson ${i + 1}: ${course.title.split(' ')[0]} Basics`}
+                        </p>
+                        <span className="playlist-item-duration">
+                          {Math.floor(Math.random() * 15) + 5}:00
+                        </span>
+                      </div>
+                      {i === 0 && <Play className="w-4 h-4 playlist-playing" />}
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CAROUSEL & CARD COMPONENTS
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // Horizontal Carousel Component
-const Carousel = ({ title, subtitle, courses, goldAccent = false }) => {
+const Carousel = ({ title, subtitle, courses, goldAccent = false, onPlayCourse }) => {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -157,7 +502,12 @@ const Carousel = ({ title, subtitle, courses, goldAccent = false }) => {
         
         <div className="mc-carousel-track" ref={scrollRef}>
           {courses.map((course, index) => (
-            <CourseCard key={course.id} course={course} index={index} />
+            <CourseCard 
+              key={course.id} 
+              course={course} 
+              index={index}
+              onPlay={() => onPlayCourse(course)}
+            />
           ))}
         </div>
         
@@ -182,7 +532,7 @@ const Carousel = ({ title, subtitle, courses, goldAccent = false }) => {
 };
 
 // Course Card Component
-const CourseCard = ({ course, index }) => {
+const CourseCard = ({ course, index, onPlay }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -195,6 +545,7 @@ const CourseCard = ({ course, index }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.4 }}
       whileHover={{ y: -8, transition: { duration: 0.2 } }}
+      onClick={onPlay}
     >
       <div className="mc-card-image-wrapper">
         <img 
@@ -249,7 +600,7 @@ const CourseCard = ({ course, index }) => {
 };
 
 // Instructor Spotlight Component
-const InstructorSpotlight = () => {
+const InstructorSpotlight = ({ onPlay }) => {
   return (
     <motion.section 
       className="mc-spotlight"
@@ -292,9 +643,16 @@ const InstructorSpotlight = () => {
           className="mc-spotlight-btn"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          onClick={() => onPlay({
+            id: 'spotlight',
+            title: 'Faith in the Storm - Introduction',
+            instructor: 'Pastor David Rivera',
+            lessons: 24,
+            videoUrl: PLACEHOLDER_VIDEOS[0]
+          })}
         >
-          Explore His Classes
-          <ChevronRight className="w-4 h-4" />
+          <Play className="w-4 h-4" />
+          Watch Preview
         </motion.button>
       </div>
     </motion.section>
@@ -312,6 +670,16 @@ export default function PortalWatch() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Video Player State
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+
+  // Open video player
+  const handlePlayCourse = (course) => {
+    setSelectedCourse(course);
+    setVideoModalOpen(true);
+  };
 
   // Auto-rotate hero
   useEffect(() => {
@@ -334,6 +702,13 @@ export default function PortalWatch() {
 
   return (
     <div className="mc-page" data-testid="masterclass-watch">
+      {/* ═══ VIDEO PLAYER MODAL ═══ */}
+      <VideoPlayerModal
+        isOpen={videoModalOpen}
+        onClose={() => setVideoModalOpen(false)}
+        course={selectedCourse}
+      />
+
       {/* ═══ HERO SECTION ═══ */}
       <section className="mc-hero">
         <AnimatePresence mode="wait">
@@ -418,6 +793,11 @@ export default function PortalWatch() {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
                   data-testid="hero-start-btn"
+                  onClick={() => handlePlayCourse({
+                    ...currentHero,
+                    id: currentHero.id,
+                    image: currentHero.backgroundImg,
+                  })}
                 >
                   <Play className="w-5 h-5" fill="currentColor" />
                   Start Watching
@@ -518,23 +898,26 @@ export default function PortalWatch() {
         <Carousel 
           title="Popular Classes" 
           subtitle="Where most members start their journey"
-          courses={COURSES.popular} 
+          courses={COURSES.popular}
+          onPlayCourse={handlePlayCourse}
         />
         
         {/* Trending Now */}
         <Carousel 
           title="Trending This Week" 
-          courses={COURSES.trending} 
+          courses={COURSES.trending}
+          onPlayCourse={handlePlayCourse}
         />
         
         {/* Instructor Spotlight */}
-        <InstructorSpotlight />
+        <InstructorSpotlight onPlay={handlePlayCourse} />
         
         {/* New Releases */}
         <Carousel 
           title="New Releases" 
           subtitle="Fresh content just added"
-          courses={COURSES.newReleases} 
+          courses={COURSES.newReleases}
+          onPlayCourse={handlePlayCourse}
         />
         
         {/* Deep Studies */}
@@ -543,6 +926,7 @@ export default function PortalWatch() {
           subtitle="In-depth explorations for serious students"
           courses={COURSES.deepStudies}
           goldAccent
+          onPlayCourse={handlePlayCourse}
         />
 
         {/* ═══ FOOTER CTA ═══ */}
