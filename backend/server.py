@@ -742,7 +742,7 @@ async def update_watch_progress(request: Request, progress: WatchProgressUpdate)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
-    session = await db.sessions.find_one({"session_token": session_token}, {"_id": 0})
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
     if not session:
         raise HTTPException(status_code=401, detail="Invalid session")
     
