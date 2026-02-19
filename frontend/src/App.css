@@ -980,3 +980,235 @@
     width: 280px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   JOIN SERVICE BANNER
+   ═══════════════════════════════════════════════════════════════ */
+
+.join-service-banner {
+  background: linear-gradient(135deg, #1D3A2F 0%, #2D5A47 100%);
+  border-radius: 20px;
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.join-service-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.6;
+}
+
+.join-service-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(212, 175, 55, 0.15);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #D4AF37;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.join-service-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+
+.join-service-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-join-online {
+  background: #D4AF37;
+  color: #1D3A2F;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px 24px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-join-online:hover {
+  background: #E8C55A;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(212, 175, 55, 0.5);
+}
+
+.btn-calendly {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-calendly:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DONATION OPTIONS SECTION
+   ═══════════════════════════════════════════════════════════════ */
+
+.give-options-section {
+  background: white;
+  border: 1px solid rgba(45, 90, 71, 0.08);
+  border-radius: 20px;
+  padding: 28px;
+  margin-top: 24px;
+}
+
+.give-options-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #1D3A2F;
+  margin-bottom: 20px;
+}
+
+.give-options-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+}
+
+.give-option-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 16px;
+  background: #F5F9F7;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.give-option-card:hover {
+  border-color: rgba(45, 90, 71, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(45, 90, 71, 0.1);
+}
+
+.give-option-card .icon-wrap {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(45, 90, 71, 0.08);
+}
+
+.give-option-card .icon-wrap svg {
+  width: 24px;
+  height: 24px;
+}
+
+.give-option-card .icon-wrap.stripe { color: #635BFF; }
+.give-option-card .icon-wrap.paypal { color: #003087; }
+.give-option-card .icon-wrap.venmo { color: #3D95CE; }
+.give-option-card .icon-wrap.zelle { color: #6D1ED4; }
+.give-option-card .icon-wrap.crypto { color: #F7931A; }
+.give-option-card .icon-wrap.bank { color: #2D5A47; }
+
+.give-option-card .label {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #5A7A6A;
+}
+
+.give-option-card .badge {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(45, 90, 71, 0.1);
+  color: #2D5A47;
+}
+
+@media (max-width: 1000px) {
+  .give-options-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .give-options-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .join-service-banner {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    padding: 28px 24px;
+  }
+  
+  .join-service-banner > div:first-child {
+    flex-direction: column;
+  }
+  
+  .join-service-banner > div:last-child {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-join-online,
+  .btn-calendly {
+    width: 100%;
+    justify-content: center;
+  }
+}
