@@ -50,6 +50,17 @@ Dashboard stats scaled to 50,000-member mega-church (NOTE: Currently hardcoded d
    - **Video Player Modal**: Cinema-style overlay with YouTube embed, "NOW PLAYING" label, autoplay
    - Category filtering (All, Faith, Family, Leadership, Worship, Growth, Community)
    - Premium badges: "NEW" (burgundy), "POPULAR" (gold), "FEATURED" (white)
+   - ✅ **"Continue Watching" Section** - Netflix-style feature:
+     - Horizontal scrollable carousel below hero
+     - Shows in-progress videos with progress bars
+     - Displays percentage watched + time remaining
+     - "Resume" button on hero for videos with progress
+     - Progress tracking saved to database
+     - Completed videos marked with checkmark badge
+   - ✅ **Watch Progress Tracking API**:
+     - `POST /api/portal/watch/progress` - Save progress
+     - `GET /api/portal/watch/progress` - Get all progress
+     - `GET /api/portal/watch/progress/{video_id}` - Get specific video progress
 
 3. **Portal Give** (`/portal/give`)
    - Amount input with quick amounts ($25, $50, $100, $250)
