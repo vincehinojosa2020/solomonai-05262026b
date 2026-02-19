@@ -170,6 +170,7 @@ export default function PortalLayout() {
           </div>
         )}
       </header>
+      )}
 
       {/* Main Content */}
       <main className={`portal-main ${isDarkPage ? 'portal-main-dark' : ''}`}>
@@ -178,22 +179,24 @@ export default function PortalLayout() {
         </div>
       </main>
 
-      {/* Mobile Bottom Nav */}
-      <nav className={`portal-bottom-nav md:hidden ${isDarkPage ? 'portal-bottom-nav-dark' : ''}`} data-testid="portal-bottom-nav">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.exact}
-            className={({ isActive }) => 
-              `portal-bottom-nav-item ${isActive ? 'active' : ''}`
-            }
-          >
-            <item.icon className="w-5 h-5" />
-            <span>{item.name}</span>
-          </NavLink>
-        ))}
-      </nav>
+      {/* Mobile Bottom Nav - Hidden on Library page */}
+      {!isLibraryPage && (
+        <nav className={`portal-bottom-nav md:hidden ${isDarkPage ? 'portal-bottom-nav-dark' : ''}`} data-testid="portal-bottom-nav">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.exact}
+              className={({ isActive }) => 
+                `portal-bottom-nav-item ${isActive ? 'active' : ''}`
+              }
+            >
+              <item.icon className="w-5 h-5" />
+              <span>{item.name}</span>
+            </NavLink>
+          ))}
+        </nav>
+      )}
     </div>
   );
 }
