@@ -21,18 +21,7 @@
 - **Role-based routing**: admin → /dashboard, member → /portal
 
 ### ✅ BUILD 2: Mega-Church Seed Data (COMPLETED)
-Dashboard stats scaled to 50,000-member mega-church:
-- **TOTAL MEMBERS**: 50,247 (+127 this month)
-- **ACTIVE GROUPS**: 284 (18 open for new members)
-- **LAST SUNDAY**: 8,420 (+340 vs prior)
-- **MTD GIVING**: $847,250 (24% of $3.5M goal)
-- **YTD GIVING**: $2,847,303 (+12% vs LY)
-- **RECURRING**: 847 active schedules
-
-Church Info Updated:
-- Address: 1556 George Dieter Dr, El Paso, TX 79936
-- Website: https://www.abundant.org
-- Timezone: America/Denver
+Dashboard stats scaled to 50,000-member mega-church (NOTE: Currently hardcoded demo values)
 
 ### ✅ BUILD 3: Member Portal (COMPLETED)
 6-page member-facing portal (Church Center equivalent):
@@ -43,85 +32,54 @@ Church Info Updated:
    - Upcoming events list
    - Solomon AI widget with personalized message
 
-2. **Portal Watch / Abundant TV** (`/portal/watch`) - ✅ **MASTERCLASS REDESIGN + VIDEO PLAYER**
-   - **Cinematic dark mode** premium streaming experience
-   - Full-bleed hero with auto-rotating featured content (3 items, 8-sec interval)
-   - Instructor avatars, lesson counts, duration metadata
-   - Sticky category filter bar (All Classes, Faith, Worship, Prayer, etc.)
-   - Search toggle with animated search bar
-   - **4 horizontal carousels**: Popular Classes, Trending, New Releases, Deep Dives
-   - **Course cards** with hover play overlay, duration badges, instructor info
-   - **Instructor Spotlight** section with stats (12 Classes, 156 Lessons, 40h+)
-   - Footer CTA: "Every Lesson. Every Teacher. All Access."
-   - Typography: Playfair Display (titles) + DM Sans (body)
-   - Framer Motion animations throughout
-   - ✅ **Video Player Modal** - Cinema-style fullscreen player with YouTube embeds
-   - ✅ **Playlist Sidebar** - Shows all lessons with active state highlighting
-
-3. **Portal Library** (`/portal/library`) - ✅ **MASTERCLASS LIBRARY CLONE**
-   - **Pixel-perfect MasterClass.com/library-search recreation**
-   - Pure black (#000000) background with cinematic vignette effect
-   - Custom top navigation: logo, search bar, My Progress, Library, Class TA (BETA), user avatar
-   - **7 category tiles**: All Categories, Faith & Spirituality, Family, Leadership, Worship, Personal Growth, Community
-   - **Filter sidebar** (265px): Format, My Content, Duration accordion dropdowns
-   - **3-column course grid** with:
-     - Sharp corners (0px border-radius per MasterClass spec)
-     - Red "NEW" badges, Purple "Popular" badges, Gold "Featured" badges
-     - Duration badges (semi-transparent dark pill)
-     - Metadata: "Class • 40:45 • Community"
-     - Hover: Play/Add button overlay + description expansion
-   - **12 REAL Abundant Church YouTube videos** from @abundantchurchep:
+2. **Portal Watch** (`/portal/library`) - ✅ **PREMIUM LUXURY MEDIA EXPERIENCE**
+   - **Consolidated from separate Watch + Library pages into ONE unified experience**
+   - **Premium Prada/Eden-X.io inspired luxury design**
+   - Sora font family for refined typography
+   - Cinematic hero section with auto-rotating featured content
+   - Gold accent colors + elegant category pills
+   - **4-column premium card grid** with glassmorphism hover effects
+   - Micro-animations throughout (Framer Motion)
+   - Search bar with focus effects
+   - **12 REAL Abundant Church YouTube videos**:
      - "Community With a Purpose" - Pastor Charles Nieman
      - "Blessing & Healing Through Humility" - Pastor Charles Nieman
      - "Building Your Life" - Pastor Charles Nieman
      - "The Missing Peace" - Pastor Charles Nieman
-     - "The Laws of Life" - Pastor Charles Nieman
-     - "Managing Your Emotions" - Pastor Charles Nieman
-     - "Worship In Spirit & In Truth" - Pastor Jared Nieman
-     - "Vision Sunday 2025" - Pastor Jared Nieman
-     - "Abundant Conference 2025" - Pastor Marcos Witt
      - And more...
-   - **Video Player Modal**: Cinema-style overlay with YouTube embed, autoplay
-   - Typography: Inter font from Google Fonts
+   - **Video Player Modal**: Cinema-style overlay with YouTube embed, "NOW PLAYING" label, autoplay
+   - Category filtering (All, Faith, Family, Leadership, Worship, Growth, Community)
+   - Premium badges: "NEW" (burgundy), "POPULAR" (gold), "FEATURED" (white)
 
-4. **Portal Give** (`/portal/give`)
+3. **Portal Give** (`/portal/give`)
    - Amount input with quick amounts ($25, $50, $100, $250)
    - Fund selector (General, Building, Missions, etc.)
-   - Frequency (One-time, Weekly, Monthly, etc.)
-   - Payment methods (Card/ACH, PayPal, Venmo, Zelle)
-   - YTD giving summary + giving history
+   - Frequency options
+   - Payment methods
 
-5. **Portal Groups** (`/portal/groups`)
+4. **Portal Groups** (`/portal/groups`)
    - My Groups section
    - Discover Groups with search/filter
-   - Request to Join / Get Notified buttons
 
-6. **Portal Events** (`/portal/events`)
-   - Filter tabs (All, This Week, This Month, Registered)
-   - Event cards with date, location, registration
-   - Registration functionality
+5. **Portal Events** (`/portal/events`)
+   - Filter tabs (All, This Week, This Month)
+   - Event cards with registration
 
-7. **Portal Me** (`/portal/me`)
-   - Profile header with avatar
-   - Tabs: Overview, My Giving, My Groups, Communications
-   - Email preferences toggles
+6. **Portal Me** (`/portal/me`)
+   - Profile with giving/groups tabs
 
-### ✅ Solomon AI Analyst (Previously Completed)
+### ✅ Solomon AI Analyst
 - Floating "Ask Solomon" button
 - Claude Sonnet 4.5 powered AI chat
-- Church data context (members, giving, groups)
-- Conversation history in MongoDB
 
-### ✅ Admin Features
-- Full SAMSON admin dashboard
-- "Preview Member Portal" link in header
-- All existing modules (Members, Groups, Events, Giving, Communications, Reports, Settings)
+### ✅ Admin Dashboard
+- Full SAMSON admin dashboard (stats hardcoded for demo)
 
 ---
 
 ## Technical Stack
 
-- **Frontend:** React 18, React Router, TailwindCSS, shadcn/ui
+- **Frontend:** React 18, React Router, TailwindCSS, shadcn/ui, Framer Motion
 - **Backend:** FastAPI, Motor (async MongoDB)
 - **Database:** MongoDB
 - **AI:** Claude Sonnet 4.5 via emergentintegrations
@@ -130,90 +88,69 @@ Church Info Updated:
 
 ---
 
-## API Endpoints
+## Recent Changes (Feb 19, 2026)
 
-### Authentication
-- `POST /api/auth/login` - Email/password login (returns role)
-- `GET /api/auth/me` - Get current user (with role)
-- `POST /api/auth/logout` - Logout
+### Media Experience Consolidation
+- **Removed**: Separate `/portal/watch` route (now redirects to `/portal/library`)
+- **Removed**: "Library" nav item (replaced with unified "Watch" that goes to library)
+- **Updated**: Navigation simplified to 6 items: Home | Watch | Give | Groups | Events | Me
 
-### Portal (Member)
-- `GET /api/portal/me` - Member profile with groups/giving
-- `GET /api/portal/giving/history` - Member's giving history
-- `GET /api/portal/events` - Upcoming events
-- `GET /api/portal/groups` - Available groups
-
-### Dashboard (Admin)
-- `GET /api/dashboard/stats` - Mega-church scale stats
-- All other admin endpoints unchanged
+### Premium Luxury Design Upgrade
+- **New font**: Sora (luxury typography)
+- **New color palette**: Rich black, gold accents, burgundy highlights
+- **New effects**: Ambient light animation, grain texture, glassmorphism
+- **Enhanced hover states**: Smooth scale animations, elegant play buttons
+- **Refined spacing**: More generous padding and margins
 
 ---
 
-## Demo Flow
+## Known Issues / Technical Debt
 
-1. Open `/login` → Show email/password form with demo credentials
-2. Login as **admin@abundant.org** → See full admin dashboard with 50,247 members
-3. Click "Ask Solomon" → AI-powered church analytics
-4. Logout → Login as **member@abundant.org** → See member portal
-5. Navigate Give, Groups, Events, Me pages
+1. **Dashboard Data**: Stats are HARDCODED demo values (not live MongoDB queries)
+2. **Library Content**: Video data is HARDCODED in frontend (no API)
+3. **Backend Monolith**: server.py needs refactoring into /routes, /models structure
 
 ---
 
-## Test Credentials
+## Backlog (Priority Order)
 
-| Account | Email | Password | Role | Destination |
-|---------|-------|----------|------|-------------|
-| Admin | admin@abundant.org | Demo2026! | admin | /dashboard |
-| Member | member@abundant.org | Demo2026! | member | /portal |
+### P1 - High Priority
+- [ ] Create zero-data demo account
+- [ ] Fix dashboard with real MongoDB queries + indexes
+- [ ] Design system: Add JetBrains Mono for data values
 
----
+### P2 - Medium Priority
+- [ ] Giving Module: "Record Gift" side panel
+- [ ] Missing Modules: Workflows, Check-In, Services
+- [ ] Communications: AI writer + rich text editor
+- [ ] Global Search (⌘K command palette)
 
-## Next Action Items
-
-### P0 - Immediate
-- [ ] Create Zero-Data Demo Account (second demo tenant with empty data)
-
-### P1 - Design & Polish
-- [ ] UPGRADE 2: Design System Elevation (Sora/JetBrains Mono fonts)
-- [ ] UPGRADE 6: Dashboard Intelligence - Fix hardcoded data with optimized DB queries
-- [ ] UPGRADE 7: Micro-interactions (Framer Motion on dashboard)
-
-### P2 - Feature Expansion
-- [ ] UPGRADE 5: Giving Module - Record Gift panel
-- [ ] UPGRADE 3: Missing Modules (Workflows, Check-In, Services)
-- [ ] UPGRADE 10: Communications - AI writer
-- [ ] UPGRADE 8: Global Search (⌘K)
-- [ ] Backend Refactor: Break server.py into modular routes/models/services
+### P3 - Lower Priority
+- [ ] Backend refactor: Break up server.py
+- [ ] Create API endpoints for sermon content
+- [ ] Standalone seed script (replace /api/seed endpoint)
 
 ---
 
-## Code Architecture
+## Credentials
 
-```
-/app/
-├── backend/
-│   ├── server.py       # All routes including auth + portal
-│   └── tests/          # pytest test files
-├── frontend/
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── LoginPage.jsx       # Email/password + demo creds
-│   │   │   └── portal/             # Member portal pages
-│   │   │       ├── PortalHome.jsx
-│   │   │       ├── PortalGive.jsx
-│   │   │       ├── PortalGroups.jsx
-│   │   │       ├── PortalEvents.jsx
-│   │   │       ├── PortalMe.jsx
-│   │   │       └── PortalWatch.jsx # ✅ MasterClass-style Abundant TV
-│   │   ├── components/
-│   │   │   ├── layout/
-│   │   │   │   ├── AppShell.jsx    # Admin layout
-│   │   │   │   └── PortalLayout.jsx # Member portal layout (dark mode on Watch)
-│   │   │   ├── ProtectedRoute.jsx  # Role-based routing
-│   │   │   └── SolomonChat.jsx     # AI chat widget
-│   │   ├── App.js                  # Routes
-│   │   ├── App.css                 # Main styles + portal dark mode
-│   │   └── masterclass.css         # ✅ MasterClass premium dark theme
-└── memory/
-    └── PRD.md
-```
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@abundant.org | Demo2026! |
+| Member | member@abundant.org | Demo2026! |
+
+---
+
+## File Reference
+
+### Core Files
+- `/app/frontend/src/pages/portal/PortalLibrary.jsx` - Premium media experience
+- `/app/frontend/src/library.css` - Luxury styling (Sora font, gold accents)
+- `/app/frontend/src/components/layout/PortalLayout.jsx` - Portal navigation
+- `/app/frontend/src/App.js` - Route configuration
+- `/app/backend/server.py` - FastAPI backend (monolithic)
+
+### CSS Architecture
+- `App.css` - Core app styles + portal styles
+- `library.css` - Premium media page styles
+- `index.css` - Base Tailwind + custom utilities
