@@ -839,6 +839,206 @@ async def get_sms_templates():
 async def root():
     return {"message": "Samson Church Management API", "version": "1.0.0"}
 
+# --- SOLOMON AI ROUTES ---
+# Store active chat sessions
+solomon_sessions: Dict[str, LlmChat] = {}
+
+SOLOMON_SYSTEM_PROMPT = """You are Solomon, an intelligent AI analyst for Samson Church Management System. You assist church administrators with:
+
+1. **Data Analysis**: Analyze membership trends, giving patterns, attendance statistics
+2. **Pastoral Advice**: Provide guidance on member care, follow-up strategies, engagement
+3. **Operational Strategy**: Help with event planning, group management, communication strategies
+4. **Quick Insights**: Answer questions about church data and provide actionable recommendations
+
+You have access to church data including:
+- Members: names, contact info, membership status, engagement scores, giving history
+- Groups: small groups, ministries, volunteer teams with member counts
+- Giving: donations, funds, recurring gifts, pledges
+- Attendance: service attendance, trends, check-in data
+- Events: upcoming services, special events, registrations
+
+When answering:
+- Be warm, professional, and pastoral in tone
+- Provide specific, actionable insights when possible
+- Reference actual data when available (it will be provided in context)
+- Suggest follow-up actions or next steps
+- Keep responses concise but thorough
+
+You are serving Abundant Church in El Paso, TX - a mega church with 50,000+ members."""
+
+async def get_church_context() -> str:
+    """Gather current church data for Solomon's context"""
+    tenant_id = DEFAULT_TENANT_ID
+    
+    # Get key stats
+    total_members = await db.people.count_documents({"tenant_id": tenant_id})
+    active_members = await db.people.count_documents({"tenant_id": tenant_id, "membership_status": "member"})
+    visitors = await db.people.count_documents({"tenant_id": tenant_id, "membership_status": "visitor"})
+    
+    # Get groups info
+    total_groups = await db.groups.count_documents({"tenant_id": tenant_id, "is_active": True})
+    
+    # Get giving stats
+    today = datetime.now(timezone.utc)
+    month_start = today.replace(day=1).strftime("%Y-%m-%d")
+    year_start = today.replace(month=1, day=1).strftime("%Y-%m-%d")
+    
+    mtd_pipeline = [
+        {"$match": {"tenant_id": tenant_id, "donation_date": {"$gte": month_start}}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+    ]
+    mtd_result = await db.donations.aggregate(mtd_pipeline).to_list(1)
+    mtd_giving = mtd_result[0]["total"] if mtd_result else 0
+    
+    ytd_pipeline = [
+        {"$match": {"tenant_id": tenant_id, "donation_date": {"$gte": year_start}}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+    ]
+    ytd_result = await db.donations.aggregate(ytd_pipeline).to_list(1)
+    ytd_giving = ytd_result[0]["total"] if ytd_result else 0
+    
+    # Get recent activity
+    recent_activities = await db.activity_log.find(
+        {"tenant_id": tenant_id}, {"_id": 0}
+    ).sort("created_at", -1).limit(5).to_list(5)
+    
+    activities_text = "\n".join([f"- {a.get('description', 'Unknown activity')}" for a in recent_activities])
+    
+    # Get upcoming events
+    upcoming_events = await db.events.find(
+        {"tenant_id": tenant_id, "start_datetime": {"$gte": today.strftime("%Y-%m-%d")}},
+        {"_id": 0}
+    ).sort("start_datetime", 1).limit(3).to_list(3)
+    
+    events_text = "\n".join([f"- {e.get('name', 'Unknown')} on {e.get('start_datetime', 'TBD')}" for e in upcoming_events])
+    
+    context = f"""
+CURRENT CHURCH DATA (as of {today.strftime('%B %d, %Y')}):
+
+MEMBERSHIP:
+- Total Members: {total_members:,}
+- Active Members: {active_members:,}
+- Visitors: {visitors:,}
+- Active Groups: {total_groups}
+
+GIVING:
+- Month-to-Date: ${mtd_giving:,.2f}
+- Year-to-Date: ${ytd_giving:,.2f}
+- Monthly Goal: $350,000
+
+RECENT ACTIVITY:
+{activities_text}
+
+UPCOMING EVENTS:
+{events_text}
+"""
+    return context
+
+@api_router.post("/solomon/chat")
+async def solomon_chat(request: SolomonChatRequest):
+    """Chat with Solomon AI analyst"""
+    try:
+        # Get or create session
+        session_id = request.session_id or str(uuid.uuid4())
+        
+        # Get API key
+        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="Solomon AI is not configured")
+        
+        # Get church context
+        church_context = await get_church_context()
+        
+        # Build system prompt with context
+        full_system_prompt = f"{SOLOMON_SYSTEM_PROMPT}\n\n{church_context}"
+        
+        # Create or get chat instance
+        if session_id not in solomon_sessions:
+            chat = LlmChat(
+                api_key=api_key,
+                session_id=session_id,
+                system_message=full_system_prompt
+            )
+            chat.with_model("anthropic", "claude-sonnet-4-5-20250929")
+            solomon_sessions[session_id] = chat
+        else:
+            chat = solomon_sessions[session_id]
+        
+        # Create user message
+        user_message = UserMessage(text=request.message)
+        
+        # Get response from Claude
+        response_text = await chat.send_message(user_message)
+        
+        # Store conversation in database for persistence
+        await db.solomon_conversations.update_one(
+            {"session_id": session_id},
+            {
+                "$push": {
+                    "messages": {
+                        "$each": [
+                            {"role": "user", "content": request.message, "timestamp": datetime.now(timezone.utc).isoformat()},
+                            {"role": "assistant", "content": response_text, "timestamp": datetime.now(timezone.utc).isoformat()}
+                        ]
+                    }
+                },
+                "$set": {"updated_at": datetime.now(timezone.utc).isoformat()},
+                "$setOnInsert": {"created_at": datetime.now(timezone.utc).isoformat()}
+            },
+            upsert=True
+        )
+        
+        # Parse response for potential actions/data
+        actions = None
+        data = None
+        
+        # Check if response suggests actions
+        if "follow-up" in response_text.lower() or "reach out" in response_text.lower():
+            actions = [
+                {"label": "View Members Needing Follow-up", "action": "navigate", "path": "/people?status=inactive"},
+                {"label": "Send Bulk Message", "action": "navigate", "path": "/communications"}
+            ]
+        elif "giving" in response_text.lower() or "donation" in response_text.lower():
+            actions = [
+                {"label": "View Giving Dashboard", "action": "navigate", "path": "/giving"},
+                {"label": "Generate Report", "action": "navigate", "path": "/reports"}
+            ]
+        elif "group" in response_text.lower() or "ministry" in response_text.lower():
+            actions = [
+                {"label": "View Groups", "action": "navigate", "path": "/groups"},
+                {"label": "Create New Group", "action": "modal", "type": "createGroup"}
+            ]
+        
+        return SolomonChatResponse(
+            response=response_text,
+            session_id=session_id,
+            data=data,
+            actions=actions
+        )
+        
+    except Exception as e:
+        logger.error(f"Solomon AI error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Solomon AI error: {str(e)}")
+
+@api_router.get("/solomon/history/{session_id}")
+async def get_solomon_history(session_id: str):
+    """Get conversation history for a session"""
+    conversation = await db.solomon_conversations.find_one(
+        {"session_id": session_id},
+        {"_id": 0}
+    )
+    if not conversation:
+        return {"messages": [], "session_id": session_id}
+    return serialize_doc(conversation)
+
+@api_router.delete("/solomon/session/{session_id}")
+async def clear_solomon_session(session_id: str):
+    """Clear a Solomon chat session"""
+    if session_id in solomon_sessions:
+        del solomon_sessions[session_id]
+    await db.solomon_conversations.delete_one({"session_id": session_id})
+    return {"message": "Session cleared", "session_id": session_id}
+
 # --- TENANT ROUTES ---
 @api_router.get("/tenant")
 async def get_tenant():
