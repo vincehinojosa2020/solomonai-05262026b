@@ -1,107 +1,76 @@
-# Samson - Church Management SaaS Platform
+# Samson - Enterprise Church Management SaaS Platform
 ## Product Requirements Document
 
 ### Overview
-**Product Name:** Samson  
-**Tagline:** "The operating system for the modern church."  
-**Demo Tenant:** Abundant Church (El Cajon, CA)
+**Product Name:** SAMSON  
+**Tagline:** "Enterprise Church Management System"  
+**Demo Tenant:** Abundant Church (El Paso, TX)  
+**Target Scale:** 50,000+ members per tenant  
+**Target Audience:** Mega churches (Lakewood, Potter's House, Elevation Church)
 
 ---
 
 ### What Was Implemented (February 2026)
 
-#### UI/UX Overhaul - Completed
-1. **Sanctuary Green Theme**
-   - Primary color: #2D5A47
-   - Gold accent: #D4AF37
-   - Cream background: #F5F9F7
-   - Luxury brand-inspired design
+#### DoD-Grade Enterprise UI Redesign - Completed
+1. **Design Aesthetic**
+   - Palantir/Bloomberg/Salesforce-inspired UI
+   - Sharp corners, no playful rounded elements
+   - Data-dense, utilitarian layout
+   - High information density
 
-2. **Join Service Banner (Dashboard)**
-   - Prominent banner with "Join Service" Zoom button
-   - "Schedule a Visit" Calendly button
-   - Video icon with animated pulse
-   - Accessible in under 3 clicks
+2. **Color Palette**
+   - Slate sidebar: #0f172a
+   - Blue accent: #3b82f6
+   - Warm off-white background: #f8fafc
+   - All uppercase labels for stats
 
-3. **Ways to Give Section (Giving Page)**
-   - Card/ACH (Online)
-   - PayPal (Coming Soon placeholder)
-   - Venmo (Coming Soon placeholder)
-   - Zelle (Coming Soon placeholder)
-   - Crypto (Coming Soon placeholder)
-   - Bank Transfer (Contact Us)
+3. **Typography**
+   - Inter font family (system-like)
+   - JetBrains Mono for numbers/data
+   - Dense, 13px base font size
 
-4. **Music Player**
-   - Ambient worship background music
-   - Play/Pause, Mute, Volume controls
-   - Fixed position at bottom left
+4. **Google OAuth Authentication (Emergent Auth)**
+   - Login page with "Continue with Google" button
+   - Session exchange via backend
+   - Protected routes with auth guard
+   - Logout functionality
+   - User profile in sidebar and topbar
 
-5. **Branding**
-   - "SAMSON" logo with gold "O"
-   - No Emergent branding
-   - OG meta tags configured
+5. **System Banner**
+   - "Live Worship Service" banner
+   - "Join Now" (Zoom) and "Schedule Visit" (Calendly) buttons
+
+6. **Payment Channels Section**
+   - Card/ACH - Active
+   - PayPal, Venmo, Zelle, Crypto - Pending (placeholders)
+   - Wire Transfer - Contact
 
 #### Core Modules - All Functional
 
 1. **Dashboard**
-   - Real-time stats: Total Members (201), Active Groups (20), MTD/YTD Giving, Recurring Givers (30)
-   - Attendance Trend chart (12 weeks)
-   - Giving by Fund chart (12 months)
-   - Monthly Giving Goal progress bar
-   - Quick Insights cards
+   - Stats: Total Members (201), Active Groups (20), MTD/YTD Giving, Recurring (30)
+   - Monthly Stewardship Goal progress (24%)
+   - Attendance Trend (12 weeks)
+   - Giving by Fund (12 months)
+   - Recent Activity feed
    - Upcoming Events list
+   - Alert cards for follow-up actions
 
 2. **People/Members Management**
-   - Paginated member list (201 seeded members)
-   - Search by name, email, phone
-   - Filter by status (Member, Visitor, Regular, Inactive)
-   - Sort by name, date added, last attended, YTD giving
-   - Bulk selection with actions
-   - Add Person modal with form validation
-   - Person Detail page with tabs
+   - 201 seeded members
+   - Search, filter, sort functionality
+   - Person detail pages
 
-3. **Groups Management**
-   - Group cards with color-coded types (20 groups)
-   - Leader info, capacity progress bars
-   - Open/Closed status
-   - Meeting schedules
-   - Group Detail page with roster, attendance, settings
+3. **Stewardship/Giving**
+   - MTD Giving: $84,250
+   - YTD Giving: $236,303
+   - Fund Progress bars (5 funds)
+   - Recent Gifts table with pagination
+   - Record Gift panel
 
-4. **Giving Module**
-   - Donation stats (MTD $84,250, YTD $236,303)
-   - Fund Progress bars with goals (5 funds)
-   - Giving by Method pie chart
-   - Recent Donations table with pagination
-   - Enter Donation panel (3-step wizard)
-   - Batch management
-
-5. **Attendance**
-   - Service types and services list
-   - Attendance records per service
-   - Check-in functionality
-
-6. **Events**
-   - Upcoming events grid
-   - Event cards with date, location, registrations
-
-7. **Communications**
-   - Email compose form
-   - Smart segments
-   - Email templates
-   - Sent history
-
-8. **Reports**
-   - Membership Report (by status)
-   - Giving by Fund
-   - Giving by Method
-   - Top Donors
-
-9. **Settings**
-   - General (church info, plan)
-   - Appearance (colors, logo)
-   - Giving (payment processing)
-   - Integrations
-   - Staff & Roles
+4. **Groups, Events, Attendance, Communications, Reports, Settings**
+   - All modules functional with seeded data
 
 ---
 
@@ -110,26 +79,19 @@
 - **Frontend:** React 18, React Router, Recharts, Tailwind CSS, shadcn/ui
 - **Backend:** FastAPI (Python), Motor (async MongoDB)
 - **Database:** MongoDB
-- **Design:** Cormorant Garamond + Inter + JetBrains Mono fonts, Sanctuary Green palette
+- **Authentication:** Emergent Google OAuth
+- **Design:** Inter + JetBrains Mono fonts, DoD-grade enterprise palette
 
 ---
 
-### User Personas
+### Authentication Flow
 
-1. **Church Administrator** - Manages members, tracks giving, generates reports
-2. **Executive Pastor** - Views dashboard, monitors church health
-3. **Finance Team** - Records donations, manages batches, generates statements
-4. **Ministry Leader** - Manages groups, tracks attendance
-
----
-
-### Core Requirements (Static)
-
-- Multi-tenant SaaS architecture
-- 50K+ member scale (pagination, indexing)
-- Enterprise-grade UI/UX
-- No platform branding ("Samson" only)
-- Mobile-responsive design
+1. User clicks "Continue with Google" on login page
+2. Redirected to `auth.emergentagent.com` for Google OAuth
+3. After Google auth, redirected back with `session_id` in URL fragment
+4. Frontend exchanges `session_id` via backend `/api/auth/session`
+5. Backend calls Emergent Auth, stores user/session, sets httpOnly cookie
+6. User redirected to dashboard with session cookie
 
 ---
 
@@ -155,38 +117,35 @@
 ### Prioritized Backlog
 
 #### P0 - Completed
+- [x] DoD-grade enterprise UI design
+- [x] Google OAuth authentication
 - [x] Dashboard with real-time stats
 - [x] People CRUD with search/filter
 - [x] Groups management
 - [x] Giving module with donation entry
+- [x] Stewardship/Giving with fund progress
 - [x] Basic attendance tracking
 - [x] Navigation and routing
-- [x] Sanctuary Green UI/UX theme
-- [x] Join Service Zoom button
-- [x] Donation method placeholders
-- [x] Calendly scheduling placeholder
-- [x] Background music player
-- [x] SAMSON branding
+- [x] User profile and logout
+- [x] Payment channel placeholders
 
 #### P1 - Next Phase
-- [ ] Stripe payment integration (keys provided)
-- [ ] Resend email integration (keys provided)
-- [ ] Real Zoom integration (replace placeholder)
-- [ ] Real Calendly integration (replace placeholder)
-- [ ] Giving statement PDF generation
-- [ ] Bulk import from CSV
+- [ ] Stripe payment integration (live payments)
+- [ ] Resend email integration
+- [ ] Real Zoom/Calendly integration
+- [ ] PDF Giving statements generation
+- [ ] Bulk member import from CSV
 - [ ] Check-in kiosk mode
 
 #### P2 - Future
 - [ ] PayPal donation integration
 - [ ] Venmo donation integration
 - [ ] Zelle donation integration
-- [ ] Crypto donation with live price lookup
-- [ ] Asset donation workflows
+- [ ] Crypto donations with live price lookup
 - [ ] Advanced reporting with exports
 - [ ] Custom fields for people
 - [ ] Pledge campaign management
-- [ ] SSO/SAML authentication
+- [ ] Multi-tenant admin panel
 - [ ] Mobile app
 
 ---
@@ -203,11 +162,37 @@ These features have UI placeholders but are NOT functional:
 
 ---
 
+### API Endpoints
+
+**Authentication:**
+- `POST /api/auth/session` - Exchange session_id for user data
+- `GET /api/auth/me` - Get current authenticated user
+- `POST /api/auth/logout` - Clear session and logout
+
+**Dashboard:**
+- `GET /api/dashboard/stats` - Dashboard statistics
+- `GET /api/dashboard/giving-trend` - Giving trend data
+- `GET /api/dashboard/attendance-trend` - Attendance trend data
+- `GET /api/dashboard/activity` - Recent activity feed
+- `GET /api/dashboard/upcoming-events` - Upcoming events
+
+**People/Giving/Groups/etc:** See server.py for full API documentation
+
+---
+
+### Test Credentials
+
+For automated testing:
+- **Session Token:** test_session_1771463210214
+- **Test User:** admin@abundantchurch.org / Admin User
+
+---
+
 ### Next Action Items
 
 1. Implement real Stripe payment integration
 2. Implement real Resend email integration
-3. Replace Zoom/Calendly placeholders with real links
+3. Replace Zoom/Calendly with real links from user
 4. Add PayPal, Venmo donation integrations
 5. Implement giving statement PDF generation
 6. Add bulk member import from CSV
