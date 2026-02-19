@@ -104,6 +104,7 @@ function AppRouter() {
         <Route index element={<PortalHome />} />
         <Route path="give" element={<PortalGive />} />
         <Route path="watch" element={<PortalWatch />} />
+        <Route path="library" element={<PortalLibrary />} />
         <Route path="groups" element={<PortalGroups />} />
         <Route path="events" element={<PortalEvents />} />
         <Route path="me" element={<PortalMe />} />
