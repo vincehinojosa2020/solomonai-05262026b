@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Outlet, NavLink, useLocation } from 'react-router-dom';
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, Home, UsersRound, Calendar, 
   CheckSquare, DollarSign, Mail, BarChart3, Settings, 
-  Building2, Search, Bell, ChevronLeft, Menu, Command
+  Building2, Search, Bell, ChevronLeft, Menu, Command,
+  LogOut
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -48,13 +49,22 @@ export default function AppShell() {
   const [collapsed, setCollapsed] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const [tenant, setTenant] = useState(null);
+  const [user, setUser] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch tenant info
     fetch(`${API_URL}/tenant`)
       .then(res => res.json())
       .then(data => setTenant(data))
       .catch(err => console.error('Failed to fetch tenant:', err));
+    
+    // Fetch current user
+    fetch(`${API_URL}/auth/me`, { credentials: 'include' })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => setUser(data))
+      .catch(err => console.error('Failed to fetch user:', err));
   }, []);
 
   useEffect(() => {
@@ -64,10 +74,21 @@ export default function AppShell() {
         setCommandOpen(true);
       }
     };
-
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch(`${API_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  };
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -81,7 +102,7 @@ export default function AppShell() {
       {/* Sidebar */}
       <aside className={`app-sidebar ${collapsed ? 'collapsed' : ''}`} data-testid="app-sidebar">
         {/* Logo */}
-        <div className="flex items-center justify-between h-14 px-4 border-b border-white/10">
+        <div className="flex items-center justify-between h-12 px-3 border-b border-slate-700">
           {!collapsed && (
             <span className="logo-text" data-testid="app-logo">
               SAMS<span className="logo-accent">O</span>N
@@ -89,7 +110,7 @@ export default function AppShell() {
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-2 rounded text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-1.5 text-slate-500 hover:text-slate-300 transition-colors"
             data-testid="sidebar-toggle"
           >
             {collapsed ? <Menu className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -97,7 +118,7 @@ export default function AppShell() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-3 scrollbar-thin">
+        <nav className="flex-1 overflow-y-auto py-2 scrollbar-thin">
           {navItems.map((section, idx) => (
             <div key={idx} className="nav-section">
               {!collapsed && (
@@ -107,9 +128,7 @@ export default function AppShell() {
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  className={({ isActive }) => 
-                    `nav-item ${isActive ? 'active' : ''}`
-                  }
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
                   data-testid={`nav-${item.name.toLowerCase()}`}
                   title={collapsed ? item.name : undefined}
                 >
@@ -122,16 +141,18 @@ export default function AppShell() {
         </nav>
 
         {/* User Section */}
-        {!collapsed && (
-          <div className="p-4 border-t border-white/10">
-            <div className="flex items-center gap-3">
-              <Avatar className="w-8 h-8">
-                <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=admin" />
-                <AvatarFallback className="bg-[#2d7a6b] text-white text-xs font-medium">AD</AvatarFallback>
+        {!collapsed && user && (
+          <div className="p-3 border-t border-slate-700">
+            <div className="flex items-center gap-2">
+              <Avatar className="w-7 h-7">
+                <AvatarImage src={user.picture} />
+                <AvatarFallback className="bg-blue-600 text-white text-xs">
+                  {user.name?.split(' ').map(n => n[0]).join('') || 'U'}
+                </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">Admin User</p>
-                <p className="text-xs text-white/50 truncate">admin@abundant.org</p>
+                <p className="text-xs font-medium text-white truncate">{user.name}</p>
+                <p className="text-xs text-slate-500 truncate">{user.email}</p>
               </div>
             </div>
           </div>
@@ -142,10 +163,10 @@ export default function AppShell() {
       <div className="app-main">
         {/* Top Bar */}
         <header className="app-topbar" data-testid="app-topbar">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {collapsed && (
-              <span className="logo-text" style={{ color: '#1a1a1a' }}>
-                SAMS<span style={{ color: '#2d7a6b' }}>O</span>N
+              <span className="font-bold text-sm tracking-wider text-slate-900">
+                SAMS<span className="text-blue-600">O</span>N
               </span>
             )}
           </div>
@@ -157,28 +178,26 @@ export default function AppShell() {
             data-testid="global-search-btn"
           >
             <Search className="search-icon" />
-            <span className="flex-1 text-left text-[#8a8a8a] text-sm">Search...</span>
+            <span className="flex-1 text-left text-slate-400 text-sm">Search...</span>
             <span className="kbd">
-              <Command className="w-3 h-3" />
-              <span>K</span>
+              <Command className="w-3 h-3" />K
             </span>
           </button>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {/* Notifications */}
             <button 
-              className="relative p-2 rounded text-[#8a8a8a] hover:text-[#2d7a6b] hover:bg-[#f7f7f5] transition-colors"
+              className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
               data-testid="notifications-btn"
             >
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#2d7a6b] rounded-full"></span>
+              <Bell className="w-4 h-4" />
             </button>
 
             {/* Tenant Badge */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-[#f7f7f5] border border-[#e8e8e5]">
-              <Building2 className="w-4 h-4 text-[#8a8a8a]" />
-              <span className="text-sm font-medium text-[#4a4a4a]">
+            <div className="flex items-center gap-2 px-2 py-1 bg-slate-100 border border-slate-200">
+              <Building2 className="w-3 h-3 text-slate-500" />
+              <span className="text-xs font-medium text-slate-600">
                 {tenant?.name || 'Abundant Church'}
               </span>
             </div>
@@ -187,19 +206,27 @@ export default function AppShell() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2" data-testid="user-menu-btn">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=admin" />
-                    <AvatarFallback className="bg-[#2d7a6b] text-white text-xs">AD</AvatarFallback>
+                  <Avatar className="w-7 h-7">
+                    <AvatarImage src={user?.picture} />
+                    <AvatarFallback className="bg-blue-600 text-white text-xs">
+                      {user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
+                    </AvatarFallback>
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="text-sm font-medium">{user?.name}</div>
+                  <div className="text-xs text-slate-500">{user?.email}</div>
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Profile</DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Log out</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign out
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -207,7 +234,7 @@ export default function AppShell() {
 
         {/* Page Content */}
         <main className="app-content">
-          <Outlet context={{ tenant, greeting: getGreeting() }} />
+          <Outlet context={{ tenant, user, greeting: getGreeting() }} />
         </main>
       </div>
 
