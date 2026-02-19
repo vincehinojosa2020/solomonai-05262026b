@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { 
   DollarSign, Plus, TrendingUp, RefreshCw, CreditCard, 
   Banknote, Building2, Check, FileText, Bitcoin, Search,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, Wallet, ExternalLink
 } from 'lucide-react';
 import { 
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, 
