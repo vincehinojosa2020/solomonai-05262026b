@@ -1,283 +1,327 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Play, Clock, Calendar, Search, ChevronRight, Tv, BookOpen, Heart } from 'lucide-react';
-import { API_URL } from '@/lib/utils';
+import { Play, Clock, ChevronRight, Search, X, Volume2, VolumeX } from 'lucide-react';
 
-// Demo sermon data for Abundant Church
-const SERMON_SERIES = [
+// Demo sermon data for Abundant Church - Masterclass style
+const FEATURED_SERMONS = [
   {
-    id: 'series-1',
-    title: 'Unshakeable Faith',
-    description: 'Building a foundation that lasts through every storm',
-    thumbnail: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=80',
-    sermonCount: 6,
-    year: 2026
+    id: 'featured-1',
+    title: 'Standing Strong in the Storm',
+    subtitle: 'Building faith that weathers any trial',
+    speaker: 'Pastor David Rivera',
+    speakerTitle: 'Lead Pastor, Abundant Church',
+    speakerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=1200&q=80',
+    duration: '42 min',
+    lessons: 6,
+    series: 'Unshakeable Faith'
   },
   {
-    id: 'series-2', 
+    id: 'featured-2',
     title: 'The Heart of Worship',
-    description: 'Discovering true worship in spirit and truth',
-    thumbnail: 'https://images.unsplash.com/photo-1478147427282-58a87a120781?w=800&q=80',
-    sermonCount: 4,
-    year: 2026
+    subtitle: 'Discovering authentic praise',
+    speaker: 'Pastor Maria Santos',
+    speakerTitle: 'Worship Pastor',
+    speakerImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1478147427282-58a87a120781?w=1200&q=80',
+    duration: '36 min',
+    lessons: 4,
+    series: 'Worship Series'
   },
   {
-    id: 'series-3',
-    title: 'Family Matters',
-    description: 'Strengthening the bonds that matter most',
-    thumbnail: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800&q=80',
-    sermonCount: 5,
-    year: 2025
-  },
-  {
-    id: 'series-4',
-    title: 'Purpose Driven',
-    description: 'Finding your calling and living it out',
-    thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&q=80',
-    sermonCount: 8,
-    year: 2025
+    id: 'featured-3',
+    title: 'Purpose Driven Life',
+    subtitle: 'Finding your calling in God\'s plan',
+    speaker: 'Pastor David Rivera',
+    speakerTitle: 'Lead Pastor, Abundant Church',
+    speakerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=1200&q=80',
+    duration: '48 min',
+    lessons: 8,
+    series: 'Purpose Series'
   }
 ];
 
-const RECENT_SERMONS = [
+const CATEGORIES = [
+  { id: 'all', name: 'All Messages' },
+  { id: 'faith', name: 'Faith & Trust' },
+  { id: 'worship', name: 'Worship' },
+  { id: 'family', name: 'Family' },
+  { id: 'leadership', name: 'Leadership' },
+  { id: 'prayer', name: 'Prayer' },
+];
+
+const ALL_SERMONS = [
   {
     id: 'sermon-1',
-    title: 'Standing Strong in the Storm',
+    title: 'When Fear Meets Faith',
     speaker: 'Pastor David Rivera',
-    date: 'Feb 16, 2026',
-    duration: '42:18',
-    series: 'Unshakeable Faith',
-    thumbnail: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=800&q=80',
-    videoUrl: '#',
-    views: 1247
+    speakerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&q=80',
+    duration: '38 min',
+    lessons: 1,
+    category: 'faith'
   },
   {
     id: 'sermon-2',
-    title: 'When Fear Meets Faith',
-    speaker: 'Pastor David Rivera',
-    date: 'Feb 9, 2026',
-    duration: '38:45',
-    series: 'Unshakeable Faith',
-    thumbnail: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&q=80',
-    videoUrl: '#',
-    views: 982
+    title: 'Songs of the Heart',
+    speaker: 'Pastor Maria Santos',
+    speakerImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800&q=80',
+    duration: '41 min',
+    lessons: 1,
+    category: 'worship'
   },
   {
     id: 'sermon-3',
-    title: 'The Foundation That Never Fails',
+    title: 'Building Strong Families',
     speaker: 'Pastor David Rivera',
-    date: 'Feb 2, 2026',
-    duration: '45:12',
-    series: 'Unshakeable Faith',
-    thumbnail: 'https://images.unsplash.com/photo-1445445290350-18a3b86e0b5a?w=800&q=80',
-    videoUrl: '#',
-    views: 1456
+    speakerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800&q=80',
+    duration: '44 min',
+    lessons: 5,
+    category: 'family'
   },
   {
     id: 'sermon-4',
-    title: 'Songs of the Heart',
-    speaker: 'Pastor Maria Santos',
-    date: 'Jan 26, 2026',
-    duration: '36:30',
-    series: 'The Heart of Worship',
-    thumbnail: 'https://images.unsplash.com/photo-1478147427282-58a87a120781?w=800&q=80',
-    videoUrl: '#',
-    views: 873
+    title: 'The Foundation That Never Fails',
+    speaker: 'Pastor David Rivera',
+    speakerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1445445290350-18a3b86e0b5a?w=800&q=80',
+    duration: '45 min',
+    lessons: 1,
+    category: 'faith'
   },
   {
     id: 'sermon-5',
-    title: 'Created to Worship',
+    title: 'Leading with Integrity',
     speaker: 'Pastor David Rivera',
-    date: 'Jan 19, 2026',
-    duration: '41:55',
-    series: 'The Heart of Worship',
-    thumbnail: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800&q=80',
-    videoUrl: '#',
-    views: 1102
+    speakerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80',
+    duration: '39 min',
+    lessons: 4,
+    category: 'leadership'
   },
   {
     id: 'sermon-6',
-    title: 'Building Strong Families',
+    title: 'The Power of Prayer',
+    speaker: 'Pastor Maria Santos',
+    speakerImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=800&q=80',
+    duration: '35 min',
+    lessons: 3,
+    category: 'prayer'
+  },
+  {
+    id: 'sermon-7',
+    title: 'Created to Worship',
+    speaker: 'Pastor Maria Santos',
+    speakerImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80',
+    duration: '42 min',
+    lessons: 1,
+    category: 'worship'
+  },
+  {
+    id: 'sermon-8',
+    title: 'Raising Godly Children',
     speaker: 'Pastor David Rivera',
-    date: 'Jan 12, 2026',
-    duration: '44:20',
-    series: 'Family Matters',
-    thumbnail: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800&q=80',
-    videoUrl: '#',
-    views: 1328
+    speakerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1536640712-4d4c36ff0e4e?w=800&q=80',
+    duration: '47 min',
+    lessons: 1,
+    category: 'family'
   }
 ];
 
 export default function PortalWatch() {
   const { user } = useOutletContext();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSeries, setSelectedSeries] = useState(null);
-  const [featuredSermon, setFeaturedSermon] = useState(RECENT_SERMONS[0]);
+  const [isMuted, setIsMuted] = useState(true);
 
-  const filteredSermons = RECENT_SERMONS.filter(sermon => {
+  // Auto-rotate featured sermons
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % FEATURED_SERMONS.length);
+    }, 8000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const filteredSermons = ALL_SERMONS.filter(sermon => {
+    const matchesCategory = selectedCategory === 'all' || sermon.category === selectedCategory;
     const matchesSearch = !searchQuery || 
       sermon.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sermon.speaker.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sermon.series.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesSeries = !selectedSeries || sermon.series === selectedSeries;
-    return matchesSearch && matchesSeries;
+      sermon.speaker.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
   });
 
+  const featured = FEATURED_SERMONS[currentSlide];
+
   return (
-    <div className="portal-watch" data-testid="portal-watch">
-      {/* Header */}
-      <div className="watch-header">
-        <div className="watch-header-content">
-          <div className="watch-logo">
-            <Tv className="w-8 h-8 text-blue-500" />
+    <div className="mc-watch" data-testid="portal-watch-masterclass">
+      {/* Hero Section - Full width background */}
+      <div className="mc-hero" style={{ backgroundImage: `url(${featured.thumbnail})` }}>
+        <div className="mc-hero-overlay" />
+        
+        {/* Top Navigation */}
+        <div className="mc-nav">
+          <div className="mc-logo">
+            <span className="mc-logo-text">ABUNDANT</span>
+            <span className="mc-logo-tv">TV</span>
+          </div>
+          
+          <div className="mc-nav-links">
+            {CATEGORIES.slice(0, 5).map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`mc-nav-link ${selectedCategory === cat.id ? 'active' : ''}`}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+
+          <div className="mc-nav-actions">
+            {searchOpen ? (
+              <div className="mc-search-box">
+                <Search className="w-4 h-4" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search messages..."
+                  autoFocus
+                  className="mc-search-input"
+                />
+                <button onClick={() => { setSearchOpen(false); setSearchQuery(''); }}>
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <button onClick={() => setSearchOpen(true)} className="mc-search-btn">
+                <Search className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Hero Content */}
+        <div className="mc-hero-content">
+          <div className="mc-hero-speaker">
+            <img src={featured.speakerImage} alt={featured.speaker} className="mc-speaker-img" />
             <div>
-              <h1 className="watch-title">Abundant TV</h1>
-              <p className="watch-subtitle">Sermons & Messages from Abundant Church</p>
+              <h3 className="mc-speaker-name">{featured.speaker}</h3>
+              <p className="mc-speaker-title">{featured.speakerTitle}</p>
             </div>
           </div>
           
-          {/* Search */}
-          <div className="watch-search">
-            <Search className="w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search sermons..."
-              className="watch-search-input"
-              data-testid="watch-search"
-            />
+          <h1 className="mc-hero-title">{featured.title}</h1>
+          <p className="mc-hero-subtitle">{featured.subtitle}</p>
+          
+          <div className="mc-hero-meta">
+            <span>{featured.lessons} {featured.lessons === 1 ? 'Message' : 'Messages'}</span>
+            <span className="mc-meta-dot">•</span>
+            <span>{featured.duration}</span>
           </div>
-        </div>
-      </div>
 
-      {/* Featured Sermon */}
-      <div className="watch-featured" data-testid="featured-sermon">
-        <div className="watch-featured-video">
-          <img 
-            src={featuredSermon.thumbnail} 
-            alt={featuredSermon.title}
-            className="watch-featured-img"
-          />
-          <div className="watch-featured-overlay">
-            <button className="watch-play-btn" data-testid="play-featured">
-              <Play className="w-8 h-8" />
+          <div className="mc-hero-actions">
+            <button className="mc-btn-primary" data-testid="watch-trailer-btn">
+              <Play className="w-5 h-5" /> Watch Trailer
             </button>
-          </div>
-          <div className="watch-featured-badge">Latest Message</div>
-        </div>
-        <div className="watch-featured-info">
-          <span className="watch-featured-series">{featuredSermon.series}</span>
-          <h2 className="watch-featured-title">{featuredSermon.title}</h2>
-          <p className="watch-featured-speaker">{featuredSermon.speaker}</p>
-          <div className="watch-featured-meta">
-            <span><Calendar className="w-4 h-4" /> {featuredSermon.date}</span>
-            <span><Clock className="w-4 h-4" /> {featuredSermon.duration}</span>
-          </div>
-          <div className="watch-featured-actions">
-            <button className="watch-btn primary" data-testid="watch-now-btn">
-              <Play className="w-4 h-4" /> Watch Now
-            </button>
-            <button className="watch-btn secondary">
-              <Heart className="w-4 h-4" /> Save
-            </button>
-            <button className="watch-btn secondary">
-              <BookOpen className="w-4 h-4" /> Notes
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Series Section */}
-      <div className="watch-section">
-        <div className="watch-section-header">
-          <h3 className="watch-section-title">Sermon Series</h3>
-          <button className="watch-view-all">View All →</button>
-        </div>
-        <div className="watch-series-grid" data-testid="series-grid">
-          {SERMON_SERIES.map((series) => (
-            <div 
-              key={series.id} 
-              className={`watch-series-card ${selectedSeries === series.title ? 'active' : ''}`}
-              onClick={() => setSelectedSeries(selectedSeries === series.title ? null : series.title)}
-              data-testid={`series-${series.id}`}
-            >
-              <div className="watch-series-img-wrapper">
-                <img src={series.thumbnail} alt={series.title} className="watch-series-img" />
-                <div className="watch-series-overlay">
-                  <span className="watch-series-count">{series.sermonCount} Messages</span>
-                </div>
-              </div>
-              <div className="watch-series-info">
-                <h4 className="watch-series-title">{series.title}</h4>
-                <p className="watch-series-desc">{series.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Recent Sermons */}
-      <div className="watch-section">
-        <div className="watch-section-header">
-          <h3 className="watch-section-title">
-            {selectedSeries ? `${selectedSeries} Series` : 'Recent Messages'}
-          </h3>
-          {selectedSeries && (
             <button 
-              className="watch-clear-filter"
-              onClick={() => setSelectedSeries(null)}
+              className="mc-btn-icon"
+              onClick={() => setIsMuted(!isMuted)}
             >
-              Clear Filter ✕
+              {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
             </button>
-          )}
+          </div>
         </div>
-        <div className="watch-sermons-grid" data-testid="sermons-grid">
+
+        {/* Slide Indicators */}
+        <div className="mc-hero-dots">
+          {FEATURED_SERMONS.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentSlide(idx)}
+              className={`mc-dot ${idx === currentSlide ? 'active' : ''}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="mc-content">
+        {/* Category Pills - Mobile */}
+        <div className="mc-categories-mobile">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`mc-category-pill ${selectedCategory === cat.id ? 'active' : ''}`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Section Title */}
+        <div className="mc-section-header">
+          <h2 className="mc-section-title">
+            {selectedCategory === 'all' ? 'All Messages' : CATEGORIES.find(c => c.id === selectedCategory)?.name}
+          </h2>
+          <span className="mc-section-count">{filteredSermons.length} available</span>
+        </div>
+
+        {/* Sermon Grid */}
+        <div className="mc-grid">
           {filteredSermons.map((sermon) => (
-            <div key={sermon.id} className="watch-sermon-card" data-testid={`sermon-${sermon.id}`}>
-              <div className="watch-sermon-thumbnail">
-                <img src={sermon.thumbnail} alt={sermon.title} />
-                <div className="watch-sermon-duration">{sermon.duration}</div>
-                <div className="watch-sermon-play">
-                  <Play className="w-6 h-6" />
+            <div key={sermon.id} className="mc-card" data-testid={`mc-card-${sermon.id}`}>
+              <div className="mc-card-img-wrapper">
+                <img src={sermon.thumbnail} alt={sermon.title} className="mc-card-img" />
+                <div className="mc-card-overlay">
+                  <button className="mc-card-play">
+                    <Play className="w-8 h-8" />
+                  </button>
+                </div>
+                <div className="mc-card-duration">
+                  <Clock className="w-3 h-3" />
+                  {sermon.duration}
                 </div>
               </div>
-              <div className="watch-sermon-info">
-                <span className="watch-sermon-series">{sermon.series}</span>
-                <h4 className="watch-sermon-title">{sermon.title}</h4>
-                <p className="watch-sermon-speaker">{sermon.speaker}</p>
-                <div className="watch-sermon-meta">
-                  <span>{sermon.date}</span>
-                  <span>•</span>
-                  <span>{sermon.views.toLocaleString()} views</span>
+              <div className="mc-card-content">
+                <div className="mc-card-speaker">
+                  <img src={sermon.speakerImage} alt={sermon.speaker} className="mc-card-speaker-img" />
+                  <span>{sermon.speaker}</span>
                 </div>
+                <h3 className="mc-card-title">{sermon.title}</h3>
+                <p className="mc-card-lessons">
+                  {sermon.lessons} {sermon.lessons === 1 ? 'message' : 'messages'}
+                </p>
               </div>
             </div>
           ))}
         </div>
-        
+
         {filteredSermons.length === 0 && (
-          <div className="watch-no-results">
-            <p>No sermons found matching your search.</p>
+          <div className="mc-no-results">
+            <p>No messages found. Try a different search or category.</p>
           </div>
         )}
-      </div>
 
-      {/* Live Service Banner */}
-      <div className="watch-live-banner" data-testid="live-banner">
-        <div className="watch-live-content">
-          <div className="watch-live-indicator">
-            <span className="watch-live-dot"></span>
-            LIVE
+        {/* Bottom CTA */}
+        <div className="mc-cta">
+          <div className="mc-cta-content">
+            <h3>Join us this Sunday</h3>
+            <p>Experience worship live at 9:00 AM & 11:00 AM</p>
           </div>
-          <div>
-            <h3>Join Us This Sunday</h3>
-            <p>Live stream at 9:00 AM & 11:00 AM</p>
-          </div>
+          <button className="mc-btn-outline">
+            Set Reminder <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
-        <button className="watch-btn primary">
-          Set Reminder
-        </button>
       </div>
     </div>
   );
