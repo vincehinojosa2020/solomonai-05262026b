@@ -880,16 +880,34 @@
 
 @media (max-width: 768px) {
   .prem-header {
-    height: 64px;
+    height: 56px;
+    padding: 0 16px;
   }
   
   .prem-logo-text {
-    font-size: 13px;
-    letter-spacing: 0.2em;
+    display: none;
   }
   
   .prem-logo-sub {
     display: none;
+  }
+  
+  .prem-nav {
+    gap: 0;
+  }
+  
+  .prem-nav-item {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  
+  .prem-nav-item span {
+    display: none;
+  }
+  
+  .prem-nav-item svg {
+    width: 18px;
+    height: 18px;
   }
   
   .prem-search {
@@ -897,6 +915,10 @@
   }
   
   .prem-user-name {
+    display: none;
+  }
+  
+  .prem-user-stats {
     display: none;
   }
   
@@ -916,6 +938,15 @@
   .prem-hero-nav {
     left: 24px;
     bottom: 32px;
+  }
+  
+  .prem-categories {
+    padding: 20px 16px;
+  }
+  
+  .prem-categories-row {
+    flex-direction: column;
+    gap: 16px;
   }
   
   .prem-modal {
