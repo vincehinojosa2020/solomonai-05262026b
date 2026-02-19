@@ -17,6 +17,7 @@ import CommunicationsPage from "@/pages/CommunicationsPage";
 import ReportsPage from "@/pages/ReportsPage";
 import SettingsPage from "@/pages/SettingsPage";
 import EventsPage from "@/pages/EventsPage";
+import IntegrationsPage from "@/pages/IntegrationsPage";
 import { API_URL } from "@/lib/utils";
 
 // Router wrapper to detect session_id in URL
