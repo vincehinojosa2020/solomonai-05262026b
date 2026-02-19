@@ -781,33 +781,34 @@ export default function PortalLibrary() {
         onPlay={handlePlay}
       />
 
-      {/* Category Pills */}
+      {/* Category Pills + Search */}
       <motion.nav 
         className="prem-categories"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
       >
-        <div className="prem-categories-inner">
-          {CATEGORIES.map((cat, i) => {
-            const Icon = cat.icon;
-            return (
-              <motion.button
-                key={cat.id}
-                className={`prem-cat ${activeCategory === cat.id ? 'active' : ''}`}
-                onClick={() => setActiveCategory(cat.id)}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + i * 0.05 }}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                data-testid={`category-${cat.id}`}
-              >
-                <Icon className="w-4 h-4" />
-                {cat.label}
-              </motion.button>
-            );
-          })}
+        <div className="prem-categories-row">
+          <div className="prem-categories-inner">
+            {CATEGORIES.map((cat, i) => {
+              const Icon = cat.icon;
+              return (
+                <motion.button
+                  key={cat.id}
+                  className={`prem-cat ${activeCategory === cat.id ? 'active' : ''}`}
+                  onClick={() => setActiveCategory(cat.id)}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 + i * 0.05 }}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  data-testid={`category-${cat.id}`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {cat.label}
+                </motion.button>
+              );
+            })}
         </div>
       </motion.nav>
 
