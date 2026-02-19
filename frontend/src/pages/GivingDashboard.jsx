@@ -169,6 +169,49 @@ export default function GivingDashboard() {
         />
       </div>
 
+      {/* Give Options Section */}
+      <div className="give-options-section" data-testid="give-options-section">
+        <h3 className="give-options-title">Ways to Give</h3>
+        <div className="give-options-grid">
+          <a href="#" onClick={(e) => { e.preventDefault(); setShowDonationPanel(true); }} className="give-option-card" data-testid="give-card">
+            <div className="icon-wrap stripe"><CreditCard /></div>
+            <span className="label">Card / ACH</span>
+            <span className="badge">Online</span>
+          </a>
+          <a href="https://paypal.me/placeholder" target="_blank" rel="noopener noreferrer" className="give-option-card" data-testid="give-paypal">
+            <div className="icon-wrap paypal">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/></svg>
+            </div>
+            <span className="label">PayPal</span>
+            <span className="badge">Coming Soon</span>
+          </a>
+          <a href="https://venmo.com/placeholder" target="_blank" rel="noopener noreferrer" className="give-option-card" data-testid="give-venmo">
+            <div className="icon-wrap venmo">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 1.498c.979 1.609 1.42 3.267 1.42 5.37 0 6.694-5.715 15.384-10.353 21.132H3.528L.001 3.39l6.968-.648 1.986 15.94c1.85-3.017 4.138-7.765 4.138-11.006 0-2.002-.344-3.363-1.036-4.467l6.558-1.711z"/></svg>
+            </div>
+            <span className="label">Venmo</span>
+            <span className="badge">Coming Soon</span>
+          </a>
+          <a href="#" className="give-option-card" data-testid="give-zelle">
+            <div className="icon-wrap zelle">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.559 24h-2.79a.483.483 0 0 1-.483-.483v-3.276H2.49A2.49 2.49 0 0 1 0 17.752V6.248A2.49 2.49 0 0 1 2.49 3.76h7.797V.483c0-.267.216-.483.483-.483h2.79c.266 0 .482.216.482.483v3.276h7.47A2.49 2.49 0 0 1 24 6.248v11.504a2.49 2.49 0 0 1-2.49 2.49h-7.469v3.276a.483.483 0 0 1-.482.482zm.483-7.76h6.228V7.76H8.41l5.632 8.48zm-9.766 0h3.22l-3.22-4.848v4.849zm15.448-8.48H5.73L11.31 7.76h8.414z"/></svg>
+            </div>
+            <span className="label">Zelle</span>
+            <span className="badge">Coming Soon</span>
+          </a>
+          <a href="#" className="give-option-card" data-testid="give-crypto">
+            <div className="icon-wrap crypto"><Bitcoin /></div>
+            <span className="label">Crypto</span>
+            <span className="badge">Coming Soon</span>
+          </a>
+          <a href="#" className="give-option-card" data-testid="give-bank">
+            <div className="icon-wrap bank"><Building2 /></div>
+            <span className="label">Bank Transfer</span>
+            <span className="badge">Contact Us</span>
+          </a>
+        </div>
+      </div>
+
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Giving by Method */}
