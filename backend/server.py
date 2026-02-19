@@ -1329,16 +1329,16 @@ async def get_dashboard_stats():
     })
     
     # ============== DEMO SCALE: Mega-church numbers for Abundant Church demo ==============
-    # Scale factors to simulate 50,000 member mega-church
-    DEMO_TOTAL_MEMBERS = 50247
-    DEMO_ACTIVE_GROUPS = 284
-    DEMO_LAST_ATTENDANCE = 8420
-    DEMO_MTD_GIVING = 847250
-    DEMO_YTD_GIVING = 2847303
-    DEMO_MTD_GOAL = 3500000
-    DEMO_RECURRING = 847
-    DEMO_NEW_THIS_MONTH = 127
-    DEMO_OPEN_GROUPS = 18
+    # Scale factors to simulate 13,000 member church
+    DEMO_TOTAL_MEMBERS = 13247
+    DEMO_ACTIVE_GROUPS = 84
+    DEMO_LAST_ATTENDANCE = 2420
+    DEMO_MTD_GIVING = 247250
+    DEMO_YTD_GIVING = 847303
+    DEMO_MTD_GOAL = 950000
+    DEMO_RECURRING = 247
+    DEMO_NEW_THIS_MONTH = 47
+    DEMO_OPEN_GROUPS = 12
     
     return {
         "total_members": DEMO_TOTAL_MEMBERS,
@@ -1350,7 +1350,7 @@ async def get_dashboard_stats():
         "ytd_giving": DEMO_YTD_GIVING,
         "mtd_goal": DEMO_MTD_GOAL,
         "last_attendance": DEMO_LAST_ATTENDANCE,
-        "last_attendance_change": 340,
+        "last_attendance_change": 140,
         "new_this_week": DEMO_NEW_THIS_MONTH,
         "recurring_givers": DEMO_RECURRING
     }
