@@ -719,29 +719,34 @@ export default function PortalLibrary() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
+          onClick={() => navigate('/portal')}
+          style={{ cursor: 'pointer' }}
         >
           <span className="prem-logo-mark">A</span>
           <span className="prem-logo-text">ABUNDANT</span>
-          <span className="prem-logo-sub">MEDIA</span>
         </motion.div>
 
-        <motion.div 
-          className={`prem-search ${isSearchFocused ? 'focused' : ''}`}
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-        >
-          <Search className="prem-search-icon" />
-          <input 
-            type="text"
-            placeholder="Search sermons, topics, speakers..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => setIsSearchFocused(true)}
-            onBlur={() => setIsSearchFocused(false)}
-            data-testid="search-input"
-          />
-        </motion.div>
+        {/* Portal Navigation */}
+        <nav className="prem-nav" data-testid="portal-nav">
+          {PORTAL_NAV.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path || 
+              (item.path === '/portal/library' && location.pathname === '/portal/library');
+            return (
+              <motion.button
+                key={item.path}
+                className={`prem-nav-item ${isActive ? 'active' : ''}`}
+                onClick={() => navigate(item.path)}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                data-testid={`nav-${item.name.toLowerCase()}`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{item.name}</span>
+              </motion.button>
+            );
+          })}
+        </nav>
 
         <motion.div 
           className="prem-user"
