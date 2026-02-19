@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Home, DollarSign, Users, Calendar, User, Bell, LogOut, Menu, X, Tv } from 'lucide-react';
+import { Home, DollarSign, Users, Calendar, User, Bell, LogOut, Menu, X, Tv, BookOpen } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { API_URL } from '@/lib/utils';
 
@@ -11,8 +11,8 @@ export default function PortalLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Check if we're on the Watch page for dark mode
-  const isWatchPage = location.pathname === '/portal/watch';
+  // Check if we're on the Watch or Library page for dark mode
+  const isDarkPage = location.pathname === '/portal/watch' || location.pathname === '/portal/library';
 
   useEffect(() => {
     fetchMemberData();
