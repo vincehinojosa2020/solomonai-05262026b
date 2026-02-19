@@ -3,407 +3,269 @@ import { useOutletContext, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, ChevronDown, ChevronLeft, ChevronRight, Play, Plus, X,
-  User, LayoutGrid, Sparkles, BookOpen, Utensils, Music, Pen, 
-  Gamepad2, Palette, Briefcase, Cpu, Home, Users, Film
+  User, LayoutGrid, Sparkles, Utensils, Music, Pen, 
+  Gamepad2, Palette, Briefcase, Cpu, Home, Users, Film, Heart, Book
 } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MASTERCLASS LIBRARY - Pixel-Perfect Recreation
+// MASTERCLASS LIBRARY - Exact Clone with Abundant Church Videos
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// Category data with icons
+// Category data with icons - exactly like MasterClass
 const CATEGORIES = [
   { id: 'all', label: 'All Categories', icon: LayoutGrid },
-  { id: 'food', label: 'Food', icon: Utensils },
-  { id: 'arts', label: 'Arts & Entertainment', icon: Film },
-  { id: 'music', label: 'Music', icon: Music },
-  { id: 'writing', label: 'Writing', icon: Pen },
-  { id: 'sports', label: 'Sports & Gaming', icon: Gamepad2 },
-  { id: 'design', label: 'Design & Style', icon: Palette },
-  { id: 'business', label: 'Business', icon: Briefcase },
-  { id: 'science', label: 'Science & Tech', icon: Cpu },
-  { id: 'home', label: 'Home & Lifestyle', icon: Home },
-  { id: 'community', label: 'Community & Government', icon: Users },
+  { id: 'faith', label: 'Faith & Spirituality', icon: Heart },
+  { id: 'family', label: 'Family & Relationships', icon: Users },
+  { id: 'leadership', label: 'Leadership', icon: Briefcase },
+  { id: 'worship', label: 'Worship', icon: Music },
+  { id: 'growth', label: 'Personal Growth', icon: Book },
+  { id: 'community', label: 'Community', icon: Home },
 ];
 
-// Sample course data
+// Real Abundant Church YouTube Videos
 const COURSES = [
   { 
     id: 1, 
-    title: "Rebuild Your Focus & Reclaim Your Time", 
-    instructor: "Cal Newport", 
+    title: "Community With a Purpose", 
+    instructor: "Pastor Charles Nieman", 
     format: "Class", 
-    duration: "1h 26m", 
-    category: "Business", 
-    badge: "New", 
-    thumbnail: "https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=600&q=80",
-    description: "Learn to cut through distraction and build deep work habits that transform your productivity and career trajectory."
+    duration: "40:45", 
+    category: "Community",
+    badge: "New",
+    youtubeId: "FoPI3hMbXvw",
+    thumbnail: "https://i.ytimg.com/vi/FoPI3hMbXvw/maxresdefault.jpg",
+    description: "Discover how the church is God's purposeful community - not a club but a family with divine purpose."
   },
   { 
     id: 2, 
-    title: "Dopamine: Take Your Brain Back", 
-    instructor: "Dr. Anna Lembke", 
+    title: "Blessing & Healing Through Humility", 
+    instructor: "Pastor Charles Nieman", 
     format: "Class", 
-    duration: "1h 1m", 
-    category: "Wellness", 
-    badge: "New", 
-    thumbnail: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&q=80",
-    description: "Stanford psychiatrist reveals the science of addiction and pleasure, teaching you to reset your brain's reward system."
+    duration: "38:30", 
+    category: "Faith & Spirituality",
+    badge: "New",
+    youtubeId: "pzpbbibEWPE",
+    thumbnail: "https://i.ytimg.com/vi/pzpbbibEWPE/maxresdefault.jpg",
+    description: "Learn how humility unlocks God's blessings and healing in your life."
   },
   { 
     id: 3, 
-    title: "The New Rules of Business", 
-    instructor: "Kim Kardashian", 
+    title: "Building Your Life", 
+    instructor: "Pastor Charles Nieman", 
     format: "Class", 
-    duration: "1h 18m", 
-    category: "Business", 
-    thumbnail: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80",
-    description: "From SKIMS to KKW Beauty, learn how to build a billion-dollar brand from the ground up."
+    duration: "45:00", 
+    category: "Personal Growth",
+    youtubeId: "Lnj6vMvOLME",
+    thumbnail: "https://i.ytimg.com/vi/Lnj6vMvOLME/maxresdefault.jpg",
+    description: "Build your life on God's Word - biblical principles for personal spiritual development."
   },
   { 
     id: 4, 
-    title: "The Power Playbook: How to Win at Work", 
-    instructor: "Professor Jeffrey Pfeffer", 
+    title: "The Missing Peace", 
+    instructor: "Pastor Charles Nieman", 
     format: "Class", 
-    duration: "1h 9m", 
-    category: "Business", 
-    thumbnail: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80",
-    description: "Stanford professor shares proven methods for gaining workplace influence and navigating corporate politics."
+    duration: "38:30", 
+    category: "Faith & Spirituality",
+    youtubeId: "OjhMsB6czxc",
+    thumbnail: "https://i.ytimg.com/vi/OjhMsB6czxc/maxresdefault.jpg",
+    description: "Find God's inner peace through grace and righteousness."
   },
   { 
     id: 5, 
-    title: "The Science of Parenting", 
-    instructor: "Noted Experts", 
-    format: "Series", 
-    episodes: 3, 
-    category: "Wellness", 
-    thumbnail: "https://images.unsplash.com/photo-1536640712-4d4c36ff0e4e?w=600&q=80",
-    description: "Evidence-based strategies from leading child development researchers and parenting specialists."
+    title: "The Laws of Life", 
+    instructor: "Pastor Charles Nieman", 
+    format: "Class", 
+    duration: "37:57", 
+    category: "Personal Growth",
+    youtubeId: "WQy48ANpj5c",
+    thumbnail: "https://i.ytimg.com/vi/WQy48ANpj5c/maxresdefault.jpg",
+    description: "Your thoughts and beliefs shape your outcomes - learn the laws that govern life."
   },
   { 
     id: 6, 
-    title: "Happy Clothes: A Film About Style", 
-    instructor: "Patricia Field", 
+    title: "The Story Behind the Story", 
+    instructor: "Pastor Charles Nieman", 
     format: "Class", 
-    duration: "1h 41m", 
-    category: "Design & Style", 
-    thumbnail: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&q=80",
-    description: "The legendary costume designer behind Sex and the City shares her philosophy on fashion as self-expression."
+    duration: "37:30", 
+    category: "Faith & Spirituality",
+    youtubeId: "wCjwUQMhCIY",
+    thumbnail: "https://i.ytimg.com/vi/wCjwUQMhCIY/maxresdefault.jpg",
+    description: "Discover the deeper meaning of Christmas and God's plan through Jesus' birth."
   },
   { 
     id: 7, 
-    title: "Cooking Fundamentals", 
-    instructor: "Gordon Ramsay", 
+    title: "Managing Your Emotions", 
+    instructor: "Pastor Charles Nieman", 
     format: "Class", 
-    duration: "3h 54m", 
-    category: "Food", 
-    thumbnail: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&q=80",
-    description: "Master essential cooking techniques from one of the world's most acclaimed chefs."
+    duration: "42:00", 
+    category: "Personal Growth",
+    badge: "Popular",
+    youtubeId: "0grr2E0kuFg",
+    thumbnail: "https://i.ytimg.com/vi/0grr2E0kuFg/maxresdefault.jpg",
+    description: "Biblical wisdom on understanding and handling your emotions effectively."
   },
   { 
     id: 8, 
-    title: "The Art of Negotiation", 
-    instructor: "Chris Voss", 
+    title: "Worship In Spirit & In Truth", 
+    instructor: "Pastor Jared Nieman", 
     format: "Class", 
-    duration: "2h 12m", 
-    category: "Business", 
-    badge: "New",
-    thumbnail: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600&q=80",
-    description: "Former FBI hostage negotiator teaches tactical empathy and high-stakes communication."
+    duration: "35:00", 
+    category: "Worship",
+    youtubeId: "uwkmP6sDihI",
+    thumbnail: "https://i.ytimg.com/vi/uwkmP6sDihI/maxresdefault.jpg",
+    description: "Experience authentic worship that transforms your relationship with God."
   },
   { 
     id: 9, 
-    title: "Filmmaking", 
-    instructor: "Martin Scorsese", 
+    title: "Vision Sunday 2025", 
+    instructor: "Pastor Jared Nieman", 
     format: "Class", 
-    duration: "4h 30m", 
-    category: "Arts & Entertainment", 
-    thumbnail: "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=600&q=80",
-    description: "The legendary director shares his creative process, from storyboarding to final cut."
+    duration: "48:00", 
+    category: "Leadership",
+    youtubeId: "O0WfS3Ma2XM",
+    thumbnail: "https://i.ytimg.com/vi/O0WfS3Ma2XM/maxresdefault.jpg",
+    description: "The church's vision and community outreach efforts for the year ahead."
   },
   { 
     id: 10, 
-    title: "Electronic Music Production", 
-    instructor: "Deadmau5", 
-    format: "Class", 
-    duration: "5h 52m", 
-    category: "Music", 
-    thumbnail: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=600&q=80",
-    description: "From sound design to mixing, learn the complete production workflow from a genre pioneer."
+    title: "Abundant Conference 2025", 
+    instructor: "Pastor Marcos Witt", 
+    format: "Session", 
+    duration: "1:20:00", 
+    category: "Worship",
+    badge: "Featured",
+    youtubeId: "kGXOOO6hHUk",
+    thumbnail: "https://i.ytimg.com/vi/kGXOOO6hHUk/maxresdefault.jpg",
+    description: "Night 2 of the Abundant Conference featuring worship and powerful teaching."
   },
   { 
     id: 11, 
-    title: "Creative Writing", 
-    instructor: "Margaret Atwood", 
+    title: "We Are Abundant: Blessed to Be a Blessing", 
+    instructor: "Pastor Charles Nieman", 
     format: "Class", 
-    duration: "3h 18m", 
-    category: "Writing", 
-    thumbnail: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=600&q=80",
-    description: "The Booker Prize winner guides you through the craft of storytelling and world-building."
+    duration: "40:00", 
+    category: "Community",
+    youtubeId: "rMmIcJCDsaU",
+    thumbnail: "https://i.ytimg.com/vi/rMmIcJCDsaU/maxresdefault.jpg",
+    description: "Understanding our calling to be a blessing to others in our community."
   },
   { 
     id: 12, 
-    title: "Chess Strategy", 
-    instructor: "Garry Kasparov", 
+    title: "Faith That Moves Mountains", 
+    instructor: "Pastor Charles Nieman", 
     format: "Class", 
-    duration: "2h 45m", 
-    category: "Sports & Gaming", 
-    thumbnail: "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=600&q=80",
-    description: "The greatest chess player of all time breaks down strategy, tactics, and competitive mindset."
+    duration: "36:00", 
+    category: "Faith & Spirituality",
+    youtubeId: "Lnj6vMvOLME",
+    thumbnail: "https://i.ytimg.com/vi/Lnj6vMvOLME/maxresdefault.jpg",
+    description: "Discover the kind of faith that can move any mountain in your life."
   },
 ];
 
-// Filter options
+// Filter options - exactly like MasterClass
 const FILTER_OPTIONS = {
-  format: ['Class', 'Series', 'Session', 'Note'],
+  format: ['Class', 'Session', 'Series'],
   myContent: ['Saved', 'In Progress', 'Completed'],
-  duration: ['Under 1 hour', '1-2 hours', '2-4 hours', '4+ hours'],
+  duration: ['Under 30 min', '30-45 min', '45+ min'],
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// COMPONENTS
+// VIDEO PLAYER MODAL - Fullscreen Cinema Experience
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// Top Navigation Bar
-const TopNav = ({ user, searchQuery, setSearchQuery }) => {
+const VideoPlayerModal = ({ isOpen, onClose, course }) => {
+  if (!isOpen || !course) return null;
+
   return (
-    <nav className="mc-lib-nav" data-testid="library-nav">
-      {/* Logo */}
-      <div className="mc-lib-logo">
-        <div className="mc-lib-logo-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-            <path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18l6.9 3.45L12 11.09 5.1 7.63 12 4.18zM4 8.82l7 3.5v7.36l-7-3.5V8.82zm9 10.86v-7.36l7-3.5v7.36l-7 3.5z"/>
-          </svg>
+    <motion.div
+      className="mcl-video-modal"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="mcl-video-container"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button className="mcl-video-close" onClick={onClose}>
+          <X className="w-6 h-6" />
+        </button>
+        <div className="mcl-video-header">
+          <h2>{course.title}</h2>
+          <p>{course.instructor}</p>
         </div>
-        <span className="mc-lib-logo-text">Abundant</span>
-      </div>
-
-      {/* Search Bar */}
-      <div className="mc-lib-search">
-        <Search className="mc-lib-search-icon" />
-        <input 
-          type="text"
-          placeholder="Search Instructors, Classes, Topics and more"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="mc-lib-search-input"
-        />
-      </div>
-
-      {/* Nav Links */}
-      <div className="mc-lib-nav-links">
-        <a href="#" className="mc-lib-nav-link">
-          <User className="w-4 h-4" />
-          <span>My Progress</span>
-        </a>
-        <a href="#" className="mc-lib-nav-link active">
-          <LayoutGrid className="w-4 h-4" />
-          <span>Library</span>
-        </a>
-        <a href="#" className="mc-lib-nav-link">
-          <Sparkles className="w-4 h-4" />
-          <span>Class TA</span>
-          <span className="mc-lib-beta-badge">BETA</span>
-        </a>
-        <div className="mc-lib-user">
-          <div className="mc-lib-avatar">
-            {user?.name?.charAt(0) || 'U'}
-          </div>
-          <span>{user?.name?.split(' ')[0] || 'User'}</span>
-          <ChevronDown className="w-4 h-4" />
+        <div className="mcl-video-player">
+          <iframe
+            src={`https://www.youtube.com/embed/${course.youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+            title={course.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
         </div>
-      </div>
-    </nav>
+      </motion.div>
+    </motion.div>
   );
 };
 
-// Category Bar
-const CategoryBar = ({ activeCategory, setActiveCategory }) => {
-  const scrollRef = useRef(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+// ═══════════════════════════════════════════════════════════════════════════════
+// COURSE CARD - Exact MasterClass Style
+// ═══════════════════════════════════════════════════════════════════════════════
 
-  const checkScroll = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-    }
-  };
-
-  const scroll = (direction) => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -200 : 200,
-        behavior: 'smooth'
-      });
-    }
-  };
-
-  useEffect(() => {
-    checkScroll();
-    const ref = scrollRef.current;
-    if (ref) {
-      ref.addEventListener('scroll', checkScroll);
-      window.addEventListener('resize', checkScroll);
-    }
-    return () => {
-      if (ref) ref.removeEventListener('scroll', checkScroll);
-      window.removeEventListener('resize', checkScroll);
-    };
-  }, []);
-
-  return (
-    <div className="mc-lib-category-bar" data-testid="category-bar">
-      <div className="mc-lib-category-header">
-        <h2 className="mc-lib-category-title">Categories</h2>
-        <div className="mc-lib-category-arrows">
-          <button 
-            className={`mc-lib-arrow-btn ${!canScrollLeft ? 'disabled' : ''}`}
-            onClick={() => scroll('left')}
-            disabled={!canScrollLeft}
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button 
-            className={`mc-lib-arrow-btn ${!canScrollRight ? 'disabled' : ''}`}
-            onClick={() => scroll('right')}
-            disabled={!canScrollRight}
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-      <div className="mc-lib-category-scroll" ref={scrollRef}>
-        {CATEGORIES.map((cat) => {
-          const Icon = cat.icon;
-          return (
-            <button
-              key={cat.id}
-              className={`mc-lib-category-tile ${activeCategory === cat.id ? 'active' : ''}`}
-              onClick={() => setActiveCategory(cat.id)}
-              data-testid={`category-${cat.id}`}
-            >
-              <Icon className="mc-lib-category-icon" />
-              <span className="mc-lib-category-label">{cat.label}</span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-// Filter Sidebar
-const FilterSidebar = ({ filters, setFilters }) => {
-  const [openAccordions, setOpenAccordions] = useState({});
-
-  const toggleAccordion = (key) => {
-    setOpenAccordions(prev => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const toggleFilter = (category, value) => {
-    setFilters(prev => {
-      const current = prev[category] || [];
-      if (current.includes(value)) {
-        return { ...prev, [category]: current.filter(v => v !== value) };
-      }
-      return { ...prev, [category]: [...current, value] };
-    });
-  };
-
-  return (
-    <aside className="mc-lib-sidebar" data-testid="filter-sidebar">
-      <h3 className="mc-lib-sidebar-title">Filters</h3>
-      
-      {Object.entries(FILTER_OPTIONS).map(([key, options]) => (
-        <div key={key} className="mc-lib-accordion">
-          <button 
-            className="mc-lib-accordion-header"
-            onClick={() => toggleAccordion(key)}
-          >
-            <span>{key === 'myContent' ? 'My Content' : key.charAt(0).toUpperCase() + key.slice(1)}</span>
-            <ChevronDown className={`mc-lib-accordion-chevron ${openAccordions[key] ? 'open' : ''}`} />
-          </button>
-          <AnimatePresence>
-            {openAccordions[key] && (
-              <motion.div
-                className="mc-lib-accordion-content"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {options.map((option) => (
-                  <label key={option} className="mc-lib-checkbox-label">
-                    <input 
-                      type="checkbox"
-                      checked={(filters[key] || []).includes(option)}
-                      onChange={() => toggleFilter(key, option)}
-                      className="mc-lib-checkbox"
-                    />
-                    <span className="mc-lib-checkbox-custom" />
-                    <span>{option}</span>
-                  </label>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      ))}
-    </aside>
-  );
-};
-
-// Course Card
 const CourseCard = ({ course, onPlay }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <motion.article 
-      className="mc-lib-card"
+      className="mcl-card"
       data-testid={`course-card-${course.id}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      {/* Thumbnail */}
-      <div className="mc-lib-card-image">
+      {/* Thumbnail - Sharp corners, no padding */}
+      <div className="mcl-card-thumb">
         <img 
           src={course.thumbnail} 
           alt={course.title}
           loading="lazy"
+          onError={(e) => {
+            e.target.src = `https://img.youtube.com/vi/${course.youtubeId}/hqdefault.jpg`;
+          }}
         />
         
-        {/* Badges */}
+        {/* NEW/Popular Badge - Red, top right */}
         {course.badge && (
-          <span className="mc-lib-badge-new">{course.badge}</span>
+          <span className={`mcl-badge ${course.badge.toLowerCase()}`}>
+            {course.badge}
+          </span>
         )}
-        <span className="mc-lib-badge-duration">
-          {course.duration || `${course.episodes} episodes`}
-        </span>
+        
+        {/* Duration - Bottom right */}
+        <span className="mcl-duration">{course.duration}</span>
 
-        {/* Hover Overlay */}
+        {/* Hover Overlay with Play/Add Buttons */}
         <AnimatePresence>
           {isHovered && (
             <motion.div 
-              className="mc-lib-card-overlay"
+              className="mcl-card-hover"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
             >
-              <div className="mc-lib-card-buttons">
+              <div className="mcl-card-btns">
                 <button 
-                  className="mc-lib-play-btn"
-                  onClick={() => onPlay(course)}
-                  data-testid={`play-btn-${course.id}`}
+                  className="mcl-btn-play"
+                  onClick={(e) => { e.stopPropagation(); onPlay(course); }}
                 >
                   <Play className="w-5 h-5" fill="currentColor" />
                 </button>
-                <button className="mc-lib-add-btn">
+                <button className="mcl-btn-add">
                   <Plus className="w-5 h-5" />
                 </button>
               </div>
@@ -412,26 +274,25 @@ const CourseCard = ({ course, onPlay }) => {
         </AnimatePresence>
       </div>
 
-      {/* Card Content */}
-      <div className="mc-lib-card-content">
-        <p className="mc-lib-card-meta">
-          {course.format} • {course.duration || `${course.episodes} episodes`} • {course.category}
+      {/* Card Info */}
+      <div className="mcl-card-info">
+        <p className="mcl-card-meta">
+          {course.format} • {course.duration} • {course.category}
         </p>
-        <h3 className="mc-lib-card-title">{course.title}</h3>
-        <p className="mc-lib-card-instructor">With {course.instructor}</p>
+        <h3 className="mcl-card-title">{course.title}</h3>
+        <p className="mcl-card-instructor">With {course.instructor}</p>
       </div>
 
-      {/* Hover Expansion */}
+      {/* Hover Expansion - Description */}
       <AnimatePresence>
         {isHovered && course.description && (
           <motion.div 
-            className="mc-lib-card-expand"
+            className="mcl-card-desc"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
           >
-            <p className="mc-lib-card-description">{course.description}</p>
+            <p>{course.description}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -440,7 +301,7 @@ const CourseCard = ({ course, onPlay }) => {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MAIN COMPONENT
+// MAIN LIBRARY PAGE
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export default function PortalLibrary() {
@@ -451,121 +312,249 @@ export default function PortalLibrary() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [filters, setFilters] = useState({});
   const [filteredCourses, setFilteredCourses] = useState(COURSES);
+  const [openAccordion, setOpenAccordion] = useState(null);
+  const [videoModal, setVideoModal] = useState({ open: false, course: null });
+  
+  const categoryScrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
 
-  // Filter courses based on search, category, and filters
+  // Category scroll handlers
+  const checkCategoryScroll = () => {
+    if (categoryScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = categoryScrollRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
+
+  const scrollCategories = (dir) => {
+    if (categoryScrollRef.current) {
+      categoryScrollRef.current.scrollBy({
+        left: dir === 'left' ? -200 : 200,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  useEffect(() => {
+    checkCategoryScroll();
+    const ref = categoryScrollRef.current;
+    if (ref) {
+      ref.addEventListener('scroll', checkCategoryScroll);
+      window.addEventListener('resize', checkCategoryScroll);
+    }
+    return () => {
+      if (ref) ref.removeEventListener('scroll', checkCategoryScroll);
+      window.removeEventListener('resize', checkCategoryScroll);
+    };
+  }, []);
+
+  // Filter courses
   useEffect(() => {
     let result = COURSES;
 
-    // Search filter
     if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+      const q = searchQuery.toLowerCase();
       result = result.filter(c => 
-        c.title.toLowerCase().includes(query) ||
-        c.instructor.toLowerCase().includes(query) ||
-        c.category.toLowerCase().includes(query)
+        c.title.toLowerCase().includes(q) ||
+        c.instructor.toLowerCase().includes(q) ||
+        c.category.toLowerCase().includes(q)
       );
     }
 
-    // Category filter
     if (activeCategory !== 'all') {
-      const categoryMap = {
-        'food': 'Food',
-        'arts': 'Arts & Entertainment',
-        'music': 'Music',
-        'writing': 'Writing',
-        'sports': 'Sports & Gaming',
-        'design': 'Design & Style',
-        'business': 'Business',
-        'science': 'Science & Tech',
-        'home': 'Home & Lifestyle',
-        'community': 'Community & Government',
+      const catMap = {
+        'faith': 'Faith & Spirituality',
+        'family': 'Family & Relationships',
+        'leadership': 'Leadership',
+        'worship': 'Worship',
+        'growth': 'Personal Growth',
+        'community': 'Community',
       };
-      const catLabel = categoryMap[activeCategory];
-      if (catLabel) {
-        result = result.filter(c => c.category === catLabel);
-      }
+      result = result.filter(c => c.category === catMap[activeCategory]);
     }
 
-    // Format filter
     if (filters.format?.length) {
       result = result.filter(c => filters.format.includes(c.format));
-    }
-
-    // Duration filter
-    if (filters.duration?.length) {
-      result = result.filter(c => {
-        if (!c.duration) return false;
-        const hours = parseFloat(c.duration.split('h')[0]);
-        return filters.duration.some(d => {
-          if (d === 'Under 1 hour') return hours < 1;
-          if (d === '1-2 hours') return hours >= 1 && hours < 2;
-          if (d === '2-4 hours') return hours >= 2 && hours < 4;
-          if (d === '4+ hours') return hours >= 4;
-          return false;
-        });
-      });
     }
 
     setFilteredCourses(result);
   }, [searchQuery, activeCategory, filters]);
 
-  // Handle play course
-  const handlePlayCourse = (course) => {
-    // Navigate to watch page with course data
-    navigate('/portal/watch', { state: { course } });
+  const toggleFilter = (cat, val) => {
+    setFilters(prev => {
+      const curr = prev[cat] || [];
+      if (curr.includes(val)) {
+        return { ...prev, [cat]: curr.filter(v => v !== val) };
+      }
+      return { ...prev, [cat]: [...curr, val] };
+    });
   };
 
   return (
-    <div className="mc-lib-page" data-testid="library-page">
-      {/* Cinematic Vignette Effect */}
-      <div className="mc-lib-vignette" />
+    <div className="mcl-page" data-testid="library-page">
+      {/* Vignette */}
+      <div className="mcl-vignette" />
 
-      {/* Top Navigation */}
-      <TopNav 
-        user={user} 
-        searchQuery={searchQuery} 
-        setSearchQuery={setSearchQuery} 
-      />
+      {/* Top Nav - Exact MasterClass style */}
+      <header className="mcl-header">
+        <div className="mcl-header-left">
+          <div className="mcl-logo">
+            <span className="mcl-logo-mark">A</span>
+            <span className="mcl-logo-text">Abundant</span>
+          </div>
+        </div>
 
-      {/* Category Bar */}
-      <CategoryBar 
-        activeCategory={activeCategory} 
-        setActiveCategory={setActiveCategory} 
-      />
+        <div className="mcl-header-center">
+          <div className="mcl-search">
+            <Search className="mcl-search-icon" />
+            <input 
+              type="text"
+              placeholder="Search Instructors, Classes, Topics and more"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
 
-      {/* Main Content Area */}
-      <div className="mc-lib-main">
+        <div className="mcl-header-right">
+          <a href="#" className="mcl-nav-link">
+            <User className="w-4 h-4" />
+            <span>My Progress</span>
+          </a>
+          <a href="#" className="mcl-nav-link active">
+            <LayoutGrid className="w-4 h-4" />
+            <span>Library</span>
+          </a>
+          <a href="#" className="mcl-nav-link">
+            <Sparkles className="w-4 h-4" />
+            <span>Class TA</span>
+            <span className="mcl-beta">BETA</span>
+          </a>
+          <div className="mcl-user">
+            <div className="mcl-avatar">{user?.name?.charAt(0) || 'M'}</div>
+            <span className="mcl-user-name">{user?.name?.split(' ')[0] || 'Member'}</span>
+            <ChevronDown className="w-4 h-4" />
+          </div>
+        </div>
+      </header>
+
+      {/* Categories Section - Exact MasterClass style */}
+      <section className="mcl-categories">
+        <div className="mcl-categories-head">
+          <h2>Categories</h2>
+          <div className="mcl-categories-nav">
+            <button 
+              className={`mcl-arrow ${!canScrollLeft ? 'disabled' : ''}`}
+              onClick={() => scrollCategories('left')}
+              disabled={!canScrollLeft}
+            >
+              <ChevronLeft />
+            </button>
+            <button 
+              className={`mcl-arrow ${!canScrollRight ? 'disabled' : ''}`}
+              onClick={() => scrollCategories('right')}
+              disabled={!canScrollRight}
+            >
+              <ChevronRight />
+            </button>
+          </div>
+        </div>
+        <div className="mcl-categories-scroll" ref={categoryScrollRef}>
+          {CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            return (
+              <button
+                key={cat.id}
+                className={`mcl-cat-tile ${activeCategory === cat.id ? 'active' : ''}`}
+                onClick={() => setActiveCategory(cat.id)}
+              >
+                <Icon className="mcl-cat-icon" />
+                <span>{cat.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <div className="mcl-main">
         {/* Filter Sidebar */}
-        <FilterSidebar filters={filters} setFilters={setFilters} />
+        <aside className="mcl-sidebar">
+          <h3>Filters</h3>
+          
+          {Object.entries(FILTER_OPTIONS).map(([key, options]) => (
+            <div key={key} className="mcl-filter">
+              <button 
+                className="mcl-filter-head"
+                onClick={() => setOpenAccordion(openAccordion === key ? null : key)}
+              >
+                <span>{key === 'myContent' ? 'My Content' : key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                <ChevronDown className={`mcl-filter-chevron ${openAccordion === key ? 'open' : ''}`} />
+              </button>
+              <AnimatePresence>
+                {openAccordion === key && (
+                  <motion.div
+                    className="mcl-filter-opts"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                  >
+                    {options.map((opt) => (
+                      <label key={opt} className="mcl-checkbox">
+                        <input 
+                          type="checkbox"
+                          checked={(filters[key] || []).includes(opt)}
+                          onChange={() => toggleFilter(key, opt)}
+                        />
+                        <span className="mcl-check-box" />
+                        <span>{opt}</span>
+                      </label>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </aside>
 
         {/* Course Grid */}
-        <main className="mc-lib-grid-container">
+        <main className="mcl-grid-wrap">
           {filteredCourses.length > 0 ? (
-            <div className="mc-lib-grid">
+            <div className="mcl-grid">
               {filteredCourses.map((course) => (
                 <CourseCard 
                   key={course.id} 
                   course={course} 
-                  onPlay={handlePlayCourse}
+                  onPlay={(c) => setVideoModal({ open: true, course: c })}
                 />
               ))}
             </div>
           ) : (
-            <div className="mc-lib-empty">
-              <BookOpen className="w-16 h-16 mb-4 opacity-30" />
-              <h3>No courses found</h3>
+            <div className="mcl-empty">
+              <Book className="w-16 h-16" />
+              <h3>No classes found</h3>
               <p>Try adjusting your filters or search terms</p>
             </div>
           )}
 
-          {/* Load More Button */}
           {filteredCourses.length > 0 && (
-            <button className="mc-lib-load-more">
-              Load More
-            </button>
+            <button className="mcl-load-more">Load More</button>
           )}
         </main>
       </div>
+
+      {/* Video Modal */}
+      <AnimatePresence>
+        {videoModal.open && (
+          <VideoPlayerModal 
+            isOpen={videoModal.open}
+            course={videoModal.course}
+            onClose={() => setVideoModal({ open: false, course: null })}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
