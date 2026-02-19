@@ -174,7 +174,7 @@ export default function PortalLayout() {
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="portal-bottom-nav md:hidden" data-testid="portal-bottom-nav">
+      <nav className={`portal-bottom-nav md:hidden ${isWatchPage ? 'portal-bottom-nav-dark' : ''}`} data-testid="portal-bottom-nav">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
