@@ -164,7 +164,7 @@ export default function GivingDashboard() {
           <h3 className="giving-section-title">Payment Channels</h3>
         </div>
         <div className="giving-grid">
-          <a href="#" onClick={(e) => { e.preventDefault(); setShowDonationPanel(true); }} className="giving-card" data-testid="give-card">
+          <a href="#" onClick={(e) => { e.preventDefault(); setShowStripeCheckout(true); }} className="giving-card" data-testid="give-card">
             <div className="icon-box stripe"><CreditCard /></div>
             <span className="label">Card / ACH</span>
             <span className="status">Active</span>
