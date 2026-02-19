@@ -58,24 +58,40 @@ Church Info Updated:
    - ✅ **Video Player Modal** - Cinema-style fullscreen player with YouTube embeds
    - ✅ **Playlist Sidebar** - Shows all lessons with active state highlighting
 
-3. **Portal Give** (`/portal/give`)
+3. **Portal Library** (`/portal/library`) - ✅ **NEW: MASTERCLASS LIBRARY CLONE**
+   - **Pixel-perfect MasterClass.com/library-search recreation**
+   - Pure black (#000000) background with cinematic vignette effect
+   - Custom top navigation: logo, search bar, My Progress, Library, Class TA (BETA), user avatar
+   - **Category bar**: 11 scrollable icon tiles with purple active state border
+   - **Filter sidebar** (265px): Format, My Content, Duration accordion dropdowns
+   - **3-column course grid** (16px gap) with:
+     - Sharp corners (0px border-radius per MasterClass spec)
+     - Red "NEW" badges (#E53935)
+     - Duration badges (semi-transparent dark pill)
+     - Metadata: "Class • 1h 26m • Business"
+     - Hover: Play/Add button overlay + description expansion
+   - Typography: Inter font
+   - Search filters by title, instructor, category
+   - 12 hardcoded courses for demo
+
+4. **Portal Give** (`/portal/give`)
    - Amount input with quick amounts ($25, $50, $100, $250)
    - Fund selector (General, Building, Missions, etc.)
    - Frequency (One-time, Weekly, Monthly, etc.)
    - Payment methods (Card/ACH, PayPal, Venmo, Zelle)
    - YTD giving summary + giving history
 
-4. **Portal Groups** (`/portal/groups`)
+5. **Portal Groups** (`/portal/groups`)
    - My Groups section
    - Discover Groups with search/filter
    - Request to Join / Get Notified buttons
 
-5. **Portal Events** (`/portal/events`)
+6. **Portal Events** (`/portal/events`)
    - Filter tabs (All, This Week, This Month, Registered)
    - Event cards with date, location, registration
    - Registration functionality
 
-6. **Portal Me** (`/portal/me`)
+7. **Portal Me** (`/portal/me`)
    - Profile header with avatar
    - Tabs: Overview, My Giving, My Groups, Communications
    - Email preferences toggles
