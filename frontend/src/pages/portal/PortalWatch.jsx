@@ -1,328 +1,231 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Play, Clock, ChevronRight, Search, X, Volume2, VolumeX } from 'lucide-react';
+import { Play, ChevronLeft, ChevronRight, Clock, BookOpen, Award } from 'lucide-react';
 
-// Demo sermon data for Abundant Church - Masterclass style
-const FEATURED_SERMONS = [
-  {
-    id: 'featured-1',
-    title: 'Standing Strong in the Storm',
-    subtitle: 'Building faith that weathers any trial',
-    speaker: 'Pastor David Rivera',
-    speakerTitle: 'Lead Pastor, Abundant Church',
-    speakerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=1200&q=80',
-    duration: '42 min',
-    lessons: 6,
-    series: 'Unshakeable Faith'
-  },
-  {
-    id: 'featured-2',
-    title: 'The Heart of Worship',
-    subtitle: 'Discovering authentic praise',
-    speaker: 'Pastor Maria Santos',
-    speakerTitle: 'Worship Pastor',
-    speakerImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1478147427282-58a87a120781?w=1200&q=80',
-    duration: '36 min',
-    lessons: 4,
-    series: 'Worship Series'
-  },
-  {
-    id: 'featured-3',
-    title: 'Purpose Driven Life',
-    subtitle: 'Finding your calling in God\'s plan',
-    speaker: 'Pastor David Rivera',
-    speakerTitle: 'Lead Pastor, Abundant Church',
-    speakerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=1200&q=80',
-    duration: '48 min',
-    lessons: 8,
-    series: 'Purpose Series'
-  }
-];
+// Sermon/Course data
+const FEATURED_COURSE = {
+  id: 'featured-1',
+  instructorName: 'Pastor David Rivera',
+  courseTitle: 'Teaches Faith in the Storm',
+  thumbnailUrl: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=1920&q=80',
+  subtitle: 'Building unshakeable faith through life\'s greatest challenges',
+  teaser: 'Learn to stand firm when everything around you is uncertain. Discover the ancient principles that have sustained believers for generations.',
+  lessonCount: 24,
+  durationMinutes: 370,
+  category: 'FEATURED SERIES',
+};
 
-const CATEGORIES = [
-  { id: 'all', name: 'All Messages' },
-  { id: 'faith', name: 'Faith & Trust' },
-  { id: 'worship', name: 'Worship' },
-  { id: 'family', name: 'Family' },
-  { id: 'leadership', name: 'Leadership' },
-  { id: 'prayer', name: 'Prayer' },
-];
+const COURSES = {
+  foundations: [
+    { id: '1', instructorName: 'Pastor David Rivera', courseTitle: 'Foundations of Faith', thumbnailUrl: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&q=80', lessonCount: 12, durationMinutes: 180, badge: 'POPULAR', category: 'Faith', level: 'Beginner' },
+    { id: '2', instructorName: 'Pastor Maria Santos', courseTitle: 'The Heart of Worship', thumbnailUrl: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800&q=80', lessonCount: 8, durationMinutes: 120, category: 'Worship', level: 'Beginner' },
+    { id: '3', instructorName: 'Pastor David Rivera', courseTitle: 'Prayer That Moves Mountains', thumbnailUrl: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=800&q=80', lessonCount: 10, durationMinutes: 150, badge: 'NEW', category: 'Prayer', level: 'Beginner' },
+    { id: '4', instructorName: 'Pastor Maria Santos', courseTitle: 'Understanding Scripture', thumbnailUrl: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80', lessonCount: 16, durationMinutes: 240, category: 'Bible Study', level: 'Beginner' },
+    { id: '5', instructorName: 'Pastor David Rivera', courseTitle: 'The Grace of God', thumbnailUrl: 'https://images.unsplash.com/photo-1445445290350-18a3b86e0b5a?w=800&q=80', lessonCount: 6, durationMinutes: 90, category: 'Theology', level: 'Beginner' },
+    { id: '6', instructorName: 'Pastor Maria Santos', courseTitle: 'Walking in the Spirit', thumbnailUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80', lessonCount: 8, durationMinutes: 120, category: 'Spiritual Growth', level: 'Beginner' },
+  ],
+  trending: [
+    { id: '7', instructorName: 'Pastor David Rivera', courseTitle: 'Leading with Purpose', thumbnailUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80', lessonCount: 14, durationMinutes: 210, badge: 'POPULAR', category: 'Leadership', level: 'Intermediate' },
+    { id: '8', instructorName: 'Pastor Maria Santos', courseTitle: 'Marriage God\'s Way', thumbnailUrl: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800&q=80', lessonCount: 10, durationMinutes: 150, category: 'Family', level: 'Intermediate' },
+    { id: '9', instructorName: 'Pastor David Rivera', courseTitle: 'Financial Stewardship', thumbnailUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80', lessonCount: 8, durationMinutes: 120, category: 'Finance', level: 'Intermediate' },
+    { id: '10', instructorName: 'Pastor Maria Santos', courseTitle: 'Raising Godly Children', thumbnailUrl: 'https://images.unsplash.com/photo-1536640712-4d4c36ff0e4e?w=800&q=80', lessonCount: 12, durationMinutes: 180, badge: 'NEW', category: 'Family', level: 'Intermediate' },
+    { id: '11', instructorName: 'Pastor David Rivera', courseTitle: 'Overcoming Anxiety', thumbnailUrl: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&q=80', lessonCount: 6, durationMinutes: 90, category: 'Mental Health', level: 'Beginner' },
+    { id: '12', instructorName: 'Pastor Maria Santos', courseTitle: 'Finding Your Calling', thumbnailUrl: 'https://images.unsplash.com/photo-1478147427282-58a87a120781?w=800&q=80', lessonCount: 8, durationMinutes: 120, category: 'Purpose', level: 'Intermediate' },
+  ],
+  quickWins: [
+    { id: '13', instructorName: 'Pastor David Rivera', courseTitle: 'Morning Devotions', thumbnailUrl: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=800&q=80', lessonCount: 5, durationMinutes: 25, category: 'Devotional', level: 'Beginner' },
+    { id: '14', instructorName: 'Pastor Maria Santos', courseTitle: 'Quick Prayer Guide', thumbnailUrl: 'https://images.unsplash.com/photo-1473172707857-f9e276582ab6?w=800&q=80', lessonCount: 4, durationMinutes: 20, category: 'Prayer', level: 'Beginner' },
+    { id: '15', instructorName: 'Pastor David Rivera', courseTitle: 'Scripture Memory', thumbnailUrl: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&q=80', lessonCount: 6, durationMinutes: 28, badge: 'NEW', category: 'Bible Study', level: 'Beginner' },
+    { id: '16', instructorName: 'Pastor Maria Santos', courseTitle: 'Gratitude Practice', thumbnailUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80', lessonCount: 3, durationMinutes: 15, category: 'Spiritual Growth', level: 'Beginner' },
+    { id: '17', instructorName: 'Pastor David Rivera', courseTitle: 'Daily Declarations', thumbnailUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80', lessonCount: 5, durationMinutes: 22, category: 'Faith', level: 'Beginner' },
+    { id: '18', instructorName: 'Pastor Maria Santos', courseTitle: 'Worship Moments', thumbnailUrl: 'https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=800&q=80', lessonCount: 4, durationMinutes: 18, category: 'Worship', level: 'Beginner' },
+  ],
+  deepDives: [
+    { id: '19', instructorName: 'Pastor David Rivera', courseTitle: 'Book of Romans Study', thumbnailUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&q=80', lessonCount: 32, durationMinutes: 480, category: 'Bible Study', level: 'Advanced' },
+    { id: '20', instructorName: 'Pastor Maria Santos', courseTitle: 'Theology of Suffering', thumbnailUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80', lessonCount: 20, durationMinutes: 300, badge: 'FEATURED', category: 'Theology', level: 'Advanced' },
+    { id: '21', instructorName: 'Pastor David Rivera', courseTitle: 'Church History', thumbnailUrl: 'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=800&q=80', lessonCount: 24, durationMinutes: 360, category: 'History', level: 'Advanced' },
+    { id: '22', instructorName: 'Pastor Maria Santos', courseTitle: 'Hebrew Foundations', thumbnailUrl: 'https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=800&q=80', lessonCount: 18, durationMinutes: 270, category: 'Languages', level: 'Advanced' },
+    { id: '23', instructorName: 'Pastor David Rivera', courseTitle: 'Apologetics Masterclass', thumbnailUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80', lessonCount: 28, durationMinutes: 420, badge: 'POPULAR', category: 'Apologetics', level: 'Advanced' },
+    { id: '24', instructorName: 'Pastor Maria Santos', courseTitle: 'Prophetic Literature', thumbnailUrl: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=800&q=80', lessonCount: 22, durationMinutes: 330, category: 'Bible Study', level: 'Advanced' },
+  ],
+};
 
-const ALL_SERMONS = [
-  {
-    id: 'sermon-1',
-    title: 'When Fear Meets Faith',
-    speaker: 'Pastor David Rivera',
-    speakerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&q=80',
-    duration: '38 min',
-    lessons: 1,
-    category: 'faith'
-  },
-  {
-    id: 'sermon-2',
-    title: 'Songs of the Heart',
-    speaker: 'Pastor Maria Santos',
-    speakerImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800&q=80',
-    duration: '41 min',
-    lessons: 1,
-    category: 'worship'
-  },
-  {
-    id: 'sermon-3',
-    title: 'Building Strong Families',
-    speaker: 'Pastor David Rivera',
-    speakerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800&q=80',
-    duration: '44 min',
-    lessons: 5,
-    category: 'family'
-  },
-  {
-    id: 'sermon-4',
-    title: 'The Foundation That Never Fails',
-    speaker: 'Pastor David Rivera',
-    speakerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1445445290350-18a3b86e0b5a?w=800&q=80',
-    duration: '45 min',
-    lessons: 1,
-    category: 'faith'
-  },
-  {
-    id: 'sermon-5',
-    title: 'Leading with Integrity',
-    speaker: 'Pastor David Rivera',
-    speakerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80',
-    duration: '39 min',
-    lessons: 4,
-    category: 'leadership'
-  },
-  {
-    id: 'sermon-6',
-    title: 'The Power of Prayer',
-    speaker: 'Pastor Maria Santos',
-    speakerImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=800&q=80',
-    duration: '35 min',
-    lessons: 3,
-    category: 'prayer'
-  },
-  {
-    id: 'sermon-7',
-    title: 'Created to Worship',
-    speaker: 'Pastor Maria Santos',
-    speakerImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80',
-    duration: '42 min',
-    lessons: 1,
-    category: 'worship'
-  },
-  {
-    id: 'sermon-8',
-    title: 'Raising Godly Children',
-    speaker: 'Pastor David Rivera',
-    speakerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1536640712-4d4c36ff0e4e?w=800&q=80',
-    duration: '47 min',
-    lessons: 1,
-    category: 'family'
-  }
-];
+const CATEGORIES = ['All', 'Faith', 'Worship', 'Prayer', 'Family', 'Leadership', 'Bible Study', 'Theology'];
+
+const formatDuration = (minutes) => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+};
+
+// Carousel Component
+const Carousel = ({ title, courses, goldTitle = false }) => {
+  const scrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
+
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = 280 * 3;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  return (
+    <div className="mc2-carousel-section">
+      <div className="mc2-carousel-header">
+        <h3 className={`mc2-carousel-title ${goldTitle ? 'gold' : ''}`}>{title}</h3>
+        <a href="#" className="mc2-see-all">See All</a>
+      </div>
+      <div className="mc2-carousel-wrapper">
+        {canScrollLeft && (
+          <button className="mc2-carousel-btn left" onClick={() => scroll('left')}>
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+        )}
+        <div 
+          className="mc2-carousel-track" 
+          ref={scrollRef} 
+          onScroll={checkScroll}
+        >
+          {courses.map((course) => (
+            <CourseCard key={course.id} course={course} />
+          ))}
+        </div>
+        {canScrollRight && (
+          <button className="mc2-carousel-btn right" onClick={() => scroll('right')}>
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Course Card Component
+const CourseCard = ({ course }) => {
+  return (
+    <div className="mc2-card" data-testid={`course-card-${course.id}`}>
+      <div className="mc2-card-image">
+        <img src={course.thumbnailUrl} alt={course.courseTitle} loading="lazy" />
+        <div className="mc2-card-gradient" />
+        {course.badge && (
+          <span className={`mc2-card-badge ${course.badge.toLowerCase()}`}>
+            {course.badge}
+          </span>
+        )}
+        <div className="mc2-card-play">
+          <Play className="w-6 h-6" />
+        </div>
+      </div>
+      <div className="mc2-card-content">
+        <span className="mc2-card-instructor">{course.instructorName}</span>
+        <h4 className="mc2-card-title">{course.courseTitle}</h4>
+        <span className="mc2-card-meta">
+          {course.lessonCount} lessons · {formatDuration(course.durationMinutes)}
+        </span>
+      </div>
+    </div>
+  );
+};
 
 export default function PortalWatch() {
   const { user } = useOutletContext();
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isMuted, setIsMuted] = useState(true);
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  // Auto-rotate featured sermons
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % FEATURED_SERMONS.length);
-    }, 8000);
-    return () => clearInterval(timer);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 80);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const filteredSermons = ALL_SERMONS.filter(sermon => {
-    const matchesCategory = selectedCategory === 'all' || sermon.category === selectedCategory;
-    const matchesSearch = !searchQuery || 
-      sermon.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sermon.speaker.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-  const featured = FEATURED_SERMONS[currentSlide];
-
   return (
-    <div className="mc-watch" data-testid="portal-watch-masterclass">
-      {/* Hero Section - Full width background */}
-      <div className="mc-hero" style={{ backgroundImage: `url(${featured.thumbnail})` }}>
-        <div className="mc-hero-overlay" />
-        
-        {/* Top Navigation */}
-        <div className="mc-nav">
-          <div className="mc-logo">
-            <span className="mc-logo-text">ABUNDANT</span>
-            <span className="mc-logo-tv">TV</span>
-          </div>
-          
-          <div className="mc-nav-links">
-            {CATEGORIES.slice(0, 5).map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`mc-nav-link ${selectedCategory === cat.id ? 'active' : ''}`}
-              >
-                {cat.name}
-              </button>
-            ))}
-          </div>
-
-          <div className="mc-nav-actions">
-            {searchOpen ? (
-              <div className="mc-search-box">
-                <Search className="w-4 h-4" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search messages..."
-                  autoFocus
-                  className="mc-search-input"
-                />
-                <button onClick={() => { setSearchOpen(false); setSearchQuery(''); }}>
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <button onClick={() => setSearchOpen(true)} className="mc-search-btn">
-                <Search className="w-5 h-5" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Hero Content */}
-        <div className="mc-hero-content">
-          <div className="mc-hero-speaker">
-            <img src={featured.speakerImage} alt={featured.speaker} className="mc-speaker-img" />
-            <div>
-              <h3 className="mc-speaker-name">{featured.speaker}</h3>
-              <p className="mc-speaker-title">{featured.speakerTitle}</p>
-            </div>
-          </div>
-          
-          <h1 className="mc-hero-title">{featured.title}</h1>
-          <p className="mc-hero-subtitle">{featured.subtitle}</p>
-          
-          <div className="mc-hero-meta">
-            <span>{featured.lessons} {featured.lessons === 1 ? 'Message' : 'Messages'}</span>
-            <span className="mc-meta-dot">•</span>
-            <span>{featured.duration}</span>
-          </div>
-
-          <div className="mc-hero-actions">
-            <button className="mc-btn-primary" data-testid="watch-trailer-btn">
-              <Play className="w-5 h-5" /> Watch Trailer
+    <div className="mc2-page" data-testid="masterclass-watch">
+      {/* Hero Section */}
+      <section className="mc2-hero" style={{ backgroundImage: `url(${FEATURED_COURSE.thumbnailUrl})` }}>
+        <div className="mc2-hero-overlay" />
+        <div className="mc2-hero-content">
+          <span className="mc2-hero-category">{FEATURED_COURSE.category}</span>
+          <h1 className="mc2-hero-title">{FEATURED_COURSE.instructorName}</h1>
+          <p className="mc2-hero-subtitle">{FEATURED_COURSE.courseTitle}</p>
+          <p className="mc2-hero-teaser">{FEATURED_COURSE.teaser}</p>
+          <div className="mc2-hero-buttons">
+            <button className="mc2-btn-primary">
+              <Play className="w-4 h-4" /> Start Learning
             </button>
-            <button 
-              className="mc-btn-icon"
-              onClick={() => setIsMuted(!isMuted)}
-            >
-              {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-            </button>
+            <button className="mc2-btn-secondary">Preview</button>
           </div>
         </div>
-
-        {/* Slide Indicators */}
-        <div className="mc-hero-dots">
-          {FEATURED_SERMONS.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentSlide(idx)}
-              className={`mc-dot ${idx === currentSlide ? 'active' : ''}`}
-            />
-          ))}
+        <div className="mc2-hero-meta">
+          <Clock className="w-4 h-4" />
+          {FEATURED_COURSE.lessonCount} lessons · {formatDuration(FEATURED_COURSE.durationMinutes)}
         </div>
-      </div>
+      </section>
 
-      {/* Content Section */}
-      <div className="mc-content">
-        {/* Category Pills - Mobile */}
-        <div className="mc-categories-mobile">
+      {/* Sticky Category Bar */}
+      <nav className={`mc2-category-bar ${isScrolled ? 'scrolled' : ''}`}>
+        <div className="mc2-category-track">
           {CATEGORIES.map((cat) => (
             <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`mc-category-pill ${selectedCategory === cat.id ? 'active' : ''}`}
+              key={cat}
+              className={`mc2-category-pill ${activeCategory === cat ? 'active' : ''}`}
+              onClick={() => setActiveCategory(cat)}
             >
-              {cat.name}
+              {cat}
             </button>
           ))}
         </div>
+      </nav>
 
-        {/* Section Title */}
-        <div className="mc-section-header">
-          <h2 className="mc-section-title">
-            {selectedCategory === 'all' ? 'All Messages' : CATEGORIES.find(c => c.id === selectedCategory)?.name}
-          </h2>
-          <span className="mc-section-count">{filteredSermons.length} available</span>
-        </div>
-
-        {/* Sermon Grid */}
-        <div className="mc-grid">
-          {filteredSermons.map((sermon) => (
-            <div key={sermon.id} className="mc-card" data-testid={`mc-card-${sermon.id}`}>
-              <div className="mc-card-img-wrapper">
-                <img src={sermon.thumbnail} alt={sermon.title} className="mc-card-img" />
-                <div className="mc-card-overlay">
-                  <button className="mc-card-play">
-                    <Play className="w-8 h-8" />
-                  </button>
-                </div>
-                <div className="mc-card-duration">
-                  <Clock className="w-3 h-3" />
-                  {sermon.duration}
-                </div>
-              </div>
-              <div className="mc-card-content">
-                <div className="mc-card-speaker">
-                  <img src={sermon.speakerImage} alt={sermon.speaker} className="mc-card-speaker-img" />
-                  <span>{sermon.speaker}</span>
-                </div>
-                <h3 className="mc-card-title">{sermon.title}</h3>
-                <p className="mc-card-lessons">
-                  {sermon.lessons} {sermon.lessons === 1 ? 'message' : 'messages'}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {filteredSermons.length === 0 && (
-          <div className="mc-no-results">
-            <p>No messages found. Try a different search or category.</p>
+      {/* Content */}
+      <main className="mc2-content">
+        <Carousel title="START HERE — FOUNDATIONS" courses={COURSES.foundations} />
+        <Carousel title="TRENDING THIS WEEK" courses={COURSES.trending} />
+        
+        {/* Instructor Spotlight */}
+        <section className="mc2-spotlight">
+          <div className="mc2-spotlight-image">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&q=80" alt="Pastor David Rivera" />
           </div>
-        )}
-
-        {/* Bottom CTA */}
-        <div className="mc-cta">
-          <div className="mc-cta-content">
-            <h3>Join us this Sunday</h3>
-            <p>Experience worship live at 9:00 AM & 11:00 AM</p>
+          <div className="mc2-spotlight-content">
+            <span className="mc2-spotlight-label">INSTRUCTOR SPOTLIGHT</span>
+            <h2 className="mc2-spotlight-name">Pastor David Rivera</h2>
+            <p className="mc2-spotlight-bio">
+              With over 25 years of ministry experience, Pastor David has helped thousands 
+              discover deeper faith and purpose. His teaching style combines theological 
+              depth with practical application.
+            </p>
+            <a href="#" className="mc2-spotlight-link">
+              Explore His Classes <ChevronRight className="w-4 h-4" />
+            </a>
           </div>
-          <button className="mc-btn-outline">
-            Set Reminder <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
+        </section>
+
+        <Carousel title="QUICK WINS · UNDER 30 MIN" courses={COURSES.quickWins} />
+        <Carousel title="DEEP DIVES" courses={COURSES.deepDives} goldTitle />
+      </main>
+
+      {/* Footer CTA */}
+      <footer className="mc2-footer-cta">
+        <div className="mc2-footer-noise" />
+        <h2 className="mc2-footer-title">Every Lesson. Every Teacher. All Access.</h2>
+        <p className="mc2-footer-subtitle">Join Abundant Church's learning community today.</p>
+        <button className="mc2-btn-gold">Get Started</button>
+      </footer>
     </div>
   );
 }
