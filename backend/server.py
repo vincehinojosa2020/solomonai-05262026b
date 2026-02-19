@@ -1189,19 +1189,31 @@ async def get_dashboard_stats():
         "is_active": True
     })
     
+    # ============== DEMO SCALE: Mega-church numbers for Abundant Church demo ==============
+    # Scale factors to simulate 50,000 member mega-church
+    DEMO_TOTAL_MEMBERS = 50247
+    DEMO_ACTIVE_GROUPS = 284
+    DEMO_LAST_ATTENDANCE = 8420
+    DEMO_MTD_GIVING = 847250
+    DEMO_YTD_GIVING = 2847303
+    DEMO_MTD_GOAL = 3500000
+    DEMO_RECURRING = 847
+    DEMO_NEW_THIS_MONTH = 127
+    DEMO_OPEN_GROUPS = 18
+    
     return {
-        "total_members": total_members,
-        "active_members": active_members,
-        "visitors": visitors,
-        "active_groups": active_groups,
-        "open_groups": open_groups,
-        "mtd_giving": mtd_giving,
-        "ytd_giving": ytd_giving,
-        "mtd_goal": 350000,
-        "last_attendance": last_attendance,
+        "total_members": DEMO_TOTAL_MEMBERS,
+        "active_members": int(DEMO_TOTAL_MEMBERS * 0.85),
+        "visitors": int(DEMO_TOTAL_MEMBERS * 0.03),
+        "active_groups": DEMO_ACTIVE_GROUPS,
+        "open_groups": DEMO_OPEN_GROUPS,
+        "mtd_giving": DEMO_MTD_GIVING,
+        "ytd_giving": DEMO_YTD_GIVING,
+        "mtd_goal": DEMO_MTD_GOAL,
+        "last_attendance": DEMO_LAST_ATTENDANCE,
         "last_attendance_change": 340,
-        "new_this_week": new_this_week,
-        "recurring_givers": recurring_count
+        "new_this_week": DEMO_NEW_THIS_MONTH,
+        "recurring_givers": DEMO_RECURRING
     }
 
 @api_router.get("/dashboard/giving-trend")
