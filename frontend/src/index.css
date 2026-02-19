@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,93 +6,96 @@
 
 @layer base {
   :root {
-    /* ═══ SANCTUARY GREEN PALETTE ═══ */
-    --sanctuary-green: #2D5A47;
-    --sanctuary-green-light: #3D7A5F;
-    --sanctuary-green-dark: #1D3A2F;
-    --sanctuary-gold: #D4AF37;
-    --sanctuary-gold-light: #E8C55A;
-    --sanctuary-cream: #F5F9F7;
-    --sanctuary-warm: #FAF8F5;
+    /* ═══ SAMSON ENTERPRISE PALETTE ═══ */
+    /* Clean, trustworthy, mega-church ready */
+    --samson-teal: #2d7a6b;
+    --samson-teal-hover: #245f54;
+    --samson-teal-light: #e8f4f1;
+    --samson-dark: #1a1a1a;
+    --samson-body: #4a4a4a;
+    --samson-muted: #8a8a8a;
+    --samson-bg: #f7f7f5;
+    --samson-surface: #ffffff;
+    --samson-border: #e8e8e5;
     
     /* ═══ BASE COLORS ═══ */
-    --background: 140 20% 98%;
-    --foreground: 150 30% 15%;
+    --background: 40 10% 97%;
+    --foreground: 0 0% 10%;
     --surface: 0 0% 100%;
     
     /* Card */
     --card: 0 0% 100%;
-    --card-foreground: 150 30% 15%;
+    --card-foreground: 0 0% 10%;
     
     /* Popover */
     --popover: 0 0% 100%;
-    --popover-foreground: 150 30% 15%;
+    --popover-foreground: 0 0% 10%;
     
-    /* Primary - Sanctuary Green */
-    --primary: 152 34% 26%;
+    /* Primary - Enterprise Teal */
+    --primary: 166 47% 33%;
     --primary-foreground: 0 0% 100%;
     
     /* Secondary */
-    --secondary: 140 20% 96%;
-    --secondary-foreground: 150 30% 15%;
+    --secondary: 40 10% 96%;
+    --secondary-foreground: 0 0% 10%;
     
     /* Muted */
-    --muted: 140 15% 95%;
-    --muted-foreground: 150 10% 45%;
+    --muted: 40 10% 95%;
+    --muted-foreground: 0 0% 45%;
     
-    /* Accent - Gold */
-    --accent: 43 70% 52%;
-    --accent-foreground: 150 30% 15%;
+    /* Accent */
+    --accent: 166 47% 33%;
+    --accent-foreground: 0 0% 100%;
     
     /* Destructive */
-    --destructive: 0 84% 60%;
+    --destructive: 0 65% 58%;
     --destructive-foreground: 0 0% 100%;
     
     /* Success */
-    --success: 152 34% 26%;
+    --success: 166 47% 33%;
     --success-foreground: 0 0% 100%;
     
     /* Warning */
-    --warning: 43 70% 52%;
-    --warning-foreground: 150 30% 15%;
+    --warning: 43 90% 50%;
+    --warning-foreground: 0 0% 10%;
     
     /* Border & Input */
-    --border: 140 20% 88%;
-    --input: 140 20% 88%;
-    --ring: 152 34% 26%;
+    --border: 40 10% 90%;
+    --input: 40 10% 90%;
+    --ring: 166 47% 33%;
     
-    /* Sidebar - Deep Green */
-    --sidebar: 152 34% 20%;
+    /* Sidebar - Dark charcoal */
+    --sidebar: 0 0% 12%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-muted: 0 0% 100% / 0.6;
-    --sidebar-accent: 0 0% 100% / 0.1;
+    --sidebar-accent: 0 0% 100% / 0.08;
     
     /* Chart Colors */
-    --chart-1: 152 34% 26%;
-    --chart-2: 43 70% 52%;
-    --chart-3: 152 34% 40%;
-    --chart-4: 43 70% 65%;
-    --chart-5: 152 34% 55%;
+    --chart-1: 166 47% 33%;
+    --chart-2: 220 70% 55%;
+    --chart-3: 166 47% 45%;
+    --chart-4: 280 60% 55%;
+    --chart-5: 30 80% 55%;
     
-    --radius: 0.5rem;
+    --radius: 0.375rem;
   }
 
   .dark {
-    --background: 150 30% 6%;
-    --foreground: 140 20% 98%;
-    --card: 150 30% 8%;
-    --card-foreground: 140 20% 98%;
-    --primary: 152 34% 35%;
+    --background: 0 0% 7%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 98%;
+    --primary: 166 47% 40%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 150 30% 14%;
-    --secondary-foreground: 140 20% 98%;
-    --muted: 150 30% 14%;
-    --muted-foreground: 140 15% 60%;
-    --accent: 43 70% 52%;
-    --accent-foreground: 150 30% 15%;
-    --border: 150 30% 20%;
-    --input: 150 30% 20%;
-    --ring: 152 34% 35%;
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 166 47% 40%;
+    --accent-foreground: 0 0% 100%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 166 47% 40%;
   }
 }
 
@@ -104,24 +107,26 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.011em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Luxury Typography - Cormorant Garamond for headings */
-  h1, h2, h3 {
-    font-family: 'Cormorant Garamond', 'Georgia', serif;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-  }
-  
-  h4, h5, h6 {
+  /* Enterprise Typography - Clean, Sans-serif */
+  h1, h2, h3, h4, h5, h6 {
     font-family: 'Inter', sans-serif;
     font-weight: 600;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
+    color: var(--samson-dark);
   }
   
+  h1 { font-size: 28px; font-weight: 600; }
+  h2 { font-size: 22px; font-weight: 600; }
+  h3 { font-size: 16px; font-weight: 600; }
+  
   .font-display {
-    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
   }
   
   .font-sans {
@@ -135,80 +140,34 @@
 }
 
 @layer utilities {
-  /* ═══ SANCTUARY DESIGN SYSTEM ═══ */
+  /* ═══ SAMSON ENTERPRISE DESIGN SYSTEM ═══ */
   
-  /* Sidebar styles - Deep Forest Green */
-  .sidebar-nav-item {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200;
-    color: rgba(255, 255, 255, 0.65);
-  }
-  
-  .sidebar-nav-item:hover {
-    color: rgba(255, 255, 255, 0.95);
-    background: rgba(255, 255, 255, 0.08);
-  }
-  
-  .sidebar-nav-item.active {
-    color: #D4AF37;
-    background: rgba(212, 175, 55, 0.12);
-    border-left: 3px solid #D4AF37;
-    margin-left: -3px;
-    padding-left: calc(0.75rem + 3px);
-  }
-  
-  .sidebar-nav-item .icon {
-    @apply w-5 h-5;
-    color: rgba(255, 255, 255, 0.45);
-  }
-  
-  .sidebar-nav-item.active .icon {
-    color: #D4AF37;
-  }
-  
-  .sidebar-nav-item:hover .icon {
-    color: rgba(255, 255, 255, 0.75);
-  }
-  
-  /* Section Labels - Luxury Spacing */
-  .sidebar-section-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: rgba(255, 255, 255, 0.35);
-    padding: 0 12px;
-    margin-top: 28px;
-    margin-bottom: 10px;
-  }
-  
-  /* Stat Cards - Refined */
+  /* Stat Cards - Clean & Professional */
   .stat-card {
-    @apply bg-white rounded-xl p-6 transition-all duration-300;
-    border: 1px solid rgba(45, 90, 71, 0.08);
-    box-shadow: 0 1px 3px rgba(45, 90, 71, 0.04);
+    @apply bg-white p-5 transition-all duration-200;
+    border: 1px solid var(--samson-border);
+    border-radius: 8px;
   }
   
   .stat-card:hover {
-    border-color: rgba(45, 90, 71, 0.15);
-    box-shadow: 0 4px 12px rgba(45, 90, 71, 0.08);
-    transform: translateY(-1px);
+    border-color: #d0d0cd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   }
   
   .stat-card .stat-value {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 28px;
+    font-weight: 600;
     letter-spacing: -0.02em;
-    color: #1D3A2F;
+    color: var(--samson-dark);
   }
   
   .stat-card .stat-label {
     font-family: 'Inter', sans-serif;
     font-size: 13px;
     font-weight: 500;
-    color: #5A7A6A;
-    margin-top: 4px;
+    color: var(--samson-muted);
+    margin-bottom: 4px;
   }
   
   .stat-card .stat-change {
@@ -218,14 +177,14 @@
   }
   
   .stat-card .stat-change.positive {
-    color: #2D5A47;
+    color: var(--samson-teal);
   }
   
   .stat-card .stat-change.negative {
-    color: #DC2626;
+    color: #d94f4f;
   }
   
-  /* Data Tables - Elegant */
+  /* Data Tables - Enterprise Grade */
   .data-table {
     @apply w-full;
   }
@@ -235,145 +194,88 @@
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #5A7A6A;
-    background: rgba(45, 90, 71, 0.03);
-    padding: 14px 16px;
+    letter-spacing: 0.05em;
+    color: var(--samson-muted);
+    background: var(--samson-bg);
+    padding: 12px 16px;
     text-align: left;
+    border-bottom: 1px solid var(--samson-border);
   }
   
   .data-table td {
     font-size: 14px;
-    color: #374151;
-    border-bottom: 1px solid rgba(45, 90, 71, 0.06);
+    color: var(--samson-body);
+    border-bottom: 1px solid var(--samson-border);
     padding: 14px 16px;
   }
   
   .data-table tr:hover td {
-    background: rgba(45, 90, 71, 0.02);
+    background: var(--samson-bg);
   }
   
-  /* Status Badges - Refined */
+  /* Status Badges - Minimal */
   .badge-member {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
-    background: rgba(45, 90, 71, 0.1);
-    color: #2D5A47;
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+    background: var(--samson-teal-light);
+    color: var(--samson-teal);
   }
   
   .badge-visitor {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
-    background: rgba(212, 175, 55, 0.15);
-    color: #9A7B1A;
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+    background: #fef3cd;
+    color: #856404;
   }
   
   .badge-inactive {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
-    background: rgba(107, 114, 128, 0.1);
-    color: #6B7280;
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+    background: #f0f0f0;
+    color: #6b7280;
   }
   
   .badge-regular {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
-    background: rgba(45, 90, 71, 0.08);
-    color: #3D7A5F;
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+    background: #e3f2fd;
+    color: #1565c0;
   }
   
-  /* Primary Button - Sanctuary Green */
+  /* Primary Button - Enterprise */
   .btn-primary {
-    background: linear-gradient(135deg, #2D5A47 0%, #3D7A5F 100%);
+    background: var(--samson-teal);
     color: white;
     font-weight: 500;
-    border-radius: 8px;
-    height: 40px;
-    padding: 0 20px;
+    border-radius: 6px;
+    height: 36px;
+    padding: 0 16px;
     font-size: 14px;
     letter-spacing: -0.01em;
-    box-shadow: 0 2px 8px rgba(45, 90, 71, 0.25);
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
+    border: none;
   }
   
   .btn-primary:hover {
-    background: linear-gradient(135deg, #3D7A5F 0%, #4D8A6F 100%);
-    box-shadow: 0 4px 12px rgba(45, 90, 71, 0.35);
-    transform: translateY(-1px);
+    background: var(--samson-teal-hover);
   }
   
   .btn-primary:active {
-    transform: translateY(0);
+    transform: scale(0.98);
   }
   
   /* Secondary Button */
   .btn-secondary {
-    @apply bg-white border text-slate-700;
-    border-color: rgba(45, 90, 71, 0.2);
+    @apply bg-white border;
+    border-color: var(--samson-border);
+    color: var(--samson-body);
     font-weight: 500;
-    border-radius: 8px;
-    height: 40px;
-    padding: 0 20px;
+    border-radius: 6px;
+    height: 36px;
+    padding: 0 16px;
     font-size: 14px;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
   }
   
   .btn-secondary:hover {
-    border-color: rgba(45, 90, 71, 0.4);
-    background: rgba(45, 90, 71, 0.03);
-  }
-  
-  /* Gold Accent Button */
-  .btn-gold {
-    background: linear-gradient(135deg, #D4AF37 0%, #E8C55A 100%);
-    color: #1D3A2F;
-    font-weight: 600;
-    border-radius: 8px;
-    height: 44px;
-    padding: 0 24px;
-    font-size: 14px;
-    letter-spacing: 0.02em;
-    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.35);
-    transition: all 0.2s ease;
-  }
-  
-  .btn-gold:hover {
-    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.5);
-    transform: translateY(-1px);
-  }
-  
-  /* Join Online Button - Prominent */
-  .btn-join-online {
-    background: linear-gradient(135deg, #2D5A47 0%, #1D3A2F 100%);
-    color: white;
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 600;
-    font-size: 18px;
-    letter-spacing: 0.02em;
-    border-radius: 12px;
-    height: 56px;
-    padding: 0 32px;
-    box-shadow: 0 4px 20px rgba(45, 90, 71, 0.35);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .btn-join-online::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, transparent 50%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  
-  .btn-join-online:hover::before {
-    opacity: 1;
-  }
-  
-  .btn-join-online:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(45, 90, 71, 0.45);
+    border-color: #c0c0bd;
+    background: var(--samson-bg);
   }
   
   /* Currency formatting */
@@ -394,50 +296,22 @@
   }
   
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgba(45, 90, 71, 0.2);
+    background: rgba(0, 0, 0, 0.15);
     border-radius: 3px;
   }
   
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: rgba(45, 90, 71, 0.35);
+    background: rgba(0, 0, 0, 0.25);
   }
   
   /* Animation utilities */
   .animate-fade-in {
-    animation: fadeIn 0.3s ease-out;
-  }
-  
-  .animate-slide-up {
-    animation: slideUp 0.35s ease-out;
-  }
-  
-  .animate-scale-in {
-    animation: scaleIn 0.25s ease-out;
+    animation: fadeIn 0.2s ease-out;
   }
   
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
-  }
-  
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  @keyframes scaleIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-  }
-  
-  /* Pulse animation for live indicator */
-  .pulse-live {
-    animation: pulse 2s infinite;
-  }
-  
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
   }
 }
 
@@ -451,23 +325,6 @@
   scrollbar-width: none;
 }
 
-/* Skeleton shimmer animation */
-.skeleton-shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(45, 90, 71, 0.05) 0%,
-    rgba(45, 90, 71, 0.1) 50%,
-    rgba(45, 90, 71, 0.05) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
 /* Recharts tooltip customization */
 .recharts-tooltip-wrapper {
   outline: none !important;
@@ -475,100 +332,22 @@
 
 .custom-tooltip {
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(45, 90, 71, 0.15);
-  border: 1px solid rgba(45, 90, 71, 0.08);
-  padding: 12px 16px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--samson-border);
+  padding: 10px 14px;
 }
 
 .custom-tooltip .label {
   font-family: 'Inter', sans-serif;
   font-size: 13px;
   font-weight: 600;
-  color: #1D3A2F;
-  margin-bottom: 6px;
+  color: var(--samson-dark);
+  margin-bottom: 4px;
 }
 
 .custom-tooltip .value {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
-  color: #5A7A6A;
-}
-
-/* Music Player */
-.music-player {
-  position: fixed;
-  bottom: 24px;
-  left: 24px;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  background: rgba(29, 58, 47, 0.95);
-  backdrop-filter: blur(12px);
-  border-radius: 50px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-}
-
-.music-player:hover {
-  background: rgba(29, 58, 47, 1);
-}
-
-.music-player-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(212, 175, 55, 0.15);
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.music-player-btn:hover {
-  background: rgba(212, 175, 55, 0.3);
-}
-
-.music-player-btn svg {
-  width: 16px;
-  height: 16px;
-  color: #D4AF37;
-}
-
-.music-player-info {
-  color: white;
-  font-size: 12px;
-}
-
-.music-player-title {
-  font-weight: 500;
-  opacity: 0.9;
-}
-
-.music-player-artist {
-  opacity: 0.6;
-  font-size: 11px;
-}
-
-/* Volume slider */
-.volume-slider {
-  width: 60px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 2px;
-  appearance: none;
-  cursor: pointer;
-}
-
-.volume-slider::-webkit-slider-thumb {
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  background: #D4AF37;
-  border-radius: 50%;
-  cursor: pointer;
+  color: var(--samson-body);
 }
