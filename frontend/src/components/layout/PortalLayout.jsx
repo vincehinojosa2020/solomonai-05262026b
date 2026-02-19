@@ -77,16 +77,16 @@ export default function PortalLayout() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#f7f6f3] flex items-center justify-center">
+      <div className={`min-h-screen flex items-center justify-center ${isWatchPage ? 'bg-black' : 'bg-[#f7f6f3]'}`}>
         <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="portal-layout">
+    <div className={`portal-layout ${isWatchPage ? 'portal-dark-mode' : ''}`}>
       {/* Top Navigation */}
-      <header className="portal-header">
+      <header className={`portal-header ${isWatchPage ? 'portal-header-dark' : ''}`}>
         <div className="portal-header-content">
           {/* Logo */}
           <div className="portal-logo" data-testid="portal-logo">
