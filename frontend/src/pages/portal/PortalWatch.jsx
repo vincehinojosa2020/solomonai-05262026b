@@ -36,7 +36,7 @@ const HERO_CONTENT = [
     backgroundImg: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=1920&q=80',
     lessons: 24,
     duration: '6h 10m',
-    videoUrl: PLACEHOLDER_VIDEOS[0],
+    youtubeId: 'dQw4w9WgXcQ',
   },
   {
     id: 'hero-2',
@@ -48,7 +48,7 @@ const HERO_CONTENT = [
     backgroundImg: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=1920&q=80',
     lessons: 18,
     duration: '4h 30m',
-    videoUrl: PLACEHOLDER_VIDEOS[1],
+    youtubeId: 'jNQXAC9IVRw',
   },
   {
     id: 'hero-3',
@@ -60,7 +60,7 @@ const HERO_CONTENT = [
     backgroundImg: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=1920&q=80',
     lessons: 16,
     duration: '3h 45m',
-    videoUrl: PLACEHOLDER_VIDEOS[2],
+    youtubeId: 'M7lc1UVf-VE',
   },
 ];
 
