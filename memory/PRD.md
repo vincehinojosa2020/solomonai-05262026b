@@ -101,6 +101,14 @@ Dashboard stats scaled to 50,000-member mega-church (NOTE: Currently hardcoded d
 
 ## Recent Changes (Feb 19, 2026)
 
+### Continue Watching Feature (Netflix-style)
+- **New**: Horizontal "Continue Watching" carousel showing in-progress videos
+- **New**: Progress tracking backend API (3 new endpoints)
+- **New**: Progress bars on video cards showing watch percentage
+- **New**: "Resume" button on hero for videos with saved progress
+- **New**: Completed videos get "Watched" badge with checkmark
+- **New**: Header shows completed video count
+
 ### Media Experience Consolidation
 - **Removed**: Separate `/portal/watch` route (now redirects to `/portal/library`)
 - **Removed**: "Library" nav item (replaced with unified "Watch" that goes to library)
