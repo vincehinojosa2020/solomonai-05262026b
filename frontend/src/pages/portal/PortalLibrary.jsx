@@ -592,6 +592,7 @@ const CourseCard = ({ course, onPlay, index, progress }) => {
 export default function PortalLibrary() {
   const { user } = useOutletContext();
   const navigate = useNavigate();
+  const location = useLocation();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
