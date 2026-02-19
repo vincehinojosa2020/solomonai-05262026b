@@ -2337,18 +2337,20 @@ async def seed_database():
         "logo_url": None,
         "primary_color": "#4f6ef7",
         "accent_color": "#00c896",
-        "timezone": "America/Los_Angeles",
+        "timezone": "America/Denver",
+        "address": "1556 George Dieter Dr, El Paso, TX 79936",
+        "website": "https://www.abundant.org",
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.tenants.insert_one(tenant)
     
-    # Create funds
+    # Create funds - Mega church scale
     funds_data = [
-        {"name": "General Fund", "description": "General operating fund", "goal_amount": 4200000},
-        {"name": "Building Fund", "description": "New sanctuary construction", "goal_amount": 2000000},
+        {"name": "General Fund", "description": "General operating fund", "goal_amount": 8000000},
+        {"name": "Building Fund", "description": "New sanctuary construction", "goal_amount": 5000000},
         {"name": "Missions", "description": "Global missions support", "goal_amount": 500000},
-        {"name": "Benevolence", "description": "Community assistance", "goal_amount": 100000},
-        {"name": "Youth Ministry", "description": "Youth programs and events", "goal_amount": 150000},
+        {"name": "Benevolence", "description": "Community assistance", "goal_amount": 150000},
+        {"name": "Youth Ministry", "description": "Youth programs and events", "goal_amount": 200000},
     ]
     
     funds = []
