@@ -330,6 +330,23 @@ class UserSession(BaseModel):
 class SessionRequest(BaseModel):
     session_id: str
 
+# ============== SOLOMON AI MODELS ==============
+
+class SolomonMessage(BaseModel):
+    role: str  # "user" or "assistant"
+    content: str
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class SolomonChatRequest(BaseModel):
+    message: str
+    session_id: Optional[str] = None
+
+class SolomonChatResponse(BaseModel):
+    response: str
+    session_id: str
+    data: Optional[Dict[str, Any]] = None  # For chart/table data
+    actions: Optional[List[Dict[str, str]]] = None  # Suggested actions
+
 # ============== HELPER FUNCTIONS ==============
 
 def serialize_doc(doc: dict) -> dict:
