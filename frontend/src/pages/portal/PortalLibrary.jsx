@@ -440,6 +440,9 @@ export default function PortalLibrary() {
         </div>
       </header>
 
+      {/* Red Gradient Bar - Cinema Curtain Effect */}
+      <div className="mcl-red-bar" />
+
       {/* Categories Section - Exact MasterClass style */}
       <section className="mcl-categories">
         <div className="mcl-categories-head">
