@@ -18,10 +18,10 @@ const YOUTUBE_VIDEO_IDS = [
   'M7lc1UVf-VE', // Sample video
 ];
 
-// Get a consistent video URL for each course
-const getVideoUrl = (courseId) => {
-  const index = parseInt(courseId) % PLACEHOLDER_VIDEOS.length;
-  return PLACEHOLDER_VIDEOS[index];
+// Get a consistent YouTube ID for each course
+const getYouTubeId = (courseId) => {
+  const index = parseInt(courseId) % YOUTUBE_VIDEO_IDS.length;
+  return YOUTUBE_VIDEO_IDS[index];
 };
 
 // Featured hero content (rotating)
