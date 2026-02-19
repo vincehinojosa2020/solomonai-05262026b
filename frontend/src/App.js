@@ -85,6 +85,7 @@ function AppRouter() {
         <Route path="/communications" element={<CommunicationsPage />} />
         <Route path="/reports" element={<ReportsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/integrations" element={<IntegrationsPage />} />
       </Route>
       
       {/* Catch-all redirect */}
