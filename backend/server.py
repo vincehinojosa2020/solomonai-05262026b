@@ -567,6 +567,145 @@ async def email_password_login(request: EmailLoginRequest, response: Response):
         "role": user_doc.get("role", "member")
     }
 
+# ============== MEMBER PORTAL ROUTES ==============
+
+@api_router.get("/portal/me")
+async def get_member_profile(request: Request):
+    """Get current member's profile for portal"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Find linked person record
+    person = await db.people.find_one({"email": user["email"]}, {"_id": 0})
+    
+    # Get member's groups
+    groups = []
+    if person:
+        group_memberships = await db.group_members.find(
+            {"person_id": person["id"], "is_active": True},
+            {"_id": 0}
+        ).to_list(100)
+        
+        for gm in group_memberships:
+            group = await db.groups.find_one({"id": gm["group_id"]}, {"_id": 0})
+            if group:
+                groups.append(serialize_doc(group))
+    
+    # Get giving summary
+    ytd_giving = 0
+    last_gift = None
+    if person:
+        today = datetime.now(timezone.utc)
+        ytd_start = today.replace(month=1, day=1).strftime("%Y-%m-%d")
+        
+        ytd_pipeline = [
+            {"$match": {"person_id": person["id"], "donation_date": {"$gte": ytd_start}}},
+            {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+        ]
+        ytd_result = await db.donations.aggregate(ytd_pipeline).to_list(1)
+        ytd_giving = ytd_result[0]["total"] if ytd_result else 0
+        
+        last_gift_doc = await db.donations.find_one(
+            {"person_id": person["id"]},
+            {"_id": 0}
+        )
+        if last_gift_doc:
+            last_gift = serialize_doc(last_gift_doc)
+    
+    # Get recurring giving
+    recurring = None
+    if person:
+        recurring_doc = await db.recurring_giving.find_one(
+            {"person_id": person["id"], "is_active": True},
+            {"_id": 0}
+        )
+        if recurring_doc:
+            recurring = serialize_doc(recurring_doc)
+    
+    return {
+        "user": serialize_doc(user),
+        "person": serialize_doc(person) if person else None,
+        "groups": groups,
+        "giving": {
+            "ytd_total": ytd_giving,
+            "last_gift": last_gift,
+            "recurring": recurring
+        },
+        "member_since": user.get("member_since") or (person.get("membership_date") if person else None)
+    }
+
+@api_router.get("/portal/giving/history")
+async def get_member_giving_history(request: Request, limit: int = 50):
+    """Get member's giving history for portal"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    person = await db.people.find_one({"email": user["email"]}, {"_id": 0})
+    
+    if not person:
+        return {"donations": [], "total": 0}
+    
+    donations = await db.donations.find(
+        {"person_id": person["id"]},
+        {"_id": 0}
+    ).sort("donation_date", -1).limit(limit).to_list(limit)
+    
+    # Enrich with fund names
+    for d in donations:
+        fund = await db.funds.find_one({"id": d.get("fund_id")}, {"_id": 0})
+        d["fund_name"] = fund["name"] if fund else "General Fund"
+    
+    return {
+        "donations": [serialize_doc(d) for d in donations],
+        "total": len(donations)
+    }
+
+@api_router.get("/portal/events")
+async def get_member_events(request: Request):
+    """Get upcoming events for member portal"""
+    tenant_id = DEFAULT_TENANT_ID
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    events = await db.events.find(
+        {"tenant_id": tenant_id, "start_datetime": {"$gte": today}},
+        {"_id": 0}
+    ).sort("start_datetime", 1).limit(20).to_list(20)
+    
+    return [serialize_doc(e) for e in events]
+
+@api_router.get("/portal/groups")
+async def get_available_groups(request: Request):
+    """Get groups available to join for member portal"""
+    tenant_id = DEFAULT_TENANT_ID
+    
+    groups = await db.groups.find(
+        {"tenant_id": tenant_id, "is_active": True},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Enrich with leader info
+    for g in groups:
+        if g.get("leader_id"):
+            leader = await db.people.find_one({"id": g["leader_id"]}, {"_id": 0})
+            g["leader"] = serialize_doc(leader) if leader else None
+    
+    return [serialize_doc(g) for g in groups]
+
 # ============== STRIPE PAYMENT ROUTES ==============
 
 # Donation packages (FIXED - never accept amounts from frontend)
