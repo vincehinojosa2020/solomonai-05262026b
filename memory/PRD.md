@@ -58,21 +58,31 @@ Church Info Updated:
    - ✅ **Video Player Modal** - Cinema-style fullscreen player with YouTube embeds
    - ✅ **Playlist Sidebar** - Shows all lessons with active state highlighting
 
-3. **Portal Library** (`/portal/library`) - ✅ **NEW: MASTERCLASS LIBRARY CLONE**
+3. **Portal Library** (`/portal/library`) - ✅ **MASTERCLASS LIBRARY CLONE**
    - **Pixel-perfect MasterClass.com/library-search recreation**
    - Pure black (#000000) background with cinematic vignette effect
    - Custom top navigation: logo, search bar, My Progress, Library, Class TA (BETA), user avatar
-   - **Category bar**: 11 scrollable icon tiles with purple active state border
+   - **7 category tiles**: All Categories, Faith & Spirituality, Family, Leadership, Worship, Personal Growth, Community
    - **Filter sidebar** (265px): Format, My Content, Duration accordion dropdowns
-   - **3-column course grid** (16px gap) with:
+   - **3-column course grid** with:
      - Sharp corners (0px border-radius per MasterClass spec)
-     - Red "NEW" badges (#E53935)
+     - Red "NEW" badges, Purple "Popular" badges, Gold "Featured" badges
      - Duration badges (semi-transparent dark pill)
-     - Metadata: "Class • 1h 26m • Business"
+     - Metadata: "Class • 40:45 • Community"
      - Hover: Play/Add button overlay + description expansion
-   - Typography: Inter font
-   - Search filters by title, instructor, category
-   - 12 hardcoded courses for demo
+   - **12 REAL Abundant Church YouTube videos** from @abundantchurchep:
+     - "Community With a Purpose" - Pastor Charles Nieman
+     - "Blessing & Healing Through Humility" - Pastor Charles Nieman
+     - "Building Your Life" - Pastor Charles Nieman
+     - "The Missing Peace" - Pastor Charles Nieman
+     - "The Laws of Life" - Pastor Charles Nieman
+     - "Managing Your Emotions" - Pastor Charles Nieman
+     - "Worship In Spirit & In Truth" - Pastor Jared Nieman
+     - "Vision Sunday 2025" - Pastor Jared Nieman
+     - "Abundant Conference 2025" - Pastor Marcos Witt
+     - And more...
+   - **Video Player Modal**: Cinema-style overlay with YouTube embed, autoplay
+   - Typography: Inter font from Google Fonts
 
 4. **Portal Give** (`/portal/give`)
    - Amount input with quick amounts ($25, $50, $100, $250)
