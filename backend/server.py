@@ -938,6 +938,10 @@ UPCOMING EVENTS:
 async def solomon_chat(request: SolomonChatRequest):
     """Chat with Solomon AI analyst"""
     try:
+        # Validate message is not empty
+        if not request.message or not request.message.strip():
+            raise HTTPException(status_code=400, detail="Message cannot be empty")
+        
         # Get or create session
         session_id = request.session_id or str(uuid.uuid4())
         
