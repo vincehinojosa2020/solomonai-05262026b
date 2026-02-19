@@ -167,8 +167,8 @@ export default function PortalLayout() {
       </header>
 
       {/* Main Content */}
-      <main className="portal-main">
-        <div className="portal-content">
+      <main className={`portal-main ${isWatchPage ? 'portal-main-dark' : ''}`}>
+        <div className={isWatchPage ? 'portal-content-full' : 'portal-content'}>
           <Outlet context={{ user, memberData, refreshData: fetchMemberData }} />
         </div>
       </main>
