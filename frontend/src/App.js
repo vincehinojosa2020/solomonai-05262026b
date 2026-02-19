@@ -25,6 +25,7 @@ import PortalGive from "@/pages/portal/PortalGive";
 import PortalGroups from "@/pages/portal/PortalGroups";
 import PortalEvents from "@/pages/portal/PortalEvents";
 import PortalMe from "@/pages/portal/PortalMe";
+import PortalWatch from "@/pages/portal/PortalWatch";
 import { API_URL } from "@/lib/utils";
 
 // Router wrapper to detect session_id in URL
