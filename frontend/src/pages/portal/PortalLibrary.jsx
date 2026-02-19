@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useOutletContext, useNavigate } from 'react-router-dom';
+import { useOutletContext, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, ChevronDown, ChevronLeft, ChevronRight, Play, Plus, X, Clock,
   User, LayoutGrid, Sparkles, Music, ArrowRight, CheckCircle, RotateCcw,
-  Briefcase, Home, Users, Heart, Book, Volume2, Bookmark
+  Briefcase, Home, Users, Heart, Book, Volume2, Bookmark, DollarSign, Calendar, Tv
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
