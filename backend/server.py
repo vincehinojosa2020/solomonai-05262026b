@@ -2289,12 +2289,43 @@ async def global_search(q: str, limit: int = 10):
 @api_router.post("/seed")
 async def seed_database():
     """Seed the database with demo data for Abundant Church"""
+    import hashlib
     tenant_id = DEFAULT_TENANT_ID
     
     # Check if already seeded
     existing = await db.tenants.find_one({"id": tenant_id})
     if existing:
         return {"message": "Database already seeded", "seeded": False}
+    
+    # ============== SEED DEMO ACCOUNTS ==============
+    demo_password_hash = hashlib.sha256("Demo2026!".encode()).hexdigest()
+    
+    # Admin account
+    admin_user = {
+        "user_id": "user_admin_demo",
+        "email": "admin@abundant.org",
+        "name": "Pastor David Rivera",
+        "picture": None,
+        "role": "admin",
+        "password_hash": demo_password_hash,
+        "church_id": tenant_id,
+        "created_at": datetime.now(timezone.utc)
+    }
+    await db.users.insert_one(admin_user)
+    
+    # Member account - Maria Gonzalez
+    member_user = {
+        "user_id": "user_member_demo",
+        "email": "member@abundant.org", 
+        "name": "Maria Gonzalez",
+        "picture": None,
+        "role": "member",
+        "password_hash": demo_password_hash,
+        "church_id": tenant_id,
+        "member_since": "2019-03-15",
+        "created_at": datetime.now(timezone.utc)
+    }
+    await db.users.insert_one(member_user)
     
     # Create tenant
     tenant = {
