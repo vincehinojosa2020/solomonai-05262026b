@@ -822,7 +822,7 @@ async def get_video_progress(request: Request, video_id: str):
     if not session_token:
         return {"position_seconds": 0, "progress_percent": 0, "completed": False}
     
-    session = await db.sessions.find_one({"session_token": session_token}, {"_id": 0})
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
     if not session:
         return {"position_seconds": 0, "progress_percent": 0, "completed": False}
     
