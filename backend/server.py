@@ -330,6 +330,13 @@ class UserSession(BaseModel):
 class SessionRequest(BaseModel):
     session_id: str
 
+class EmailLoginRequest(BaseModel):
+    email: str
+    password: str
+
+class UserRole(BaseModel):
+    role: str = "member"  # "admin" or "member"
+
 # ============== SOLOMON AI MODELS ==============
 
 class SolomonMessage(BaseModel):
