@@ -3,8 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Play, ChevronLeft, ChevronRight, Clock, Search, 
-  BookmarkPlus, Volume2, VolumeX, Pause, Maximize,
-  X, Info, List, SkipBack, SkipForward, Settings
+  BookmarkPlus, X, Info, List
 } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════════════════════════
