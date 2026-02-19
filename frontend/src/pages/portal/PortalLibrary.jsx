@@ -2,23 +2,23 @@ import { useState, useRef, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, ChevronDown, ChevronLeft, ChevronRight, Play, Plus, X,
-  User, LayoutGrid, Sparkles, Utensils, Music, Pen, 
-  Gamepad2, Palette, Briefcase, Cpu, Home, Users, Film, Heart, Book
+  Search, ChevronDown, ChevronLeft, ChevronRight, Play, Plus, X, Clock,
+  User, LayoutGrid, Sparkles, Music, ArrowRight,
+  Briefcase, Home, Users, Heart, Book, Volume2, Bookmark
 } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MASTERCLASS LIBRARY - Exact Clone with Abundant Church Videos
+// ABUNDANT MEDIA - Premium Cinematic Experience
+// Inspired by MasterClass + Prada + Eden-X.io
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// Category data with icons - exactly like MasterClass
 const CATEGORIES = [
-  { id: 'all', label: 'All Categories', icon: LayoutGrid },
-  { id: 'faith', label: 'Faith & Spirituality', icon: Heart },
-  { id: 'family', label: 'Family & Relationships', icon: Users },
+  { id: 'all', label: 'All', icon: LayoutGrid },
+  { id: 'faith', label: 'Faith', icon: Heart },
+  { id: 'family', label: 'Family', icon: Users },
   { id: 'leadership', label: 'Leadership', icon: Briefcase },
   { id: 'worship', label: 'Worship', icon: Music },
-  { id: 'growth', label: 'Personal Growth', icon: Book },
+  { id: 'growth', label: 'Growth', icon: Book },
   { id: 'community', label: 'Community', icon: Home },
 ];
 
@@ -34,7 +34,8 @@ const COURSES = [
     badge: "New",
     youtubeId: "FoPI3hMbXvw",
     thumbnail: "https://i.ytimg.com/vi/FoPI3hMbXvw/maxresdefault.jpg",
-    description: "Discover how the church is God's purposeful community - not a club but a family with divine purpose."
+    description: "Discover how the church is God's purposeful community - not a club but a family with divine purpose.",
+    featured: true,
   },
   { 
     id: 2, 
@@ -46,7 +47,8 @@ const COURSES = [
     badge: "New",
     youtubeId: "pzpbbibEWPE",
     thumbnail: "https://i.ytimg.com/vi/pzpbbibEWPE/maxresdefault.jpg",
-    description: "Learn how humility unlocks God's blessings and healing in your life."
+    description: "Learn how humility unlocks God's blessings and healing in your life.",
+    featured: true,
   },
   { 
     id: 3, 
@@ -57,7 +59,7 @@ const COURSES = [
     category: "Personal Growth",
     youtubeId: "Lnj6vMvOLME",
     thumbnail: "https://i.ytimg.com/vi/Lnj6vMvOLME/maxresdefault.jpg",
-    description: "Build your life on God's Word - biblical principles for personal spiritual development."
+    description: "Build your life on God's Word - biblical principles for personal spiritual development.",
   },
   { 
     id: 4, 
@@ -68,7 +70,8 @@ const COURSES = [
     category: "Faith & Spirituality",
     youtubeId: "OjhMsB6czxc",
     thumbnail: "https://i.ytimg.com/vi/OjhMsB6czxc/maxresdefault.jpg",
-    description: "Find God's inner peace through grace and righteousness."
+    description: "Find God's inner peace through grace and righteousness.",
+    featured: true,
   },
   { 
     id: 5, 
@@ -79,7 +82,7 @@ const COURSES = [
     category: "Personal Growth",
     youtubeId: "WQy48ANpj5c",
     thumbnail: "https://i.ytimg.com/vi/WQy48ANpj5c/maxresdefault.jpg",
-    description: "Your thoughts and beliefs shape your outcomes - learn the laws that govern life."
+    description: "Your thoughts and beliefs shape your outcomes - learn the laws that govern life.",
   },
   { 
     id: 6, 
@@ -90,7 +93,7 @@ const COURSES = [
     category: "Faith & Spirituality",
     youtubeId: "wCjwUQMhCIY",
     thumbnail: "https://i.ytimg.com/vi/wCjwUQMhCIY/maxresdefault.jpg",
-    description: "Discover the deeper meaning of Christmas and God's plan through Jesus' birth."
+    description: "Discover the deeper meaning of Christmas and God's plan through Jesus' birth.",
   },
   { 
     id: 7, 
@@ -102,7 +105,7 @@ const COURSES = [
     badge: "Popular",
     youtubeId: "0grr2E0kuFg",
     thumbnail: "https://i.ytimg.com/vi/0grr2E0kuFg/maxresdefault.jpg",
-    description: "Biblical wisdom on understanding and handling your emotions effectively."
+    description: "Biblical wisdom on understanding and handling your emotions effectively.",
   },
   { 
     id: 8, 
@@ -113,7 +116,7 @@ const COURSES = [
     category: "Worship",
     youtubeId: "uwkmP6sDihI",
     thumbnail: "https://i.ytimg.com/vi/uwkmP6sDihI/maxresdefault.jpg",
-    description: "Experience authentic worship that transforms your relationship with God."
+    description: "Experience authentic worship that transforms your relationship with God.",
   },
   { 
     id: 9, 
@@ -124,7 +127,7 @@ const COURSES = [
     category: "Leadership",
     youtubeId: "O0WfS3Ma2XM",
     thumbnail: "https://i.ytimg.com/vi/O0WfS3Ma2XM/maxresdefault.jpg",
-    description: "The church's vision and community outreach efforts for the year ahead."
+    description: "The church's vision and community outreach efforts for the year ahead.",
   },
   { 
     id: 10, 
@@ -136,18 +139,19 @@ const COURSES = [
     badge: "Featured",
     youtubeId: "kGXOOO6hHUk",
     thumbnail: "https://i.ytimg.com/vi/kGXOOO6hHUk/maxresdefault.jpg",
-    description: "Night 2 of the Abundant Conference featuring worship and powerful teaching."
+    description: "Night 2 of the Abundant Conference featuring worship and powerful teaching.",
+    featured: true,
   },
   { 
     id: 11, 
-    title: "We Are Abundant: Blessed to Be a Blessing", 
+    title: "We Are Abundant", 
     instructor: "Pastor Charles Nieman", 
     format: "Class", 
     duration: "40:00", 
     category: "Community",
     youtubeId: "rMmIcJCDsaU",
     thumbnail: "https://i.ytimg.com/vi/rMmIcJCDsaU/maxresdefault.jpg",
-    description: "Understanding our calling to be a blessing to others in our community."
+    description: "Understanding our calling to be a blessing to others in our community.",
   },
   { 
     id: 12, 
@@ -158,19 +162,12 @@ const COURSES = [
     category: "Faith & Spirituality",
     youtubeId: "Lnj6vMvOLME",
     thumbnail: "https://i.ytimg.com/vi/Lnj6vMvOLME/maxresdefault.jpg",
-    description: "Discover the kind of faith that can move any mountain in your life."
+    description: "Discover the kind of faith that can move any mountain in your life.",
   },
 ];
 
-// Filter options - exactly like MasterClass
-const FILTER_OPTIONS = {
-  format: ['Class', 'Session', 'Series'],
-  myContent: ['Saved', 'In Progress', 'Completed'],
-  duration: ['Under 30 min', '30-45 min', '45+ min'],
-};
-
 // ═══════════════════════════════════════════════════════════════════════════════
-// VIDEO PLAYER MODAL - Fullscreen Cinema Experience
+// VIDEO PLAYER MODAL - Premium Cinema Experience
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const VideoPlayerModal = ({ isOpen, onClose, course }) => {
@@ -178,27 +175,30 @@ const VideoPlayerModal = ({ isOpen, onClose, course }) => {
 
   return (
     <motion.div
-      className="mcl-video-modal"
+      className="prem-modal"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
+      data-testid="video-player-modal"
     >
       <motion.div
-        className="mcl-video-container"
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
+        className="prem-modal-content"
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="mcl-video-close" onClick={onClose}>
-          <X className="w-6 h-6" />
+        <button className="prem-modal-close" onClick={onClose} data-testid="video-close-btn">
+          <X className="w-5 h-5" />
         </button>
-        <div className="mcl-video-header">
+        <div className="prem-modal-header">
+          <span className="prem-modal-label">Now Playing</span>
           <h2>{course.title}</h2>
           <p>{course.instructor}</p>
         </div>
-        <div className="mcl-video-player">
+        <div className="prem-modal-video">
           <iframe
             src={`https://www.youtube.com/embed/${course.youtubeId}?autoplay=1&rel=0&modestbranding=1`}
             title={course.title}
@@ -212,85 +212,194 @@ const VideoPlayerModal = ({ isOpen, onClose, course }) => {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// COURSE CARD - Exact MasterClass Style
+// HERO SECTION - Prada-style Cinematic Hero
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const CourseCard = ({ course, onPlay }) => {
+const HeroSection = ({ content, onPlay }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const featured = content.filter(c => c.featured).slice(0, 4);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % featured.length);
+    }, 7000);
+    return () => clearInterval(interval);
+  }, [featured.length]);
+
+  const current = featured[activeIndex];
+  if (!current) return null;
+
+  return (
+    <section className="prem-hero" data-testid="hero-section">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current.id}
+          className="prem-hero-bg"
+          style={{ backgroundImage: `url(${current.thumbnail})` }}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
+        />
+      </AnimatePresence>
+      
+      <div className="prem-hero-overlay" />
+      <div className="prem-hero-grain" />
+      
+      <div className="prem-hero-content">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current.id}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {current.badge && (
+              <motion.span 
+                className="prem-hero-badge"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                {current.badge}
+              </motion.span>
+            )}
+            <h1 className="prem-hero-title">{current.title}</h1>
+            <p className="prem-hero-instructor">{current.instructor}</p>
+            <p className="prem-hero-desc">{current.description}</p>
+            <div className="prem-hero-meta">
+              <span><Clock className="w-4 h-4" /> {current.duration}</span>
+              <span className="prem-meta-dot">•</span>
+              <span>{current.category}</span>
+            </div>
+            <div className="prem-hero-actions">
+              <motion.button 
+                className="prem-btn-play"
+                onClick={() => onPlay(current)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                data-testid="hero-play-btn"
+              >
+                <Play className="w-5 h-5" fill="currentColor" />
+                Watch Now
+              </motion.button>
+              <motion.button 
+                className="prem-btn-save"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Bookmark className="w-5 h-5" />
+              </motion.button>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+        
+        <div className="prem-hero-nav">
+          {featured.map((_, i) => (
+            <button
+              key={i}
+              className={`prem-nav-dot ${activeIndex === i ? 'active' : ''}`}
+              onClick={() => setActiveIndex(i)}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COURSE CARD - Premium Glass Card
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const CourseCard = ({ course, onPlay, index }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <motion.article 
-      className="mcl-card"
+      className="prem-card"
       data-testid={`course-card-${course.id}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.05, ease: [0.23, 1, 0.32, 1] }}
+      whileHover={{ y: -8 }}
     >
-      {/* Thumbnail - Sharp corners, no padding */}
-      <div className="mcl-card-thumb">
-        <img 
+      <div className="prem-card-thumb">
+        <motion.img 
           src={course.thumbnail} 
           alt={course.title}
           loading="lazy"
+          animate={{ scale: isHovered ? 1.08 : 1 }}
+          transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
           onError={(e) => {
             e.target.src = `https://img.youtube.com/vi/${course.youtubeId}/hqdefault.jpg`;
           }}
         />
         
-        {/* NEW/Popular Badge - Red, top right */}
         {course.badge && (
-          <span className={`mcl-badge ${course.badge.toLowerCase()}`}>
+          <span className={`prem-badge ${course.badge.toLowerCase()}`}>
             {course.badge}
           </span>
         )}
         
-        {/* Duration - Bottom right */}
-        <span className="mcl-duration">{course.duration}</span>
+        <span className="prem-duration">
+          <Clock className="w-3 h-3" />
+          {course.duration}
+        </span>
 
-        {/* Hover Overlay with Play/Add Buttons */}
         <AnimatePresence>
           {isHovered && (
             <motion.div 
-              className="mcl-card-hover"
+              className="prem-card-overlay"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             >
-              <div className="mcl-card-btns">
-                <button 
-                  className="mcl-btn-play"
-                  onClick={(e) => { e.stopPropagation(); onPlay(course); }}
-                >
-                  <Play className="w-5 h-5" fill="currentColor" />
-                </button>
-                <button className="mcl-btn-add">
-                  <Plus className="w-5 h-5" />
-                </button>
-              </div>
+              <motion.button 
+                className="prem-card-play"
+                onClick={(e) => { e.stopPropagation(); onPlay(course); }}
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ delay: 0.1 }}
+                whileHover={{ scale: 1.1 }}
+                data-testid={`play-btn-${course.id}`}
+              >
+                <Play className="w-6 h-6" fill="currentColor" />
+              </motion.button>
+              <motion.button 
+                className="prem-card-save"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ delay: 0.15 }}
+                whileHover={{ scale: 1.1 }}
+              >
+                <Plus className="w-5 h-5" />
+              </motion.button>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      {/* Card Info */}
-      <div className="mcl-card-info">
-        <p className="mcl-card-meta">
-          {course.format} • {course.duration} • {course.category}
-        </p>
-        <h3 className="mcl-card-title">{course.title}</h3>
-        <p className="mcl-card-instructor">With {course.instructor}</p>
+      <div className="prem-card-info">
+        <p className="prem-card-meta">{course.format} • {course.category}</p>
+        <h3 className="prem-card-title">{course.title}</h3>
+        <p className="prem-card-instructor">{course.instructor}</p>
       </div>
 
-      {/* Hover Expansion - Description */}
       <AnimatePresence>
         {isHovered && course.description && (
           <motion.div 
-            className="mcl-card-desc"
+            className="prem-card-desc"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
           >
             <p>{course.description}</p>
           </motion.div>
@@ -310,45 +419,9 @@ export default function PortalLibrary() {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
-  const [filters, setFilters] = useState({});
   const [filteredCourses, setFilteredCourses] = useState(COURSES);
-  const [openAccordion, setOpenAccordion] = useState(null);
   const [videoModal, setVideoModal] = useState({ open: false, course: null });
-  
-  const categoryScrollRef = useRef(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  // Category scroll handlers
-  const checkCategoryScroll = () => {
-    if (categoryScrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = categoryScrollRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-    }
-  };
-
-  const scrollCategories = (dir) => {
-    if (categoryScrollRef.current) {
-      categoryScrollRef.current.scrollBy({
-        left: dir === 'left' ? -200 : 200,
-        behavior: 'smooth'
-      });
-    }
-  };
-
-  useEffect(() => {
-    checkCategoryScroll();
-    const ref = categoryScrollRef.current;
-    if (ref) {
-      ref.addEventListener('scroll', checkCategoryScroll);
-      window.addEventListener('resize', checkCategoryScroll);
-    }
-    return () => {
-      if (ref) ref.removeEventListener('scroll', checkCategoryScroll);
-      window.removeEventListener('resize', checkCategoryScroll);
-    };
-  }, []);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   // Filter courses
   useEffect(() => {
@@ -375,178 +448,148 @@ export default function PortalLibrary() {
       result = result.filter(c => c.category === catMap[activeCategory]);
     }
 
-    if (filters.format?.length) {
-      result = result.filter(c => filters.format.includes(c.format));
-    }
-
     setFilteredCourses(result);
-  }, [searchQuery, activeCategory, filters]);
-
-  const toggleFilter = (cat, val) => {
-    setFilters(prev => {
-      const curr = prev[cat] || [];
-      if (curr.includes(val)) {
-        return { ...prev, [cat]: curr.filter(v => v !== val) };
-      }
-      return { ...prev, [cat]: [...curr, val] };
-    });
-  };
+  }, [searchQuery, activeCategory]);
 
   return (
-    <div className="mcl-page" data-testid="library-page">
-      {/* Vignette */}
-      <div className="mcl-vignette" />
+    <div className="prem-page" data-testid="library-page">
+      {/* Ambient Light Effect */}
+      <div className="prem-ambient" />
+      
+      {/* Premium Header */}
+      <header className="prem-header">
+        <motion.div 
+          className="prem-logo"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          <span className="prem-logo-mark">A</span>
+          <span className="prem-logo-text">ABUNDANT</span>
+          <span className="prem-logo-sub">MEDIA</span>
+        </motion.div>
 
-      {/* Top Nav - Exact MasterClass style */}
-      <header className="mcl-header">
-        <div className="mcl-header-left">
-          <div className="mcl-logo">
-            <span className="mcl-logo-mark">A</span>
-            <span className="mcl-logo-text">Abundant</span>
-          </div>
-        </div>
+        <motion.div 
+          className={`prem-search ${isSearchFocused ? 'focused' : ''}`}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+        >
+          <Search className="prem-search-icon" />
+          <input 
+            type="text"
+            placeholder="Search sermons, topics, speakers..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
+            data-testid="search-input"
+          />
+        </motion.div>
 
-        <div className="mcl-header-center">
-          <div className="mcl-search">
-            <Search className="mcl-search-icon" />
-            <input 
-              type="text"
-              placeholder="Search Instructors, Classes, Topics and more"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="mcl-header-right">
-          <a href="#" className="mcl-nav-link">
-            <User className="w-4 h-4" />
-            <span>My Progress</span>
-          </a>
-          <a href="#" className="mcl-nav-link active">
-            <LayoutGrid className="w-4 h-4" />
-            <span>Library</span>
-          </a>
-          <a href="#" className="mcl-nav-link">
-            <Sparkles className="w-4 h-4" />
-            <span>Class TA</span>
-            <span className="mcl-beta">BETA</span>
-          </a>
-          <div className="mcl-user">
-            <div className="mcl-avatar">{user?.name?.charAt(0) || 'M'}</div>
-            <span className="mcl-user-name">{user?.name?.split(' ')[0] || 'Member'}</span>
-            <ChevronDown className="w-4 h-4" />
-          </div>
-        </div>
+        <motion.div 
+          className="prem-user"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+        >
+          <div className="prem-avatar">{user?.name?.charAt(0) || 'M'}</div>
+          <span className="prem-user-name">{user?.name?.split(' ')[0] || 'Member'}</span>
+        </motion.div>
       </header>
 
-      {/* Red Gradient Bar - Cinema Curtain Effect */}
-      <div className="mcl-red-bar" />
+      {/* Cinematic Red Line */}
+      <div className="prem-cinema-line" />
 
-      {/* Categories Section - Exact MasterClass style */}
-      <section className="mcl-categories">
-        <div className="mcl-categories-head">
-          <h2>Categories</h2>
-          <div className="mcl-categories-nav">
-            <button 
-              className={`mcl-arrow ${!canScrollLeft ? 'disabled' : ''}`}
-              onClick={() => scrollCategories('left')}
-              disabled={!canScrollLeft}
-            >
-              <ChevronLeft />
-            </button>
-            <button 
-              className={`mcl-arrow ${!canScrollRight ? 'disabled' : ''}`}
-              onClick={() => scrollCategories('right')}
-              disabled={!canScrollRight}
-            >
-              <ChevronRight />
-            </button>
-          </div>
-        </div>
-        <div className="mcl-categories-scroll" ref={categoryScrollRef}>
-          {CATEGORIES.map((cat) => {
+      {/* Hero Section */}
+      <HeroSection content={COURSES} onPlay={(c) => setVideoModal({ open: true, course: c })} />
+
+      {/* Category Pills */}
+      <motion.nav 
+        className="prem-categories"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <div className="prem-categories-inner">
+          {CATEGORIES.map((cat, i) => {
             const Icon = cat.icon;
             return (
-              <button
+              <motion.button
                 key={cat.id}
-                className={`mcl-cat-tile ${activeCategory === cat.id ? 'active' : ''}`}
+                className={`prem-cat ${activeCategory === cat.id ? 'active' : ''}`}
                 onClick={() => setActiveCategory(cat.id)}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 + i * 0.05 }}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                data-testid={`category-${cat.id}`}
               >
-                <Icon className="mcl-cat-icon" />
-                <span>{cat.label}</span>
-              </button>
+                <Icon className="w-4 h-4" />
+                {cat.label}
+              </motion.button>
             );
           })}
         </div>
-      </section>
+      </motion.nav>
 
-      {/* Main Content */}
-      <div className="mcl-main">
-        {/* Filter Sidebar */}
-        <aside className="mcl-sidebar">
-          <h3>Filters</h3>
-          
-          {Object.entries(FILTER_OPTIONS).map(([key, options]) => (
-            <div key={key} className="mcl-filter">
-              <button 
-                className="mcl-filter-head"
-                onClick={() => setOpenAccordion(openAccordion === key ? null : key)}
-              >
-                <span>{key === 'myContent' ? 'My Content' : key.charAt(0).toUpperCase() + key.slice(1)}</span>
-                <ChevronDown className={`mcl-filter-chevron ${openAccordion === key ? 'open' : ''}`} />
-              </button>
-              <AnimatePresence>
-                {openAccordion === key && (
-                  <motion.div
-                    className="mcl-filter-opts"
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                  >
-                    {options.map((opt) => (
-                      <label key={opt} className="mcl-checkbox">
-                        <input 
-                          type="checkbox"
-                          checked={(filters[key] || []).includes(opt)}
-                          onChange={() => toggleFilter(key, opt)}
-                        />
-                        <span className="mcl-check-box" />
-                        <span>{opt}</span>
-                      </label>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
-        </aside>
+      {/* Content Grid */}
+      <main className="prem-main">
+        <motion.div 
+          className="prem-section-header"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
+          <h2>
+            {activeCategory === 'all' ? 'All Sermons' : CATEGORIES.find(c => c.id === activeCategory)?.label}
+          </h2>
+          <span className="prem-count">{filteredCourses.length} classes</span>
+        </motion.div>
 
-        {/* Course Grid */}
-        <main className="mcl-grid-wrap">
-          {filteredCourses.length > 0 ? (
-            <div className="mcl-grid">
-              {filteredCourses.map((course) => (
-                <CourseCard 
-                  key={course.id} 
-                  course={course} 
-                  onPlay={(c) => setVideoModal({ open: true, course: c })}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="mcl-empty">
-              <Book className="w-16 h-16" />
-              <h3>No classes found</h3>
-              <p>Try adjusting your filters or search terms</p>
-            </div>
-          )}
+        {filteredCourses.length > 0 ? (
+          <div className="prem-grid">
+            {filteredCourses.map((course, index) => (
+              <CourseCard 
+                key={course.id} 
+                course={course} 
+                index={index}
+                onPlay={(c) => setVideoModal({ open: true, course: c })}
+              />
+            ))}
+          </div>
+        ) : (
+          <motion.div 
+            className="prem-empty"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Search className="w-12 h-12" />
+            <h3>No results found</h3>
+            <p>Try adjusting your search or filters</p>
+          </motion.div>
+        )}
+      </main>
 
-          {filteredCourses.length > 0 && (
-            <button className="mcl-load-more">Load More</button>
-          )}
-        </main>
-      </div>
+      {/* Footer CTA */}
+      <motion.footer 
+        className="prem-footer"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
+      >
+        <div className="prem-footer-content">
+          <div className="prem-footer-text">
+            <h3>Experience Sunday Live</h3>
+            <p>Join us every Sunday at 9am & 11am for live worship</p>
+          </div>
+          <button className="prem-footer-btn">
+            Watch Live
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </motion.footer>
 
       {/* Video Modal */}
       <AnimatePresence>
