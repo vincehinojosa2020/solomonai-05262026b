@@ -3467,3 +3467,72 @@
   background: rgba(255,255,255,0.1);
   border-color: rgba(255,255,255,0.5);
 }
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   PORTAL DARK MODE (for Watch/Abundant TV page)
+   ═══════════════════════════════════════════════════════════════ */
+
+.portal-layout.portal-dark-mode {
+  background: #000;
+}
+
+.portal-header-dark {
+  background: #000 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.portal-header-dark .portal-logo span {
+  color: #fff !important;
+}
+
+.portal-header-dark .portal-nav-item {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.portal-header-dark .portal-nav-item:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.portal-header-dark .portal-nav-item.active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.portal-header-dark .portal-notification-btn,
+.portal-header-dark .portal-logout-btn,
+.portal-header-dark .portal-mobile-toggle {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.portal-header-dark .portal-notification-btn:hover,
+.portal-header-dark .portal-logout-btn:hover,
+.portal-header-dark .portal-mobile-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.portal-main-dark {
+  background: #000;
+}
+
+.portal-content-full {
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.portal-bottom-nav-dark {
+  background: #000 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.portal-bottom-nav-dark .portal-bottom-nav-item {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.portal-bottom-nav-dark .portal-bottom-nav-item.active {
+  color: #fff;
+}
