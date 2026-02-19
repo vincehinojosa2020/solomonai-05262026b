@@ -424,8 +424,15 @@
 
 /* ═══ CATEGORIES - MINIMAL LUXURY ═══ */
 .prem-categories {
-  padding: 40px 48px;
+  padding: 32px 48px;
   background: linear-gradient(to bottom, rgba(20, 20, 20, 0.8), transparent);
+}
+
+.prem-categories-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
 }
 
 .prem-categories-inner {
