@@ -3,7 +3,7 @@ import { useOutletContext, Link } from 'react-router-dom';
 import { 
   Users, UsersRound, Calendar, DollarSign, TrendingUp, 
   UserPlus, ArrowUpRight, ArrowDownRight, ChevronRight,
-  Plus, RefreshCw
+  Plus, RefreshCw, Video, ExternalLink, CalendarCheck
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, 
@@ -169,6 +169,42 @@ export default function Dashboard() {
             <Plus className="w-4 h-4 mr-2" />
             Quick Actions
           </Button>
+        </div>
+      </div>
+
+      {/* Join Service CTA - Prominent */}
+      <div className="join-service-banner" data-testid="join-service-banner">
+        <div className="flex items-center gap-4">
+          <div className="join-service-icon">
+            <Video className="w-6 h-6" />
+          </div>
+          <div>
+            <h2 className="join-service-title">Join Our Online Service</h2>
+            <p className="join-service-subtitle">Sundays at 9:00 AM & 11:00 AM PST</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <a 
+            href="https://zoom.us/j/placeholder" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="btn-join-online"
+            data-testid="join-zoom-btn"
+          >
+            <Video className="w-5 h-5 mr-2" />
+            Join Service
+            <ExternalLink className="w-4 h-4 ml-2 opacity-70" />
+          </a>
+          <a 
+            href="https://calendly.com/placeholder"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-calendly"
+            data-testid="schedule-meeting-btn"
+          >
+            <CalendarCheck className="w-5 h-5 mr-2" />
+            Schedule a Visit
+          </a>
         </div>
       </div>
 
