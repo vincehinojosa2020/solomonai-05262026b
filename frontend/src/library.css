@@ -908,3 +908,246 @@
 .prem-card:nth-child(6) { animation-delay: 0.35s; }
 .prem-card:nth-child(7) { animation-delay: 0.4s; }
 .prem-card:nth-child(8) { animation-delay: 0.45s; }
+
+
+/* ═══ CONTINUE WATCHING SECTION ═══ */
+.prem-continue {
+  padding: 48px;
+  background: linear-gradient(to bottom, var(--prem-charcoal), transparent);
+  position: relative;
+  z-index: 1;
+}
+
+.prem-continue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.prem-continue-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.prem-continue-title h2 {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--prem-white);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.prem-continue-title svg {
+  color: var(--prem-gold);
+}
+
+.prem-continue-count {
+  font-size: 13px;
+  color: var(--prem-white-50);
+  letter-spacing: 0.05em;
+}
+
+.prem-continue-wrapper {
+  position: relative;
+}
+
+.prem-scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  background: var(--prem-charcoal);
+  border: 1px solid var(--prem-white-15);
+  color: var(--prem-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.prem-continue-wrapper:hover .prem-scroll-btn {
+  opacity: 1;
+}
+
+.prem-scroll-btn:hover {
+  background: var(--prem-white);
+  color: var(--prem-black);
+}
+
+.prem-scroll-btn.left {
+  left: -22px;
+}
+
+.prem-scroll-btn.right {
+  right: -22px;
+}
+
+.prem-continue-scroll {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 8px 0;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.prem-continue-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.prem-continue-card {
+  flex: 0 0 320px;
+  cursor: pointer;
+}
+
+.prem-continue-thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--prem-slate);
+}
+
+.prem-continue-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.prem-continue-card:hover .prem-continue-thumb img {
+  transform: scale(1.05);
+}
+
+.prem-continue-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  color: var(--prem-white);
+}
+
+.prem-continue-card:hover .prem-continue-overlay {
+  opacity: 1;
+}
+
+.prem-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.prem-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--prem-deep-red), var(--prem-burgundy));
+  transition: width 0.3s ease;
+}
+
+.prem-continue-info {
+  padding: 16px 0 0;
+}
+
+.prem-continue-info h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--prem-white);
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prem-continue-info p {
+  font-size: 13px;
+  color: var(--prem-white-50);
+  margin: 0 0 8px;
+}
+
+.prem-continue-time {
+  font-size: 12px;
+  color: var(--prem-gold);
+  letter-spacing: 0.02em;
+}
+
+/* ═══ CARD PROGRESS BAR ═══ */
+.prem-card-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.prem-card-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--prem-deep-red), var(--prem-burgundy));
+}
+
+.prem-card-progress-text {
+  color: var(--prem-gold);
+}
+
+/* Completed Card Style */
+.prem-card.completed .prem-card-thumb img {
+  filter: brightness(0.7);
+}
+
+.prem-badge.completed {
+  background: rgba(0, 0, 0, 0.8);
+  color: var(--prem-white);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.prem-badge.completed svg {
+  color: #4ade80;
+}
+
+/* User Stats in Header */
+.prem-user-stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--prem-gold);
+  padding: 6px 12px;
+  background: var(--prem-white-05);
+  border: 1px solid var(--prem-white-08);
+  margin-right: 12px;
+}
+
+.prem-hero-progress {
+  color: var(--prem-gold);
+}
+
+/* ═══ RESPONSIVE CONTINUE WATCHING ═══ */
+@media (max-width: 1024px) {
+  .prem-continue {
+    padding: 32px 24px;
+  }
+  
+  .prem-scroll-btn {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .prem-continue-card {
+    flex: 0 0 260px;
+  }
+}
