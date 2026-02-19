@@ -10,6 +10,19 @@ import {
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// PORTAL NAVIGATION - Premium Dark Theme
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const PORTAL_NAV = [
+  { name: 'Home', path: '/portal', icon: Home },
+  { name: 'Watch', path: '/portal/library', icon: Tv },
+  { name: 'Give', path: '/portal/give', icon: DollarSign },
+  { name: 'Groups', path: '/portal/groups', icon: Users },
+  { name: 'Events', path: '/portal/events', icon: Calendar },
+  { name: 'Me', path: '/portal/me', icon: User },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // ABUNDANT MEDIA - Premium Cinematic Experience
 // Inspired by MasterClass + Prada + Eden-X.io + Netflix Continue Watching
 // ═══════════════════════════════════════════════════════════════════════════════
