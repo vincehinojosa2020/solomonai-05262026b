@@ -1,0 +1,274 @@
+import { useState, useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
+import { CreditCard, Building2, DollarSign, Download, CheckCircle } from 'lucide-react';
+import { API_URL, formatCurrency } from '@/lib/utils';
+import { toast } from 'sonner';
+
+export default function PortalGive() {
+  const { user, memberData, refreshData } = useOutletContext();
+  const [amount, setAmount] = useState('');
+  const [fund, setFund] = useState('general');
+  const [frequency, setFrequency] = useState('one-time');
+  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [funds, setFunds] = useState([]);
+  const [givingHistory, setGivingHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const quickAmounts = [25, 50, 100, 250];
+
+  useEffect(() => {
+    fetchFunds();
+    fetchGivingHistory();
+  }, []);
+
+  const fetchFunds = async () => {
+    try {
+      const res = await fetch(`${API_URL}/funds`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setFunds(data);
+        if (data.length > 0) setFund(data[0].id);
+      }
+    } catch (error) {
+      console.error('Failed to fetch funds:', error);
+    }
+  };
+
+  const fetchGivingHistory = async () => {
+    try {
+      const res = await fetch(`${API_URL}/portal/giving/history`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setGivingHistory(data.donations || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch giving history:', error);
+    }
+  };
+
+  const handleGive = async () => {
+    if (!amount || parseFloat(amount) <= 0) {
+      toast.error('Please enter a valid amount');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Use existing Stripe checkout flow
+      const response = await fetch(`${API_URL}/payments/donate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          package_id: 'custom',
+          custom_amount: parseFloat(amount),
+          fund_id: fund,
+          origin_url: window.location.href,
+          recurring: frequency !== 'one-time',
+          donor_name: user?.name
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+
+      const data = await response.json();
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url;
+      }
+    } catch (error) {
+      toast.error('Unable to process donation. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const ytdGiving = memberData?.giving?.ytd_total || 0;
+  const lastGift = memberData?.giving?.last_gift;
+  const recurring = memberData?.giving?.recurring;
+
+  return (
+    <div className="portal-give" data-testid="portal-give">
+      <div className="portal-page-header">
+        <h1 className="portal-page-title">Give to Abundant Church</h1>
+        <p className="portal-page-subtitle">Securely give online using your preferred method</p>
+      </div>
+
+      <div className="portal-give-container">
+        {/* Giving Form */}
+        <div className="portal-give-form">
+          {/* Amount */}
+          <div className="portal-form-section">
+            <label className="portal-form-label">AMOUNT</label>
+            <div className="portal-amount-input-wrapper">
+              <span className="portal-currency-symbol">$</span>
+              <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0.00"
+                className="portal-amount-input"
+                data-testid="give-amount-input"
+              />
+            </div>
+            <div className="portal-quick-amounts">
+              {quickAmounts.map((qa) => (
+                <button
+                  key={qa}
+                  onClick={() => setAmount(qa.toString())}
+                  className={`portal-quick-amount ${amount === qa.toString() ? 'active' : ''}`}
+                  data-testid={`quick-amount-${qa}`}
+                >
+                  ${qa}
+                </button>
+              ))}
+              <button
+                onClick={() => setAmount('')}
+                className={`portal-quick-amount ${!quickAmounts.includes(parseInt(amount)) && amount ? 'active' : ''}`}
+              >
+                Other
+              </button>
+            </div>
+          </div>
+
+          {/* Fund */}
+          <div className="portal-form-section">
+            <label className="portal-form-label">FUND</label>
+            <select
+              value={fund}
+              onChange={(e) => setFund(e.target.value)}
+              className="portal-select"
+              data-testid="give-fund-select"
+            >
+              {funds.map((f) => (
+                <option key={f.id} value={f.id}>{f.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Frequency */}
+          <div className="portal-form-section">
+            <label className="portal-form-label">FREQUENCY</label>
+            <select
+              value={frequency}
+              onChange={(e) => setFrequency(e.target.value)}
+              className="portal-select"
+              data-testid="give-frequency-select"
+            >
+              <option value="one-time">One time</option>
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Every 2 weeks</option>
+              <option value="monthly">Monthly</option>
+              <option value="annually">Annually</option>
+            </select>
+          </div>
+
+          {/* Payment Method */}
+          <div className="portal-form-section">
+            <label className="portal-form-label">PAYMENT METHOD</label>
+            <div className="portal-payment-methods">
+              <button
+                onClick={() => setPaymentMethod('card')}
+                className={`portal-payment-method ${paymentMethod === 'card' ? 'active' : ''}`}
+                data-testid="payment-method-card"
+              >
+                <CreditCard className="w-4 h-4" />
+                Card / ACH
+              </button>
+              <button
+                onClick={() => setPaymentMethod('paypal')}
+                className={`portal-payment-method ${paymentMethod === 'paypal' ? 'active' : ''}`}
+              >
+                <span className="text-blue-600 font-bold text-sm">P</span>
+                PayPal
+              </button>
+              <button
+                onClick={() => setPaymentMethod('venmo')}
+                className={`portal-payment-method ${paymentMethod === 'venmo' ? 'active' : ''}`}
+              >
+                <span className="text-blue-500 font-bold text-sm">V</span>
+                Venmo
+              </button>
+              <button
+                onClick={() => setPaymentMethod('zelle')}
+                className={`portal-payment-method ${paymentMethod === 'zelle' ? 'active' : ''}`}
+              >
+                <span className="text-purple-600 font-bold text-sm">Z</span>
+                Zelle
+              </button>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            onClick={handleGive}
+            disabled={isLoading || !amount}
+            className="portal-give-btn"
+            data-testid="give-submit-btn"
+          >
+            {isLoading ? 'Processing...' : `Give ${amount ? `$${amount}` : ''} →`}
+          </button>
+        </div>
+
+        {/* Giving Summary */}
+        <div className="portal-give-summary">
+          <h3 className="portal-summary-title">Your giving this year</h3>
+          
+          <div className="portal-summary-stat">
+            <span className="portal-summary-label">YTD Given</span>
+            <span className="portal-summary-value">{formatCurrency(ytdGiving)}</span>
+          </div>
+
+          {lastGift && (
+            <div className="portal-summary-stat">
+              <span className="portal-summary-label">Last Gift</span>
+              <span className="portal-summary-value-sm">
+                {formatCurrency(lastGift.amount)} — {lastGift.fund_name || 'General Fund'} — {lastGift.donation_date}
+              </span>
+            </div>
+          )}
+
+          {recurring && (
+            <div className="portal-summary-stat">
+              <span className="portal-summary-label">Recurring</span>
+              <span className="portal-summary-value-sm flex items-center gap-1">
+                {formatCurrency(recurring.amount)}/{recurring.frequency}
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                Active
+              </span>
+            </div>
+          )}
+
+          <button className="portal-download-btn" data-testid="download-statement-btn">
+            <Download className="w-4 h-4" />
+            Download Tax Statement
+          </button>
+        </div>
+      </div>
+
+      {/* Giving History */}
+      {givingHistory.length > 0 && (
+        <div className="portal-section mt-8">
+          <h3 className="portal-section-title">Giving History</h3>
+          <div className="portal-history-table">
+            <div className="portal-history-header">
+              <span>Date</span>
+              <span>Fund</span>
+              <span>Amount</span>
+              <span>Method</span>
+            </div>
+            {givingHistory.slice(0, 10).map((donation, idx) => (
+              <div key={idx} className="portal-history-row">
+                <span>{donation.donation_date}</span>
+                <span>{donation.fund_name}</span>
+                <span className="font-semibold">{formatCurrency(donation.amount)}</span>
+                <span className="capitalize">{donation.payment_method}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
