@@ -11,13 +11,11 @@ import {
 // MASTERCLASS-STYLE ABUNDANT TV - Premium Dark Cinematic Experience
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// Placeholder video URLs - using public creative commons videos
+// Placeholder video URLs - using publicly accessible sample videos
 const PLACEHOLDER_VIDEOS = [
-  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+  'https://www.w3schools.com/html/mov_bbb.mp4',
+  'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+  'https://www.w3schools.com/html/movie.mp4',
 ];
 
 // Get a consistent video URL for each course
