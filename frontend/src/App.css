@@ -2372,3 +2372,537 @@
   font-size: 14px;
   color: #475569;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ABUNDANT TV - Member Portal Sermons/Watch Section
+   ═══════════════════════════════════════════════════════════════ */
+
+.portal-watch {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.watch-header {
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+  margin: -24px -20px 24px -20px;
+  padding: 24px 20px;
+  border-radius: 0 0 24px 24px;
+}
+
+.watch-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.watch-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.watch-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.watch-subtitle {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.watch-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  min-width: 280px;
+}
+
+.watch-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 14px;
+  outline: none;
+}
+
+.watch-search-input::placeholder {
+  color: #94a3b8;
+}
+
+/* Featured Sermon */
+.watch-featured {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 24px;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+  .watch-featured {
+    grid-template-columns: 1fr;
+  }
+}
+
+.watch-featured-video {
+  position: relative;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+
+.watch-featured-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.watch-featured-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.watch-featured-video:hover .watch-featured-overlay {
+  opacity: 1;
+}
+
+.watch-play-btn {
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.95);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #3b82f6;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+}
+
+.watch-play-btn:hover {
+  transform: scale(1.1);
+}
+
+.watch-featured-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 6px 12px;
+  background: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 4px;
+}
+
+.watch-featured-info {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.watch-featured-series {
+  font-size: 12px;
+  font-weight: 600;
+  color: #3b82f6;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.watch-featured-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 8px 0;
+  line-height: 1.3;
+}
+
+.watch-featured-speaker {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.watch-featured-meta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.watch-featured-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.watch-featured-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.watch-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+}
+
+.watch-btn.primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.watch-btn.primary:hover {
+  background: #2563eb;
+}
+
+.watch-btn.secondary {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.watch-btn.secondary:hover {
+  background: #e2e8f0;
+}
+
+/* Sections */
+.watch-section {
+  margin-bottom: 32px;
+}
+
+.watch-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.watch-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.watch-view-all,
+.watch-clear-filter {
+  font-size: 14px;
+  font-weight: 500;
+  color: #3b82f6;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.watch-clear-filter {
+  color: #ef4444;
+}
+
+/* Series Grid */
+.watch-series-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .watch-series-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .watch-series-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.watch-series-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.watch-series-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.watch-series-card.active {
+  border-color: #3b82f6;
+}
+
+.watch-series-img-wrapper {
+  position: relative;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+}
+
+.watch-series-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.watch-series-card:hover .watch-series-img {
+  transform: scale(1.05);
+}
+
+.watch-series-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+  display: flex;
+  align-items: flex-end;
+  padding: 12px;
+}
+
+.watch-series-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.watch-series-info {
+  padding: 12px;
+}
+
+.watch-series-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.watch-series-desc {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Sermons Grid */
+.watch-sermons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .watch-sermons-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .watch-sermons-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.watch-sermon-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.watch-sermon-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.watch-sermon-thumbnail {
+  position: relative;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+
+.watch-sermon-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.watch-sermon-card:hover .watch-sermon-thumbnail img {
+  transform: scale(1.05);
+}
+
+.watch-sermon-duration {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  padding: 4px 8px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+.watch-sermon-play {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: white;
+}
+
+.watch-sermon-card:hover .watch-sermon-play {
+  opacity: 1;
+}
+
+.watch-sermon-info {
+  padding: 14px;
+}
+
+.watch-sermon-series {
+  font-size: 11px;
+  font-weight: 600;
+  color: #3b82f6;
+  text-transform: uppercase;
+}
+
+.watch-sermon-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 6px 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.watch-sermon-speaker {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 8px 0;
+}
+
+.watch-sermon-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.watch-no-results {
+  text-align: center;
+  padding: 48px 20px;
+  color: #64748b;
+}
+
+/* Live Banner */
+.watch-live-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+  border-radius: 16px;
+  margin-top: 32px;
+}
+
+.watch-live-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.watch-live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #ef4444;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 6px;
+}
+
+.watch-live-dot {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.watch-live-content h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+}
+
+.watch-live-content p {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .watch-live-banner {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .watch-live-content {
+    flex-direction: column;
+  }
+}
