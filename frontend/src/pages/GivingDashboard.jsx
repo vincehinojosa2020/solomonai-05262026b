@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { API_URL, formatCurrency, formatDate } from '@/lib/utils';
 import EnterDonationPanel from '@/components/modals/EnterDonationPanel';
+import DonationCheckout from '@/components/modals/DonationCheckout';
 
 const StatCard = ({ title, value, subtitle, icon: Icon }) => (
   <div className="stat-card">
