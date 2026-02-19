@@ -142,16 +142,20 @@ Church Info Updated:
 
 ## Next Action Items
 
+### P0 - Immediate
+- [ ] Create Zero-Data Demo Account (second demo tenant with empty data)
+
 ### P1 - Design & Polish
 - [ ] UPGRADE 2: Design System Elevation (Sora/JetBrains Mono fonts)
-- [ ] UPGRADE 6: Dashboard Intelligence (Solomon Insights widget)
-- [ ] UPGRADE 7: Micro-interactions (Framer Motion)
+- [ ] UPGRADE 6: Dashboard Intelligence - Fix hardcoded data with optimized DB queries
+- [ ] UPGRADE 7: Micro-interactions (Framer Motion on dashboard)
 
 ### P2 - Feature Expansion
 - [ ] UPGRADE 5: Giving Module - Record Gift panel
 - [ ] UPGRADE 3: Missing Modules (Workflows, Check-In, Services)
 - [ ] UPGRADE 10: Communications - AI writer
 - [ ] UPGRADE 8: Global Search (⌘K)
+- [ ] Backend Refactor: Break server.py into modular routes/models/services
 
 ---
 
