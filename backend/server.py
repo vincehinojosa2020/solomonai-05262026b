@@ -513,6 +513,57 @@ async def logout(request: Request, response: Response):
     
     return {"message": "Logged out"}
 
+@api_router.post("/auth/login")
+async def email_password_login(request: EmailLoginRequest, response: Response):
+    """Login with email and password (for demo accounts)"""
+    import hashlib
+    
+    # Find user by email
+    user_doc = await db.users.find_one({"email": request.email}, {"_id": 0})
+    
+    if not user_doc:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Verify password (simple hash comparison for demo)
+    stored_hash = user_doc.get("password_hash")
+    if not stored_hash:
+        raise HTTPException(status_code=401, detail="Password login not enabled for this account")
+    
+    input_hash = hashlib.sha256(request.password.encode()).hexdigest()
+    if input_hash != stored_hash:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Create session
+    session_token = f"sess_{uuid.uuid4().hex}"
+    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+    
+    await db.user_sessions.delete_many({"user_id": user_doc["user_id"]})
+    await db.user_sessions.insert_one({
+        "user_id": user_doc["user_id"],
+        "session_token": session_token,
+        "expires_at": expires_at,
+        "created_at": datetime.now(timezone.utc)
+    })
+    
+    # Set cookie
+    response.set_cookie(
+        key="session_token",
+        value=session_token,
+        httponly=True,
+        secure=True,
+        samesite="none",
+        path="/",
+        max_age=7 * 24 * 60 * 60
+    )
+    
+    return {
+        "user_id": user_doc["user_id"],
+        "email": user_doc["email"],
+        "name": user_doc["name"],
+        "picture": user_doc.get("picture"),
+        "role": user_doc.get("role", "member")
+    }
+
 # ============== STRIPE PAYMENT ROUTES ==============
 
 # Donation packages (FIXED - never accept amounts from frontend)
