@@ -1284,70 +1284,41 @@ async def get_dashboard_stats():
 
 @api_router.get("/dashboard/giving-trend")
 async def get_giving_trend():
-    tenant_id = DEFAULT_TENANT_ID
-    today = datetime.now(timezone.utc)
-    
-    # Get last 12 months of giving by fund
-    months = []
-    for i in range(11, -1, -1):
-        month_date = today - timedelta(days=30*i)
-        month_start = month_date.replace(day=1).strftime("%Y-%m-%d")
-        month_end = (month_date.replace(day=28) + timedelta(days=4)).replace(day=1).strftime("%Y-%m-%d")
-        
-        pipeline = [
-            {"$match": {
-                "tenant_id": tenant_id,
-                "donation_date": {"$gte": month_start, "$lt": month_end}
-            }},
-            {"$lookup": {
-                "from": "funds",
-                "localField": "fund_id",
-                "foreignField": "id",
-                "as": "fund"
-            }},
-            {"$unwind": {"path": "$fund", "preserveNullAndEmptyArrays": True}},
-            {"$group": {
-                "_id": "$fund.name",
-                "total": {"$sum": "$amount"}
-            }}
-        ]
-        
-        results = await db.donations.aggregate(pipeline).to_list(10)
-        month_data = {
-            "month": month_date.strftime("%b"),
-            "General Fund": 0,
-            "Building Fund": 0,
-            "Missions": 0,
-            "Crypto": 0
-        }
-        for r in results:
-            fund_name = r["_id"] or "General Fund"
-            if fund_name in month_data:
-                month_data[fund_name] = r["total"]
-        months.append(month_data)
-    
-    return months
+    """Return demo giving trend data - 12 months for Abundant Church"""
+    return [
+        {"month": "Mar", "General Fund": 18500, "Building Fund": 4200, "Missions": 1800, "Crypto": 0},
+        {"month": "Apr", "General Fund": 19200, "Building Fund": 4500, "Missions": 1900, "Crypto": 200},
+        {"month": "May", "General Fund": 21000, "Building Fund": 4800, "Missions": 2100, "Crypto": 0},
+        {"month": "Jun", "General Fund": 18900, "Building Fund": 4100, "Missions": 1750, "Crypto": 0},
+        {"month": "Jul", "General Fund": 17500, "Building Fund": 3900, "Missions": 1600, "Crypto": 150},
+        {"month": "Aug", "General Fund": 19800, "Building Fund": 4300, "Missions": 1850, "Crypto": 0},
+        {"month": "Sep", "General Fund": 22500, "Building Fund": 5100, "Missions": 2200, "Crypto": 0},
+        {"month": "Oct", "General Fund": 21200, "Building Fund": 4700, "Missions": 2050, "Crypto": 300},
+        {"month": "Nov", "General Fund": 24800, "Building Fund": 5500, "Missions": 2400, "Crypto": 0},
+        {"month": "Dec", "General Fund": 32500, "Building Fund": 7200, "Missions": 3100, "Crypto": 500},
+        {"month": "Jan", "General Fund": 20100, "Building Fund": 4400, "Missions": 1950, "Crypto": 0},
+        {"month": "Feb", "General Fund": 24750, "Building Fund": 5200, "Missions": 2350, "Crypto": 0}
+    ]
 
 @api_router.get("/dashboard/attendance-trend")
 async def get_attendance_trend():
-    tenant_id = DEFAULT_TENANT_ID
-    today = datetime.now(timezone.utc)
-    
-    # Get last 12 weeks of attendance
-    weeks = []
-    for i in range(11, -1, -1):
-        week_date = today - timedelta(weeks=i)
-        # Find the Sunday of that week
-        sunday = week_date - timedelta(days=week_date.weekday() + 1)
-        sunday_str = sunday.strftime("%Y-%m-%d")
-        
-        pipeline = [
-            {"$match": {"tenant_id": tenant_id}},
-            {"$lookup": {
-                "from": "services",
-                "localField": "service_id",
-                "foreignField": "id",
-                "as": "service"
+    """Return demo attendance trend data - 12 weeks for Abundant Church"""
+    return [
+        {"week": "Week 1", "attendance": 285, "date": "Dec 1"},
+        {"week": "Week 2", "attendance": 298, "date": "Dec 8"},
+        {"week": "Week 3", "attendance": 312, "date": "Dec 15"},
+        {"week": "Week 4", "attendance": 445, "date": "Dec 22"},
+        {"week": "Week 5", "attendance": 478, "date": "Dec 29"},
+        {"week": "Week 6", "attendance": 302, "date": "Jan 5"},
+        {"week": "Week 7", "attendance": 295, "date": "Jan 12"},
+        {"week": "Week 8", "attendance": 308, "date": "Jan 19"},
+        {"week": "Week 9", "attendance": 318, "date": "Jan 26"},
+        {"week": "Week 10", "attendance": 305, "date": "Feb 2"},
+        {"week": "Week 11", "attendance": 288, "date": "Feb 9"},
+        {"week": "Week 12", "attendance": 312, "date": "Feb 16"}
+    ]
+
+@api_router.get("/dashboard/activity")
             }},
             {"$unwind": "$service"},
             {"$match": {"service.date": sunday_str}},
