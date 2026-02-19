@@ -1,15 +1,17 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, ChevronDown, ChevronLeft, ChevronRight, Play, Plus, X, Clock,
-  User, LayoutGrid, Sparkles, Music, ArrowRight,
+  User, LayoutGrid, Sparkles, Music, ArrowRight, CheckCircle, RotateCcw,
   Briefcase, Home, Users, Heart, Book, Volume2, Bookmark
 } from 'lucide-react';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // ABUNDANT MEDIA - Premium Cinematic Experience
-// Inspired by MasterClass + Prada + Eden-X.io
+// Inspired by MasterClass + Prada + Eden-X.io + Netflix Continue Watching
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const CATEGORIES = [
@@ -22,6 +24,14 @@ const CATEGORIES = [
   { id: 'community', label: 'Community', icon: Home },
 ];
 
+// Helper to parse duration string to seconds
+const parseDuration = (duration) => {
+  const parts = duration.split(':').map(Number);
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  return 0;
+};
+
 // Real Abundant Church YouTube Videos
 const COURSES = [
   { 
@@ -30,6 +40,7 @@ const COURSES = [
     instructor: "Pastor Charles Nieman", 
     format: "Class", 
     duration: "40:45", 
+    durationSeconds: 2445,
     category: "Community",
     badge: "New",
     youtubeId: "FoPI3hMbXvw",
@@ -43,6 +54,7 @@ const COURSES = [
     instructor: "Pastor Charles Nieman", 
     format: "Class", 
     duration: "38:30", 
+    durationSeconds: 2310,
     category: "Faith & Spirituality",
     badge: "New",
     youtubeId: "pzpbbibEWPE",
@@ -56,6 +68,7 @@ const COURSES = [
     instructor: "Pastor Charles Nieman", 
     format: "Class", 
     duration: "45:00", 
+    durationSeconds: 2700,
     category: "Personal Growth",
     youtubeId: "Lnj6vMvOLME",
     thumbnail: "https://i.ytimg.com/vi/Lnj6vMvOLME/maxresdefault.jpg",
@@ -67,6 +80,7 @@ const COURSES = [
     instructor: "Pastor Charles Nieman", 
     format: "Class", 
     duration: "38:30", 
+    durationSeconds: 2310,
     category: "Faith & Spirituality",
     youtubeId: "OjhMsB6czxc",
     thumbnail: "https://i.ytimg.com/vi/OjhMsB6czxc/maxresdefault.jpg",
@@ -79,6 +93,7 @@ const COURSES = [
     instructor: "Pastor Charles Nieman", 
     format: "Class", 
     duration: "37:57", 
+    durationSeconds: 2277,
     category: "Personal Growth",
     youtubeId: "WQy48ANpj5c",
     thumbnail: "https://i.ytimg.com/vi/WQy48ANpj5c/maxresdefault.jpg",
@@ -90,6 +105,7 @@ const COURSES = [
     instructor: "Pastor Charles Nieman", 
     format: "Class", 
     duration: "37:30", 
+    durationSeconds: 2250,
     category: "Faith & Spirituality",
     youtubeId: "wCjwUQMhCIY",
     thumbnail: "https://i.ytimg.com/vi/wCjwUQMhCIY/maxresdefault.jpg",
@@ -101,6 +117,7 @@ const COURSES = [
     instructor: "Pastor Charles Nieman", 
     format: "Class", 
     duration: "42:00", 
+    durationSeconds: 2520,
     category: "Personal Growth",
     badge: "Popular",
     youtubeId: "0grr2E0kuFg",
@@ -113,6 +130,7 @@ const COURSES = [
     instructor: "Pastor Jared Nieman", 
     format: "Class", 
     duration: "35:00", 
+    durationSeconds: 2100,
     category: "Worship",
     youtubeId: "uwkmP6sDihI",
     thumbnail: "https://i.ytimg.com/vi/uwkmP6sDihI/maxresdefault.jpg",
@@ -124,6 +142,7 @@ const COURSES = [
     instructor: "Pastor Jared Nieman", 
     format: "Class", 
     duration: "48:00", 
+    durationSeconds: 2880,
     category: "Leadership",
     youtubeId: "O0WfS3Ma2XM",
     thumbnail: "https://i.ytimg.com/vi/O0WfS3Ma2XM/maxresdefault.jpg",
@@ -135,6 +154,7 @@ const COURSES = [
     instructor: "Pastor Marcos Witt", 
     format: "Session", 
     duration: "1:20:00", 
+    durationSeconds: 4800,
     category: "Worship",
     badge: "Featured",
     youtubeId: "kGXOOO6hHUk",
@@ -148,6 +168,7 @@ const COURSES = [
     instructor: "Pastor Charles Nieman", 
     format: "Class", 
     duration: "40:00", 
+    durationSeconds: 2400,
     category: "Community",
     youtubeId: "rMmIcJCDsaU",
     thumbnail: "https://i.ytimg.com/vi/rMmIcJCDsaU/maxresdefault.jpg",
@@ -159,6 +180,7 @@ const COURSES = [
     instructor: "Pastor Charles Nieman", 
     format: "Class", 
     duration: "36:00", 
+    durationSeconds: 2160,
     category: "Faith & Spirituality",
     youtubeId: "Lnj6vMvOLME",
     thumbnail: "https://i.ytimg.com/vi/Lnj6vMvOLME/maxresdefault.jpg",
@@ -167,11 +189,47 @@ const COURSES = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// VIDEO PLAYER MODAL - Premium Cinema Experience
+// VIDEO PLAYER MODAL - With Progress Tracking
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const VideoPlayerModal = ({ isOpen, onClose, course }) => {
+const VideoPlayerModal = ({ isOpen, onClose, course, onProgressUpdate, initialPosition = 0 }) => {
+  const iframeRef = useRef(null);
+  const progressInterval = useRef(null);
+  const [currentTime, setCurrentTime] = useState(initialPosition);
+
+  useEffect(() => {
+    if (isOpen && course) {
+      // Start tracking progress every 10 seconds
+      progressInterval.current = setInterval(() => {
+        // Increment simulated time (since we can't get exact time from YouTube iframe without API)
+        setCurrentTime(prev => {
+          const newTime = prev + 10;
+          // Save progress
+          onProgressUpdate(course, newTime);
+          return newTime;
+        });
+      }, 10000);
+    }
+
+    return () => {
+      if (progressInterval.current) {
+        clearInterval(progressInterval.current);
+      }
+    };
+  }, [isOpen, course, onProgressUpdate]);
+
+  const handleClose = () => {
+    // Save final progress on close
+    if (course && currentTime > 0) {
+      onProgressUpdate(course, currentTime);
+    }
+    onClose();
+  };
+
   if (!isOpen || !course) return null;
+
+  // Calculate start time for YouTube
+  const startTime = initialPosition > 0 ? `&start=${Math.floor(initialPosition)}` : '';
 
   return (
     <motion.div
@@ -179,7 +237,7 @@ const VideoPlayerModal = ({ isOpen, onClose, course }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      onClick={onClose}
+      onClick={handleClose}
       data-testid="video-player-modal"
     >
       <motion.div
@@ -190,7 +248,7 @@ const VideoPlayerModal = ({ isOpen, onClose, course }) => {
         transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="prem-modal-close" onClick={onClose} data-testid="video-close-btn">
+        <button className="prem-modal-close" onClick={handleClose} data-testid="video-close-btn">
           <X className="w-5 h-5" />
         </button>
         <div className="prem-modal-header">
@@ -200,7 +258,8 @@ const VideoPlayerModal = ({ isOpen, onClose, course }) => {
         </div>
         <div className="prem-modal-video">
           <iframe
-            src={`https://www.youtube.com/embed/${course.youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+            ref={iframeRef}
+            src={`https://www.youtube.com/embed/${course.youtubeId}?autoplay=1&rel=0&modestbranding=1${startTime}&enablejsapi=1`}
             title={course.title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
@@ -212,10 +271,82 @@ const VideoPlayerModal = ({ isOpen, onClose, course }) => {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// CONTINUE WATCHING SECTION - Netflix-style
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const ContinueWatchingSection = ({ items, onPlay, onRemove }) => {
+  const scrollRef = useRef(null);
+
+  if (!items || items.length === 0) return null;
+
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const amount = direction === 'left' ? -400 : 400;
+      scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <section className="prem-continue" data-testid="continue-watching-section">
+      <div className="prem-continue-header">
+        <div className="prem-continue-title">
+          <RotateCcw className="w-5 h-5" />
+          <h2>Continue Watching</h2>
+        </div>
+        <span className="prem-continue-count">{items.length} in progress</span>
+      </div>
+      
+      <div className="prem-continue-wrapper">
+        <button className="prem-scroll-btn left" onClick={() => scroll('left')}>
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+        
+        <div className="prem-continue-scroll" ref={scrollRef}>
+          {items.map((item, index) => (
+            <motion.div
+              key={item.video_id}
+              className="prem-continue-card"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              data-testid={`continue-card-${item.video_id}`}
+            >
+              <div className="prem-continue-thumb" onClick={() => onPlay(item)}>
+                <img src={item.thumbnail} alt={item.title} />
+                <div className="prem-continue-overlay">
+                  <Play className="w-10 h-10" fill="currentColor" />
+                </div>
+                <div className="prem-progress-bar">
+                  <div 
+                    className="prem-progress-fill"
+                    style={{ width: `${item.progress_percent}%` }}
+                  />
+                </div>
+              </div>
+              <div className="prem-continue-info">
+                <h4>{item.title}</h4>
+                <p>{item.instructor}</p>
+                <span className="prem-continue-time">
+                  {Math.round(item.progress_percent)}% • {Math.floor((item.duration_seconds - item.position_seconds) / 60)} min left
+                </span>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        
+        <button className="prem-scroll-btn right" onClick={() => scroll('right')}>
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      </div>
+    </section>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // HERO SECTION - Prada-style Cinematic Hero
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const HeroSection = ({ content, onPlay }) => {
+const HeroSection = ({ content, onPlay, watchProgress }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const featured = content.filter(c => c.featured).slice(0, 4);
 
@@ -228,6 +359,9 @@ const HeroSection = ({ content, onPlay }) => {
 
   const current = featured[activeIndex];
   if (!current) return null;
+
+  // Check if hero video has progress
+  const progress = watchProgress[current.id];
 
   return (
     <section className="prem-hero" data-testid="hero-section">
@@ -272,6 +406,12 @@ const HeroSection = ({ content, onPlay }) => {
               <span><Clock className="w-4 h-4" /> {current.duration}</span>
               <span className="prem-meta-dot">•</span>
               <span>{current.category}</span>
+              {progress && progress.progress_percent > 0 && (
+                <>
+                  <span className="prem-meta-dot">•</span>
+                  <span className="prem-hero-progress">{Math.round(progress.progress_percent)}% watched</span>
+                </>
+              )}
             </div>
             <div className="prem-hero-actions">
               <motion.button 
@@ -282,7 +422,7 @@ const HeroSection = ({ content, onPlay }) => {
                 data-testid="hero-play-btn"
               >
                 <Play className="w-5 h-5" fill="currentColor" />
-                Watch Now
+                {progress && progress.progress_percent > 0 ? 'Resume' : 'Watch Now'}
               </motion.button>
               <motion.button 
                 className="prem-btn-save"
@@ -310,15 +450,17 @@ const HeroSection = ({ content, onPlay }) => {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// COURSE CARD - Premium Glass Card
+// COURSE CARD - Premium Glass Card with Progress
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const CourseCard = ({ course, onPlay, index }) => {
+const CourseCard = ({ course, onPlay, index, progress }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const hasProgress = progress && progress.progress_percent > 0;
+  const isCompleted = progress && progress.completed;
 
   return (
     <motion.article 
-      className="prem-card"
+      className={`prem-card ${isCompleted ? 'completed' : ''}`}
       data-testid={`course-card-${course.id}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -339,7 +481,13 @@ const CourseCard = ({ course, onPlay, index }) => {
           }}
         />
         
-        {course.badge && (
+        {isCompleted && (
+          <span className="prem-badge completed">
+            <CheckCircle className="w-3 h-3" /> Watched
+          </span>
+        )}
+        
+        {!isCompleted && course.badge && (
           <span className={`prem-badge ${course.badge.toLowerCase()}`}>
             {course.badge}
           </span>
@@ -349,6 +497,16 @@ const CourseCard = ({ course, onPlay, index }) => {
           <Clock className="w-3 h-3" />
           {course.duration}
         </span>
+
+        {/* Progress bar */}
+        {hasProgress && !isCompleted && (
+          <div className="prem-card-progress">
+            <div 
+              className="prem-card-progress-fill"
+              style={{ width: `${progress.progress_percent}%` }}
+            />
+          </div>
+        )}
 
         <AnimatePresence>
           {isHovered && (
@@ -387,7 +545,12 @@ const CourseCard = ({ course, onPlay, index }) => {
       </div>
 
       <div className="prem-card-info">
-        <p className="prem-card-meta">{course.format} • {course.category}</p>
+        <p className="prem-card-meta">
+          {course.format} • {course.category}
+          {hasProgress && !isCompleted && (
+            <span className="prem-card-progress-text"> • {Math.round(progress.progress_percent)}%</span>
+          )}
+        </p>
         <h3 className="prem-card-title">{course.title}</h3>
         <p className="prem-card-instructor">{course.instructor}</p>
       </div>
@@ -420,8 +583,87 @@ export default function PortalLibrary() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [filteredCourses, setFilteredCourses] = useState(COURSES);
-  const [videoModal, setVideoModal] = useState({ open: false, course: null });
+  const [videoModal, setVideoModal] = useState({ open: false, course: null, startPosition: 0 });
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  
+  // Watch progress state
+  const [continueWatching, setContinueWatching] = useState([]);
+  const [watchProgress, setWatchProgress] = useState({});
+  const [completedCount, setCompletedCount] = useState(0);
+
+  // Fetch watch progress on mount
+  useEffect(() => {
+    const fetchProgress = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/portal/watch/progress`, {
+          credentials: 'include'
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setContinueWatching(data.continue_watching || []);
+          setCompletedCount(data.total_watched || 0);
+          
+          // Build progress map by video_id
+          const progressMap = {};
+          [...(data.continue_watching || []), ...(data.completed || [])].forEach(p => {
+            progressMap[p.video_id] = p;
+          });
+          setWatchProgress(progressMap);
+        }
+      } catch (err) {
+        console.error('Error fetching watch progress:', err);
+      }
+    };
+    fetchProgress();
+  }, []);
+
+  // Save progress to backend
+  const saveProgress = useCallback(async (course, positionSeconds) => {
+    try {
+      await fetch(`${API_URL}/api/portal/watch/progress`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          video_id: String(course.id),
+          youtube_id: course.youtubeId,
+          position_seconds: Math.floor(positionSeconds),
+          duration_seconds: course.durationSeconds || parseDuration(course.duration),
+          title: course.title,
+          thumbnail: course.thumbnail,
+          instructor: course.instructor
+        })
+      });
+      
+      // Update local state
+      const progressPercent = (positionSeconds / (course.durationSeconds || parseDuration(course.duration))) * 100;
+      setWatchProgress(prev => ({
+        ...prev,
+        [course.id]: {
+          ...prev[course.id],
+          video_id: String(course.id),
+          position_seconds: positionSeconds,
+          progress_percent: progressPercent,
+          completed: progressPercent >= 90
+        }
+      }));
+    } catch (err) {
+      console.error('Error saving progress:', err);
+    }
+  }, []);
+
+  // Handle playing a video (from Continue Watching or regular)
+  const handlePlay = useCallback((item) => {
+    // Find the full course data
+    const course = COURSES.find(c => String(c.id) === String(item.id || item.video_id)) || item;
+    const startPosition = item.position_seconds || watchProgress[course.id]?.position_seconds || 0;
+    
+    setVideoModal({ 
+      open: true, 
+      course: { ...course, ...item },
+      startPosition 
+    });
+  }, [watchProgress]);
 
   // Filter courses
   useEffect(() => {
@@ -493,6 +735,12 @@ export default function PortalLibrary() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.3 }}
         >
+          {completedCount > 0 && (
+            <span className="prem-user-stats">
+              <CheckCircle className="w-4 h-4" />
+              {completedCount}
+            </span>
+          )}
           <div className="prem-avatar">{user?.name?.charAt(0) || 'M'}</div>
           <span className="prem-user-name">{user?.name?.split(' ')[0] || 'Member'}</span>
         </motion.div>
@@ -502,7 +750,17 @@ export default function PortalLibrary() {
       <div className="prem-cinema-line" />
 
       {/* Hero Section */}
-      <HeroSection content={COURSES} onPlay={(c) => setVideoModal({ open: true, course: c })} />
+      <HeroSection 
+        content={COURSES} 
+        onPlay={handlePlay}
+        watchProgress={watchProgress}
+      />
+
+      {/* Continue Watching Section */}
+      <ContinueWatchingSection 
+        items={continueWatching}
+        onPlay={handlePlay}
+      />
 
       {/* Category Pills */}
       <motion.nav 
@@ -555,7 +813,8 @@ export default function PortalLibrary() {
                 key={course.id} 
                 course={course} 
                 index={index}
-                onPlay={(c) => setVideoModal({ open: true, course: c })}
+                progress={watchProgress[course.id]}
+                onPlay={handlePlay}
               />
             ))}
           </div>
@@ -597,7 +856,9 @@ export default function PortalLibrary() {
           <VideoPlayerModal 
             isOpen={videoModal.open}
             course={videoModal.course}
-            onClose={() => setVideoModal({ open: false, course: null })}
+            initialPosition={videoModal.startPosition}
+            onClose={() => setVideoModal({ open: false, course: null, startPosition: 0 })}
+            onProgressUpdate={saveProgress}
           />
         )}
       </AnimatePresence>
