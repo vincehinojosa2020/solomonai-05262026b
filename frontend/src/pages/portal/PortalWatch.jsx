@@ -103,154 +103,29 @@ const COURSES = {
 const CATEGORIES = ['All Classes', 'Faith', 'Worship', 'Prayer', 'Family', 'Leadership', 'Bible Study'];
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// VIDEO PLAYER MODAL COMPONENT
+// VIDEO PLAYER MODAL COMPONENT (YouTube Embed)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const VideoPlayerModal = ({ isOpen, onClose, course }) => {
-  const videoRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [showControls, setShowControls] = useState(true);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [showPlaylist, setShowPlaylist] = useState(false);
-  const controlsTimeoutRef = useRef(null);
   const containerRef = useRef(null);
 
-  // Format time helper
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  // Play/Pause toggle
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  // Mute toggle
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
-  };
-
-  // Fullscreen toggle
-  const toggleFullscreen = () => {
-    if (containerRef.current) {
-      if (!isFullscreen) {
-        if (containerRef.current.requestFullscreen) {
-          containerRef.current.requestFullscreen();
-        }
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
-      }
-      setIsFullscreen(!isFullscreen);
-    }
-  };
-
-  // Progress update
-  const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      const current = videoRef.current.currentTime;
-      const dur = videoRef.current.duration;
-      setCurrentTime(current);
-      setDuration(dur);
-      setProgress((current / dur) * 100);
-    }
-  };
-
-  // Seek
-  const handleSeek = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const pos = (e.clientX - rect.left) / rect.width;
-    if (videoRef.current) {
-      videoRef.current.currentTime = pos * videoRef.current.duration;
-    }
-  };
-
-  // Skip forward/back
-  const skip = (seconds) => {
-    if (videoRef.current) {
-      videoRef.current.currentTime += seconds;
-    }
-  };
-
-  // Auto-hide controls
-  const handleMouseMove = () => {
-    setShowControls(true);
-    if (controlsTimeoutRef.current) {
-      clearTimeout(controlsTimeoutRef.current);
-    }
-    controlsTimeoutRef.current = setTimeout(() => {
-      if (isPlaying) {
-        setShowControls(false);
-      }
-    }, 3000);
-  };
+  // Get YouTube ID for the course
+  const youtubeId = course?.youtubeId || getYouTubeId(course?.id || '1');
 
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!isOpen) return;
-      switch (e.key) {
-        case ' ':
-        case 'k':
-          e.preventDefault();
-          togglePlay();
-          break;
-        case 'm':
-          toggleMute();
-          break;
-        case 'f':
-          toggleFullscreen();
-          break;
-        case 'ArrowLeft':
-          skip(-10);
-          break;
-        case 'ArrowRight':
-          skip(10);
-          break;
-        case 'Escape':
-          onClose();
-          break;
+      if (e.key === 'Escape') {
+        onClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, isPlaying]);
-
-  // Auto-play on open
-  useEffect(() => {
-    if (isOpen && videoRef.current) {
-      videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
-    }
-  }, [isOpen, course]);
-
-  // Cleanup on close
-  useEffect(() => {
-    if (!isOpen && videoRef.current) {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    }
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   if (!isOpen || !course) return null;
-
-  const videoUrl = course.videoUrl || getVideoUrl(course.id);
 
   return (
     <AnimatePresence>
@@ -269,43 +144,25 @@ const VideoPlayerModal = ({ isOpen, onClose, course }) => {
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.3 }}
           onClick={(e) => e.stopPropagation()}
-          onMouseMove={handleMouseMove}
           data-testid="video-player-modal"
         >
-          {/* Video Element */}
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            className="video-element"
-            onTimeUpdate={handleTimeUpdate}
-            onEnded={() => setIsPlaying(false)}
-            onClick={togglePlay}
-            playsInline
-          />
-
-          {/* Center Play Button (when paused) */}
-          <AnimatePresence>
-            {!isPlaying && (
-              <motion.button
-                className="video-center-play"
-                onClick={togglePlay}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Play className="w-16 h-16" fill="currentColor" />
-              </motion.button>
-            )}
-          </AnimatePresence>
+          {/* YouTube Embed */}
+          <div className="video-embed-wrapper">
+            <iframe
+              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+              title={course.title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="video-iframe"
+            />
+          </div>
 
           {/* Top Bar */}
           <motion.div
             className="video-top-bar"
             initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: showControls ? 1 : 0, y: showControls ? 0 : -20 }}
-            transition={{ duration: 0.2 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
           >
             <button className="video-close-btn" onClick={onClose} data-testid="video-close-btn">
               <X className="w-6 h-6" />
@@ -321,69 +178,6 @@ const VideoPlayerModal = ({ isOpen, onClose, course }) => {
               <List className="w-5 h-5" />
               <span>Lessons</span>
             </button>
-          </motion.div>
-
-          {/* Bottom Controls */}
-          <motion.div
-            className="video-controls"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: showControls ? 1 : 0, y: showControls ? 0 : 20 }}
-            transition={{ duration: 0.2 }}
-          >
-            {/* Progress Bar */}
-            <div className="video-progress-container" onClick={handleSeek}>
-              <div className="video-progress-bar">
-                <div 
-                  className="video-progress-fill" 
-                  style={{ width: `${progress}%` }}
-                />
-                <div 
-                  className="video-progress-handle"
-                  style={{ left: `${progress}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Controls Row */}
-            <div className="video-controls-row">
-              <div className="video-controls-left">
-                <button className="video-control-btn" onClick={() => skip(-10)}>
-                  <SkipBack className="w-5 h-5" />
-                </button>
-                <button 
-                  className="video-control-btn play-pause" 
-                  onClick={togglePlay}
-                  data-testid="video-play-pause"
-                >
-                  {isPlaying ? (
-                    <Pause className="w-6 h-6" fill="currentColor" />
-                  ) : (
-                    <Play className="w-6 h-6" fill="currentColor" />
-                  )}
-                </button>
-                <button className="video-control-btn" onClick={() => skip(10)}>
-                  <SkipForward className="w-5 h-5" />
-                </button>
-                <button className="video-control-btn" onClick={toggleMute}>
-                  {isMuted ? (
-                    <VolumeX className="w-5 h-5" />
-                  ) : (
-                    <Volume2 className="w-5 h-5" />
-                  )}
-                </button>
-                <span className="video-time">
-                  {formatTime(currentTime)} / {formatTime(duration || 0)}
-                </span>
-              </div>
-              <div className="video-controls-right">
-                <button className="video-control-btn">
-                  <Settings className="w-5 h-5" />
-                </button>
-                <button className="video-control-btn" onClick={toggleFullscreen}>
-                  <Maximize className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
           </motion.div>
 
           {/* Playlist Sidebar */}
