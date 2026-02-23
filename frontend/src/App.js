@@ -76,6 +76,8 @@ function AppRouter() {
     <Routes>
       {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignUpPage />} />
+      <Route path="/register" element={<Navigate to="/signup" replace />} />
       
       {/* Admin Protected routes */}
       <Route element={
