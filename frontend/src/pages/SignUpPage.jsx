@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, Check, X, Shield, Lock, Mail, User, Phone, ArrowRight, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Check, X, Shield, Lock, Mail, User, Phone, ArrowRight, Loader2, Building2 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
