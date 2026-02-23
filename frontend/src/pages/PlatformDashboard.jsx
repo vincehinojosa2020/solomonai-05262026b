@@ -244,12 +244,12 @@ export default function PlatformDashboard() {
                   <td>
                     <span className="tenant-members">{(tenant.member_count || 0).toLocaleString()}</span>
                   </td>
-                  <td>{getStatusBadge(tenant.subscription_status)}</td>
-                  <td>
+                  <td onClick={(e) => e.stopPropagation()}>{getStatusBadge(tenant.subscription_status)}</td>
+                  <td onClick={(e) => e.stopPropagation()}>
                     <div className="tenant-actions">
                       <button 
                         className="action-btn view"
-                        onClick={() => viewAsChurchAdmin(tenant)}
+                        onClick={(e) => { e.stopPropagation(); viewAsChurchAdmin(tenant); }}
                         title="View as Church Admin"
                         data-testid={`view-${tenant.subdomain}`}
                       >
@@ -257,7 +257,7 @@ export default function PlatformDashboard() {
                       </button>
                       <button 
                         className="action-btn edit"
-                        onClick={() => setSelectedTenant(tenant)}
+                        onClick={(e) => { e.stopPropagation(); setSelectedTenant(tenant); }}
                         title="Manage"
                       >
                         <Settings className="w-4 h-4" />
@@ -265,7 +265,7 @@ export default function PlatformDashboard() {
                       {tenant.subscription_status === 'active' ? (
                         <button 
                           className="action-btn suspend"
-                          onClick={() => updateSubscription(tenant.id, 'suspended')}
+                          onClick={(e) => { e.stopPropagation(); updateSubscription(tenant.id, 'suspended'); }}
                           title="Suspend"
                         >
                           <AlertCircle className="w-4 h-4" />
@@ -273,7 +273,7 @@ export default function PlatformDashboard() {
                       ) : (
                         <button 
                           className="action-btn activate"
-                          onClick={() => updateSubscription(tenant.id, 'active')}
+                          onClick={(e) => { e.stopPropagation(); updateSubscription(tenant.id, 'active'); }}
                           title="Activate"
                         >
                           <CheckCircle className="w-4 h-4" />
