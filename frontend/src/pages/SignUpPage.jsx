@@ -138,7 +138,7 @@ export default function SignUpPage() {
     <div className="signup-page" data-testid="signup-page">
       <div className="signup-sidebar">
         <div className="signup-brand">
-          <h1 className="signup-logo">Sol<span>o</span>mon AI</h1>
+          <h1 className="signup-logo">SAMS<span>O</span>N</h1>
           <p className="signup-tagline">Enterprise Church Management System</p>
         </div>
         

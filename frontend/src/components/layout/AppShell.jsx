@@ -107,7 +107,7 @@ export default function AppShell() {
         <div className="flex items-center justify-between h-12 px-3 border-b border-slate-700">
           {!collapsed && (
             <span className="logo-text" data-testid="app-logo">
-              Sol<span className="logo-accent">o</span>mon AI
+              SAMS<span className="logo-accent">O</span>N
             </span>
           )}
           <button
@@ -168,7 +168,7 @@ export default function AppShell() {
           <div className="flex items-center gap-3">
             {collapsed && (
               <span className="font-bold text-sm tracking-wider text-slate-900">
-                Sol<span className="text-blue-600">o</span>mon AI
+                SAMS<span className="text-blue-600">O</span>N
               </span>
             )}
           </div>
