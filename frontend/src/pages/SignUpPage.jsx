@@ -31,12 +31,33 @@ export default function SignUpPage() {
     phone: '',
     password: '',
     confirmPassword: '',
+    churchId: '',  // Added church selection
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [emailAvailable, setEmailAvailable] = useState(null);
   const [checkingEmail, setCheckingEmail] = useState(false);
+  const [churches, setChurches] = useState([]);
+  const [loadingChurches, setLoadingChurches] = useState(true);
+
+  // Fetch available churches on mount
+  useState(() => {
+    const fetchChurches = async () => {
+      try {
+        const res = await fetch(`${API_URL}/tenants/list`);
+        if (res.ok) {
+          const data = await res.json();
+          setChurches(data.filter(t => t.subscription_status === 'active'));
+        }
+      } catch (error) {
+        console.error('Failed to fetch churches:', error);
+      } finally {
+        setLoadingChurches(false);
+      }
+    };
+    fetchChurches();
+  }, []);
 
   const passwordReqs = checkPasswordRequirements(formData.password);
   const allRequirementsMet = Object.values(passwordReqs).every(Boolean);
