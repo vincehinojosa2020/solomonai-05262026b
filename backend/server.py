@@ -782,6 +782,9 @@ async def register_user(request: UserRegistrationRequest, response: Response):
     
     logger.info(f"New user registered: {request.email}")
     
+    # Send welcome email from Samson AI (non-blocking)
+    asyncio.create_task(send_welcome_email(request.email, request.first_name))
+    
     return {
         "message": "Account created successfully",
         "user_id": user_id,
