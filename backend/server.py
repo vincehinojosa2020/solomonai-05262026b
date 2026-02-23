@@ -14,6 +14,7 @@ import uuid
 from datetime import datetime, timezone, date, timedelta
 from bson import ObjectId
 import random
+import resend
 
 # Stripe integration
 from emergentintegrations.payments.stripe.checkout import (
@@ -30,11 +31,15 @@ try:
 except ImportError:
     TWILIO_AVAILABLE = False
 
-# Solomon AI - Claude Integration
+# Samson AI - Claude Integration
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+# Configure Resend for welcome emails
+resend.api_key = os.environ.get("RESEND_API_KEY")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
