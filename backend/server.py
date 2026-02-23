@@ -1062,7 +1062,6 @@ async def get_payment_config():
 
 # Donation packages (FIXED - never accept amounts from frontend)
 DONATION_PACKAGES = {
-DONATION_PACKAGES = {
     "tithe_10": 10.00,
     "tithe_25": 25.00,
     "tithe_50": 50.00,
