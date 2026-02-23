@@ -56,6 +56,35 @@ api_router = APIRouter(prefix="/api")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# ============== MULTI-TENANT CONFIGURATION ==============
+
+# Platform admin accounts (can access all tenants)
+PLATFORM_ADMIN_EMAILS = ["admin@samson.ai", "admin@abundant.org"]
+
+# Role hierarchy
+ROLES = {
+    "platform_admin": 100,  # Can access everything
+    "church_admin": 50,     # Can manage their church
+    "member": 10            # Portal access only
+}
+
+async def get_tenant_by_subdomain(subdomain: str):
+    """Get tenant by subdomain"""
+    tenant = await db.tenants.find_one({"subdomain": subdomain.lower()}, {"_id": 0})
+    return tenant
+
+async def get_tenant_by_id(tenant_id: str):
+    """Get tenant by ID"""
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+    return tenant
+
+async def validate_tenant_subscription(tenant_id: str) -> bool:
+    """Check if tenant has active subscription"""
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+    if not tenant:
+        return False
+    return tenant.get("subscription_status") == "active"
+
 # ============== EMAIL HELPER FUNCTIONS ==============
 
 async def send_welcome_email(email: str, first_name: str):
