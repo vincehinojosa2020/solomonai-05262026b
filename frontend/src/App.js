@@ -56,6 +56,7 @@ function AppRouter() {
       }>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/platform" element={<PlatformDashboard />} />
         <Route path="/people" element={<PeopleList />} />
         <Route path="/people/:personId" element={<PersonDetail />} />
         <Route path="/households" element={<PeopleList type="households" />} />
