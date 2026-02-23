@@ -33,25 +33,20 @@ import { API_URL } from "@/lib/utils";
 // Router wrapper to detect session_id in URL
 function AppRouter() {
   const location = useLocation();
-  const [isSeeding, setIsSeeding] = useState(false);
-  const [isSeeded, setIsSeeded] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     // Seed database on first load
     const seedDatabase = async () => {
       try {
-        setIsSeeding(true);
         const response = await fetch(`${API_URL}/seed`, { method: 'POST' });
         const data = await response.json();
         console.log('Seed result:', data);
-        setIsSeeded(true);
       } catch (error) {
         console.error('Failed to seed database:', error);
-        // Still mark as seeded to allow app to proceed
-        setIsSeeded(true);
-      } finally {
-        setIsSeeding(false);
+        // Proceed anyway - seed is optional
       }
+      setIsReady(true);
     };
     seedDatabase();
   }, []);
@@ -61,7 +56,7 @@ function AppRouter() {
     return <AuthCallback />;
   }
 
-  if (isSeeding && !isSeeded) {
+  if (!isReady) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="text-center">
@@ -72,6 +67,7 @@ function AppRouter() {
       </div>
     );
   }
+
 
   return (
     <Routes>
