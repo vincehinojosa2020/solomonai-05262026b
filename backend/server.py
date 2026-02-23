@@ -872,6 +872,18 @@ async def create_donation_checkout(request: Request, donation: DonationRequest):
         if not stripe_api_key:
             raise HTTPException(status_code=500, detail="Payment processing not configured")
         
+        # Get logged in user if available
+        session_token = request.cookies.get("session_token")
+        user_email = None
+        user_id = None
+        if session_token:
+            session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+            if session:
+                user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+                if user:
+                    user_email = user.get("email")
+                    user_id = user.get("user_id")
+        
         # Determine amount
         if donation.package_id == "custom":
             if not donation.custom_amount or donation.custom_amount < 1.0:
@@ -885,8 +897,8 @@ async def create_donation_checkout(request: Request, donation: DonationRequest):
                 raise HTTPException(status_code=400, detail="Invalid donation package")
         
         # Build success/cancel URLs from frontend origin
-        success_url = f"{donation.origin_url}/giving?status=success&session_id={{CHECKOUT_SESSION_ID}}"
-        cancel_url = f"{donation.origin_url}/giving?status=cancelled"
+        success_url = f"{donation.origin_url}?status=success&session_id={{CHECKOUT_SESSION_ID}}"
+        cancel_url = f"{donation.origin_url}?status=cancelled"
         
         # Initialize Stripe
         host_url = str(request.base_url).rstrip('/')
@@ -898,7 +910,8 @@ async def create_donation_checkout(request: Request, donation: DonationRequest):
             "tenant_id": DEFAULT_TENANT_ID,
             "fund_id": donation.fund_id or "general",
             "donor_name": donation.donor_name or "Anonymous",
-            "donor_email": donation.donor_email or "",
+            "donor_email": user_email or donation.donor_email or "",
+            "user_id": user_id or "",
             "recurring": str(donation.recurring),
             "source": "web_portal"
         }
