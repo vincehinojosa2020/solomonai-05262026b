@@ -33,39 +33,10 @@ import { API_URL } from "@/lib/utils";
 // Router wrapper to detect session_id in URL
 function AppRouter() {
   const location = useLocation();
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    // Seed database on first load
-    const seedDatabase = async () => {
-      try {
-        const response = await fetch(`${API_URL}/seed`, { method: 'POST' });
-        const data = await response.json();
-        console.log('Seed result:', data);
-      } catch (error) {
-        console.error('Failed to seed database:', error);
-        // Proceed anyway - seed is optional
-      }
-      setIsReady(true);
-    };
-    seedDatabase();
-  }, []);
 
   // Check URL fragment for session_id synchronously (prevents race conditions)
   if (location.hash?.includes('session_id=')) {
     return <AuthCallback />;
-  }
-
-  if (!isReady) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white font-medium">Initializing SAMSON...</p>
-          <p className="text-slate-400 text-sm mt-1">Creating demo data for Abundant Church</p>
-        </div>
-      </div>
-    );
   }
 
 
