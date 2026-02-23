@@ -173,6 +173,12 @@ class TenantBase(BaseModel):
     primary_color: str = "#4f6ef7"
     accent_color: str = "#00c896"
     timezone: str = "America/Los_Angeles"
+    subscription_status: str = "active"  # active, suspended, cancelled
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    website: Optional[str] = None
+    phone: Optional[str] = None
 
 class Tenant(TenantBase):
     model_config = ConfigDict(extra="ignore")
