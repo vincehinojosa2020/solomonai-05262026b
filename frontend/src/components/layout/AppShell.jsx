@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, Home, UsersRound, Calendar, 
   CheckSquare, DollarSign, Mail, BarChart3, Settings, 
   Building2, Search, Bell, ChevronLeft, Menu, Command,
-  LogOut, Plug
+  LogOut, Plug, Globe
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -44,6 +44,13 @@ const navItems = [
   { section: 'ADMIN', items: [
     { name: 'Settings', path: '/settings', icon: Settings },
     { name: 'Integrations', path: '/integrations', icon: Plug },
+  ]},
+];
+
+// Platform admin gets an extra section
+const platformNavItems = [
+  { section: 'PLATFORM', items: [
+    { name: 'All Churches', path: '/platform', icon: Globe },
   ]},
 ];
 
