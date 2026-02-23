@@ -68,8 +68,8 @@ export default function LoginPage() {
 
   const copyCredentials = async (type) => {
     const creds = type === 'admin' 
-      ? 'admin@abundant.org / Demo2026!'
-      : 'member@abundant.org / Demo2026!';
+      ? 'admin@abundant.church / Demo2026!'
+      : 'member@abundant.church / Demo2026!';
     
     await navigator.clipboard.writeText(creds);
     
