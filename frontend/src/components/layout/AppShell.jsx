@@ -59,10 +59,17 @@ export default function AppShell() {
   const [commandOpen, setCommandOpen] = useState(false);
   const [tenant, setTenant] = useState(null);
   const [user, setUser] = useState(null);
+  const [impersonatedTenant, setImpersonatedTenant] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check if platform admin is viewing a specific church
+    const storedTenant = sessionStorage.getItem('impersonate_tenant');
+    if (storedTenant) {
+      setImpersonatedTenant(JSON.parse(storedTenant));
+    }
+    
     // Fetch tenant info
     fetch(`${API_URL}/tenant`)
       .then(res => res.json())
@@ -75,6 +82,12 @@ export default function AppShell() {
       .then(data => setUser(data))
       .catch(err => console.error('Failed to fetch user:', err));
   }, []);
+
+  const exitImpersonation = () => {
+    sessionStorage.removeItem('impersonate_tenant');
+    setImpersonatedTenant(null);
+    navigate('/platform');
+  };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
