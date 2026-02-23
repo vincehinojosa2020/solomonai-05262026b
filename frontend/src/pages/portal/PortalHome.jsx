@@ -104,7 +104,7 @@ export default function PortalHome() {
       {/* Upcoming Events */}
       <div className="portal-section">
         <div className="portal-section-header">
-          <h2 className="portal-section-title">Upcoming at Abundant Church</h2>
+          <h2 className="portal-section-title">Upcoming at {getChurchName()}</h2>
           <Link to="/portal/events" className="portal-section-link">View all →</Link>
         </div>
         
