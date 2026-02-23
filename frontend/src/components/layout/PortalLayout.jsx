@@ -7,6 +7,7 @@ import { API_URL } from '@/lib/utils';
 export default function PortalLayout() {
   const [user, setUser] = useState(null);
   const [memberData, setMemberData] = useState(null);
+  const [tenant, setTenant] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -19,7 +20,20 @@ export default function PortalLayout() {
 
   useEffect(() => {
     fetchMemberData();
+    fetchTenant();
   }, []);
+
+  const fetchTenant = async () => {
+    try {
+      const res = await fetch(`${API_URL}/tenant`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setTenant(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch tenant:', error);
+    }
+  };
 
   const fetchMemberData = async () => {
     try {
