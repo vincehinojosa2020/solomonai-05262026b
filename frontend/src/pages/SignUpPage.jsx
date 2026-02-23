@@ -48,7 +48,8 @@ export default function SignUpPage() {
         const res = await fetch(`${API_URL}/tenants/list`);
         if (res.ok) {
           const data = await res.json();
-          setChurches(data.filter(t => t.subscription_status === 'active'));
+          setChurches(data);  // API already filters for active only
+          console.log('Churches loaded:', data);
         }
       } catch (error) {
         console.error('Failed to fetch churches:', error);
