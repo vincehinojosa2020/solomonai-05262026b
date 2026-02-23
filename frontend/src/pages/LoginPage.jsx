@@ -237,6 +237,7 @@ export default function LoginPage() {
               Demo Accounts (Password: Demo2026!)
             </div>
             
+            {/* Platform Admin - God Mode */}
             <div className="demo-credential-row">
               <div className="demo-credential-info">
                 <span className="demo-role" style={{color: '#8b5cf6', minWidth: '95px'}}>Platform:</span>
@@ -249,6 +250,7 @@ export default function LoginPage() {
               </div>
             </div>
             
+            {/* Church Admins */}
             <div className="demo-credential-row">
               <div className="demo-credential-info">
                 <span className="demo-role">Abundant:</span>
@@ -287,6 +289,30 @@ export default function LoginPage() {
                   admin@pottershouse.church
                 </code>
               </div>
+            </div>
+
+            {/* Member Account - Maria */}
+            <div className="demo-credentials-divider">
+              <span>Member Portal</span>
+            </div>
+            
+            <div className="demo-credential-row">
+              <div className="demo-credential-info">
+                <span className="demo-role" style={{color: '#f59e0b', minWidth: '95px'}}>Maria:</span>
+                <code className="demo-creds" onClick={() => {
+                  setEmail('member@abundant.church');
+                  setPassword('Demo2026!');
+                }}>
+                  member@abundant.church
+                </code>
+              </div>
+              <button 
+                onClick={() => copyCredentials('member')}
+                className="demo-copy-btn"
+                title="Copy credentials"
+              >
+                {copiedMember ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+              </button>
             </div>
           </div>
           
