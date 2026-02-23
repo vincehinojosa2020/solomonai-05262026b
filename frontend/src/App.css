@@ -4631,3 +4631,27 @@
   font-size: 12px;
   color: #64748b;
 }
+
+/* Demo Credentials Divider */
+.demo-credentials-divider {
+  display: flex;
+  align-items: center;
+  margin: 12px 0 8px 0;
+  gap: 10px;
+}
+
+.demo-credentials-divider::before,
+.demo-credentials-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #334155;
+}
+
+.demo-credentials-divider span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  white-space: nowrap;
+}
