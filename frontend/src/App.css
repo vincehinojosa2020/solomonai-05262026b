@@ -3950,12 +3950,3 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
-
-  align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
-  text-align: center;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px dashed #e2e8f0;
-}
