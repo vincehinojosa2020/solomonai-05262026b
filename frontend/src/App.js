@@ -8,6 +8,7 @@ import AppShell from "@/components/layout/AppShell";
 import PortalLayout from "@/components/layout/PortalLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import LoginPage from "@/pages/LoginPage";
+import SignUpPage from "@/pages/SignUpPage";
 import AuthCallback from "@/pages/AuthCallback";
 import Dashboard from "@/pages/Dashboard";
 import PeopleList from "@/pages/PeopleList";
