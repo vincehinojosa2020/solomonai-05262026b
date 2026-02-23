@@ -214,7 +214,13 @@ export default function PlatformDashboard() {
             </thead>
             <tbody>
               {filteredTenants.map((tenant) => (
-                <tr key={tenant.id} data-testid={`tenant-row-${tenant.subdomain}`}>
+                <tr 
+                  key={tenant.id} 
+                  data-testid={`tenant-row-${tenant.subdomain}`}
+                  onClick={() => viewAsChurchAdmin(tenant)}
+                  className="tenant-row-clickable"
+                  style={{ cursor: 'pointer' }}
+                >
                   <td>
                     <div className="tenant-info">
                       <div 
