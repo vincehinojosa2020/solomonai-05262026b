@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Copy, Check, Loader2 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
