@@ -42,7 +42,7 @@ export default function SignUpPage() {
   const [loadingChurches, setLoadingChurches] = useState(true);
 
   // Fetch available churches on mount
-  useState(() => {
+  useEffect(() => {
     const fetchChurches = async () => {
       try {
         const res = await fetch(`${API_URL}/tenants/list`);
