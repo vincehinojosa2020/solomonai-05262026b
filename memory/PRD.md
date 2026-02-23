@@ -138,6 +138,16 @@ Dashboard stats scaled to 50,000-member mega-church (NOTE: Currently hardcoded d
 
 ---
 
+## Recent Changes (Feb 23, 2026)
+
+### Branding Consistency Update - "Solomon" → "Samson"
+- **Renamed**: AI chat assistant from "Solomon" to "Samson" for consistent branding
+- **Updated**: `SolomonChat.jsx` → `SamsonChat.jsx`
+- **Updated**: All "Ask Solomon" text → "Ask Samson" across portal
+- **Updated**: Chat placeholder text, loading messages, and welcome screens
+- **Cleanup**: Removed redundant `masterclass.css` file (styles consolidated in library.css)
+- **Cleanup**: Removed `masterclass.css` import from App.js
+
 ## Recent Changes (Feb 19, 2026)
 
 ### Continue Watching Feature (Netflix-style)
