@@ -772,6 +772,17 @@ async def register_user(request: UserRegistrationRequest, response: Response):
     user_id = str(uuid.uuid4())
     password_hash = hashlib.sha256(request.password.encode()).hexdigest()
     
+    # Use provided tenant_id or default
+    tenant_id = request.tenant_id if request.tenant_id else DEFAULT_TENANT_ID
+    
+    # Validate tenant exists and is active
+    if tenant_id:
+        tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+        if not tenant:
+            raise HTTPException(status_code=400, detail="Selected church not found")
+        if tenant.get("subscription_status") != "active":
+            raise HTTPException(status_code=400, detail="Selected church is not accepting registrations")
+    
     new_user = {
         "id": str(uuid.uuid4()),
         "user_id": user_id,
@@ -782,8 +793,8 @@ async def register_user(request: UserRegistrationRequest, response: Response):
         "last_name": request.last_name,
         "phone": request.phone,
         "role": "member",
-        "church_id": DEFAULT_TENANT_ID,
-        "tenant_id": DEFAULT_TENANT_ID,
+        "church_id": tenant_id,
+        "tenant_id": tenant_id,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "is_active": True,
         "membership_status": "Active",
