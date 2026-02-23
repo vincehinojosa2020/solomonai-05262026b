@@ -3636,6 +3636,277 @@ async def seed_demo_accounts(tenant_id: str):
         }
     }
 
+# ============== MULTI-TENANT SEED ==============
+
+@api_router.post("/seed-platform")
+async def seed_platform():
+    """Seed the entire SAMSON platform with multiple churches and demo data"""
+    import hashlib
+    
+    demo_password_hash = hashlib.sha256("Demo2026!".encode()).hexdigest()
+    
+    # Define the three demo churches
+    churches = [
+        {
+            "id": "abundant-church-001",
+            "name": "Abundant Living Faith Center",
+            "subdomain": "abundant",
+            "plan": "enterprise",
+            "member_limit": 100000,
+            "subscription_status": "active",
+            "address": "1556 George Dieter Dr",
+            "city": "El Paso",
+            "state": "TX",
+            "timezone": "America/Denver",
+            "website": "https://www.abundant.org",
+            "phone": "(915) 755-3000",
+            "primary_color": "#4f6ef7",
+            "accent_color": "#00c896"
+        },
+        {
+            "id": "cityreach-church-001",
+            "name": "City Reach Church",
+            "subdomain": "cityreach",
+            "plan": "enterprise",
+            "member_limit": 50000,
+            "subscription_status": "active",
+            "address": "1401 Medical Pkwy",
+            "city": "Cedar Park",
+            "state": "TX",
+            "timezone": "America/Chicago",
+            "website": "https://cityreachchurch.com",
+            "phone": "(512) 528-8600",
+            "primary_color": "#10b981",
+            "accent_color": "#f59e0b"
+        },
+        {
+            "id": "pottershouse-church-001",
+            "name": "The Potter's House",
+            "subdomain": "pottershouse",
+            "plan": "enterprise",
+            "member_limit": 100000,
+            "subscription_status": "active",
+            "address": "6777 W Kiest Blvd",
+            "city": "Dallas",
+            "state": "TX",
+            "timezone": "America/Chicago",
+            "website": "https://thepottershouse.org",
+            "phone": "(214) 331-0954",
+            "primary_color": "#7c3aed",
+            "accent_color": "#ec4899"
+        }
+    ]
+    
+    results = {"churches": [], "platform_accounts": []}
+    
+    # Create/update Samson platform admin accounts
+    platform_accounts = [
+        {
+            "user_id": "platform_admin_001",
+            "email": "admin@samson.ai",
+            "name": "Samson Platform Admin",
+            "role": "platform_admin",
+            "tenant_id": None  # Platform admin has no tenant restriction
+        },
+        {
+            "user_id": "platform_member_001",
+            "email": "member@samson.ai",
+            "name": "Demo Member",
+            "role": "member",
+            "tenant_id": "abundant-church-001"  # Default to Abundant for demo
+        },
+        {
+            "user_id": "platform_newmember_001",
+            "email": "newmember@samson.ai",
+            "name": "New Member Demo",
+            "role": "member",
+            "tenant_id": "abundant-church-001"
+        }
+    ]
+    
+    for account in platform_accounts:
+        await db.users.update_one(
+            {"email": account["email"]},
+            {"$set": {
+                **account,
+                "password_hash": demo_password_hash,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "is_active": True
+            }},
+            upsert=True
+        )
+        results["platform_accounts"].append(account["email"])
+    
+    # Seed each church
+    for church in churches:
+        # Create/update tenant
+        await db.tenants.update_one(
+            {"id": church["id"]},
+            {"$set": {
+                **church,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }},
+            upsert=True
+        )
+        
+        # Create church admin account
+        admin_email = f"admin@{church['subdomain']}.church"
+        await db.users.update_one(
+            {"email": admin_email},
+            {"$set": {
+                "user_id": f"admin_{church['subdomain']}",
+                "email": admin_email,
+                "name": f"{church['name']} Admin",
+                "role": "church_admin",
+                "tenant_id": church["id"],
+                "password_hash": demo_password_hash,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "is_active": True
+            }},
+            upsert=True
+        )
+        
+        # Create demo member account
+        member_email = f"member@{church['subdomain']}.church"
+        await db.users.update_one(
+            {"email": member_email},
+            {"$set": {
+                "user_id": f"member_{church['subdomain']}",
+                "email": member_email,
+                "name": f"{church['name']} Member",
+                "role": "member",
+                "tenant_id": church["id"],
+                "password_hash": demo_password_hash,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "is_active": True
+            }},
+            upsert=True
+        )
+        
+        # Generate 500 members for this church with 6 months of data
+        existing_members = await db.people.count_documents({"tenant_id": church["id"]})
+        if existing_members < 100:  # Only seed if not already seeded
+            await seed_church_members(church["id"], church["name"], 500)
+        
+        results["churches"].append({
+            "name": church["name"],
+            "subdomain": church["subdomain"],
+            "admin_email": admin_email,
+            "member_email": member_email
+        })
+    
+    return {
+        "message": "Platform seeded successfully",
+        "results": results,
+        "demo_credentials": {
+            "password": "Demo2026!",
+            "platform_admin": "admin@samson.ai",
+            "abundant_admin": "admin@abundant.church",
+            "cityreach_admin": "admin@cityreach.church",
+            "pottershouse_admin": "admin@pottershouse.church"
+        }
+    }
+
+async def seed_church_members(tenant_id: str, church_name: str, count: int = 500):
+    """Generate realistic church members with 6 months of giving/attendance data"""
+    
+    first_names = ["James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Linda", 
+                   "William", "Elizabeth", "David", "Barbara", "Richard", "Susan", "Joseph", "Jessica",
+                   "Thomas", "Sarah", "Charles", "Karen", "Christopher", "Nancy", "Daniel", "Lisa",
+                   "Matthew", "Betty", "Anthony", "Margaret", "Carlos", "Maria", "Juan", "Sofia",
+                   "Miguel", "Isabella", "Diego", "Valentina", "Roberto", "Ana", "Luis", "Carmen"]
+    
+    last_names = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis",
+                  "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson",
+                  "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee", "Perez", "Thompson",
+                  "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson"]
+    
+    statuses = ["member", "member", "member", "member", "visitor", "regular"]
+    
+    people = []
+    donations = []
+    attendance_records = []
+    
+    today = datetime.now(timezone.utc)
+    six_months_ago = today - timedelta(days=180)
+    
+    fund_names = ["General Fund", "Building Fund", "Missions", "Benevolence", "Youth Ministry"]
+    
+    for i in range(count):
+        person_id = str(uuid.uuid4())
+        first_name = random.choice(first_names)
+        last_name = random.choice(last_names)
+        
+        person = {
+            "id": person_id,
+            "tenant_id": tenant_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": f"{first_name.lower()}.{last_name.lower()}{i}@email.com",
+            "mobile_phone": f"({random.randint(200, 999)}) {random.randint(200, 999)}-{random.randint(1000, 9999)}",
+            "date_of_birth": f"{random.randint(1960, 2005)}-{random.randint(1, 12):02d}-{random.randint(1, 28):02d}",
+            "gender": random.choice(["male", "female"]),
+            "membership_status": random.choice(statuses),
+            "membership_date": (six_months_ago + timedelta(days=random.randint(0, 180))).strftime("%Y-%m-%d"),
+            "photo_url": f"https://api.dicebear.com/7.x/avataaars/svg?seed={person_id}",
+            "engagement_score": random.randint(30, 100),
+            "ytd_giving": 0,
+            "lifetime_giving": 0,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        people.append(person)
+        
+        # Generate donations (6 months of history)
+        if random.random() > 0.3:  # 70% of members give
+            num_donations = random.randint(3, 24)  # 3-24 donations over 6 months
+            person_total = 0
+            for _ in range(num_donations):
+                donation_date = six_months_ago + timedelta(days=random.randint(0, 180))
+                amount = random.choice([25, 50, 100, 150, 200, 250, 500, 1000])
+                donation = {
+                    "id": str(uuid.uuid4()),
+                    "tenant_id": tenant_id,
+                    "person_id": person_id,
+                    "donor_name": f"{first_name} {last_name}",
+                    "amount": amount,
+                    "fund_name": random.choice(fund_names),
+                    "donation_date": donation_date.strftime("%Y-%m-%d"),
+                    "payment_method": random.choice(["card", "ach", "cash", "check"]),
+                    "payment_status": "completed",
+                    "created_at": donation_date.isoformat()
+                }
+                donations.append(donation)
+                person_total += amount
+            person["ytd_giving"] = person_total
+            person["lifetime_giving"] = person_total * random.uniform(1, 3)
+        
+        # Generate attendance (6 months)
+        if random.random() > 0.2:  # 80% have some attendance
+            num_attendances = random.randint(5, 24)  # 5-24 services over 6 months
+            for _ in range(num_attendances):
+                att_date = six_months_ago + timedelta(days=random.randint(0, 180))
+                att_record = {
+                    "id": str(uuid.uuid4()),
+                    "tenant_id": tenant_id,
+                    "person_id": person_id,
+                    "person_name": f"{first_name} {last_name}",
+                    "service_name": random.choice(["Sunday 9AM", "Sunday 11AM", "Wednesday Night"]),
+                    "check_in_time": att_date.isoformat(),
+                    "created_at": att_date.isoformat()
+                }
+                attendance_records.append(att_record)
+    
+    # Bulk insert
+    if people:
+        await db.people.insert_many(people)
+    if donations:
+        await db.donations.insert_many(donations)
+    if attendance_records:
+        await db.attendance.insert_many(attendance_records)
+    
+    logger.info(f"Seeded {len(people)} members for {church_name}")
+    return len(people)
+
 # Include router
 app.include_router(api_router)
 
