@@ -1475,7 +1475,146 @@ async def get_sms_templates():
 async def root():
     return {"message": "Samson Church Management API", "version": "1.0.0"}
 
-# --- SOLOMON AI ROUTES ---
+# ============== TENANT/CHURCH MANAGEMENT ROUTES ==============
+
+@api_router.get("/tenants")
+async def list_tenants(request: Request):
+    """List all tenants (platform admin only)"""
+    # Verify platform admin
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+    
+    tenants = await db.tenants.find({}, {"_id": 0}).to_list(100)
+    
+    # Get member count for each tenant
+    for tenant in tenants:
+        tenant["member_count"] = await db.users.count_documents({"tenant_id": tenant["id"]})
+    
+    return tenants
+
+@api_router.get("/tenants/{subdomain}")
+async def get_tenant_by_subdomain_route(subdomain: str):
+    """Get tenant info by subdomain (public - for registration)"""
+    tenant = await get_tenant_by_subdomain(subdomain)
+    if not tenant:
+        raise HTTPException(status_code=404, detail="Church not found")
+    
+    # Return limited public info
+    return {
+        "id": tenant["id"],
+        "name": tenant["name"],
+        "subdomain": tenant["subdomain"],
+        "subscription_status": tenant.get("subscription_status", "active"),
+        "logo_url": tenant.get("logo_url"),
+        "primary_color": tenant.get("primary_color", "#4f6ef7")
+    }
+
+@api_router.post("/tenants")
+async def create_tenant(request: Request, tenant_data: TenantBase):
+    """Create a new tenant/church (platform admin only)"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+    
+    # Check subdomain uniqueness
+    existing = await db.tenants.find_one({"subdomain": tenant_data.subdomain.lower()})
+    if existing:
+        raise HTTPException(status_code=400, detail="Subdomain already in use")
+    
+    tenant = {
+        "id": str(uuid.uuid4()),
+        "name": tenant_data.name,
+        "subdomain": tenant_data.subdomain.lower(),
+        "plan": tenant_data.plan,
+        "member_limit": tenant_data.member_limit,
+        "logo_url": tenant_data.logo_url,
+        "primary_color": tenant_data.primary_color,
+        "accent_color": tenant_data.accent_color,
+        "timezone": tenant_data.timezone,
+        "subscription_status": tenant_data.subscription_status,
+        "address": tenant_data.address,
+        "city": tenant_data.city,
+        "state": tenant_data.state,
+        "website": tenant_data.website,
+        "phone": tenant_data.phone,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.tenants.insert_one(tenant)
+    logger.info(f"New tenant created: {tenant['name']} ({tenant['subdomain']})")
+    
+    return {"message": "Tenant created", "tenant_id": tenant["id"], "subdomain": tenant["subdomain"]}
+
+@api_router.patch("/tenants/{tenant_id}/subscription")
+async def update_tenant_subscription(request: Request, tenant_id: str, status: str):
+    """Update tenant subscription status (platform admin only)"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+    
+    if status not in ["active", "suspended", "cancelled"]:
+        raise HTTPException(status_code=400, detail="Invalid status")
+    
+    result = await db.tenants.update_one(
+        {"id": tenant_id},
+        {"$set": {"subscription_status": status}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+    
+    return {"message": f"Subscription updated to {status}"}
+
+@api_router.get("/tenants/{tenant_id}/users")
+async def list_tenant_users(request: Request, tenant_id: str, skip: int = 0, limit: int = 50):
+    """List users for a specific tenant (platform admin only)"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+    
+    users = await db.users.find(
+        {"tenant_id": tenant_id},
+        {"_id": 0, "password_hash": 0}
+    ).skip(skip).limit(limit).to_list(limit)
+    
+    total = await db.users.count_documents({"tenant_id": tenant_id})
+    
+    return {"users": users, "total": total, "skip": skip, "limit": limit}
+
+# --- SAMSON AI ROUTES ---
 # Store active chat sessions
 solomon_sessions: Dict[str, LlmChat] = {}
 
