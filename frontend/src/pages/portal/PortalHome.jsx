@@ -6,11 +6,11 @@ import { API_URL } from '@/lib/utils';
 export default function PortalHome() {
   const { user, memberData } = useOutletContext();
   const [events, setEvents] = useState([]);
-  const [solomonMessage, setSolomonMessage] = useState('');
+  const [samsonMessage, setSamsonMessage] = useState('');
 
   useEffect(() => {
     fetchUpcomingEvents();
-    generateSolomonInsight();
+    generateSamsonInsight();
   }, [memberData]);
 
   const fetchUpcomingEvents = async () => {
@@ -25,7 +25,7 @@ export default function PortalHome() {
     }
   };
 
-  const generateSolomonInsight = () => {
+  const generateSamsonInsight = () => {
     // Generate a personalized insight based on member data
     const firstName = user?.name?.split(' ')[0] || 'friend';
     const attendance = memberData?.person?.engagement_score || 85;
