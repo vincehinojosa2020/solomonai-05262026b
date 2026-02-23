@@ -334,6 +334,14 @@ class EmailLoginRequest(BaseModel):
     email: str
     password: str
 
+class UserRegistrationRequest(BaseModel):
+    email: EmailStr
+    password: str
+    confirm_password: str
+    first_name: str
+    last_name: str
+    phone: Optional[str] = None
+
 class UserRole(BaseModel):
     role: str = "member"  # "admin" or "member"
 
