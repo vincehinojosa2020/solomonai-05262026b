@@ -131,11 +131,11 @@ export default function PortalHome() {
         </div>
       </div>
 
-      {/* Solomon AI Widget */}
+      {/* Samson AI Widget */}
       <div className="portal-solomon-widget" data-testid="portal-solomon-widget">
         <div className="portal-solomon-header">
           <Sparkles className="w-5 h-5 text-blue-500" />
-          <span>Ask Solomon</span>
+          <span>Ask Samson</span>
         </div>
         <p className="portal-solomon-message">{solomonMessage}</p>
         <div className="portal-solomon-input">
