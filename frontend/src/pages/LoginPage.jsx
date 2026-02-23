@@ -269,13 +269,13 @@ export default function LoginPage() {
               </button>
             </div>
 
-            <div className="demo-credential new-member">
-              <div className="demo-label">
-                <span className="demo-icon new">✨</span>
-                <span>New Member (Zero Data):</span>
-              </div>
-              <div className="demo-value">
-                <code className="demo-code">
+            <div className="demo-credential-row">
+              <div className="demo-credential-info">
+                <span className="demo-role" style={{color: '#10b981', minWidth: '85px'}}>New (Zero):</span>
+                <code className="demo-creds" onClick={() => {
+                  setEmail('newmember@abundant.org');
+                  setPassword('Demo2026!');
+                }}>
                   newmember@abundant.org / Demo2026!
                 </code>
               </div>
