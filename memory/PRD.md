@@ -30,7 +30,7 @@ Dashboard stats scaled to 50,000-member mega-church (NOTE: Currently hardcoded d
    - Welcome banner with greeting + date
    - Quick actions: Give Now, My Groups, Upcoming Events
    - Upcoming events list
-   - Solomon AI widget with personalized message
+   - Samson AI widget with personalized message
 
 2. **Portal Watch** (`/portal/library`) - ✅ **PREMIUM LUXURY MEDIA EXPERIENCE**
    - **Consolidated from separate Watch + Library pages into ONE unified experience**
@@ -80,8 +80,8 @@ Dashboard stats scaled to 50,000-member mega-church (NOTE: Currently hardcoded d
 6. **Portal Me** (`/portal/me`)
    - Profile with giving/groups tabs
 
-### ✅ Solomon AI Analyst
-- Floating "Ask Solomon" button
+### ✅ Samson AI Analyst
+- Floating "Ask Samson" button
 - Claude Sonnet 4.5 powered AI chat
 
 ### ✅ Admin Dashboard
