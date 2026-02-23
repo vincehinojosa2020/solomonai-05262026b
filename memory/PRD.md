@@ -180,10 +180,11 @@ Dashboard stats scaled to 50,000-member mega-church (NOTE: Currently hardcoded d
 
 ## Credentials
 
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@abundant.org | Demo2026! |
-| Member | member@abundant.org | Demo2026! |
+| Role | Email | Password | Description |
+|------|-------|----------|-------------|
+| Admin | admin@abundant.org | Demo2026! | Full admin dashboard access |
+| Member | member@abundant.org | Demo2026! | Member with donation & watch history |
+| New Member | newmember@abundant.org | Demo2026! | **ZERO DATA** - Fresh account for testing full flow |
 
 ---
 
