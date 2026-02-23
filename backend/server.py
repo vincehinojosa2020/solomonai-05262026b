@@ -1501,6 +1501,15 @@ async def list_tenants(request: Request):
     
     return tenants
 
+@api_router.get("/tenants/list")
+async def list_public_churches():
+    """List active churches for public registration (no auth required)"""
+    tenants = await db.tenants.find(
+        {"subscription_status": "active"},
+        {"_id": 0, "id": 1, "name": 1, "subdomain": 1, "city": 1, "state": 1, "primary_color": 1}
+    ).to_list(100)
+    return tenants
+
 @api_router.get("/tenants/{subdomain}")
 async def get_tenant_by_subdomain_route(subdomain: str):
     """Get tenant info by subdomain (public - for registration)"""
