@@ -135,6 +135,18 @@ export default function PortalGive() {
         <p className="portal-page-subtitle">Securely give online using your preferred method</p>
       </div>
 
+      {/* Success Message Banner */}
+      {showSuccessMessage && (
+        <div className="portal-success-banner" data-testid="donation-success">
+          <CheckCircle className="w-6 h-6 text-green-500" />
+          <div>
+            <h3>Thank you for your generous gift!</h3>
+            <p>Your donation has been received and will be reflected in your giving history.</p>
+          </div>
+          <button onClick={() => setShowSuccessMessage(false)} className="portal-close-btn">×</button>
+        </div>
+      )}
+
       <div className="portal-give-container">
         {/* Giving Form */}
         <div className="portal-give-form">
