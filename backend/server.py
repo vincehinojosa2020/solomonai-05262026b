@@ -56,6 +56,83 @@ api_router = APIRouter(prefix="/api")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# ============== EMAIL HELPER FUNCTIONS ==============
+
+async def send_welcome_email(email: str, first_name: str):
+    """Send a creative welcome email from Samson AI when a new user registers"""
+    try:
+        html_content = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #1a1a2e; margin: 0; padding: 0; background-color: #f8f9fa;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <tr>
+            <td style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 40px; border-radius: 16px 16px 0 0; text-align: center;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.5px;">
+                    Welcome to the Family, {first_name}! 🙏
+                </h1>
+            </td>
+        </tr>
+        <tr>
+            <td style="background: #ffffff; padding: 40px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+                <p style="font-size: 16px; color: #4a5568; margin: 0 0 20px 0;">
+                    Hey {first_name},
+                </p>
+                <p style="font-size: 16px; color: #4a5568; margin: 0 0 20px 0;">
+                    I'm <strong>Samson</strong>, your AI assistant at Abundant Church. I just wanted to personally say <strong>thank you</strong> for joining our community! 
+                </p>
+                <p style="font-size: 16px; color: #4a5568; margin: 0 0 20px 0;">
+                    Whether you're looking to grow in faith, connect with others, or simply find a place to belong — you're in the right place. We're so glad you're here.
+                </p>
+                <div style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 20px; margin: 24px 0; border-radius: 0 8px 8px 0;">
+                    <p style="margin: 0; color: #1e40af; font-size: 15px;">
+                        <strong>What's next?</strong><br>
+                        Log in to explore sermon videos, join a group, or make your first gift. I'm always here if you need anything!
+                    </p>
+                </div>
+                <p style="font-size: 16px; color: #4a5568; margin: 0 0 8px 0;">
+                    See you soon,
+                </p>
+                <p style="font-size: 18px; color: #1a1a2e; margin: 0; font-weight: 600;">
+                    Samson 🤖✨
+                </p>
+                <p style="font-size: 13px; color: #94a3b8; margin: 16px 0 0 0; font-style: italic;">
+                    Your AI Church Assistant at Abundant Church
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; padding: 24px;">
+                <p style="font-size: 12px; color: #94a3b8; margin: 0;">
+                    Abundant Church • El Paso, TX<br>
+                    Powered by SAMSON AI
+                </p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+"""
+        
+        params = {
+            "from": SENDER_EMAIL,
+            "to": [email],
+            "subject": f"Welcome to Abundant Church, {first_name}! 🎉",
+            "html": html_content
+        }
+        
+        # Run sync SDK in thread to keep FastAPI non-blocking
+        email_response = await asyncio.to_thread(resend.Emails.send, params)
+        logger.info(f"Welcome email sent to {email}, id: {email_response.get('id')}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send welcome email to {email}: {str(e)}")
+        return False
+
 # ============== PYDANTIC MODELS ==============
 
 class TenantBase(BaseModel):
