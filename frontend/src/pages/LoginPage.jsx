@@ -234,14 +234,26 @@ export default function LoginPage() {
           <div className="demo-credentials-box" data-testid="demo-credentials-box">
             <div className="demo-credentials-label">
               <span className="demo-key-icon">🔑</span>
-              Demo Accounts
+              Demo Accounts (Password: Demo2026!)
             </div>
             
             <div className="demo-credential-row">
               <div className="demo-credential-info">
-                <span className="demo-role">Admin:</span>
+                <span className="demo-role" style={{color: '#8b5cf6', minWidth: '95px'}}>Platform:</span>
+                <code className="demo-creds" onClick={() => {
+                  setEmail('admin@samson.ai');
+                  setPassword('Demo2026!');
+                }}>
+                  admin@samson.ai
+                </code>
+              </div>
+            </div>
+            
+            <div className="demo-credential-row">
+              <div className="demo-credential-info">
+                <span className="demo-role">Abundant:</span>
                 <code className="demo-creds" onClick={() => fillCredentials('admin')}>
-                  admin@abundant.org / Demo2026!
+                  admin@abundant.church
                 </code>
               </div>
               <button 
@@ -255,28 +267,24 @@ export default function LoginPage() {
             
             <div className="demo-credential-row">
               <div className="demo-credential-info">
-                <span className="demo-role">Member:</span>
-                <code className="demo-creds" onClick={() => fillCredentials('member')}>
-                  member@abundant.org / Demo2026!
+                <span className="demo-role" style={{color: '#10b981'}}>CityReach:</span>
+                <code className="demo-creds" onClick={() => {
+                  setEmail('admin@cityreach.church');
+                  setPassword('Demo2026!');
+                }}>
+                  admin@cityreach.church
                 </code>
               </div>
-              <button 
-                onClick={() => copyCredentials('member')}
-                className="demo-copy-btn"
-                title="Copy credentials"
-              >
-                {copiedMember ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
             </div>
 
             <div className="demo-credential-row">
               <div className="demo-credential-info">
-                <span className="demo-role" style={{color: '#10b981', minWidth: '85px'}}>New (Zero):</span>
+                <span className="demo-role" style={{color: '#7c3aed'}}>Potter's:</span>
                 <code className="demo-creds" onClick={() => {
-                  setEmail('newmember@abundant.org');
+                  setEmail('admin@pottershouse.church');
                   setPassword('Demo2026!');
                 }}>
-                  newmember@abundant.org / Demo2026!
+                  admin@pottershouse.church
                 </code>
               </div>
             </div>
