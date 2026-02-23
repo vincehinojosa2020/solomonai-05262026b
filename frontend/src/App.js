@@ -47,6 +47,8 @@ function AppRouter() {
         setIsSeeded(true);
       } catch (error) {
         console.error('Failed to seed database:', error);
+        // Still mark as seeded to allow app to proceed
+        setIsSeeded(true);
       } finally {
         setIsSeeding(false);
       }
