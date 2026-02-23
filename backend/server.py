@@ -1841,7 +1841,20 @@ async def clear_solomon_session(session_id: str):
 
 # --- TENANT ROUTES ---
 @api_router.get("/tenant")
-async def get_tenant():
+async def get_tenant(request: Request):
+    """Get tenant info - returns user's tenant if logged in, else default"""
+    # Try to get user's tenant from session
+    session_token = request.cookies.get("session_token")
+    if session_token:
+        session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+        if session:
+            user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+            if user and user.get("tenant_id"):
+                tenant = await db.tenants.find_one({"id": user["tenant_id"]}, {"_id": 0})
+                if tenant:
+                    return serialize_doc(tenant)
+    
+    # Fallback to default tenant
     tenant = await db.tenants.find_one({"id": DEFAULT_TENANT_ID}, {"_id": 0})
     if not tenant:
         # Return default tenant if not found
