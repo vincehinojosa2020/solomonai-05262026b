@@ -85,10 +85,10 @@ export default function LoginPage() {
 
   const fillCredentials = (type) => {
     if (type === 'admin') {
-      setEmail('admin@abundant.org');
+      setEmail('admin@abundant.church');
       setPassword('Demo2026!');
     } else {
-      setEmail('member@abundant.org');
+      setEmail('member@abundant.church');
       setPassword('Demo2026!');
     }
   };
