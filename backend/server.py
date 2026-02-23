@@ -1018,13 +1018,46 @@ async def stripe_webhook(request: Request):
         
         # Update transaction based on webhook
         if webhook_response.payment_status == "paid":
-            await db.payment_transactions.update_one(
+            # Get the transaction
+            transaction = await db.payment_transactions.find_one(
                 {"session_id": webhook_response.session_id},
-                {"$set": {
-                    "payment_status": "paid",
-                    "webhook_received_at": datetime.now(timezone.utc)
-                }}
+                {"_id": 0}
             )
+            
+            if transaction:
+                # Update transaction status
+                await db.payment_transactions.update_one(
+                    {"session_id": webhook_response.session_id},
+                    {"$set": {
+                        "payment_status": "paid",
+                        "webhook_received_at": datetime.now(timezone.utc)
+                    }}
+                )
+                
+                # Create donation record
+                donor_email = transaction.get("donor_email") or transaction.get("metadata", {}).get("donor_email")
+                if donor_email:
+                    person = await db.people.find_one({"email": donor_email}, {"_id": 0})
+                    person_id = person["id"] if person else None
+                else:
+                    person_id = None
+                
+                donation = {
+                    "id": f"don_{uuid.uuid4().hex[:12]}",
+                    "tenant_id": DEFAULT_TENANT_ID,
+                    "person_id": person_id,
+                    "amount": transaction.get("amount", 0),
+                    "fund_id": transaction.get("fund_id", "general"),
+                    "donation_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                    "payment_method": "stripe",
+                    "transaction_id": webhook_response.session_id,
+                    "donor_name": transaction.get("donor_name", "Anonymous"),
+                    "donor_email": donor_email,
+                    "status": "completed",
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+                await db.donations.insert_one(donation)
+                logger.info(f"Created donation record: {donation['id']}")
         
         return {"status": "received"}
         
