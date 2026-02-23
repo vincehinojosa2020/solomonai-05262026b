@@ -99,7 +99,7 @@ export default function LoginPage() {
       <div className="login-sidebar">
         <div>
           <div className="login-logo">
-            SAMS<span className="accent">O</span>N
+            Sol<span className="accent">o</span>mon AI
           </div>
           <div className="login-tagline">
             Enterprise Church Management System

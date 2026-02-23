@@ -65,7 +65,7 @@ function AppRouter() {
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white font-medium">Initializing SAMSON...</p>
+          <p className="text-white font-medium">Initializing Solomon AI...</p>
           <p className="text-slate-400 text-sm mt-1">Creating demo data for Abundant Church</p>
         </div>
       </div>
