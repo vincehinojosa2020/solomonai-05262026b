@@ -268,6 +268,18 @@ export default function LoginPage() {
                 {copiedMember ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
             </div>
+
+            <div className="demo-credential new-member">
+              <div className="demo-label">
+                <span className="demo-icon new">✨</span>
+                <span>New Member (Zero Data):</span>
+              </div>
+              <div className="demo-value">
+                <code className="demo-code">
+                  newmember@abundant.org / Demo2026!
+                </code>
+              </div>
+            </div>
           </div>
           
           <div className="login-footer">
