@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import CommandPalette from '@/components/CommandPalette';
-import SolomonChat from '@/components/SolomonChat';
+import SamsonChat from '@/components/SamsonChat';
 import { API_URL } from '@/lib/utils';
 
 const navItems = [
