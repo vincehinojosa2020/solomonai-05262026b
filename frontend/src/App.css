@@ -4590,3 +4590,16 @@
 .impersonation-exit:hover {
   background: rgba(255, 255, 255, 0.3);
 }
+
+/* Clickable tenant rows */
+.tenant-row-clickable {
+  transition: background-color 0.15s ease;
+}
+
+.tenant-row-clickable:hover {
+  background-color: #f0f9ff !important;
+}
+
+.tenant-row-clickable:hover .tenant-name {
+  color: #2563eb;
+}
