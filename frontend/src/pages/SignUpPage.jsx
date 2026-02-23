@@ -210,6 +210,32 @@ export default function SignUpPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="signup-form">
+            {/* Church Selector */}
+            <div className="signup-field">
+              <label>Select Your Church</label>
+              <div className="signup-input-wrapper">
+                <Building2 className="signup-input-icon" />
+                <select
+                  name="churchId"
+                  value={formData.churchId}
+                  onChange={handleChange}
+                  required
+                  className="signup-select"
+                  data-testid="signup-church"
+                >
+                  <option value="">Choose your church...</option>
+                  {churches.map((church) => (
+                    <option key={church.id} value={church.id}>
+                      {church.name} — {church.city}, {church.state}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {loadingChurches && (
+                <span className="signup-hint">Loading churches...</span>
+              )}
+            </div>
+
             {/* Name Row */}
             <div className="signup-row">
               <div className="signup-field">
