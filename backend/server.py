@@ -1050,7 +1050,18 @@ async def get_video_progress(request: Request, video_id: str):
 
 # ============== STRIPE PAYMENT ROUTES ==============
 
+@api_router.get("/payments/config")
+async def get_payment_config():
+    """Get the Stripe publishable key for frontend"""
+    publishable_key = os.environ.get("STRIPE_PUBLISHABLE_KEY")
+    return {
+        "publishable_key": publishable_key,
+        "currency": "usd",
+        "payment_methods": ["card"]
+    }
+
 # Donation packages (FIXED - never accept amounts from frontend)
+DONATION_PACKAGES = {
 DONATION_PACKAGES = {
     "tithe_10": 10.00,
     "tithe_25": 25.00,
