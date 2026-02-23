@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { CreditCard, Building2, DollarSign, Download, CheckCircle } from 'lucide-react';
+import { useOutletContext, useSearchParams } from 'react-router-dom';
+import { CreditCard, Building2, DollarSign, Download, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export default function PortalGive() {
   const { user, memberData, refreshData } = useOutletContext();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [amount, setAmount] = useState('');
   const [fund, setFund] = useState('general');
   const [frequency, setFrequency] = useState('one-time');
@@ -13,13 +14,52 @@ export default function PortalGive() {
   const [funds, setFunds] = useState([]);
   const [givingHistory, setGivingHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const quickAmounts = [25, 50, 100, 250];
 
   useEffect(() => {
     fetchFunds();
     fetchGivingHistory();
+    
+    // Handle Stripe redirect
+    const status = searchParams.get('status');
+    const sessionId = searchParams.get('session_id');
+    
+    if (status === 'success' && sessionId) {
+      // Confirm payment and create donation record
+      confirmPayment(sessionId);
+    } else if (status === 'cancelled') {
+      toast.error('Donation was cancelled');
+      // Clear URL params
+      setSearchParams({});
+    }
   }, []);
+
+  const confirmPayment = async (sessionId) => {
+    try {
+      const res = await fetch(`${API_URL}/payments/status/${sessionId}`, {
+        credentials: 'include'
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        if (data.payment_status === 'paid') {
+          setShowSuccessMessage(true);
+          toast.success('Thank you for your generous donation!');
+          // Refresh giving history
+          setTimeout(() => {
+            fetchGivingHistory();
+          }, 1000);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to confirm payment:', error);
+    } finally {
+      // Clear URL params
+      setSearchParams({});
+    }
+  };
 
   const fetchFunds = async () => {
     try {
