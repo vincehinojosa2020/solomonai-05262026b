@@ -207,7 +207,7 @@ export default function PortalLayout() {
       {/* Main Content */}
       <main className={`portal-main ${isDarkPage ? 'portal-main-dark' : ''}`}>
         <div className={isDarkPage ? 'portal-content-full' : 'portal-content'}>
-          <Outlet context={{ user, memberData, refreshData: fetchMemberData }} />
+          <Outlet context={{ user, memberData, tenant, refreshData: fetchMemberData }} />
         </div>
       </main>
 
