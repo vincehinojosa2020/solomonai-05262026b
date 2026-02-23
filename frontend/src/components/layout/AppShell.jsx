@@ -128,6 +128,28 @@ export default function AppShell() {
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-2 scrollbar-thin">
+          {/* Platform section for platform admins */}
+          {user?.role === 'platform_admin' && platformNavItems.map((section, idx) => (
+            <div key={`platform-${idx}`} className="nav-section">
+              {!collapsed && (
+                <div className="nav-section-label" style={{ color: '#a855f7' }}>{section.section}</div>
+              )}
+              {section.items.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                  data-testid={`nav-${item.name.toLowerCase().replace(' ', '-')}`}
+                  title={collapsed ? item.name : undefined}
+                  style={({ isActive }) => isActive ? { background: 'rgba(168, 85, 247, 0.2)' } : {}}
+                >
+                  <item.icon className="icon" style={{ color: '#a855f7' }} />
+                  {!collapsed && <span style={{ color: '#a855f7' }}>{item.name}</span>}
+                </NavLink>
+              ))}
+            </div>
+          ))}
+          
           {navItems.map((section, idx) => (
             <div key={idx} className="nav-section">
               {!collapsed && (
