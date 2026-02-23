@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, Send, Sparkles, ChevronRight, Loader2, Trash2 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 
-const SolomonChat = () => {
+const SamsonChat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -64,7 +64,7 @@ const SolomonChat = () => {
       };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Solomon chat error:', error);
+      console.error('Samson chat error:', error);
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: "I apologize, but I'm having trouble connecting right now. Please try again in a moment.",
@@ -115,15 +115,15 @@ const SolomonChat = () => {
       <button
         onClick={() => setIsOpen(true)}
         className={`solomon-fab ${isOpen ? 'hidden' : ''}`}
-        data-testid="solomon-fab"
-        aria-label="Ask Solomon"
+        data-testid="samson-fab"
+        aria-label="Ask Samson"
       >
         <Sparkles className="w-5 h-5" />
-        <span className="solomon-fab-label">Ask Solomon</span>
+        <span className="solomon-fab-label">Ask Samson</span>
       </button>
 
       {/* Chat Panel */}
-      <div className={`solomon-panel ${isOpen ? 'open' : ''}`} data-testid="solomon-panel">
+      <div className={`solomon-panel ${isOpen ? 'open' : ''}`} data-testid="samson-panel">
         {/* Header */}
         <div className="solomon-header">
           <div className="flex items-center gap-2">
@@ -131,7 +131,7 @@ const SolomonChat = () => {
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="solomon-title">Solomon</h3>
+              <h3 className="solomon-title">Samson</h3>
               <p className="solomon-subtitle">AI Church Analyst</p>
             </div>
           </div>
@@ -141,7 +141,7 @@ const SolomonChat = () => {
                 onClick={handleClearChat}
                 className="solomon-clear-btn"
                 title="Clear conversation"
-                data-testid="solomon-clear-btn"
+                data-testid="samson-clear-btn"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -149,7 +149,7 @@ const SolomonChat = () => {
             <button
               onClick={() => setIsOpen(false)}
               className="solomon-close-btn"
-              data-testid="solomon-close-btn"
+              data-testid="samson-close-btn"
             >
               <X className="w-5 h-5" />
             </button>
@@ -157,13 +157,13 @@ const SolomonChat = () => {
         </div>
 
         {/* Messages */}
-        <div className="solomon-messages" data-testid="solomon-messages">
+        <div className="solomon-messages" data-testid="samson-messages">
           {messages.length === 0 ? (
             <div className="solomon-welcome">
               <div className="solomon-welcome-icon">
                 <Sparkles className="w-8 h-8" />
               </div>
-              <h4>Welcome! I'm Solomon</h4>
+              <h4>Welcome! I'm Samson</h4>
               <p>Your AI-powered church analyst. I can help you understand your data, provide pastoral insights, and suggest strategic actions.</p>
               
               <div className="solomon-prompts">
@@ -173,7 +173,7 @@ const SolomonChat = () => {
                     key={idx}
                     onClick={() => handleSend(prompt)}
                     className="solomon-prompt-btn"
-                    data-testid={`solomon-prompt-${idx}`}
+                    data-testid={`samson-prompt-${idx}`}
                   >
                     <MessageSquare className="w-3 h-3" />
                     {prompt}
@@ -186,7 +186,7 @@ const SolomonChat = () => {
               <div
                 key={idx}
                 className={`solomon-message ${msg.role}`}
-                data-testid={`solomon-message-${idx}`}
+                data-testid={`samson-message-${idx}`}
               >
                 {msg.role === 'assistant' && (
                   <div className="solomon-message-avatar">
@@ -204,7 +204,7 @@ const SolomonChat = () => {
                           key={actionIdx}
                           onClick={() => handleActionClick(action)}
                           className="solomon-action-btn"
-                          data-testid={`solomon-action-${actionIdx}`}
+                          data-testid={`samson-action-${actionIdx}`}
                         >
                           {action.label}
                           <ChevronRight className="w-3 h-3" />
@@ -224,7 +224,7 @@ const SolomonChat = () => {
               </div>
               <div className="solomon-message-content loading">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Solomon is thinking...</span>
+                <span>Samson is thinking...</span>
               </div>
             </div>
           )}
@@ -239,17 +239,17 @@ const SolomonChat = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask Solomon anything about your church..."
+            placeholder="Ask Samson anything about your church..."
             className="solomon-input"
             rows={1}
             disabled={isLoading}
-            data-testid="solomon-input"
+            data-testid="samson-input"
           />
           <button
             onClick={() => handleSend()}
             disabled={!inputValue.trim() || isLoading}
             className="solomon-send-btn"
-            data-testid="solomon-send-btn"
+            data-testid="samson-send-btn"
           >
             <Send className="w-4 h-4" />
           </button>
@@ -261,11 +261,11 @@ const SolomonChat = () => {
         <div 
           className="solomon-backdrop" 
           onClick={() => setIsOpen(false)}
-          data-testid="solomon-backdrop"
+          data-testid="samson-backdrop"
         />
       )}
     </>
   );
 };
 
-export default SolomonChat;
+export default SamsonChat;
