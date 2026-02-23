@@ -283,7 +283,7 @@ export default function LoginPage() {
           </div>
           
           <div className="login-footer">
-            Don't have an account? <a href="#" className="text-blue-600 hover:underline">Request access →</a>
+            Don't have an account? <Link to="/signup" className="text-blue-600 hover:underline">Create account →</Link>
           </div>
         </div>
       </div>
