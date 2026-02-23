@@ -137,7 +137,7 @@ export default function PortalHome() {
           <Sparkles className="w-5 h-5 text-blue-500" />
           <span>Ask Samson</span>
         </div>
-        <p className="portal-solomon-message">{solomonMessage}</p>
+        <p className="portal-solomon-message">{samsonMessage}</p>
         <div className="portal-solomon-input">
           <input 
             type="text" 
