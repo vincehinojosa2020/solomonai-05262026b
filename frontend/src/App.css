@@ -3588,6 +3588,369 @@
 .portal-empty-state {
   display: flex;
   flex-direction: column;
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SIGNUP PAGE - Enterprise Security Design
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.signup-page {
+  display: flex;
+  min-height: 100vh;
+  background: #0f172a;
+}
+
+.signup-sidebar {
+  width: 400px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.signup-brand {
+  margin-bottom: 48px;
+}
+
+.signup-logo {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.signup-logo span {
+  color: #3b82f6;
+}
+
+.signup-tagline {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 8px;
+}
+
+.signup-features {
+  flex: 1;
+}
+
+.signup-feature {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.signup-feature svg {
+  color: #22c55e;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.signup-feature h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 4px;
+}
+
+.signup-feature p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.signup-version {
+  font-size: 12px;
+  color: #475569;
+}
+
+.signup-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background: white;
+}
+
+.signup-container {
+  width: 100%;
+  max-width: 480px;
+}
+
+.signup-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.signup-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px;
+}
+
+.signup-header p {
+  font-size: 15px;
+  color: #64748b;
+  margin: 0;
+}
+
+.signup-google-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 24px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.signup-google-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.signup-divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.signup-divider::before,
+.signup-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.signup-divider span {
+  padding: 0 16px;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.signup-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.signup-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.signup-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.signup-field label .optional {
+  font-weight: 400;
+  color: #9ca3af;
+}
+
+.signup-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.signup-input-icon {
+  position: absolute;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.signup-input-wrapper input {
+  width: 100%;
+  padding: 12px 14px 12px 44px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 15px;
+  color: #1e293b;
+  transition: all 0.2s;
+}
+
+.signup-input-wrapper input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.signup-input-wrapper input::placeholder {
+  color: #94a3b8;
+}
+
+.signup-input-status {
+  position: absolute;
+  right: 14px;
+  width: 18px;
+  height: 18px;
+}
+
+.signup-input-status.checking {
+  color: #94a3b8;
+  animation: spin 1s linear infinite;
+}
+
+.signup-input-status.available {
+  color: #22c55e;
+}
+
+.signup-input-status.taken {
+  color: #ef4444;
+}
+
+.signup-toggle-pw {
+  position: absolute;
+  right: 40px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.signup-toggle-pw:hover {
+  color: #64748b;
+}
+
+.signup-field-error {
+  font-size: 13px;
+  color: #ef4444;
+  margin: 4px 0 0;
+}
+
+.signup-field-error a {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+/* Password Requirements */
+.signup-requirements {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.signup-req {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #ef4444;
+}
+
+.signup-req.met {
+  color: #22c55e;
+}
+
+.signup-req svg {
+  flex-shrink: 0;
+}
+
+.signup-submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.signup-submit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.signup-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.signup-login-link {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.signup-login-link a {
+  color: #3b82f6;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.signup-login-link a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .signup-sidebar {
+    display: none;
+  }
+  
+  .signup-main {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 500px) {
+  .signup-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .signup-requirements {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
   align-items: center;
   justify-content: center;
   padding: 48px 24px;
