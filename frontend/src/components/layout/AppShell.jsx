@@ -68,6 +68,8 @@ export default function AppShell() {
     const storedTenant = sessionStorage.getItem('impersonate_tenant');
     if (storedTenant) {
       setImpersonatedTenant(JSON.parse(storedTenant));
+    } else {
+      setImpersonatedTenant(null);
     }
     
     // Fetch tenant info
@@ -81,7 +83,7 @@ export default function AppShell() {
       .then(res => res.ok ? res.json() : null)
       .then(data => setUser(data))
       .catch(err => console.error('Failed to fetch user:', err));
-  }, []);
+  }, [location.pathname]);  // Re-run when location changes
 
   const exitImpersonation = () => {
     sessionStorage.removeItem('impersonate_tenant');
