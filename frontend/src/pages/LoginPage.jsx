@@ -154,7 +154,7 @@ export default function LoginPage() {
       {/* Right Panel - Login */}
       <div className="login-main">
         <div className="login-box" style={{ maxWidth: '400px' }}>
-          <h1 className="login-title">Sign in to Solomon AI</h1>
+          <h1 className="login-title">Sign in to SAMSON</h1>
           <p className="login-subtitle">
             Access your church management platform
           </p>
