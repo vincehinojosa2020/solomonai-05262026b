@@ -32,11 +32,11 @@ export default function PortalHome() {
     const ytdGiving = memberData?.giving?.ytd_total || 0;
     
     if (attendance >= 80) {
-      setSolomonMessage(`Hi ${firstName}! You've attended 47 of the last 52 Sundays and your giving is consistent. Thank you for your faithfulness to Abundant Church. 🙏`);
+      setSamsonMessage(`Hi ${firstName}! You've attended 47 of the last 52 Sundays and your giving is consistent. Thank you for your faithfulness to Abundant Church. 🙏`);
     } else if (ytdGiving > 500) {
-      setSolomonMessage(`Hi ${firstName}! Your generous giving of $${ytdGiving.toLocaleString()} this year is making a real difference. Thank you for investing in God's kingdom! 💙`);
+      setSamsonMessage(`Hi ${firstName}! Your generous giving of $${ytdGiving.toLocaleString()} this year is making a real difference. Thank you for investing in God's kingdom! 💙`);
     } else {
-      setSolomonMessage(`Welcome back, ${firstName}! We're so glad you're part of the Abundant Church family. How can I help you today?`);
+      setSamsonMessage(`Welcome back, ${firstName}! We're so glad you're part of the Abundant Church family. How can I help you today?`);
     }
   };
 
