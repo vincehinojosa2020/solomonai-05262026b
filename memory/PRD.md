@@ -4,9 +4,38 @@
 ### Overview
 **Product Name:** SAMSON  
 **Tagline:** "Enterprise Church Management System"  
-**Demo Tenant:** Abundant Church (El Paso, TX)  
-**Target Scale:** 50,000+ members per tenant  
+**Target Scale:** 50,000+ members per tenant, 1M+ concurrent users platform-wide  
 **Demo URL:** https://samson-demo.preview.emergentagent.com
+**Architecture:** Multi-tenant SaaS with subdomain routing
+
+---
+
+## Multi-Tenant Architecture (Feb 23, 2026)
+
+### Tenant Structure
+Each church is a tenant with isolated data:
+- **Subdomain routing**: `abundant.samson.ai`, `cityreach.samson.ai`, etc.
+- **Dedicated data**: Members, donations, groups, events per tenant
+- **Subscription management**: Active, suspended, cancelled states
+
+### Demo Churches
+| Church | Subdomain | Admin Email | Members | Location |
+|--------|-----------|-------------|---------|----------|
+| Abundant Living Faith Center | abundant | admin@abundant.church | 500 | El Paso, TX |
+| City Reach Church | cityreach | admin@cityreach.church | 500 | Cedar Park, TX |
+| The Potter's House | pottershouse | admin@pottershouse.church | 500 | Dallas, TX |
+
+### Role Hierarchy
+1. **platform_admin** - Access all tenants, manage subscriptions
+2. **church_admin** - Full admin within their church
+3. **member** - Portal access only
+
+### Platform Accounts
+| Role | Email | Password |
+|------|-------|----------|
+| Platform Admin | admin@samson.ai | Demo2026! |
+| Demo Member | member@samson.ai | Demo2026! |
+| New Member | newmember@samson.ai | Demo2026! |
 
 ---
 
@@ -14,9 +43,11 @@
 
 ### ✅ BUILD 1: Email/Password Login + Demo Accounts (COMPLETED)
 - **Email/Password form** on login page with show/hide password toggle
-- **Demo Credentials Box** with copy buttons:
-  - Admin: `admin@abundant.org / Demo2026!` → routes to `/dashboard`
-  - Member: `member@abundant.org / Demo2026!` → routes to `/portal`
+- **Multi-tenant Demo Credentials Box**:
+  - Platform: `admin@samson.ai` → Platform super-admin
+  - Abundant: `admin@abundant.church` → Church admin
+  - CityReach: `admin@cityreach.church` → Church admin
+  - Potter's: `admin@pottershouse.church` → Church admin
 - **Google OAuth** still available as alternative login
 - **Role-based routing**: admin → /dashboard, member → /portal
 
