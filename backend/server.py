@@ -601,6 +601,123 @@ async def email_password_login(request: EmailLoginRequest, response: Response):
         "role": user_doc.get("role", "member")
     }
 
+# ============== USER REGISTRATION ==============
+
+import re
+import hashlib
+
+def validate_password_strength(password: str) -> tuple[bool, str]:
+    """
+    Validate password meets security requirements:
+    - Minimum 8 characters
+    - At least one uppercase letter
+    - At least one lowercase letter
+    - At least one number
+    - At least one special character
+    """
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters long"
+    
+    if not re.search(r'[A-Z]', password):
+        return False, "Password must contain at least one uppercase letter"
+    
+    if not re.search(r'[a-z]', password):
+        return False, "Password must contain at least one lowercase letter"
+    
+    if not re.search(r'\d', password):
+        return False, "Password must contain at least one number"
+    
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\;\'`~]', password):
+        return False, "Password must contain at least one special character (!@#$%^&*)"
+    
+    return True, "Password meets requirements"
+
+@api_router.post("/auth/register")
+async def register_user(request: UserRegistrationRequest, response: Response):
+    """Register a new member account with email and password"""
+    
+    # Validate passwords match
+    if request.password != request.confirm_password:
+        raise HTTPException(status_code=400, detail="Passwords do not match")
+    
+    # Validate password strength
+    is_valid, message = validate_password_strength(request.password)
+    if not is_valid:
+        raise HTTPException(status_code=400, detail=message)
+    
+    # Check if email already exists
+    existing_user = await db.users.find_one({"email": request.email.lower()}, {"_id": 0})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="An account with this email already exists")
+    
+    # Create user
+    user_id = str(uuid.uuid4())
+    password_hash = hashlib.sha256(request.password.encode()).hexdigest()
+    
+    new_user = {
+        "id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "email": request.email.lower(),
+        "password_hash": password_hash,
+        "name": f"{request.first_name} {request.last_name}",
+        "first_name": request.first_name,
+        "last_name": request.last_name,
+        "phone": request.phone,
+        "role": "member",
+        "church_id": DEFAULT_TENANT_ID,
+        "tenant_id": DEFAULT_TENANT_ID,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "is_active": True,
+        "membership_status": "Active",
+        "profile_photo": None,
+        "email_verified": False,
+        "registration_source": "web_signup"
+    }
+    
+    await db.users.insert_one(new_user)
+    
+    # Create session and auto-login
+    session_token = f"sess_{uuid.uuid4().hex}"
+    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+    
+    await db.user_sessions.insert_one({
+        "user_id": user_id,
+        "session_token": session_token,
+        "expires_at": expires_at,
+        "created_at": datetime.now(timezone.utc)
+    })
+    
+    # Set cookie
+    response.set_cookie(
+        key="session_token",
+        value=session_token,
+        httponly=True,
+        secure=True,
+        samesite="none",
+        path="/",
+        max_age=7 * 24 * 60 * 60
+    )
+    
+    logger.info(f"New user registered: {request.email}")
+    
+    return {
+        "message": "Account created successfully",
+        "user_id": user_id,
+        "email": new_user["email"],
+        "name": new_user["name"],
+        "role": "member"
+    }
+
+@api_router.post("/auth/check-email")
+async def check_email_availability(data: dict):
+    """Check if an email is available for registration"""
+    email = data.get("email", "").lower()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email required")
+    
+    existing = await db.users.find_one({"email": email}, {"_id": 0})
+    return {"available": existing is None}
+
 # ============== MEMBER PORTAL ROUTES ==============
 
 @api_router.get("/portal/me")
