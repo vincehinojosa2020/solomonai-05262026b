@@ -4542,3 +4542,51 @@
     width: 100%;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   IMPERSONATION BANNER (Platform Admin viewing specific church)
+   ═══════════════════════════════════════════════════════════════ */
+
+.impersonation-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+  color: white;
+  font-size: 13px;
+}
+
+.impersonation-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.impersonation-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.impersonation-subdomain {
+  opacity: 0.8;
+  font-size: 12px;
+}
+
+.impersonation-exit {
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.impersonation-exit:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
