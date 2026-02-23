@@ -1170,6 +1170,9 @@ async def create_donation_checkout(request: Request, donation: DonationRequest):
             "session_id": session.session_id
         }
         
+    except HTTPException:
+        # Re-raise HTTP exceptions (400, 401, etc.)
+        raise
     except Exception as e:
         logger.error(f"Donation checkout error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
