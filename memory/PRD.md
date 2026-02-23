@@ -106,13 +106,25 @@ Dashboard stats scaled to 50,000-member mega-church (NOTE: Currently hardcoded d
 | Component | Status | Notes |
 |-----------|--------|-------|
 | Database Indexes | ✅ Ready | 55 indexes across 10 key collections |
-| Authentication | ✅ Ready | Google OAuth + Email/Password |
+| Authentication | ✅ Ready | Google OAuth + Email/Password + Self-Registration |
 | Member Portal | ✅ Ready | 6 pages, all functional |
 | Video Streaming | ✅ Ready | YouTube embeds (no bandwidth cost) |
 | Continue Watching | ✅ Ready | Progress tracking with API |
 | Admin Dashboard | ✅ Demo Mode | Hardcoded sample data for pitches |
 | Solomon AI | ✅ Ready | Claude Sonnet 4.5 powered |
 | Payments | ✅ Ready | Stripe integration |
+| Self-Registration | ✅ Ready | Strong password requirements |
+
+### Security Features
+- **Password Requirements** (enforced on signup):
+  - Minimum 8 characters
+  - At least one uppercase letter
+  - At least one lowercase letter
+  - At least one number
+  - At least one special character (!@#$%^&*)
+- **Email Uniqueness**: Duplicate emails blocked
+- **Session-Based Auth**: Secure HTTP-only cookies
+- **256-bit Encryption**: Bank-level security
 
 ### Database Scale
 - **55 indexes** optimized for 50,000+ member scale
