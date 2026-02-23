@@ -1,8 +1,8 @@
-# Solomon AI - Enterprise Church Management SaaS Platform
+# SAMSON - Enterprise Church Management SaaS Platform
 ## Product Requirements Document
 
 ### Overview
-**Product Name:** Solomon AI  
+**Product Name:** SAMSON  
 **Tagline:** "Enterprise Church Management System"  
 **Demo Tenant:** Abundant Church (El Paso, TX)  
 **Target Scale:** 50,000+ members per tenant  
