@@ -458,6 +458,7 @@ class UserRegistrationRequest(BaseModel):
     first_name: str
     last_name: str
     phone: Optional[str] = None
+    tenant_id: Optional[str] = None  # Church selection
 
 class UserRole(BaseModel):
     role: str = "member"  # "admin" or "member"
