@@ -300,9 +300,9 @@ export default function PortalGive() {
       </div>
 
       {/* Giving History */}
-      {givingHistory.length > 0 && (
-        <div className="portal-section mt-8">
-          <h3 className="portal-section-title">Giving History</h3>
+      <div className="portal-section mt-8">
+        <h3 className="portal-section-title">Giving History</h3>
+        {givingHistory.length > 0 ? (
           <div className="portal-history-table">
             <div className="portal-history-header">
               <span>Date</span>
@@ -311,7 +311,7 @@ export default function PortalGive() {
               <span>Method</span>
             </div>
             {givingHistory.slice(0, 10).map((donation, idx) => (
-              <div key={idx} className="portal-history-row">
+              <div key={idx} className="portal-history-row" data-testid={`donation-row-${idx}`}>
                 <span>{donation.donation_date}</span>
                 <span>{donation.fund_name}</span>
                 <span className="font-semibold">{formatCurrency(donation.amount)}</span>
@@ -319,8 +319,14 @@ export default function PortalGive() {
               </div>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="portal-empty-state" data-testid="no-donations">
+            <DollarSign className="w-12 h-12 text-slate-300" />
+            <p className="text-slate-500 mt-4">No giving history yet</p>
+            <p className="text-slate-400 text-sm">Your donations will appear here after your first gift.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
