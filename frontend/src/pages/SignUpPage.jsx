@@ -127,6 +127,7 @@ export default function SignUpPage() {
           first_name: formData.firstName,
           last_name: formData.lastName,
           phone: formData.phone || null,
+          tenant_id: formData.churchId,  // Church selection
         }),
       });
 
@@ -136,7 +137,9 @@ export default function SignUpPage() {
         throw new Error(data.detail || 'Registration failed');
       }
 
-      toast.success('Welcome to Abundant Church!');
+      // Get church name for welcome message
+      const selectedChurch = churches.find(c => c.id === formData.churchId);
+      toast.success(`Welcome to ${selectedChurch?.name || 'your church'}!`);
       
       // Store user info
       localStorage.setItem('samson_user', JSON.stringify({
