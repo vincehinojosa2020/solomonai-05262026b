@@ -205,6 +205,27 @@ export default function AppShell() {
 
       {/* Main Content */}
       <div className="app-main">
+        {/* Impersonation Banner - Shows when platform admin is viewing a specific church */}
+        {impersonatedTenant && user?.role === 'platform_admin' && (
+          <div className="impersonation-banner" data-testid="impersonation-banner">
+            <div className="impersonation-content">
+              <span 
+                className="impersonation-dot" 
+                style={{ backgroundColor: impersonatedTenant.primary_color }}
+              />
+              <span>Viewing as: <strong>{impersonatedTenant.name}</strong></span>
+              <span className="impersonation-subdomain">({impersonatedTenant.subdomain}.samson.ai)</span>
+            </div>
+            <button 
+              onClick={exitImpersonation}
+              className="impersonation-exit"
+              data-testid="exit-impersonation"
+            >
+              ← Back to All Churches
+            </button>
+          </div>
+        )}
+        
         {/* Top Bar */}
         <header className="app-topbar" data-testid="app-topbar">
           <div className="flex items-center gap-3">
