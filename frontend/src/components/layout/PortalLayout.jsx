@@ -92,6 +92,20 @@ export default function PortalLayout() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
+  // Get church display name (simplified)
+  const getChurchDisplayName = () => {
+    if (tenant?.name) {
+      // Shorten common church name patterns
+      const name = tenant.name
+        .replace(' Living Faith Center', '')
+        .replace(' Church', '')
+        .replace(' Ministries', '')
+        .toUpperCase();
+      return name;
+    }
+    return 'ABUNDANT';
+  };
+
   if (!user) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${isDarkPage ? 'bg-black' : 'bg-[#f7f6f3]'}`}>
@@ -106,9 +120,14 @@ export default function PortalLayout() {
       {!isLibraryPage && (
         <header className={`portal-header ${isDarkPage ? 'portal-header-dark' : ''}`}>
         <div className="portal-header-content">
-          {/* Logo */}
+          {/* Logo - Dynamic church name */}
           <div className="portal-logo" data-testid="portal-logo">
-            <span className="text-blue-600 font-bold text-lg tracking-wide">ABUNDANT</span>
+            <span 
+              className="font-bold text-lg tracking-wide"
+              style={{ color: tenant?.primary_color || '#2563eb' }}
+            >
+              {getChurchDisplayName()}
+            </span>
           </div>
 
           {/* Desktop Nav */}
