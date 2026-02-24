@@ -608,8 +608,10 @@ export default function PortalLibrary() {
           onClick={() => navigate('/portal')}
           style={{ cursor: 'pointer' }}
         >
-          <span className="prem-logo-mark">A</span>
-          <span className="prem-logo-text">ABUNDANT</span>
+          <span className="prem-logo-mark" style={{ backgroundColor: tenant?.primary_color || '#dc2626' }}>
+            {tenant?.name?.charAt(0) || 'S'}
+          </span>
+          <span className="prem-logo-text">{tenant?.name?.toUpperCase() || 'SOLOMON'}</span>
         </motion.div>
 
         {/* Portal Navigation */}
