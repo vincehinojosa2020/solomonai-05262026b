@@ -584,6 +584,10 @@ function EditGroupModal({ group, open, onClose, onSuccess }) {
 function ViewMembersModal({ group, open, onClose }) {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAddMember, setShowAddMember] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [availablePeople, setAvailablePeople] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -605,28 +609,219 @@ function ViewMembersModal({ group, open, onClose }) {
     }
   };
 
+  const searchPeople = async (query) => {
+    if (!query || query.length < 2) {
+      setAvailablePeople([]);
+      return;
+    }
+    
+    setSearchLoading(true);
+    try {
+      const res = await fetch(
+        `${API_URL}/admin/groups/${group.id}/available-members?search=${encodeURIComponent(query)}`,
+        { credentials: 'include' }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setAvailablePeople(data.people || []);
+      }
+    } catch (error) {
+      console.error('Failed to search people:', error);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const handleAddMember = async (personId) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/groups/${group.id}/members`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ person_id: personId })
+      });
+      
+      if (res.ok) {
+        toast.success('Member added to group');
+        fetchMembers();
+        setSearchQuery('');
+        setAvailablePeople([]);
+        setShowAddMember(false);
+      } else {
+        const data = await res.json();
+        toast.error(data.detail || 'Failed to add member');
+      }
+    } catch (error) {
+      toast.error('Failed to add member');
+    }
+  };
+
+  const handleRemoveMember = async (personId) => {
+    if (!confirm('Remove this member from the group?')) return;
+    
+    try {
+      const res = await fetch(`${API_URL}/admin/groups/${group.id}/members/${personId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      
+      if (res.ok) {
+        toast.success('Member removed');
+        fetchMembers();
+      } else {
+        toast.error('Failed to remove member');
+      }
+    } catch (error) {
+      toast.error('Failed to remove member');
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="view-members-modal">
+      <DialogContent className="view-members-modal" style={{ maxWidth: '500px' }}>
         <DialogHeader>
-          <DialogTitle>{group.name} - Members</DialogTitle>
+          <DialogTitle className="flex items-center justify-between">
+            <span>{group.name} - Members</span>
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={() => setShowAddMember(!showAddMember)}
+            >
+              <UserPlus className="w-4 h-4 mr-1" />
+              Add Member
+            </Button>
+          </DialogTitle>
           <DialogDescription>{members.length} member{members.length !== 1 ? 's' : ''}</DialogDescription>
         </DialogHeader>
 
-        <div className="members-list">
+        {/* Add Member Section */}
+        {showAddMember && (
+          <div className="add-member-section" style={{ 
+            padding: '12px', 
+            background: '#f8fafc', 
+            borderRadius: '8px',
+            marginBottom: '12px' 
+          }}>
+            <div style={{ position: 'relative' }}>
+              <Search className="w-4 h-4" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+              <Input
+                type="text"
+                placeholder="Search by name or email..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  searchPeople(e.target.value);
+                }}
+                style={{ paddingLeft: '36px' }}
+              />
+            </div>
+            
+            {searchLoading && (
+              <div style={{ padding: '8px', textAlign: 'center', color: '#64748b' }}>
+                <Loader2 className="w-4 h-4 animate-spin inline" /> Searching...
+              </div>
+            )}
+            
+            {availablePeople.length > 0 && (
+              <div style={{ marginTop: '8px', maxHeight: '150px', overflowY: 'auto' }}>
+                {availablePeople.map(person => (
+                  <div 
+                    key={person.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '8px',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      background: 'white',
+                      marginBottom: '4px'
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: '500', fontSize: '14px' }}>
+                        {person.first_name} {person.last_name}
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#64748b' }}>{person.email}</div>
+                    </div>
+                    <Button size="sm" onClick={() => handleAddMember(person.id)}>
+                      <Plus className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {searchQuery.length >= 2 && !searchLoading && availablePeople.length === 0 && (
+              <div style={{ padding: '8px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
+                No available members found
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="members-list" style={{ maxHeight: '300px', overflowY: 'auto' }}>
           {loading ? (
-            <div className="members-loading">Loading...</div>
+            <div className="members-loading" style={{ textAlign: 'center', padding: '20px' }}>
+              <Loader2 className="w-5 h-5 animate-spin inline" /> Loading members...
+            </div>
           ) : members.length === 0 ? (
-            <div className="members-empty">No members yet</div>
+            <div className="members-empty" style={{ textAlign: 'center', padding: '30px', color: '#94a3b8' }}>
+              <Users className="w-10 h-10 mx-auto mb-2 opacity-40" />
+              <p>No members yet</p>
+              <p style={{ fontSize: '12px' }}>Add members using the button above</p>
+            </div>
           ) : (
             members.map(member => (
-              <div key={member.id} className="member-row">
-                <div className="member-avatar">{member.name?.charAt(0) || '?'}</div>
-                <div className="member-info">
-                  <div className="member-name">{member.name}</div>
-                  <div className="member-email">{member.email}</div>
+              <div key={member.id} className="member-row" style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '10px',
+                borderBottom: '1px solid #f1f5f9',
+                gap: '12px'
+              }}>
+                <div className="member-avatar" style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  background: '#3b82f6',
+                  color: 'white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: '600',
+                  fontSize: '14px'
+                }}>
+                  {member.name?.charAt(0) || '?'}
                 </div>
-                <span className="member-role">{member.role}</span>
+                <div className="member-info" style={{ flex: 1 }}>
+                  <div className="member-name" style={{ fontWeight: '500', fontSize: '14px' }}>{member.name}</div>
+                  <div className="member-email" style={{ fontSize: '12px', color: '#64748b' }}>{member.email}</div>
+                </div>
+                <span className="member-role" style={{
+                  fontSize: '11px',
+                  padding: '2px 8px',
+                  background: member.role === 'leader' ? '#dcfce7' : '#f1f5f9',
+                  color: member.role === 'leader' ? '#16a34a' : '#64748b',
+                  borderRadius: '20px',
+                  textTransform: 'capitalize'
+                }}>
+                  {member.role}
+                </span>
+                <button 
+                  onClick={() => handleRemoveMember(member.person_id)}
+                  style={{
+                    padding: '4px',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#94a3b8',
+                    borderRadius: '4px'
+                  }}
+                  title="Remove from group"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
             ))
           )}
