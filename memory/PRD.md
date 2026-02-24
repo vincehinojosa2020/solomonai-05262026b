@@ -3,7 +3,6 @@
 
 ### Overview
 **Product Name:** Solomon AI  
-**Tagline:** "AI-Powered Church Management"  
 **Target Scale:** 50,000+ members per tenant, 1M+ concurrent users platform-wide  
 **Demo URL:** https://faith-ops-platform.preview.emergentagent.com
 **Architecture:** Multi-tenant SaaS with subdomain routing
@@ -14,16 +13,16 @@
 
 ### Tenant Structure
 Each church is a tenant with isolated data:
-- **Subdomain routing**: `abundant.solomon.ai`, `cityreach.solomon.ai`, etc.
+- **Subdomain routing**: `abundant.solomon.ai`, `cristoviene.solomon.ai`, etc.
 - **Dedicated data**: Members, donations, groups, events, videos per tenant
 - **Subscription management**: Active, suspended, cancelled states
 
 ### Demo Churches
-| Church | Subdomain | Admin Email |
-|--------|-----------|-------------|
-| Abundant Living Faith Center | abundant | admin@abundant.church |
-| City Reach Church | cityreach | admin@cityreach.church |
-| The Potter's House | pottershouse | admin@pottershouse.church |
+| Church | Subdomain | City |
+|--------|-----------|------|
+| Abundant Church | abundant | El Paso, TX |
+| Cristo Viene | cristoviene | El Paso, TX |
+| The Potter's House | pottershouse | Dallas, TX |
 
 ### Role Hierarchy
 1. **platform_admin** - Access all tenants, manage subscriptions (admin@solomon.ai)
