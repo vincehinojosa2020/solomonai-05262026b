@@ -438,7 +438,7 @@ const CourseCard = ({ course, onPlay, index, progress }) => {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export default function PortalLibrary() {
-  const { user } = useOutletContext();
+  const { user, tenant } = useOutletContext();
   const navigate = useNavigate();
   const location = useLocation();
   
