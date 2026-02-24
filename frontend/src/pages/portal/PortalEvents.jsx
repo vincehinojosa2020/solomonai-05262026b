@@ -26,9 +26,42 @@ export default function PortalEvents() {
     }
   };
 
-  const handleRegister = (eventId) => {
-    setRegisteredEvents([...registeredEvents, eventId]);
-    toast.success('Successfully registered for the event!');
+  const handleRegister = async (eventId) => {
+    try {
+      const res = await fetch(`${API_URL}/portal/events/${eventId}/register`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setRegisteredEvents([...registeredEvents, eventId]);
+        toast.success(data.message || 'Successfully registered!');
+      } else {
+        const error = await res.json();
+        toast.error(error.detail || 'Failed to register');
+      }
+    } catch (error) {
+      toast.error('Failed to register for event');
+    }
+  };
+
+  const handleCancelRegistration = async (eventId) => {
+    try {
+      const res = await fetch(`${API_URL}/portal/events/${eventId}/register`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      
+      if (res.ok) {
+        setRegisteredEvents(registeredEvents.filter(id => id !== eventId));
+        toast.success('Registration cancelled');
+      } else {
+        toast.error('Failed to cancel registration');
+      }
+    } catch (error) {
+      toast.error('Failed to cancel registration');
+    }
   };
 
   const formatDate = (dateStr) => {
