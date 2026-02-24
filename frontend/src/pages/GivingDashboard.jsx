@@ -124,10 +124,20 @@ export default function GivingDashboard() {
           <h1 className="page-title">Stewardship</h1>
           <p className="page-subtitle">Manage giving and financial operations</p>
         </div>
-        <Button className="btn-primary" onClick={() => setShowDonationPanel(true)} data-testid="enter-donation-btn">
-          <Plus className="w-4 h-4 mr-1" />
-          Record Gift
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => window.open(`${API_URL}/admin/giving/export`, '_blank')}
+            data-testid="export-csv-btn"
+          >
+            <FileText className="w-4 h-4 mr-1" />
+            Export CSV
+          </Button>
+          <Button className="btn-primary" onClick={() => setShowDonationPanel(true)} data-testid="enter-donation-btn">
+            <Plus className="w-4 h-4 mr-1" />
+            Record Gift
+          </Button>
+        </div>
       </div>
 
       {/* Stats Grid */}
