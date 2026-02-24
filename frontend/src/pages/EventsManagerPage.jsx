@@ -166,6 +166,7 @@ export default function EventsManagerPage() {
               event={event}
               onEdit={() => setEditingEvent(event)}
               onDelete={() => handleDeleteEvent(event.id)}
+              onViewRegistrations={() => setViewingEvent(event)}
             />
           ))}
         </div>
@@ -189,6 +190,18 @@ export default function EventsManagerPage() {
           onClose={() => setEditingEvent(null)}
           onSuccess={() => {
             setEditingEvent(null);
+            fetchEvents();
+          }}
+        />
+      )}
+
+      {/* View Registrations Modal */}
+      {viewingEvent && (
+        <ViewRegistrationsModal
+          event={viewingEvent}
+          open={!!viewingEvent}
+          onClose={() => {
+            setViewingEvent(null);
             fetchEvents();
           }}
         />
