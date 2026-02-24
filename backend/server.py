@@ -5868,7 +5868,7 @@ async def seed_platform():
             "password": "Demo2026!",
             "platform_admin": "admin@solomon.ai",
             "abundant_admin": "admin@abundant.church",
-            "cityreach_admin": "admin@cityreach.church",
+            "cristoviene_admin": "admin@cristoviene.church",
             "pottershouse_admin": "admin@pottershouse.church"
         }
     }
