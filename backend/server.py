@@ -1487,7 +1487,7 @@ async def get_sms_templates():
 
 @api_router.get("/")
 async def root():
-    return {"message": "Samson Church Management API", "version": "1.0.0"}
+    return {"message": "Solomon AI Church Management API", "version": "1.0.0"}
 
 # ============== TENANT/CHURCH MANAGEMENT ROUTES ==============
 
