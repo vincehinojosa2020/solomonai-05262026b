@@ -252,31 +252,95 @@ export default function PortalGive() {
           {/* Payment Method */}
           <div className="portal-form-section">
             <label className="portal-form-label">PAYMENT METHOD</label>
+            
+            {/* Saved Cards */}
+            {savedCards.length > 0 && (
+              <div className="portal-saved-cards" style={{ marginBottom: '12px' }}>
+                <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '8px' }}>Saved Cards</p>
+                {savedCards.map((card) => (
+                  <button
+                    key={card.id}
+                    onClick={() => {
+                      setSelectedSavedCard(card.id);
+                      setPaymentMethod('saved');
+                    }}
+                    className={`portal-saved-card ${selectedSavedCard === card.id ? 'active' : ''}`}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '10px 14px',
+                      border: selectedSavedCard === card.id ? '2px solid #3b82f6' : '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      background: selectedSavedCard === card.id ? '#eff6ff' : 'white',
+                      width: '100%',
+                      marginBottom: '8px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                    data-testid={`saved-card-${card.id}`}
+                  >
+                    <CreditCard className="w-4 h-4" style={{ color: '#3b82f6' }} />
+                    <span style={{ fontWeight: '500' }}>{card.card_brand} •••• {card.card_last_four}</span>
+                    <span style={{ fontSize: '12px', color: '#94a3b8', marginLeft: 'auto' }}>
+                      Exp {card.card_exp_month}/{card.card_exp_year}
+                    </span>
+                    {card.is_default && (
+                      <span style={{ 
+                        fontSize: '10px', 
+                        background: '#dcfce7', 
+                        color: '#16a34a', 
+                        padding: '2px 6px', 
+                        borderRadius: '10px' 
+                      }}>
+                        Default
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+            
+            <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '8px' }}>
+              {savedCards.length > 0 ? 'Or use a new payment method' : 'Choose payment method'}
+            </p>
             <div className="portal-payment-methods">
               <button
-                onClick={() => setPaymentMethod('card')}
-                className={`portal-payment-method ${paymentMethod === 'card' ? 'active' : ''}`}
+                onClick={() => {
+                  setPaymentMethod('card');
+                  setSelectedSavedCard(null);
+                }}
+                className={`portal-payment-method ${paymentMethod === 'card' && !selectedSavedCard ? 'active' : ''}`}
                 data-testid="payment-method-card"
               >
                 <CreditCard className="w-4 h-4" />
                 Card / ACH
               </button>
               <button
-                onClick={() => setPaymentMethod('paypal')}
+                onClick={() => {
+                  setPaymentMethod('paypal');
+                  setSelectedSavedCard(null);
+                }}
                 className={`portal-payment-method ${paymentMethod === 'paypal' ? 'active' : ''}`}
               >
                 <span className="text-blue-600 font-bold text-sm">P</span>
                 PayPal
               </button>
               <button
-                onClick={() => setPaymentMethod('venmo')}
+                onClick={() => {
+                  setPaymentMethod('venmo');
+                  setSelectedSavedCard(null);
+                }}
                 className={`portal-payment-method ${paymentMethod === 'venmo' ? 'active' : ''}`}
               >
                 <span className="text-blue-500 font-bold text-sm">V</span>
                 Venmo
               </button>
               <button
-                onClick={() => setPaymentMethod('zelle')}
+                onClick={() => {
+                  setPaymentMethod('zelle');
+                  setSelectedSavedCard(null);
+                }}
                 className={`portal-payment-method ${paymentMethod === 'zelle' ? 'active' : ''}`}
               >
                 <span className="text-purple-600 font-bold text-sm">Z</span>
