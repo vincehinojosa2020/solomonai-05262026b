@@ -4367,6 +4367,135 @@ async def seed_platform():
             "member_email": member_email
         })
     
+    # Seed media videos for Abundant Church (as demo content)
+    abundant_videos = [
+        {
+            "id": "video_001",
+            "tenant_id": "abundant-church-001",
+            "title": "Community With a Purpose",
+            "description": "Discover how the church is God's purposeful community - not a club but a family with divine purpose.",
+            "youtube_id": "FoPI3hMbXvw",
+            "youtube_url": "https://youtube.com/watch?v=FoPI3hMbXvw",
+            "thumbnail_url": "https://i.ytimg.com/vi/FoPI3hMbXvw/maxresdefault.jpg",
+            "duration": "40:45",
+            "instructor": "Pastor Charles Nieman",
+            "category_id": "community",
+            "is_featured": True,
+            "is_published": True,
+            "badge": "New",
+            "view_count": 1250,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "video_002",
+            "tenant_id": "abundant-church-001",
+            "title": "Blessing & Healing Through Humility",
+            "description": "Learn how humility unlocks God's blessings and healing in your life.",
+            "youtube_id": "pzpbbibEWPE",
+            "youtube_url": "https://youtube.com/watch?v=pzpbbibEWPE",
+            "thumbnail_url": "https://i.ytimg.com/vi/pzpbbibEWPE/maxresdefault.jpg",
+            "duration": "38:30",
+            "instructor": "Pastor Charles Nieman",
+            "category_id": "faith",
+            "is_featured": False,
+            "is_published": True,
+            "badge": "New",
+            "view_count": 890,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "video_003",
+            "tenant_id": "abundant-church-001",
+            "title": "Building Your Life",
+            "description": "Build your life on God's Word - biblical principles for personal spiritual development.",
+            "youtube_id": "Lnj6vMvOLME",
+            "youtube_url": "https://youtube.com/watch?v=Lnj6vMvOLME",
+            "thumbnail_url": "https://i.ytimg.com/vi/Lnj6vMvOLME/maxresdefault.jpg",
+            "duration": "45:00",
+            "instructor": "Pastor Charles Nieman",
+            "category_id": "growth",
+            "is_featured": False,
+            "is_published": True,
+            "view_count": 1520,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "video_004",
+            "tenant_id": "abundant-church-001",
+            "title": "Living the Word",
+            "description": "Transform your daily life through the power of God's Word in practical application.",
+            "youtube_id": "gVSrV8QDWs8",
+            "youtube_url": "https://youtube.com/watch?v=gVSrV8QDWs8",
+            "thumbnail_url": "https://i.ytimg.com/vi/gVSrV8QDWs8/maxresdefault.jpg",
+            "duration": "42:15",
+            "instructor": "Pastor Charles Nieman",
+            "category_id": "faith",
+            "is_featured": False,
+            "is_published": True,
+            "view_count": 780,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "video_005",
+            "tenant_id": "abundant-church-001",
+            "title": "The Abundant Family",
+            "description": "Discover the heart of Christian family life and building strong relationships.",
+            "youtube_id": "UDe5u2z_H8I",
+            "youtube_url": "https://youtube.com/watch?v=UDe5u2z_H8I",
+            "thumbnail_url": "https://i.ytimg.com/vi/UDe5u2z_H8I/maxresdefault.jpg",
+            "duration": "35:20",
+            "instructor": "Pastor Charles Nieman",
+            "category_id": "family",
+            "is_featured": False,
+            "is_published": True,
+            "badge": "Popular",
+            "view_count": 2100,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "video_006",
+            "tenant_id": "abundant-church-001",
+            "title": "Leading with Purpose",
+            "description": "Biblical principles for leading in your home, workplace, and community.",
+            "youtube_id": "3BHJSkx3J4E",
+            "youtube_url": "https://youtube.com/watch?v=3BHJSkx3J4E",
+            "thumbnail_url": "https://i.ytimg.com/vi/3BHJSkx3J4E/maxresdefault.jpg",
+            "duration": "48:00",
+            "instructor": "Pastor Charles Nieman",
+            "category_id": "leadership",
+            "is_featured": False,
+            "is_published": True,
+            "view_count": 650,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+    
+    # Seed media categories
+    categories = [
+        {"id": "faith", "tenant_id": "abundant-church-001", "name": "Faith", "slug": "faith", "icon": "heart", "sort_order": 1},
+        {"id": "family", "tenant_id": "abundant-church-001", "name": "Family", "slug": "family", "icon": "users", "sort_order": 2},
+        {"id": "leadership", "tenant_id": "abundant-church-001", "name": "Leadership", "slug": "leadership", "icon": "briefcase", "sort_order": 3},
+        {"id": "worship", "tenant_id": "abundant-church-001", "name": "Worship", "slug": "worship", "icon": "music", "sort_order": 4},
+        {"id": "growth", "tenant_id": "abundant-church-001", "name": "Growth", "slug": "growth", "icon": "trending-up", "sort_order": 5},
+        {"id": "community", "tenant_id": "abundant-church-001", "name": "Community", "slug": "community", "icon": "home", "sort_order": 6},
+    ]
+    
+    # Insert categories
+    for cat in categories:
+        await db.media_categories.update_one(
+            {"id": cat["id"], "tenant_id": cat["tenant_id"]},
+            {"$set": cat},
+            upsert=True
+        )
+    
+    # Insert videos
+    for video in abundant_videos:
+        await db.media_videos.update_one(
+            {"id": video["id"]},
+            {"$set": video},
+            upsert=True
+        )
+    
     return {
         "message": "Platform seeded successfully",
         "results": results,
