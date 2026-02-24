@@ -26,70 +26,62 @@ Each church is a tenant with isolated data:
 | The Potter's House | pottershouse | admin@pottershouse.church |
 
 ### Role Hierarchy
-1. **platform_admin** - Access all tenants, manage subscriptions
-2. **church_admin** - Full admin within their church (including Media, Groups, Events)
-3. **member** - Portal access only (watch videos, join groups, register for events)
+1. **platform_admin** - Access all tenants, manage subscriptions (admin@solomon.ai)
+2. **church_admin** - Full admin within their church (e.g., admin@abundant.church)
+3. **member** - Portal access only (e.g., member@abundant.church)
 
 ---
 
 ## What's Implemented (February 24, 2026)
 
-### ✅ Church Admin Features
+### P0: Media Library Sync Bug - FIXED
+- Removed hardcoded `ALL_CONTENT` array from `PortalWatch.jsx`
+- Watch page now exclusively fetches from `/api/portal/media/videos` endpoint
+- Videos deleted by church admin no longer appear on member portal
+- Proper loading and empty states implemented
 
-**Media Library Manager** (`/media`)
-- Add YouTube videos via URL (auto-extracts ID and thumbnail)
-- Edit/Delete/Feature videos
-- Publish/Unpublish controls
-- Category filtering (Faith, Family, Leadership, Worship, Growth, Community)
-- Grid and List view options
-- Synced to member portal - changes reflect immediately
+### P1: Platform Admin UI - FIXED
+- Clean UI for `admin@solomon.ai` without church-specific elements
+- Sidebar shows "Solomon" as name (not full email)
+- Role displays as "Platform Admin"
+- Top bar greeting: "Good morning, Solomon"
+- Tenant badge hidden (no "Abundant Living Faith Center")
+- "Preview Member Portal" link hidden
+- Limited navigation: All Churches, Settings, Integrations only
+- Purple accent color for Platform section
 
-**Groups & Bible Studies Manager** (`/admin/groups`)
-- Create/Edit/Delete groups
-- Group types: Small Group, Bible Study, Prayer Group, Youth, Men's, Women's, Couples, Ministry Team
-- Set meeting day/time, location, capacity
-- Open/Close for new members
-- View member roster
+### P1: Platform Admin Impersonation Flow - IMPROVED
+- When impersonating a church, full Church Admin navigation appears
+- Impersonation banner shows which church is being viewed
+- "Back to All Churches" button to exit impersonation
 
-**Events & Services Manager** (`/admin/events`)
-- Create/Edit/Delete events
-- Set date, time, location, capacity
-- Enable/disable registration
-- Track registration counts
-- View registrations
+### Bidirectional Communication Features - NEW
 
-### ✅ Member Portal Features
+#### Member Side (/portal)
+- **Groups Page**: View available groups, "Request to Join" for open groups, "Leave Group" option
+- **Events Page**: View upcoming events, "Register" button, "Cancel Registration" option
+- **My Groups API**: `/api/portal/my-groups` - Get member's joined groups
+- **My Events API**: `/api/portal/my-events` - Get member's registered events
 
-**Watch Page** (`/portal/library`)
-- Dynamically fetches videos from database (managed by church admin)
-- Netflix-style hero carousel with featured videos
-- Category filtering
-- Search functionality
-- Church-branded (shows church name)
+#### Admin Side (/admin)
+- **Group Member Management**: View members, search & add people, remove members
+- **Event Registration Management**: View registrations, add manual registrations, remove registrations
+- **New APIs**:
+  - `POST /api/admin/groups/{id}/members` - Add member to group
+  - `DELETE /api/admin/groups/{id}/members/{personId}` - Remove member
+  - `GET /api/admin/groups/{id}/available-members` - Search non-members
+  - `GET /api/admin/events/{id}/registrations` - List event registrations
+  - `POST /api/admin/events/{id}/registrations` - Add registration
+  - `DELETE /api/admin/events/{id}/registrations/{id}` - Cancel registration
 
-**Groups Page** (`/portal/groups`)
-- View available groups
-- **Join Group** functionality - members can join open groups
-- Shows "My Groups" vs "Discover Groups"
-
-**Events Page** (`/portal/events`)
-- View upcoming events
-- **Register for Event** functionality
-- **Cancel Registration** option
-- Filter by time period
-
-**Giving** (`/portal/give`)
-- Live Stripe integration
-- Amount presets and custom amounts
-
-### ✅ Platform Admin (God Mode)
-
-**Platform Dashboard** (`/platform`)
-- Real stats from database (not hardcoded)
-- Tabs: Churches | All Members
-- Searchable member directory
-- Church management (view, activate/suspend)
-- **No Media Library link** (correctly scoped to church admins only)
+### Existing Features (Still Working)
+- **Authentication**: JWT-based with email/password, Google OAuth
+- **Media Library Manager**: Full CRUD for YouTube videos
+- **Groups Manager**: Create/edit/delete groups, open/close for joining
+- **Events Manager**: Create/edit/delete events, manage registrations
+- **Giving**: Live Stripe integration for donations
+- **Solomon AI Chat**: Claude-powered assistant (Ask Solomon button)
+- **Platform Dashboard**: Real aggregated statistics
 
 ---
 
@@ -99,24 +91,28 @@ Each church is a tenant with isolated data:
 - **Backend:** FastAPI, Motor (async MongoDB)
 - **Database:** MongoDB
 - **AI:** Claude Sonnet 4.5 via emergentintegrations
-- **Auth:** Email/Password (bcrypt) + Google OAuth + JWT sessions
+- **Auth:** Email/Password (SHA256) + Google OAuth + JWT sessions
 - **Payments:** Stripe (Live keys)
-- **Email:** Resend
+- **Email:** Resend (Welcome emails)
 
 ---
 
 ## Key API Endpoints
 
+### Authentication
+- `POST /api/auth/login` - Email/password login
+- `POST /api/auth/register` - New member registration
+- `POST /api/auth/logout` - Clear session
+- `GET /api/auth/me` - Get current user
+
 ### Media (Church Admin)
-- `GET /api/admin/media/videos` - List videos with search/filter
-- `POST /api/admin/media/videos` - Add video from YouTube URL
+- `GET /api/admin/media/videos` - List videos
+- `POST /api/admin/media/videos` - Add video
 - `PUT /api/admin/media/videos/{id}` - Update video
 - `DELETE /api/admin/media/videos/{id}` - Delete video
-- `POST /api/admin/media/videos/{id}/feature` - Toggle featured
 
-### Media (Portal)
-- `GET /api/portal/media/videos` - Get published videos for member
-- `GET /api/portal/media/featured` - Get featured hero video
+### Media (Member Portal)
+- `GET /api/portal/media/videos` - Get published videos
 
 ### Groups (Admin)
 - `GET /api/admin/groups` - List groups
@@ -124,18 +120,28 @@ Each church is a tenant with isolated data:
 - `PUT /api/admin/groups/{id}` - Update group
 - `DELETE /api/admin/groups/{id}` - Delete group
 - `GET /api/admin/groups/{id}/members` - View members
+- `POST /api/admin/groups/{id}/members` - Add member
+- `DELETE /api/admin/groups/{id}/members/{personId}` - Remove member
 
-### Groups (Portal)
-- `POST /api/portal/groups/{id}/join` - Join a group
+### Groups (Member Portal)
+- `GET /api/portal/groups` - Available groups
+- `GET /api/portal/my-groups` - My groups
+- `POST /api/portal/groups/{id}/join` - Join group
+- `DELETE /api/portal/groups/{id}/leave` - Leave group
 
 ### Events (Admin)
 - `GET /api/admin/events` - List events
 - `POST /api/admin/events` - Create event
 - `PUT /api/admin/events/{id}` - Update event
 - `DELETE /api/admin/events/{id}` - Delete event
+- `GET /api/admin/events/{id}/registrations` - View registrations
+- `POST /api/admin/events/{id}/registrations` - Add registration
+- `DELETE /api/admin/events/{id}/registrations/{id}` - Remove registration
 
-### Events (Portal)
-- `POST /api/portal/events/{id}/register` - Register for event
+### Events (Member Portal)
+- `GET /api/portal/events` - Upcoming events
+- `GET /api/portal/my-events` - My registered events
+- `POST /api/portal/events/{id}/register` - Register
 - `DELETE /api/portal/events/{id}/register` - Cancel registration
 
 ---
@@ -145,14 +151,14 @@ Each church is a tenant with isolated data:
 ### Platform Admin (God Mode)
 - **Email:** admin@solomon.ai
 - **Password:** Demo2026!
-- **Access:** All churches, member directory, stats
-- **Does NOT see:** Media Library (correctly scoped)
+- **Access:** All churches, member directory, platform stats
+- **Does NOT see:** Media Library, Groups, Events (church-specific)
 
 ### Church Admins
 - admin@abundant.church / Demo2026!
 - admin@cityreach.church / Demo2026!
 - admin@pottershouse.church / Demo2026!
-- **See:** Media Library, Groups Manager, Events Manager
+- **See:** Full navigation including Media Library, Groups Manager, Events Manager
 
 ### Members
 - member@abundant.church (Maria Gonzalez) / Demo2026!
@@ -164,39 +170,53 @@ Each church is a tenant with isolated data:
 ## Backlog (Priority Order)
 
 ### P0 - Completed This Session
-- [x] Media Library Manager (church admin)
-- [x] Portal Watch connected to database
-- [x] Groups Manager (church admin)
-- [x] Events Manager (church admin)
-- [x] Member can join groups
-- [x] Member can register for events
-- [x] Correct scoping (platform admin doesn't see Media Library)
+- [x] Media Library Sync Bug - Videos sync between admin and portal
+- [x] Platform Admin UI cleanup - Clean interface for Solomon admin
+- [x] Bidirectional Group Management - Members join/leave, admins add/remove
+- [x] Bidirectional Event Management - Members register/cancel, admins manage
 
 ### P1 - Next Priority
-- [ ] Seed demo events via admin API
 - [ ] Saved payment methods for members
 - [ ] Giving reports with CSV export
+- [ ] Year-end tax statements (PDF generation)
 
 ### P2 - Medium Priority
 - [ ] Audit logging for critical actions
-- [ ] Year-end tax statements (PDF)
-- [ ] Backend refactor: Break up server.py
+- [ ] Backend refactor: Break up server.py into modules
+- [ ] Notification system for group/event updates
 
-### P3 - Future
-- [ ] AI Sermon Transcription (tabled)
-- [ ] AI Sermon Summaries (tabled)
-- [ ] Engagement Scoring (tabled)
+### P3 - Future (API Keys Required)
+- [ ] AI Sermon Transcription
+- [ ] AI Sermon Summaries
+- [ ] Engagement Scoring
+- [ ] SMS notifications (Twilio)
 
 ---
 
 ## Changelog
 
-### Feb 24, 2026 (Latest)
+### Feb 24, 2026 (Latest Session)
+- **Fixed P0 Bug**: Media Library sync - removed hardcoded content, portal now fetches from DB
+- **Fixed P1 Bug**: Platform Admin UI - clean interface without tenant-specific elements
+- **Added**: Bidirectional group member management (member join/leave, admin add/remove)
+- **Added**: Bidirectional event registration management (member register/cancel, admin manage)
+- **Added**: `/api/portal/my-groups` and `/api/portal/my-events` endpoints
+- **Added**: Admin modals for viewing/managing group members and event registrations
+- **Added**: Leave group functionality for members
+- **Updated**: AppShell.jsx with conditional rendering for platform admin role
+- **Created**: Test suite `/app/backend/tests/test_bidirectional_comm_iter10.py`
+
+### Previous Session
 - Built Media Library Manager for church admins
 - Built Groups & Bible Studies Manager
 - Built Events & Services Manager
 - Connected portal Watch page to database (dynamic content)
-- Added join group API for members
-- Added event registration API for members
 - Correctly scoped Media Library to church admins only
 - Platform admin no longer sees Media Library link
+- Rebranded from "Samson" to "Solomon AI"
+- Live platform dashboard with real aggregated stats
+
+---
+
+## Test Reports
+- Latest: `/app/test_reports/iteration_10.json` - 100% pass rate (16/16 backend tests)
