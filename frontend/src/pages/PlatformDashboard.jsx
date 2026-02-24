@@ -4,7 +4,7 @@ import {
   Building2, Users, DollarSign, TrendingUp, Settings, 
   CheckCircle, XCircle, AlertCircle, ChevronRight, 
   Search, Filter, MoreVertical, Eye, Edit, Trash2,
-  Globe, Shield, Activity, BarChart3
+  Globe, Shield, Activity, BarChart3, UserPlus, Mail
 } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -12,11 +12,16 @@ import { toast } from 'sonner';
 export default function PlatformDashboard() {
   const navigate = useNavigate();
   const [tenants, setTenants] = useState([]);
+  const [activeTab, setActiveTab] = useState('churches'); // churches | members
+  const [members, setMembers] = useState([]);
+  const [membersTotal, setMembersTotal] = useState(0);
+  const [membersLoading, setMembersLoading] = useState(false);
   const [stats, setStats] = useState({
     totalChurches: 0,
     activeChurches: 0,
     totalMembers: 0,
-    totalDonationsThisMonth: 0
+    totalDonationsThisMonth: 0,
+    recentSignups: 0
   });
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,7 +30,32 @@ export default function PlatformDashboard() {
 
   useEffect(() => {
     fetchTenants();
+    fetchPlatformStats();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === 'members') {
+      fetchMembers();
+    }
+  }, [activeTab, searchQuery]);
+
+  const fetchPlatformStats = async () => {
+    try {
+      const res = await fetch(`${API_URL}/platform/stats`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setStats({
+          totalChurches: data.churches.total,
+          activeChurches: data.churches.active,
+          totalMembers: data.members.total_users,
+          totalDonationsThisMonth: data.giving.mtd_total,
+          recentSignups: data.members.recent_signups
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch platform stats:', error);
+    }
+  };
 
   const fetchTenants = async () => {
     try {
@@ -39,22 +69,30 @@ export default function PlatformDashboard() {
       
       const data = await res.json();
       setTenants(data);
-      
-      // Calculate stats
-      const active = data.filter(t => t.subscription_status === 'active').length;
-      const totalMembers = data.reduce((sum, t) => sum + (t.member_count || 0), 0);
-      
-      setStats({
-        totalChurches: data.length,
-        activeChurches: active,
-        totalMembers: totalMembers,
-        totalDonationsThisMonth: 847500 // Demo value
-      });
     } catch (error) {
       console.error('Failed to fetch tenants:', error);
       toast.error('Failed to load platform data');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchMembers = async () => {
+    setMembersLoading(true);
+    try {
+      const params = new URLSearchParams({ limit: '50' });
+      if (searchQuery) params.append('search', searchQuery);
+      
+      const res = await fetch(`${API_URL}/admin/members?${params}`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setMembers(data.members);
+        setMembersTotal(data.total);
+      }
+    } catch (error) {
+      console.error('Failed to fetch members:', error);
+    } finally {
+      setMembersLoading(false);
     }
   };
 
