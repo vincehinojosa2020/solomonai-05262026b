@@ -564,16 +564,16 @@ export default function PortalLibrary() {
     });
   }, [watchProgress, allCourses]);
 
-  // Filter courses
+  // Filter courses based on search and category
   useEffect(() => {
-    let result = COURSES;
+    let result = [...allCourses];
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       result = result.filter(c => 
-        c.title.toLowerCase().includes(q) ||
-        c.instructor.toLowerCase().includes(q) ||
-        c.category.toLowerCase().includes(q)
+        c.title?.toLowerCase().includes(q) ||
+        c.instructor?.toLowerCase().includes(q) ||
+        c.category?.toLowerCase().includes(q)
       );
     }
 
@@ -586,11 +586,11 @@ export default function PortalLibrary() {
         'growth': 'Personal Growth',
         'community': 'Community',
       };
-      result = result.filter(c => c.category === catMap[activeCategory]);
+      result = result.filter(c => c.category === catMap[activeCategory] || c.category === activeCategory);
     }
 
     setFilteredCourses(result);
-  }, [searchQuery, activeCategory]);
+  }, [searchQuery, activeCategory, allCourses]);
 
   return (
     <div className="prem-page" data-testid="library-page">
