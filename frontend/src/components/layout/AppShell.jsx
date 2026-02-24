@@ -37,6 +37,7 @@ const navItems = [
   ]},
   { section: 'CONNECT', items: [
     { name: 'Communications', path: '/communications', icon: Mail },
+    { name: 'Media Library', path: '/media', icon: Video },
   ]},
   { section: 'ANALYTICS', items: [
     { name: 'Reports', path: '/reports', icon: BarChart3 },
