@@ -77,7 +77,7 @@ const INTEGRATIONS = [
       {
         id: 'zapier',
         name: 'Zapier',
-        description: 'Connect Samson to 5,000+ apps. Automate workflows without code.',
+        description: 'Connect Solomon AI to 5,000+ apps. Automate workflows without code.',
         icon: Zap,
         color: '#FF4A00',
         status: 'coming_soon',
@@ -207,7 +207,7 @@ export default function IntegrationsPage() {
       <div className="page-header">
         <div>
           <h1 className="page-title">Integrations</h1>
-          <p className="page-subtitle">Connect Samson to your favorite tools</p>
+          <p className="page-subtitle">Connect Solomon AI to your favorite tools</p>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-500">{activeCount} of {totalCount} active</span>
