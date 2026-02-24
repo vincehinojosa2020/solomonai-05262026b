@@ -274,7 +274,7 @@ export default function PlatformDashboard() {
                     </div>
                   </td>
                   <td>
-                    <code className="tenant-subdomain">{tenant.subdomain}.samson.ai</code>
+                    <code className="tenant-subdomain">{tenant.subdomain}.solomon.ai</code>
                   </td>
                   <td>
                     <span className="tenant-plan">{tenant.plan}</span>
@@ -360,7 +360,7 @@ export default function PlatformDashboard() {
             <div className="platform-modal-content">
               <div className="modal-info-row">
                 <span>Subdomain:</span>
-                <code>{selectedTenant.subdomain}.samson.ai</code>
+                <code>{selectedTenant.subdomain}.solomon.ai</code>
               </div>
               <div className="modal-info-row">
                 <span>Plan:</span>
