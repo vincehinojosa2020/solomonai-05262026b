@@ -544,3 +544,226 @@ function EditEventModal({ event, open, onClose, onSuccess }) {
     </Dialog>
   );
 }
+
+
+function ViewRegistrationsModal({ event, open, onClose }) {
+  const [registrations, setRegistrations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [addLoading, setAddLoading] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      fetchRegistrations();
+    }
+  }, [open, event.id]);
+
+  const fetchRegistrations = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/admin/events/${event.id}/registrations`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setRegistrations(data.registrations || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch registrations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddRegistration = async (e) => {
+    e.preventDefault();
+    if (!newName) {
+      toast.error('Please enter a name');
+      return;
+    }
+
+    setAddLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/admin/events/${event.id}/registrations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name: newName, email: newEmail || null })
+      });
+
+      if (res.ok) {
+        toast.success('Registration added');
+        fetchRegistrations();
+        setNewName('');
+        setNewEmail('');
+        setShowAddForm(false);
+      } else {
+        const data = await res.json();
+        toast.error(data.detail || 'Failed to add registration');
+      }
+    } catch (error) {
+      toast.error('Failed to add registration');
+    } finally {
+      setAddLoading(false);
+    }
+  };
+
+  const handleCancelRegistration = async (registrationId) => {
+    if (!confirm('Remove this registration?')) return;
+
+    try {
+      const res = await fetch(`${API_URL}/admin/events/${event.id}/registrations/${registrationId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (res.ok) {
+        toast.success('Registration removed');
+        fetchRegistrations();
+      } else {
+        toast.error('Failed to remove registration');
+      }
+    } catch (error) {
+      toast.error('Failed to remove registration');
+    }
+  };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="view-registrations-modal" style={{ maxWidth: '550px' }}>
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            <span>{event.name} - Registrations</span>
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={() => setShowAddForm(!showAddForm)}
+            >
+              <UserPlus className="w-4 h-4 mr-1" />
+              Add
+            </Button>
+          </DialogTitle>
+          <DialogDescription>
+            {registrations.length} registration{registrations.length !== 1 ? 's' : ''}
+            {event.capacity && ` / ${event.capacity} capacity`}
+          </DialogDescription>
+        </DialogHeader>
+
+        {/* Add Registration Form */}
+        {showAddForm && (
+          <form onSubmit={handleAddRegistration} style={{ 
+            padding: '12px', 
+            background: '#f8fafc', 
+            borderRadius: '8px',
+            marginBottom: '12px' 
+          }}>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+              <Input
+                type="text"
+                placeholder="Name *"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                style={{ flex: 1 }}
+              />
+              <Input
+                type="email"
+                placeholder="Email (optional)"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                style={{ flex: 1 }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+              <Button type="button" size="sm" variant="ghost" onClick={() => setShowAddForm(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" size="sm" disabled={addLoading || !newName}>
+                {addLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Plus className="w-3 h-3" />}
+                Add Registration
+              </Button>
+            </div>
+          </form>
+        )}
+
+        <div className="registrations-list" style={{ maxHeight: '350px', overflowY: 'auto' }}>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '30px' }}>
+              <Loader2 className="w-5 h-5 animate-spin inline" /> Loading registrations...
+            </div>
+          ) : registrations.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
+              <Users className="w-12 h-12 mx-auto mb-3 opacity-40" />
+              <p style={{ fontWeight: '500' }}>No registrations yet</p>
+              <p style={{ fontSize: '13px' }}>Add registrations using the button above</p>
+            </div>
+          ) : (
+            registrations.map((reg, idx) => (
+              <div 
+                key={reg.id || idx} 
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '12px',
+                  borderBottom: '1px solid #f1f5f9',
+                  gap: '12px'
+                }}
+              >
+                <div style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  background: '#f97316',
+                  color: 'white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: '600',
+                  fontSize: '14px'
+                }}>
+                  {reg.user_name?.charAt(0) || '?'}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: '500', fontSize: '14px' }}>{reg.user_name || 'Unknown'}</div>
+                  <div style={{ fontSize: '12px', color: '#64748b' }}>
+                    {reg.user_email || 'No email'} • Registered {formatDate(reg.registered_at)}
+                  </div>
+                </div>
+                {reg.registered_by_admin && (
+                  <span style={{
+                    fontSize: '10px',
+                    padding: '2px 6px',
+                    background: '#e0f2fe',
+                    color: '#0369a1',
+                    borderRadius: '10px'
+                  }}>
+                    Admin
+                  </span>
+                )}
+                <button 
+                  onClick={() => handleCancelRegistration(reg.id)}
+                  style={{
+                    padding: '4px',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#94a3b8',
+                    borderRadius: '4px'
+                  }}
+                  title="Remove registration"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
