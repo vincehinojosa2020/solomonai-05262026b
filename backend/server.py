@@ -963,10 +963,14 @@ async def get_member_profile(request: Request):
             {"_id": 0}
         ).to_list(100)
         
-        for gm in group_memberships:
-            group = await db.groups.find_one({"id": gm["group_id"]}, {"_id": 0})
-            if group:
-                groups.append(serialize_doc(group))
+        # Optimized: Fetch all groups in a single query instead of N+1
+        if group_memberships:
+            group_ids = [gm["group_id"] for gm in group_memberships]
+            groups_docs = await db.groups.find(
+                {"id": {"$in": group_ids}},
+                {"_id": 0}
+            ).to_list(len(group_ids))
+            groups = [serialize_doc(g) for g in groups_docs]
     
     # Get giving summary
     ytd_giving = 0
