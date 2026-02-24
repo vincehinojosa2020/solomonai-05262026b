@@ -216,7 +216,7 @@ export default function AppShell() {
                 style={{ backgroundColor: impersonatedTenant.primary_color }}
               />
               <span>Viewing as: <strong>{impersonatedTenant.name}</strong></span>
-              <span className="impersonation-subdomain">({impersonatedTenant.subdomain}.samson.ai)</span>
+              <span className="impersonation-subdomain">({impersonatedTenant.subdomain}.solomon.ai)</span>
             </div>
             <button 
               onClick={exitImpersonation}
@@ -233,7 +233,7 @@ export default function AppShell() {
           <div className="flex items-center gap-3">
             {collapsed && (
               <span className="font-bold text-sm tracking-wider text-slate-900">
-                SAMS<span className="text-blue-600">O</span>N
+                SOL<span className="text-blue-600">O</span>MON
               </span>
             )}
           </div>
