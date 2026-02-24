@@ -230,6 +230,9 @@ export default function PortalLayout() {
           ))}
         </nav>
       )}
+
+      {/* Solomon AI Chat */}
+      <SolomonChat />
     </div>
   );
 }
