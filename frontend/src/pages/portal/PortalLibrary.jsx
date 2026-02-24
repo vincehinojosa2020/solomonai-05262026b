@@ -208,9 +208,10 @@ const ContinueWatchingSection = ({ items, onPlay, onRemove }) => {
 
 const HeroSection = ({ content, onPlay, watchProgress }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const featured = content.filter(c => c.featured).slice(0, 4);
+  const featured = (content || []).filter(c => c.featured).slice(0, 4);
 
   useEffect(() => {
+    if (featured.length === 0) return;
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % featured.length);
     }, 7000);
