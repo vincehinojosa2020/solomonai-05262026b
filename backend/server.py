@@ -1038,10 +1038,20 @@ async def get_member_giving_history(request: Request, limit: int = 50):
         {"_id": 0}
     ).sort("donation_date", -1).limit(limit).to_list(limit)
     
-    # Enrich with fund names
-    for d in donations:
-        fund = await db.funds.find_one({"id": d.get("fund_id")}, {"_id": 0})
-        d["fund_name"] = fund["name"] if fund else "General Fund"
+    # Optimized: Fetch all fund names in a single query instead of N+1
+    if donations:
+        fund_ids = list(set(d.get("fund_id") for d in donations if d.get("fund_id")))
+        if fund_ids:
+            funds_list = await db.funds.find(
+                {"id": {"$in": fund_ids}},
+                {"_id": 0, "id": 1, "name": 1}
+            ).to_list(len(fund_ids))
+            funds_map = {f["id"]: f["name"] for f in funds_list}
+        else:
+            funds_map = {}
+        
+        for d in donations:
+            d["fund_name"] = funds_map.get(d.get("fund_id"), "General Fund")
     
     return {
         "donations": [serialize_doc(d) for d in donations],
