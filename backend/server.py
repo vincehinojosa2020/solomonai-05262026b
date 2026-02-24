@@ -41,9 +41,20 @@ load_dotenv(ROOT_DIR / '.env')
 resend.api_key = os.environ.get("RESEND_API_KEY")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
 
-# MongoDB connection
+# MongoDB connection with Atlas-compatible settings
 mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
+client = AsyncIOMotorClient(
+    mongo_url,
+    serverSelectionTimeoutMS=30000,  # 30 seconds for server selection
+    connectTimeoutMS=30000,           # 30 seconds to establish connection
+    socketTimeoutMS=60000,            # 60 seconds for socket operations
+    maxPoolSize=50,                   # Connection pool size
+    minPoolSize=10,                   # Minimum connections to maintain
+    maxIdleTimeMS=45000,              # Close idle connections after 45 seconds
+    retryWrites=True,                 # Enable retryable writes
+    retryReads=True,                  # Enable retryable reads
+    w='majority'                      # Write concern for durability
+)
 db = client[os.environ['DB_NAME']]
 
 # Create the main app
