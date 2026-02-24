@@ -47,7 +47,7 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # Create the main app
-app = FastAPI(title="Samson Church Management API")
+app = FastAPI(title="Solomon AI Church Management API")
 
 # Create router with /api prefix
 api_router = APIRouter(prefix="/api")
