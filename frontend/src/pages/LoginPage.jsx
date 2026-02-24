@@ -269,12 +269,12 @@ export default function LoginPage() {
             
             <div className="demo-credential-row">
               <div className="demo-credential-info">
-                <span className="demo-role" style={{color: '#10b981'}}>CityReach:</span>
+                <span className="demo-role" style={{color: '#dc2626'}}>Cristo Viene:</span>
                 <code className="demo-creds" onClick={() => {
-                  setEmail('admin@cityreach.church');
+                  setEmail('admin@cristoviene.church');
                   setPassword('Demo2026!');
                 }}>
-                  admin@cityreach.church
+                  admin@cristoviene.church
                 </code>
               </div>
             </div>
@@ -317,12 +317,12 @@ export default function LoginPage() {
             
             <div className="demo-credential-row">
               <div className="demo-credential-info">
-                <span className="demo-role" style={{color: '#10b981', minWidth: '95px'}}>John:</span>
+                <span className="demo-role" style={{color: '#dc2626', minWidth: '95px'}}>Carlos:</span>
                 <code className="demo-creds" onClick={() => {
-                  setEmail('member@cityreach.church');
+                  setEmail('member@cristoviene.church');
                   setPassword('Demo2026!');
                 }}>
-                  member@cityreach.church
+                  member@cristoviene.church
                 </code>
               </div>
             </div>
