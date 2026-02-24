@@ -23,6 +23,8 @@ import EventsPage from "@/pages/EventsPage";
 import IntegrationsPage from "@/pages/IntegrationsPage";
 import PlatformDashboard from "@/pages/PlatformDashboard";
 import MediaManagerPage from "@/pages/MediaManagerPage";
+import GroupsManagerPage from "@/pages/GroupsManagerPage";
+import EventsManagerPage from "@/pages/EventsManagerPage";
 // Portal Pages
 import PortalHome from "@/pages/portal/PortalHome";
 import PortalGive from "@/pages/portal/PortalGive";
