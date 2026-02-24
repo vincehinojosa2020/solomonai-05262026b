@@ -1,17 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
-import { Users, MapPin, Clock, ChevronRight, Search, Bell } from 'lucide-react';
+import { Users, MapPin, Clock, ChevronRight, Search, Bell, LogOut } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export default function PortalGroups() {
   const { user, memberData } = useOutletContext();
   const [allGroups, setAllGroups] = useState([]);
+  const [myGroups, setMyGroups] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [loadingGroups, setLoadingGroups] = useState(true);
 
   useEffect(() => {
     fetchGroups();
+    fetchMyGroups();
   }, []);
 
   const fetchGroups = async () => {
@@ -23,10 +26,23 @@ export default function PortalGroups() {
       }
     } catch (error) {
       console.error('Failed to fetch groups:', error);
+    } finally {
+      setLoadingGroups(false);
     }
   };
 
-  const myGroups = memberData?.groups || [];
+  const fetchMyGroups = async () => {
+    try {
+      const res = await fetch(`${API_URL}/portal/my-groups`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setMyGroups(data.groups || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch my groups:', error);
+    }
+  };
+
   const myGroupIds = myGroups.map(g => g.id);
 
   const filteredGroups = allGroups.filter(g => {
@@ -48,16 +64,37 @@ export default function PortalGroups() {
       if (res.ok) {
         const data = await res.json();
         toast.success(data.message || 'You have joined the group!');
-        // Refresh groups list
+        // Refresh both lists
         fetchGroups();
-        // Refresh member data
-        window.location.reload();
+        fetchMyGroups();
       } else {
         const error = await res.json();
         toast.error(error.detail || 'Failed to join group');
       }
     } catch (error) {
       toast.error('Failed to join group');
+    }
+  };
+
+  const handleLeaveGroup = async (groupId) => {
+    if (!confirm('Are you sure you want to leave this group?')) return;
+    
+    try {
+      const res = await fetch(`${API_URL}/portal/groups/${groupId}/leave`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      
+      if (res.ok) {
+        toast.success('You have left the group');
+        fetchGroups();
+        fetchMyGroups();
+      } else {
+        const error = await res.json();
+        toast.error(error.detail || 'Failed to leave group');
+      }
+    } catch (error) {
+      toast.error('Failed to leave group');
     }
   };
 
@@ -70,9 +107,14 @@ export default function PortalGroups() {
       <div className="portal-group-card-header">
         <h3 className="portal-group-name">{group.name}</h3>
         {isMine ? (
-          <Link to={`/portal/groups/${group.id}`} className="portal-group-action-btn">
-            View Group
-          </Link>
+          <button 
+            onClick={() => handleLeaveGroup(group.id)}
+            className="portal-group-action-btn secondary"
+            style={{ color: '#dc2626' }}
+          >
+            <LogOut className="w-3 h-3" />
+            Leave Group
+          </button>
         ) : group.is_open ? (
           <button 
             onClick={() => handleJoinRequest(group.id)}
@@ -98,6 +140,17 @@ export default function PortalGroups() {
             {group.leader.first_name} {group.leader.last_name}, Leader
           </span>
         )}
+        {isMine && group.role && (
+          <span className="portal-group-role" style={{ 
+            background: group.role === 'leader' ? '#dcfce7' : '#e0f2fe',
+            color: group.role === 'leader' ? '#16a34a' : '#0369a1',
+            padding: '2px 8px',
+            borderRadius: '10px',
+            fontSize: '11px'
+          }}>
+            {group.role}
+          </span>
+        )}
       </div>
       
       <div className="portal-group-details">
@@ -116,7 +169,7 @@ export default function PortalGroups() {
         <div className="portal-group-detail">
           <Users className="w-4 h-4" />
           <span>{group.member_count || 0} members</span>
-          {group.is_open && <span className="text-green-600 ml-1">• Open</span>}
+          {group.is_open && !isMine && <span className="text-green-600 ml-1">• Open</span>}
         </div>
       </div>
     </div>
