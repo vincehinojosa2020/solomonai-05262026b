@@ -1871,6 +1871,308 @@ async def get_admin_member_directory(
         }
     }
 
+# ============== MEDIA MANAGEMENT API ==============
+
+def extract_youtube_id(url: str) -> Optional[str]:
+    """Extract YouTube video ID from various URL formats"""
+    import re
+    patterns = [
+        r'(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})',
+        r'^([a-zA-Z0-9_-]{11})$'  # Just the ID itself
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, url)
+        if match:
+            return match.group(1)
+    return None
+
+async def get_current_admin_user(request: Request):
+    """Helper to get current admin user with tenant validation"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Must be admin or platform_admin
+    if user.get("role") not in ["admin", "church_admin", "platform_admin"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    return user
+
+# --- Media Categories ---
+
+@api_router.get("/admin/media/categories")
+async def get_media_categories(request: Request):
+    """Get all media categories for the church"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    if not tenant_id:
+        # Platform admin - get default categories
+        categories = await db.media_categories.find({}, {"_id": 0}).sort("sort_order", 1).to_list(100)
+    else:
+        categories = await db.media_categories.find(
+            {"tenant_id": tenant_id}, {"_id": 0}
+        ).sort("sort_order", 1).to_list(100)
+    
+    return {"categories": categories}
+
+@api_router.post("/admin/media/categories")
+async def create_media_category(request: Request, category: dict):
+    """Create a new media category"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+    
+    new_category = MediaCategory(
+        tenant_id=tenant_id,
+        name=category.get("name"),
+        slug=category.get("slug", category.get("name", "").lower().replace(" ", "-")),
+        icon=category.get("icon", "video"),
+        sort_order=category.get("sort_order", 0)
+    )
+    
+    await db.media_categories.insert_one(new_category.model_dump())
+    return {"message": "Category created", "category": new_category.model_dump()}
+
+# --- Media Videos ---
+
+@api_router.get("/admin/media/videos")
+async def get_admin_media_videos(
+    request: Request,
+    skip: int = 0,
+    limit: int = 50,
+    category_id: Optional[str] = None,
+    series_id: Optional[str] = None,
+    search: Optional[str] = None,
+    is_published: Optional[bool] = None
+):
+    """Get all videos for admin management"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    query = {}
+    if tenant_id:
+        query["tenant_id"] = tenant_id
+    
+    if category_id:
+        query["category_id"] = category_id
+    if series_id:
+        query["series_id"] = series_id
+    if is_published is not None:
+        query["is_published"] = is_published
+    if search:
+        query["$or"] = [
+            {"title": {"$regex": search, "$options": "i"}},
+            {"instructor": {"$regex": search, "$options": "i"}},
+            {"description": {"$regex": search, "$options": "i"}}
+        ]
+    
+    videos = await db.media_videos.find(
+        query, {"_id": 0}
+    ).sort([("is_featured", -1), ("created_at", -1)]).skip(skip).limit(limit).to_list(limit)
+    
+    total = await db.media_videos.count_documents(query)
+    
+    return {
+        "videos": videos,
+        "total": total,
+        "skip": skip,
+        "limit": limit
+    }
+
+@api_router.post("/admin/media/videos")
+async def create_media_video(request: Request, video_data: MediaVideoCreate):
+    """Create a new video from YouTube URL"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+    
+    # Extract YouTube ID
+    youtube_id = extract_youtube_id(video_data.youtube_url)
+    if not youtube_id:
+        raise HTTPException(status_code=400, detail="Invalid YouTube URL")
+    
+    # Check for duplicate
+    existing = await db.media_videos.find_one({
+        "tenant_id": tenant_id,
+        "youtube_id": youtube_id
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="This video already exists in your library")
+    
+    # Auto-generate thumbnail URL
+    thumbnail_url = f"https://i.ytimg.com/vi/{youtube_id}/maxresdefault.jpg"
+    
+    # Create video record
+    new_video = MediaVideo(
+        tenant_id=tenant_id,
+        title=video_data.title or f"Video {youtube_id}",
+        description=video_data.description,
+        youtube_id=youtube_id,
+        youtube_url=video_data.youtube_url,
+        thumbnail_url=thumbnail_url,
+        instructor=video_data.instructor,
+        category_id=video_data.category_id,
+        series_id=video_data.series_id,
+        is_featured=video_data.is_featured,
+        badge=video_data.badge,
+        is_published=True,
+        published_at=datetime.now(timezone.utc).isoformat()
+    )
+    
+    await db.media_videos.insert_one(new_video.model_dump())
+    
+    logger.info(f"Video created: {new_video.title} ({youtube_id}) for tenant {tenant_id}")
+    
+    return {
+        "message": "Video added successfully",
+        "video": new_video.model_dump()
+    }
+
+@api_router.put("/admin/media/videos/{video_id}")
+async def update_media_video(request: Request, video_id: str, updates: dict):
+    """Update a video's metadata"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    query = {"id": video_id}
+    if tenant_id:
+        query["tenant_id"] = tenant_id
+    
+    # Allowed fields to update
+    allowed_fields = [
+        "title", "description", "instructor", "category_id", "series_id",
+        "is_featured", "is_published", "badge", "sort_order", "duration"
+    ]
+    
+    update_data = {k: v for k, v in updates.items() if k in allowed_fields}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.media_videos.update_one(query, {"$set": update_data})
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Video not found")
+    
+    return {"message": "Video updated successfully"}
+
+@api_router.delete("/admin/media/videos/{video_id}")
+async def delete_media_video(request: Request, video_id: str):
+    """Delete a video from the library"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    query = {"id": video_id}
+    if tenant_id:
+        query["tenant_id"] = tenant_id
+    
+    result = await db.media_videos.delete_one(query)
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Video not found")
+    
+    return {"message": "Video deleted successfully"}
+
+@api_router.post("/admin/media/videos/{video_id}/feature")
+async def toggle_video_featured(request: Request, video_id: str):
+    """Toggle featured status of a video"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    query = {"id": video_id}
+    if tenant_id:
+        query["tenant_id"] = tenant_id
+    
+    video = await db.media_videos.find_one(query, {"_id": 0})
+    if not video:
+        raise HTTPException(status_code=404, detail="Video not found")
+    
+    new_featured = not video.get("is_featured", False)
+    await db.media_videos.update_one(query, {"$set": {"is_featured": new_featured}})
+    
+    return {"message": f"Video {'featured' if new_featured else 'unfeatured'}", "is_featured": new_featured}
+
+# --- Portal Media API (for members) ---
+
+@api_router.get("/portal/media/videos")
+async def get_portal_videos(request: Request, category: Optional[str] = None, limit: int = 50):
+    """Get published videos for member portal"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    tenant_id = user.get("tenant_id")
+    
+    query = {"is_published": True}
+    if tenant_id:
+        query["tenant_id"] = tenant_id
+    if category and category != "all":
+        query["category_id"] = category
+    
+    videos = await db.media_videos.find(
+        query, {"_id": 0}
+    ).sort([("is_featured", -1), ("created_at", -1)]).limit(limit).to_list(limit)
+    
+    # Get categories for this tenant
+    cat_query = {"tenant_id": tenant_id} if tenant_id else {}
+    categories = await db.media_categories.find(cat_query, {"_id": 0}).sort("sort_order", 1).to_list(20)
+    
+    return {
+        "videos": videos,
+        "categories": categories,
+        "total": len(videos)
+    }
+
+@api_router.get("/portal/media/featured")
+async def get_featured_video(request: Request):
+    """Get the featured/hero video for the portal"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    tenant_id = user.get("tenant_id") if user else None
+    
+    query = {"is_published": True, "is_featured": True}
+    if tenant_id:
+        query["tenant_id"] = tenant_id
+    
+    featured = await db.media_videos.find_one(query, {"_id": 0})
+    
+    if not featured:
+        # Fall back to most recent video
+        query = {"is_published": True}
+        if tenant_id:
+            query["tenant_id"] = tenant_id
+        featured = await db.media_videos.find_one(
+            query, {"_id": 0}, sort=[("created_at", -1)]
+        )
+    
+    return {"video": featured}
+
 # --- SOLOMON AI ROUTES ---
 # Store active chat sessions
 solomon_sessions: Dict[str, LlmChat] = {}
