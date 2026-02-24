@@ -4044,6 +4044,347 @@ async def get_donations(
         "per_page": per_page
     }
 
+# ============== GIVING REPORTS & CSV EXPORT ==============
+
+from fastapi.responses import StreamingResponse
+import csv
+import io
+
+@api_router.get("/admin/giving/report")
+async def get_giving_report(
+    request: Request,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    fund_id: Optional[str] = None,
+    group_by: str = "day"  # day, week, month, fund, donor
+):
+    """Get giving report with aggregated statistics"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    
+    query = {"tenant_id": tenant_id, "status": "completed"}
+    
+    if start_date:
+        query["donation_date"] = {"$gte": start_date}
+    if end_date:
+        query.setdefault("donation_date", {})["$lte"] = end_date
+    if fund_id:
+        query["fund_id"] = fund_id
+    
+    # Basic statistics
+    total_donations = await db.donations.count_documents(query)
+    
+    # Sum total amount
+    sum_pipeline = [
+        {"$match": query},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+    ]
+    sum_result = await db.donations.aggregate(sum_pipeline).to_list(1)
+    total_amount = sum_result[0]["total"] if sum_result else 0
+    
+    # Group by specified field
+    if group_by == "fund":
+        group_pipeline = [
+            {"$match": query},
+            {"$group": {
+                "_id": "$fund_id",
+                "count": {"$sum": 1},
+                "total": {"$sum": "$amount"}
+            }},
+            {"$lookup": {
+                "from": "funds",
+                "localField": "_id",
+                "foreignField": "id",
+                "as": "fund"
+            }},
+            {"$unwind": {"path": "$fund", "preserveNullAndEmptyArrays": True}},
+            {"$project": {
+                "_id": 0,
+                "label": {"$ifNull": ["$fund.name", "$_id"]},
+                "count": 1,
+                "total": 1
+            }},
+            {"$sort": {"total": -1}}
+        ]
+    elif group_by == "donor":
+        group_pipeline = [
+            {"$match": query},
+            {"$group": {
+                "_id": "$person_id",
+                "count": {"$sum": 1},
+                "total": {"$sum": "$amount"}
+            }},
+            {"$lookup": {
+                "from": "people",
+                "localField": "_id",
+                "foreignField": "id",
+                "as": "donor"
+            }},
+            {"$unwind": {"path": "$donor", "preserveNullAndEmptyArrays": True}},
+            {"$project": {
+                "_id": 0,
+                "label": {"$concat": [{"$ifNull": ["$donor.first_name", ""]}, " ", {"$ifNull": ["$donor.last_name", "Anonymous"]}]},
+                "count": 1,
+                "total": 1
+            }},
+            {"$sort": {"total": -1}},
+            {"$limit": 20}
+        ]
+    elif group_by == "month":
+        group_pipeline = [
+            {"$match": query},
+            {"$group": {
+                "_id": {"$substr": ["$donation_date", 0, 7]},  # YYYY-MM
+                "count": {"$sum": 1},
+                "total": {"$sum": "$amount"}
+            }},
+            {"$project": {
+                "_id": 0,
+                "label": "$_id",
+                "count": 1,
+                "total": 1
+            }},
+            {"$sort": {"label": -1}}
+        ]
+    else:  # day
+        group_pipeline = [
+            {"$match": query},
+            {"$group": {
+                "_id": "$donation_date",
+                "count": {"$sum": 1},
+                "total": {"$sum": "$amount"}
+            }},
+            {"$project": {
+                "_id": 0,
+                "label": "$_id",
+                "count": 1,
+                "total": 1
+            }},
+            {"$sort": {"label": -1}},
+            {"$limit": 30}
+        ]
+    
+    breakdown = await db.donations.aggregate(group_pipeline).to_list(100)
+    
+    # Get recent donations
+    recent_pipeline = [
+        {"$match": query},
+        {"$lookup": {
+            "from": "people",
+            "localField": "person_id",
+            "foreignField": "id",
+            "as": "donor"
+        }},
+        {"$unwind": {"path": "$donor", "preserveNullAndEmptyArrays": True}},
+        {"$lookup": {
+            "from": "funds",
+            "localField": "fund_id",
+            "foreignField": "id",
+            "as": "fund"
+        }},
+        {"$unwind": {"path": "$fund", "preserveNullAndEmptyArrays": True}},
+        {"$project": {
+            "_id": 0,
+            "id": 1,
+            "amount": 1,
+            "donation_date": 1,
+            "payment_method": 1,
+            "donor_name": {"$concat": [{"$ifNull": ["$donor.first_name", ""]}, " ", {"$ifNull": ["$donor.last_name", "Anonymous"]}]},
+            "donor_email": "$donor.email",
+            "fund_name": "$fund.name"
+        }},
+        {"$sort": {"donation_date": -1}},
+        {"$limit": 50}
+    ]
+    recent = await db.donations.aggregate(recent_pipeline).to_list(50)
+    
+    return {
+        "summary": {
+            "total_donations": total_donations,
+            "total_amount": total_amount,
+            "average_donation": total_amount / total_donations if total_donations > 0 else 0,
+            "date_range": {"start": start_date, "end": end_date}
+        },
+        "breakdown": breakdown,
+        "recent_donations": recent
+    }
+
+@api_router.get("/admin/giving/export")
+async def export_giving_csv(
+    request: Request,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    fund_id: Optional[str] = None
+):
+    """Export giving data as CSV"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    
+    query = {"tenant_id": tenant_id, "status": "completed"}
+    
+    if start_date:
+        query["donation_date"] = {"$gte": start_date}
+    if end_date:
+        query.setdefault("donation_date", {})["$lte"] = end_date
+    if fund_id:
+        query["fund_id"] = fund_id
+    
+    # Get all donations with donor and fund info
+    pipeline = [
+        {"$match": query},
+        {"$lookup": {
+            "from": "people",
+            "localField": "person_id",
+            "foreignField": "id",
+            "as": "donor"
+        }},
+        {"$unwind": {"path": "$donor", "preserveNullAndEmptyArrays": True}},
+        {"$lookup": {
+            "from": "funds",
+            "localField": "fund_id",
+            "foreignField": "id",
+            "as": "fund"
+        }},
+        {"$unwind": {"path": "$fund", "preserveNullAndEmptyArrays": True}},
+        {"$project": {
+            "_id": 0,
+            "donation_date": 1,
+            "amount": 1,
+            "payment_method": 1,
+            "check_number": 1,
+            "donor_first_name": "$donor.first_name",
+            "donor_last_name": "$donor.last_name",
+            "donor_email": "$donor.email",
+            "donor_phone": "$donor.phone",
+            "donor_address": "$donor.address",
+            "fund_name": "$fund.name",
+            "notes": 1,
+            "transaction_id": 1
+        }},
+        {"$sort": {"donation_date": -1}}
+    ]
+    
+    donations = await db.donations.aggregate(pipeline).to_list(10000)
+    
+    # Create CSV
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Header row
+    writer.writerow([
+        "Date", "Amount", "Payment Method", "Check #",
+        "First Name", "Last Name", "Email", "Phone", "Address",
+        "Fund", "Notes", "Transaction ID"
+    ])
+    
+    # Data rows
+    for d in donations:
+        writer.writerow([
+            d.get("donation_date", ""),
+            f"${d.get('amount', 0):.2f}",
+            d.get("payment_method", ""),
+            d.get("check_number", ""),
+            d.get("donor_first_name", ""),
+            d.get("donor_last_name", ""),
+            d.get("donor_email", ""),
+            d.get("donor_phone", ""),
+            d.get("donor_address", ""),
+            d.get("fund_name", ""),
+            d.get("notes", ""),
+            d.get("transaction_id", "")
+        ])
+    
+    output.seek(0)
+    
+    # Generate filename
+    date_str = datetime.now().strftime("%Y%m%d")
+    filename = f"giving_report_{date_str}.csv"
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@api_router.get("/admin/giving/year-end-statement/{person_id}")
+async def get_year_end_statement(request: Request, person_id: str, year: int = 2025):
+    """Generate year-end giving statement data for a specific person"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    
+    # Get person info
+    person = await db.people.find_one({"id": person_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not person:
+        raise HTTPException(status_code=404, detail="Person not found")
+    
+    # Get all donations for this person in the specified year
+    start_date = f"{year}-01-01"
+    end_date = f"{year}-12-31"
+    
+    pipeline = [
+        {"$match": {
+            "tenant_id": tenant_id,
+            "person_id": person_id,
+            "status": "completed",
+            "donation_date": {"$gte": start_date, "$lte": end_date}
+        }},
+        {"$lookup": {
+            "from": "funds",
+            "localField": "fund_id",
+            "foreignField": "id",
+            "as": "fund"
+        }},
+        {"$unwind": {"path": "$fund", "preserveNullAndEmptyArrays": True}},
+        {"$project": {
+            "_id": 0,
+            "donation_date": 1,
+            "amount": 1,
+            "payment_method": 1,
+            "check_number": 1,
+            "fund_name": "$fund.name"
+        }},
+        {"$sort": {"donation_date": 1}}
+    ]
+    
+    donations = await db.donations.aggregate(pipeline).to_list(1000)
+    
+    # Calculate totals by fund
+    fund_totals = {}
+    for d in donations:
+        fund = d.get("fund_name", "General")
+        fund_totals[fund] = fund_totals.get(fund, 0) + d.get("amount", 0)
+    
+    total_amount = sum(d.get("amount", 0) for d in donations)
+    
+    # Get church/tenant info
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+    
+    return {
+        "statement": {
+            "year": year,
+            "generated_date": datetime.now().strftime("%Y-%m-%d"),
+            "church": {
+                "name": tenant.get("name", "Church") if tenant else "Church",
+                "address": tenant.get("address", "") if tenant else "",
+                "city": tenant.get("city", "") if tenant else "",
+                "state": tenant.get("state", "") if tenant else "",
+                "ein": tenant.get("ein", "XX-XXXXXXX") if tenant else "XX-XXXXXXX"
+            },
+            "donor": {
+                "name": f"{person.get('first_name', '')} {person.get('last_name', '')}".strip(),
+                "address": person.get("address", ""),
+                "city": person.get("city", ""),
+                "state": person.get("state", ""),
+                "zip": person.get("zip", "")
+            },
+            "donations": donations,
+            "fund_totals": [{"fund": k, "total": v} for k, v in fund_totals.items()],
+            "total_amount": total_amount,
+            "donation_count": len(donations),
+            "disclaimer": "No goods or services were provided in exchange for these contributions except intangible religious benefits."
+        }
+    }
+
 @api_router.post("/donations")
 async def create_donation(donation_data: DonationBase):
     tenant_id = DEFAULT_TENANT_ID
