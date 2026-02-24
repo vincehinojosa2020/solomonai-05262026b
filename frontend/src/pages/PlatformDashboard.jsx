@@ -209,7 +209,28 @@ export default function PlatformDashboard() {
         </div>
       </div>
 
-      {/* Tenants Table */}
+      {/* Tabs */}
+      <div className="platform-tabs">
+        <button 
+          className={`platform-tab ${activeTab === 'churches' ? 'active' : ''}`}
+          onClick={() => setActiveTab('churches')}
+          data-testid="tab-churches"
+        >
+          <Building2 className="w-4 h-4" />
+          Churches ({stats.totalChurches})
+        </button>
+        <button 
+          className={`platform-tab ${activeTab === 'members' ? 'active' : ''}`}
+          onClick={() => setActiveTab('members')}
+          data-testid="tab-members"
+        >
+          <Users className="w-4 h-4" />
+          All Members ({stats.totalMembers.toLocaleString()})
+        </button>
+      </div>
+
+      {/* Churches Tab Content */}
+      {activeTab === 'churches' && (
       <div className="platform-section">
         <div className="platform-section-header">
           <h2>Church Tenants</h2>
