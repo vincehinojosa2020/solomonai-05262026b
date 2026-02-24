@@ -52,6 +52,8 @@ export default function LoginPage() {
       // Route based on role
       if (data.role === 'member') {
         navigate('/portal', { state: { user: data } });
+      } else if (data.role === 'platform_admin') {
+        navigate('/platform', { state: { user: data } });
       } else {
         navigate('/dashboard', { state: { user: data } });
       }
