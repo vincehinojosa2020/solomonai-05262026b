@@ -774,6 +774,7 @@ async def register_user(request: UserRegistrationRequest, response: Response):
     
     # Use provided tenant_id or default
     tenant_id = request.tenant_id if request.tenant_id else DEFAULT_TENANT_ID
+    church_name = "your church"  # Default
     
     # Validate tenant exists and is active
     if tenant_id:
@@ -782,6 +783,7 @@ async def register_user(request: UserRegistrationRequest, response: Response):
             raise HTTPException(status_code=400, detail="Selected church not found")
         if tenant.get("subscription_status") != "active":
             raise HTTPException(status_code=400, detail="Selected church is not accepting registrations")
+        church_name = tenant.get("name", "your church")
     
     new_user = {
         "id": str(uuid.uuid4()),
@@ -827,10 +829,10 @@ async def register_user(request: UserRegistrationRequest, response: Response):
         max_age=7 * 24 * 60 * 60
     )
     
-    logger.info(f"New user registered: {request.email}")
+    logger.info(f"New user registered: {request.email} at {church_name}")
     
-    # Send welcome email from Samson AI (non-blocking)
-    asyncio.create_task(send_welcome_email(request.email, request.first_name))
+    # Send welcome email from Solomon AI (non-blocking)
+    asyncio.create_task(send_welcome_email(request.email, request.first_name, church_name))
     
     return {
         "message": "Account created successfully",
