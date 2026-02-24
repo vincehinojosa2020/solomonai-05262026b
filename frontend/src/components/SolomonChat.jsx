@@ -131,8 +131,8 @@ const SolomonChat = () => {
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="solomon-title">Samson</h3>
-              <p className="solomon-subtitle">AI Church Analyst</p>
+              <h3 className="solomon-title">Solomon</h3>
+              <p className="solomon-subtitle">AI Church Assistant</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
