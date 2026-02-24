@@ -3836,7 +3836,7 @@ async def seed_demo_accounts(tenant_id: str):
 
 @api_router.post("/seed-platform")
 async def seed_platform():
-    """Seed the entire SAMSON platform with multiple churches and demo data"""
+    """Seed the entire Solomon AI platform with multiple churches and demo data"""
     import hashlib
     
     demo_password_hash = hashlib.sha256("Demo2026!".encode()).hexdigest()
