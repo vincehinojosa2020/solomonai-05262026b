@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { MapPin, Clock, Users, CheckCircle, Calendar as CalendarIcon } from 'lucide-react';
+import { MapPin, Clock, Users, CheckCircle, Calendar as CalendarIcon, X } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export default function PortalEvents() {
   const { user, memberData } = useOutletContext();
   const [events, setEvents] = useState([]);
+  const [myEvents, setMyEvents] = useState([]);
   const [filter, setFilter] = useState('all');
-  const [registeredEvents, setRegisteredEvents] = useState(['event_sunday_service', 'event_womens_conf']);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchEvents();
+    fetchMyEvents();
   }, []);
 
   const fetchEvents = async () => {
@@ -23,8 +25,24 @@ export default function PortalEvents() {
       }
     } catch (error) {
       console.error('Failed to fetch events:', error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  const fetchMyEvents = async () => {
+    try {
+      const res = await fetch(`${API_URL}/portal/my-events`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setMyEvents(data.events || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch my events:', error);
+    }
+  };
+
+  const registeredEventIds = myEvents.map(e => e.id);
 
   const handleRegister = async (eventId) => {
     try {
@@ -35,8 +53,9 @@ export default function PortalEvents() {
       
       if (res.ok) {
         const data = await res.json();
-        setRegisteredEvents([...registeredEvents, eventId]);
         toast.success(data.message || 'Successfully registered!');
+        fetchEvents();
+        fetchMyEvents();
       } else {
         const error = await res.json();
         toast.error(error.detail || 'Failed to register');
@@ -47,6 +66,8 @@ export default function PortalEvents() {
   };
 
   const handleCancelRegistration = async (eventId) => {
+    if (!confirm('Cancel your registration for this event?')) return;
+    
     try {
       const res = await fetch(`${API_URL}/portal/events/${eventId}/register`, {
         method: 'DELETE',
@@ -54,8 +75,9 @@ export default function PortalEvents() {
       });
       
       if (res.ok) {
-        setRegisteredEvents(registeredEvents.filter(id => id !== eventId));
         toast.success('Registration cancelled');
+        fetchEvents();
+        fetchMyEvents();
       } else {
         toast.error('Failed to cancel registration');
       }
@@ -78,26 +100,27 @@ export default function PortalEvents() {
     { id: 'all', label: 'All' },
     { id: 'week', label: 'This Week' },
     { id: 'month', label: 'This Month' },
-    { id: 'registered', label: 'Registered' },
+    { id: 'registered', label: 'My Registrations' },
   ];
 
   const filteredEvents = events.filter(event => {
     if (filter === 'registered') {
-      return registeredEvents.includes(event.id);
+      return registeredEventIds.includes(event.id);
     }
     // For now, show all events for other filters
     return true;
   });
 
   const EventCard = ({ event }) => {
-    const isRegistered = registeredEvents.includes(event.id);
-    const { month, day, time, full } = formatDate(event.start_datetime);
+    const isRegistered = registeredEventIds.includes(event.id);
+    const dateInfo = event.start_datetime ? formatDate(event.start_datetime) : 
+                     event.event_date ? formatDate(event.event_date) : { month: '?', day: '?', time: '' };
 
     return (
       <div className="portal-event-card" data-testid={`event-card-${event.id}`}>
         <div className="portal-event-date-chip">
-          <span className="portal-event-month">{month}</span>
-          <span className="portal-event-day">{day}</span>
+          <span className="portal-event-month">{dateInfo.month}</span>
+          <span className="portal-event-day">{dateInfo.day}</span>
         </div>
         
         <div className="portal-event-card-content">
@@ -110,10 +133,12 @@ export default function PortalEvents() {
                 {event.location}
               </span>
             )}
-            <span className="portal-event-card-info">
-              <Clock className="w-3.5 h-3.5" />
-              {time}
-            </span>
+            {(event.start_time || dateInfo.time) && (
+              <span className="portal-event-card-info">
+                <Clock className="w-3.5 h-3.5" />
+                {event.start_time || dateInfo.time}
+              </span>
+            )}
             {event.registration_count > 0 && (
               <span className="portal-event-card-info">
                 <Users className="w-3.5 h-3.5" />
@@ -124,14 +149,24 @@ export default function PortalEvents() {
 
           <div className="portal-event-card-actions">
             {isRegistered ? (
-              <span className="portal-registered-badge">
-                <CheckCircle className="w-4 h-4" />
-                Registered ✓
-              </span>
+              <>
+                <span className="portal-registered-badge">
+                  <CheckCircle className="w-4 h-4" />
+                  Registered ✓
+                </span>
+                <button 
+                  onClick={() => handleCancelRegistration(event.id)}
+                  className="portal-event-btn secondary"
+                  style={{ color: '#dc2626' }}
+                >
+                  <X className="w-3 h-3" />
+                  Cancel
+                </button>
+              </>
             ) : (
               <>
                 <button className="portal-event-btn secondary">View Details</button>
-                {event.registration_required && (
+                {(event.registration_required || event.requires_registration) && (
                   <button 
                     onClick={() => handleRegister(event.id)}
                     className="portal-event-btn primary"
