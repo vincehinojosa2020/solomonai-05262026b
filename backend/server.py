@@ -1433,6 +1433,129 @@ async def stripe_webhook(request: Request):
         logger.error(f"Stripe webhook error: {e}")
         return {"status": "error", "message": str(e)}
 
+# ============== SAVED PAYMENT METHODS ==============
+
+@api_router.get("/payments/methods")
+async def get_saved_payment_methods(request: Request):
+    """Get saved payment methods for the current user"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Get saved payment methods from database
+    methods = await db.payment_methods.find(
+        {"user_id": user["user_id"], "is_active": True},
+        {"_id": 0}
+    ).to_list(10)
+    
+    return {"payment_methods": methods}
+
+class SavePaymentMethodRequest(BaseModel):
+    card_last_four: str
+    card_brand: str
+    card_exp_month: int
+    card_exp_year: int
+    stripe_payment_method_id: Optional[str] = None
+    is_default: bool = False
+
+@api_router.post("/payments/methods")
+async def save_payment_method(request: Request, method_data: SavePaymentMethodRequest):
+    """Save a new payment method for the current user"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # If setting as default, unset other defaults
+    if method_data.is_default:
+        await db.payment_methods.update_many(
+            {"user_id": user["user_id"]},
+            {"$set": {"is_default": False}}
+        )
+    
+    payment_method = {
+        "id": str(uuid.uuid4()),
+        "user_id": user["user_id"],
+        "tenant_id": user.get("tenant_id"),
+        "card_last_four": method_data.card_last_four,
+        "card_brand": method_data.card_brand,
+        "card_exp_month": method_data.card_exp_month,
+        "card_exp_year": method_data.card_exp_year,
+        "stripe_payment_method_id": method_data.stripe_payment_method_id,
+        "is_default": method_data.is_default,
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.payment_methods.insert_one(payment_method)
+    
+    return {"message": "Payment method saved", "payment_method": {k: v for k, v in payment_method.items() if k != "_id"}}
+
+@api_router.delete("/payments/methods/{method_id}")
+async def delete_payment_method(request: Request, method_id: str):
+    """Delete a saved payment method"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    # Soft delete - just mark as inactive
+    result = await db.payment_methods.update_one(
+        {"id": method_id, "user_id": session["user_id"]},
+        {"$set": {"is_active": False}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Payment method not found")
+    
+    return {"message": "Payment method removed"}
+
+@api_router.put("/payments/methods/{method_id}/default")
+async def set_default_payment_method(request: Request, method_id: str):
+    """Set a payment method as the default"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    # Unset all defaults first
+    await db.payment_methods.update_many(
+        {"user_id": session["user_id"]},
+        {"$set": {"is_default": False}}
+    )
+    
+    # Set the new default
+    result = await db.payment_methods.update_one(
+        {"id": method_id, "user_id": session["user_id"], "is_active": True},
+        {"$set": {"is_default": True}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Payment method not found")
+    
+    return {"message": "Default payment method updated"}
+
 # ============== SMS ROUTES ==============
 
 class SMSRequest(BaseModel):
