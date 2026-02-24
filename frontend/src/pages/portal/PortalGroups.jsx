@@ -38,8 +38,27 @@ export default function PortalGroups() {
     return matchesSearch && matchesType && notMyGroup;
   });
 
-  const handleJoinRequest = (groupId) => {
-    toast.success('Request sent! The group leader will be notified.');
+  const handleJoinRequest = async (groupId) => {
+    try {
+      const res = await fetch(`${API_URL}/portal/groups/${groupId}/join`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(data.message || 'You have joined the group!');
+        // Refresh groups list
+        fetchGroups();
+        // Refresh member data
+        window.location.reload();
+      } else {
+        const error = await res.json();
+        toast.error(error.detail || 'Failed to join group');
+      }
+    } catch (error) {
+      toast.error('Failed to join group');
+    }
   };
 
   const handleNotify = (groupId) => {
