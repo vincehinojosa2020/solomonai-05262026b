@@ -21,6 +21,7 @@ export default function EventsManagerPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
+  const [viewingEvent, setViewingEvent] = useState(null);
   const [showPast, setShowPast] = useState(false);
   const [stats, setStats] = useState({ total: 0, upcoming: 0, registrations: 0 });
 
