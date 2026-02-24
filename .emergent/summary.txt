@@ -1,102 +1,100 @@
 <analysis>**original_problem_statement:**
-The user's goal is to build Samson, an enterprise-grade, multi-tenant SaaS Church Management System (ChMS). The platform is designed to be publicly available, allowing churches to subscribe and manage their operations, while individual members can sign up, donate, and engage with their specific church's content.
+The user's goal is to build Solomon AI, an enterprise-grade, multi-tenant SaaS Church Management System (ChMS). The platform allows churches to subscribe and manage their operations, while members can sign up, donate, and engage with their specific church's content.
 
-The project recently underwent a major architectural shift from a single-church system to a full multi-tenant platform with three core user roles:
-1.  **Platform Admin (God Mode)**: An administrator for the entire Samson platform () who can manage tenant churches, view platform-wide analytics, and drill down to manage individual churches.
-2.  **Church Admin**: An administrator for a specific church (e.g., ) who sees an isolated dashboard with data only for their own congregation.
-3.  **Member**: A regular church member (e.g., ) who interacts with the member portal to donate, watch videos, and view their giving history, with the UI dynamically branded to their specific church.
+The platform has three core user roles:
+1.  **Platform Admin (God Mode/Solomon)**: An administrator for the entire Solomon AI platform () who manages tenant churches and views platform-wide analytics.
+2.  **Church Admin**: An administrator for a specific church (e.g., ) who sees an isolated dashboard to manage their congregation's content (media, groups, events) and members.
+3.  **Member**: A regular church member (e.g., ) who interacts with a portal branded to their church to donate, watch videos, and join groups/events.
 
-Most recently, the user provided a requirements document from a software consultant and has asked for a detailed gap analysis between the document's recommendations and the current state of the application, as well as an honest opinion on the consultant's vision.
+The user's most recent requests focus on building out management capabilities for Church Admins (Media, Groups, Events) and fixing UI/UX bugs related to the Platform Admin's view and a data synchronization issue.
 
 **User's preferred language**: English
 
 **what currently exists?**
 The application is a full-stack system with a React frontend and a monolithic FastAPI/MongoDB backend, architected for multi-tenancy.
--   **Multi-Tenancy**: The database schema and API are structured to support multiple church tenants, each with its own isolated set of users, data, and branding (color, name).
--   **Three-Tier Access**: The UI correctly implements three distinct views based on user role: a God Mode platform dashboard (), a church-specific admin dashboard (), and a member-facing portal ().
--   **Authentication & Registration**: Supports custom JWT-based authentication. The public registration page allows new users to select their church from a list of active tenants.
--   **Integrations**:
-    -   **Live Stripe**: Fully configured with the user's live keys for real donations. The checkout flow has been tested and verified.
-    -   **Resend**: Integrated for sending welcome emails to new users upon registration.
-    -   **Emergent-managed Google Auth**: Previously implemented.
--   **Demo Data**: A comprehensive seed script () populates the database with three demo churches (Abundant, CityReach, Potter's House) and associated admin/member accounts for demonstration purposes.
+-   **Branding**: The application has been fully rebranded from Samson to Solomon AI.
+-   **Multi-Tenancy & Roles**: The three-tier access control (Platform Admin, Church Admin, Member) is implemented with data isolation based on .
+-   **Dashboards**:
+    -   The Platform Admin dashboard displays live, aggregated statistics (total churches, members, GMV) and a directory of all members across the platform.
+    -   The Church Admin dashboard shows tenant-specific stats.
+    -   The Member Portal displays content (videos) dynamically based on the member's church.
+-   **Core Features**:
+    -   **Authentication**: JWT-based auth with demo accounts for all roles.
+    -   **Giving**: Live Stripe integration for donations.
+    -   **Media Management**: A full-featured Media Library for Church Admins to manage YouTube videos, which dynamically populates the Member Portal's Watch page.
+    -   **Group/Event Management**: Admin UIs have been created for managing groups and events.
+-   **Integrations**: Live Stripe, Resend (for welcome emails), and Emergent-managed Google Auth.
 
 **Last working item**:
--   **Last item agent was working**: The agent was analyzing a document provided by the user, . The user requested a gap analysis comparing the document's specifications to the current application, an opinion on the consultant's recommendations, and a list of missing features. The agent had just started this analysis.
+-   **Last item agent was working**: The agent was investigating a data synchronization bug reported by the user. After a Church Admin deletes a video from the Media Library, the video still appears on the Member Portal's Watch page. The agent had just viewed the relevant frontend file () and identified that a hardcoded array () was likely being used as a fallback, causing the deleted videos to reappear.
 -   **Status**: IN PROGRESS
--   **Agent Testing Done**: N/A
--   **Which testing method agent to use?**: N/A (This is an analysis task, not a coding task).
+-   **Agent Testing Done**: N
+-   **Which testing method agent to use?**: Manual testing.
+    1.  Fix the code in  to remove the hardcoded fallback.
+    2.  Log in as  and navigate to the Media Library.
+    3.  Delete a specific video (e.g., Worship in Spirit and in Truth).
+    4.  Log out and log in as .
+    5.  Navigate to the Watch page and verify the deleted video is no longer visible.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Consultant Document Analysis (P0)**
-    -   **Description**: The user is waiting for a detailed breakdown of the  file. This is the highest priority task and blocks further development until the user provides direction based on the analysis.
-    -   **Attempted fixes**: The agent began by using the  to read the document.
+-   **Issue 1: Media Library Sync Bug (P0)**
+    -   **Description**: Videos deleted by a Church Admin from the Media Library are not removed from the member-facing Watch page. The user specifically noted deleting videos featuring Jared Nieman and Marcos Witt.
+    -   **Attempted fixes**: The agent correctly identified that the bug is likely caused by a hardcoded  array in  being used as a fallback when the API fetch is in progress or fails.
     -   **Next debug checklist**:
-        1.  Thoroughly review the extracted text from the consultant's document.
-        2.  Create a structured comparison (e.g., a markdown table) of features listed in the document versus features that currently exist in the Samson app.
-        3.  Clearly identify all missing features or discrepancies.
-        4.  Provide a professional, honest opinion on whether the consultant's recommendations align with the project's goals, as requested by the user.
-        5.  Present this analysis to the user for feedback and prioritization.
-    -   **Why fix this issue and what will be achieved with the fix?**: To align the development roadmap with the user's strategic goals and incorporate valuable external feedback, ensuring the project meets stakeholder expectations.
+        1.  Edit .
+        2.  Completely remove the  constant and any logic that uses it.
+        3.  Ensure the component exclusively renders data fetched from the  endpoint.
+        4.  Implement proper loading and empty states (e.g., show a spinner while fetching and a No videos available message if the API returns an empty array).
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: N/A
+    -   **Should Test frontend/backend/both after fix?**: Frontend
     -   **Blocked on other issue**: None.
--   **Issue 2: Mocked Platform Dashboard Stats (P2)**
-    -   **Description**: The main Platform Admin dashboard displays hardcoded statistics (e.g., 100 Total Churches, 1 Active Subscription, 47,500 Platform GMV). These figures are not dynamically calculated from the database.
-    -   **Attempted fixes**: The agent created the dashboard with placeholder values to build the UI.
+-   **Issue 2: Platform Admin UI Cleanup (P1)**
+    -   **Description**: The UI for the Platform Admin () has several visual bugs:
+        -   The top banner incorrectly displays another church's name (Abundant Living Faith Center) and a Preview Member Portal link. Both should be removed for the platform admin.
+        -   The user display name in the bottom-left of the sidebar should be Solomon, not Solomon Platform Admin.
     -   **Next debug checklist**:
-        1.  Create new aggregation endpoints in  to calculate platform-wide stats (e.g., count documents in  collection, sum donations across all tenants).
-        2.  Update the  component to fetch and display this live data.
-    -   **Why fix this issue and what will be achieved with the fix?**: Provides the platform administrator with real-time, accurate insights into the SaaS business's health and growth.
+        1.  Investigate .
+        2.  Add conditional rendering logic to hide the top banner and Preview link when the user's role is .
+        3.  Modify the user name display logic to show Solomon for the platform admin.
     -   **Status**: NOT STARTED
-    -   **Is recurring issue?**: Y (Evolved from the original dashboard performance issue).
-    -   **Should Test frontend/backend/both after fix?**: both
-    -   **Blocked on other issue**: Blocked on Consultant Document Analysis as priorities may shift.
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Frontend
+    -   **Blocked on other issue**: None.
+-   **Issue 3: Platform Admin Impersonation Flow (P1)**
+    -   **Description**: The user wants the Platform Admin to be able to drill down into a church's account and see the exact same UI as the Church Admin, including the Media Library and other management pages. Currently, these links are hidden.
+    -   **Next debug checklist**:
+        1.  Review the navigation logic in .
+        2.  Adjust the conditional rendering so that if the platform admin is impersonating a tenant (i.e., a  is selected), the sidebar displays all the navigation links available to a  for that tenant.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Frontend
+    -   **Blocked on other issue**: None.
 
 **In progress Task List**:
--   **Task 1: Gap Analysis of Consultant's Document (P0)**
-    -   **Where to resume**: The agent has extracted the content of . The next step is to structure the analysis and present it to the user.
-    -   **What will be achieved with this?**: A clear, prioritized list of new features and changes for the user to approve.
-    -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: N/A
-    -   **Blocked on something**: User feedback after the analysis is presented.
+-   None. Current work is focused on addressing user-reported bugs.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   **P1: Implement Features from Consultant Doc**: Begin implementing the user-approved features from the gap analysis.
-    -   **P1: Build out Platform Admin Controls**: Implement features for the platform admin, such as manually activating/deactivating church subscriptions from the UI.
+    -   **P1: Connect Group & Event Management**: The admin UIs for Groups and Events are built, but need to be fully connected. The Events page shows an empty state and needs to be pointed to the correct data source. The member-facing pages need functionality to join groups and register for events.
+    -   **P1: Saved Payment Methods**: Allow members to save their credit card on the platform for future donations.
 -   **Future Tasks:**
-    -   **P2: Backend Refactor**: Decompose the monolithic  into a modular structure (e.g., routes, models, services).
-    -   **P2: Standalone Seed Script**: Move the seeding logic from the  endpoint into a separate, executable script.
-    -   **P2: Missing Core Modules**: Build the Workflows, Check-In, and Services modules as originally planned.
-    -   **P2: Global Search (⌘K)**: Implement a command palette for quick navigation and actions.
-    -   **P2: Communications Upgrade**: Integrate an AI writer and rich text editor.
+    -   **P2: High-Value AI Features**: AI Sermon Transcription, AI Sermon Summaries, and Engagement Scoring (user has explicitly tabled these for now).
+    -   **P2: Admin Tools**: Implement Audit Logging, Year-End Tax Statements (PDFs), Fund Management, and Giving Reports (CSV export).
+    -   **P2: Backend Refactor**: Decompose the monolithic  into a modular structure (routes, models, services).
 
 **Completed work in this session**
--   **Major Performance Fix**: Resolved a ~2-minute page load delay by removing a database seeding operation that was incorrectly triggered on every frontend render. Page load time is now <1 second.
--   **Multi-Tenant Architecture Implementation**:
-    -   Transitioned the entire application to a multi-tenant SaaS model.
-    -   Created a  collection in MongoDB to store church-specific data and branding.
-    -   Updated user, donation, and other models to be associated with a .
-    -   Created a comprehensive seed script () to generate data for 3 demo churches and platform-level accounts.
--   **Role-Based Dashboards & Data Isolation**:
-    -   Created a **Platform Admin (God Mode)** dashboard () for managing all church tenants.
-    -   Implemented drill-down functionality, allowing the platform admin to impersonate a church admin and view their isolated dashboard.
-    -   Ensured **Church Admin** dashboards () are strictly sandboxed to their own tenant's data.
-    -   Enhanced the **Member Portal** () with dynamic branding (logo, color, name) that changes based on the logged-in member's church.
--   **Live Integrations**:
-    -   **Stripe**: Successfully configured and tested the donation flow with the user's **live** Stripe keys.
-    -   **Resend**: Integrated for sending automated welcome emails to new members upon registration.
--   **User Experience Enhancements**:
-    -   Added a Select Your Church dropdown to the public registration page.
-    -   Updated the login page with clearly organized demo accounts for all three roles (Platform Admin, Church Admin, Member).
-    -   Fixed various UI/UX issues, including personalized greetings for members (e.g., Good evening, Maria 👋).
--   **Branding Consolidation**: Eradicated all remaining Solomon branding, renaming components and assets to Samson for full consistency.
+-   **Branding Overhaul**: Renamed the entire application from Samson to Solomon AI.
+-   **Live Platform Dashboard**: Replaced mocked data on the platform admin dashboard with live, aggregated stats from new backend endpoints.
+-   **Platform Member Directory**: Added a new All Members tab to the platform dashboard, allowing the admin to see a list of all users across all tenants.
+-   **Church Admin Media Manager**:
+    -   Built a full CRUD backend and a polished frontend UI for church admins to manage YouTube video content.
+    -   Connected the member portal's Watch page to dynamically fetch and display videos from the database, replacing the previous hardcoded content.
+-   **Admin Group & Event Management UIs**: Created the initial admin pages for managing church groups and events.
 
 **Earlier issues found/mentioned but not fixed**
--   **Minor Frontend Loading Timing Issue**: An old, uninvestigated test report mentioned a minor loading timing issue on the frontend. The major performance bug was fixed, but this specific minor issue was never addressed directly. Status remains NOT STARTED.
+-   **Minor Frontend Loading Timing Issue**: An old, uninvestigated test report mentioned a minor loading timing issue on the frontend. Status remains NOT STARTED.
 
 **Known issue recurrence from previous fork**
 -   None.
@@ -105,82 +103,89 @@ The application is a full-stack system with a React frontend and a monolithic Fa
 
 
 **Key Technical Concepts**
--   **Multi-Tenancy**: The core architectural pattern, isolating data by  across the application stack.
--   **Role-Based Access Control (RBAC)**: Differentiating user experience and API access based on roles (, , ).
--   **Impersonation (Drill-Down)**: Allowing a super-admin to assume the context of a tenant admin to manage or debug their specific environment.
--   **Dynamic Frontend Branding**: Using CSS variables and fetched tenant data to change UI elements like colors and names without a page reload.
--   **Database Seeding**: Using an API endpoint () to create a consistent, complex demo environment with multiple tenants and users.
+-   **Multi-Tenancy**: Isolating data by  across the application stack.
+-   **Role-Based Access Control (RBAC)**: Differentiating UI and API access based on , , and  roles.
+-   **Impersonation (Drill-Down)**: Allowing a super-admin to assume the context of a tenant admin.
+-   **Dynamic Content Management**: Building admin tools to manage content (like videos) that is then dynamically displayed on member-facing pages.
 
 **key DB schema**
 -   **tenants**: 
 -   **users**: 
 -   **donations**: 
+-   **media**: 
+-   **media_series**: 
+-   **groups**: 
+-   **events**: 
 
 **changes in tech stack**
--   : Added to  for email integration.
+-   None in this session.
 
 **All files of reference**
--   : The monolithic backend containing all new multi-tenant logic, API endpoints, and seeding functions.
--   : The new God Mode UI.
--   : Rewritten to display a structured list of demo accounts for all roles.
--   : Modified to include a dynamic church selector.
--   : Modified to implement the impersonation banner and role-based navigation.
--   : Modified to display dynamic church branding.
--   : Updated to reflect the new multi-tenant architecture.
--   : The consultant's document currently under analysis.
+-    (Contains the sync bug)
+-    (Location for UI/impersonation fixes)
+-    (Contains all backend logic)
+-    (Newly created media management UI)
+-    (Updated with live stats)
 
 **Areas that need refactoring**:
--   ****: This file has grown critically large and complex. It is the top candidate for refactoring. The logic should be broken down into separate files for routes, database models, services, and seeding.
--   **Dashboard Data Endpoints**: The remaining mocked data on the Platform Dashboard should be replaced with proper aggregation queries.
+-   ****: This monolithic file is the top priority for refactoring. It now includes logic for users, tenants, donations, media, groups, and events, making it difficult to maintain.
+-   ****: Needs the hardcoded content removed and state management cleaned up.
 
 **key api endpoints**
--   : (NEW) Seeds the database with the entire multi-tenant demo environment.
--   : (NEW) Gets a list of all tenants (for platform admin).
--   : (NEW) Gets a list of publicly active tenants (for the registration page).
--   : (Updated) Now accepts a  to associate a new user with a church.
--   : (Updated) Returns the specific tenant details for the currently authenticated user.
--   : (NEW) Provides the frontend with the live Stripe publishable key.
+-   : (NEW) Gets aggregated statistics for the entire platform.
+-   : (NEW) Gets all members for a specific tenant (or all tenants for platform admin).
+-   : (NEW) Full CRUD endpoints for managing media.
+-   : (NEW) Full CRUD endpoints for managing groups.
+-   : (NEW) Full CRUD endpoints for managing events.
+-   : (NEW) Endpoint for members to fetch published videos for their church.
 
 **Critical Info for New Agent**
--   **TOP PRIORITY**: The user is waiting for the analysis of the consultant's document (). You must provide a gap analysis and an opinion as the very next step. Do not proceed with any other coding until you get the user's feedback on this analysis.
--   **Architecture is Multi-Tenant**: Understand that the entire application now operates on a multi-tenant model. All new features and bug fixes must respect data isolation via .
--   **Three Demo Personas**: The user's demo workflow relies on three key roles:
-    1.  **Platform Admin ()**: God Mode view of all churches.
-    2.  **Church Admin ()**: Isolated view of one church.
-    3.  **Member ()**: The end-user portal experience.
--   **Stripe is LIVE**: The Stripe integration uses the user's real, live keys. Be cautious when interacting with payment flows.
+-   **Address User Feedback First**: The highest priority is to fix the bugs the user just reported. Start with the **Media Library Sync Bug (P0)**, then address the Platform Admin UI issues.
+-   **Confirm the Personas**:
+    1.  **Solomon (Platform Admin)**: Needs a clean, high-level overview. The impersonation flow must perfectly mimic the church admin view.
+    2.  **Church Admin**: Needs tools to manage their specific church's content (Media, Groups, Events).
+    3.  **Member**: Consumes the content managed by their church admin.
+-   **Data Flow**: The core loop you're working on is: Church Admin manages content -> Data is saved to DB via API -> Member Portal reads data from DB via API. Ensure this loop is solid.
 
 **documents and test reports created in this job**
 -    (updated)
--    (from a successful E2E test run)
+-    (new)
 
 **Last 10 User Messages and any pending HUMAN messages**
-10. **User**: Confirms the three demo views (God mode, Church Admin, Member) and emphasizes the need for data isolation. (COMPLETED)
-9.  **User**: Asks if the platform admin dashboard should be a separate application or part of the existing one. (COMPLETED)
-8.  **User**: Asks to continue with the next action items and to double-check the Stripe integration, mentioning it was buffering previously. (COMPLETED)
-7.  **User**: Wants the platform admin to be able to drill into specific church admin pages from the main list. Also reiterates the need for a regular member account for demoing. (COMPLETED)
-6.  **User**: Asks for  account to be added to test the landing page and to continue with the next updates. (COMPLETED)
-5.  **User**: Provides a document from a software consultant and asks for a gap analysis, what's missing, and an honest opinion on the recommendations. (IN PROGRESS)
-4.  **User**: Acknowledges and approves keeping the platform admin dashboard within the same application. (COMPLETED)
-3.  **User**: Asks about the platform admin dashboard being a new web app or part of the same one. (COMPLETED)
-2.  **User**: Approves the plan to fix performance and implement the multi-tenant architecture. (COMPLETED)
-1.  **User**: Describes a significant architectural pivot to a multi-tenant SaaS model, explains the vision for elasticity, and details the three demo churches and user roles required. (COMPLETED)
+10. **User**: Reports that the preview is loading forever. (RESOLVED)
+9.  **User**: Confirms the preview is now working and provides a detailed list of new requirements and clarifications for all three user roles (Platform Admin, Church Admin, Member). Requests a Media Manager for church admins. (IN PROGRESS)
+8.  **User**: Provides a list of UI/UX design books and asks the agent to incorporate their principles while building the Media Manager. (COMPLETED)
+7.  **User**: Confirms the agent's plan to start with the Church Admin Media Manager. (COMPLETED)
+6.  **User**: Gives feedback that the Media Library should only be visible to Church Admins, not the Platform Admin. Asks to connect the admin-managed videos to the member's Watch page and provides a test case (delete videos and verify they disappear for the member). (IN PROGRESS)
+5.  **User**: Instructs the agent to continue with the next action items (Group/Event management) and that they will test later. (COMPLETED)
+4.  **User**: Provides detailed feedback and bug reports:
+    -   **BUG**: Deleting videos in the Media Library doesn't remove them from the member's view.
+    -   **BUG**: The Platform Admin UI shows incorrect banner text and an incorrect user display name.
+    -   **REQ**: The Platform Admin's impersonation view should exactly mimic the Church Admin's view, including the Media Library. (PENDING)
+3. **User**: Confirms the fix for the duplicate church entry. (COMPLETED)
+2. **User**: Points out a bug where the dashboard showed 4 churches instead of 3. (RESOLVED)
+1. **User**: Provides final instructions for the completed branding and dashboard tasks. (COMPLETED)
 
 **Project Health Check:**
--   **Broken**: Nothing is critically broken. The app is stable and the main user flows are working.
--   **Mocked**: Key performance indicators (KPIs) on the Platform Admin dashboard () are hardcoded and not representative of real data.
+-   **Broken**:
+    -   The data sync between the Admin Media Library and the Member Portal is broken.
+    -   The Platform Admin dashboard has multiple visual/UI bugs.
+-   **Mocked**:
+    -   The Admin Events Manager page is not connected to the correct data source and shows an empty state.
+    -   Some statistics on the Admin Groups Manager page are still based on static demo data.
 
 **3rd Party Integrations**
--   **Stripe (Payments)**: Configured with the user's **LIVE keys**.
--   **Resend (Email)**: Configured with a user-provided API key for sending welcome emails.
+-   **Stripe (Payments)**: Configured with user's LIVE keys.
+-   **Resend (Email)**: Configured for sending welcome emails.
 -   **Emergent-managed Google Auth**: Available for authentication.
--   **Anthropic (Claude)**: Powers the Ask Samson AI chat widget.
+-   **Anthropic (Claude)**: Powers the Ask Solomon AI chat widget.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES. A full E2E test was successfully run to validate registration, login, and donation flows after implementing Stripe and Resend.
+-   **Testing agent used after significant changes**: NO (in this session)
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None.
--   **Known regressions**: None. The previous regression (mocked dashboard data) was an intentional choice, and the underlying performance issue causing it was fixed.
+-   **Known regressions**:
+    -   The Platform Admin dashboard incorrectly displays a Church Admin's view upon login, requiring manual navigation to .
 
 **Credentials to test flow:**
 -   **Platform Admin (God Mode)**:  / 
@@ -190,7 +195,6 @@ The application is a full-stack system with a React frontend and a monolithic Fa
     -    / 
 -   **Members**:
     -    (Maria Gonzalez) / 
-    -    (John Smith) / 
 
 **What agent forgot to execute**
--   The agent was in the middle of executing the user's most recent request (analyzing the consultant document) when the session ended. Nothing was forgotten or overlooked.</analysis>
+-   The agent did not fully resolve the user's latest bug reports before the session ended. The primary outstanding tasks are fixing the Media Library sync bug and the Platform Admin UI issues.</analysis>

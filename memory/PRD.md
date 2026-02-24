@@ -5,7 +5,7 @@
 **Product Name:** Solomon AI  
 **Tagline:** "AI-Powered Church Management"  
 **Target Scale:** 50,000+ members per tenant, 1M+ concurrent users platform-wide  
-**Demo URL:** https://samson-staging-1.preview.emergentagent.com
+**Demo URL:** https://faith-ops-platform.preview.emergentagent.com
 **Architecture:** Multi-tenant SaaS with subdomain routing
 
 ---
