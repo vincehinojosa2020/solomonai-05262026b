@@ -156,7 +156,7 @@ export default function PlatformDashboard() {
             <Globe className="w-8 h-8 text-purple-500" />
             Platform Admin
           </h1>
-          <p className="platform-subtitle">Manage all churches on SAMSON</p>
+          <p className="platform-subtitle">Manage all churches on Solomon AI</p>
         </div>
         <div className="platform-header-actions">
           <button className="btn-primary" onClick={() => toast.info('Coming soon: Add new church')}>
