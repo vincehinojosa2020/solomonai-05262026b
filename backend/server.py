@@ -5489,7 +5489,7 @@ async def seed_platform():
     churches = [
         {
             "id": "abundant-church-001",
-            "name": "Abundant Living Faith Center",
+            "name": "Abundant Church",
             "subdomain": "abundant",
             "plan": "enterprise",
             "member_limit": 100000,
@@ -5504,20 +5504,20 @@ async def seed_platform():
             "accent_color": "#00c896"
         },
         {
-            "id": "cityreach-church-001",
-            "name": "City Reach Church",
-            "subdomain": "cityreach",
+            "id": "cristoviene-church-001",
+            "name": "Cristo Viene",
+            "subdomain": "cristoviene",
             "plan": "enterprise",
             "member_limit": 50000,
             "subscription_status": "active",
-            "address": "1401 Medical Pkwy",
-            "city": "Cedar Park",
+            "address": "7500 N Loop Dr",
+            "city": "El Paso",
             "state": "TX",
-            "timezone": "America/Chicago",
-            "website": "https://cityreachchurch.com",
-            "phone": "(512) 528-8600",
-            "primary_color": "#10b981",
-            "accent_color": "#f59e0b"
+            "timezone": "America/Denver",
+            "website": "https://cristoviene.org",
+            "phone": "(915) 598-4000",
+            "primary_color": "#dc2626",
+            "accent_color": "#fbbf24"
         },
         {
             "id": "pottershouse-church-001",
