@@ -13,10 +13,10 @@ const SolomonChat = () => {
 
   // Sample prompts to get started
   const samplePrompts = [
-    "How are our giving trends this month?",
-    "Which members need follow-up?",
-    "Summarize our group engagement",
-    "What events are coming up?"
+    "Where is our offerings best spent this season?",
+    "What groups can I join?",
+    "Tell me about upcoming events",
+    "How is my giving making an impact?"
   ];
 
   useEffect(() => {
