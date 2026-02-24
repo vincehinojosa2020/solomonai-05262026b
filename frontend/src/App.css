@@ -4095,6 +4095,131 @@
   margin-top: 4px;
 }
 
+/* Platform Tabs */
+.platform-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0;
+}
+
+.platform-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.platform-tab:hover {
+  color: #0f172a;
+}
+
+.platform-tab.active {
+  color: #7c3aed;
+}
+
+.platform-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #7c3aed;
+}
+
+/* Member Directory Styles */
+.member-count-badge {
+  background: #f1f5f9;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.member-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.member-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.member-name {
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.member-email {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.member-church {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.member-status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.member-status.active {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.member-status.inactive {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.member-status.pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.member-date {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.loading-spinner-inline {
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+}
+
 /* Platform Section */
 .platform-section {
   background: white;
