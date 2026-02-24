@@ -73,6 +73,8 @@ function AppRouter() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/integrations" element={<IntegrationsPage />} />
         <Route path="/media" element={<MediaManagerPage />} />
+        <Route path="/admin/groups" element={<GroupsManagerPage />} />
+        <Route path="/admin/events" element={<EventsManagerPage />} />
       </Route>
       
       {/* Member Portal routes */}
