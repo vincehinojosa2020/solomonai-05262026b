@@ -655,7 +655,7 @@ export default function PortalLibrary() {
 
       {/* Hero Section */}
       <HeroSection 
-        content={COURSES} 
+        content={allCourses} 
         onPlay={handlePlay}
         watchProgress={watchProgress}
       />
