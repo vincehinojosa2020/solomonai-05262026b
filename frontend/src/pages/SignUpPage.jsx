@@ -143,7 +143,7 @@ export default function SignUpPage() {
       toast.success(`Welcome to ${selectedChurch?.name || 'your church'}!`);
       
       // Store user info
-      localStorage.setItem('samson_user', JSON.stringify({
+      localStorage.setItem('solomon_user', JSON.stringify({
         user_id: data.user_id,
         email: data.email,
         name: data.name,
@@ -163,8 +163,8 @@ export default function SignUpPage() {
     <div className="signup-page" data-testid="signup-page">
       <div className="signup-sidebar">
         <div className="signup-brand">
-          <h1 className="signup-logo">SAMS<span>O</span>N</h1>
-          <p className="signup-tagline">Enterprise Church Management System</p>
+          <h1 className="signup-logo">SOL<span>O</span>MON</h1>
+          <p className="signup-tagline">AI-Powered Church Management</p>
         </div>
         
         <div className="signup-features">
@@ -191,7 +191,7 @@ export default function SignUpPage() {
         <div className="signup-container">
           <div className="signup-header">
             <h2>Create Your Account</h2>
-            <p>Join Abundant Church and start your journey</p>
+            <p>Join your church community today</p>
           </div>
 
           {/* Google Sign Up */}
