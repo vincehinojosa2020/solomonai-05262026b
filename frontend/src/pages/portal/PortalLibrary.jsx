@@ -553,8 +553,8 @@ export default function PortalLibrary() {
 
   // Handle playing a video (from Continue Watching or regular)
   const handlePlay = useCallback((item) => {
-    // Find the full course data
-    const course = COURSES.find(c => String(c.id) === String(item.id || item.video_id)) || item;
+    // Find the full course data from fetched courses
+    const course = allCourses.find(c => String(c.id) === String(item.id || item.video_id)) || item;
     const startPosition = item.position_seconds || watchProgress[course.id]?.position_seconds || 0;
     
     setVideoModal({ 
@@ -562,7 +562,7 @@ export default function PortalLibrary() {
       course: { ...course, ...item },
       startPosition 
     });
-  }, [watchProgress]);
+  }, [watchProgress, allCourses]);
 
   // Filter courses
   useEffect(() => {
