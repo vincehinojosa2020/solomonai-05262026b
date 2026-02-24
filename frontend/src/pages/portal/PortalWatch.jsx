@@ -6,10 +6,11 @@ import {
   BookmarkPlus, Info, LayoutGrid, Rows3, User, Sparkles,
   Heart, Users, Briefcase, Music, Book, Home, ChevronDown
 } from 'lucide-react';
+import { API_URL } from '@/lib/utils';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ABUNDANT TV - Unified Watch & Library Experience
-// Best of MasterClass: Hero + Carousels + Grid + Filters
+// Now fetches content from database - managed by church admin
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // Categories
