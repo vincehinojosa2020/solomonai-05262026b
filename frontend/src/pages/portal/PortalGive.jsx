@@ -13,10 +13,43 @@ export default function PortalGive() {
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [funds, setFunds] = useState([]);
   const [givingHistory, setGivingHistory] = useState([]);
+  const [savedCards, setSavedCards] = useState([]);
+  const [selectedSavedCard, setSelectedSavedCard] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const quickAmounts = [25, 50, 100, 250];
+
+  useEffect(() => {
+    fetchFunds();
+    fetchGivingHistory();
+    fetchSavedPaymentMethods();
+    
+    // Handle Stripe redirect
+    const status = searchParams.get('status');
+    const sessionId = searchParams.get('session_id');
+    
+    if (status === 'success' && sessionId) {
+      // Confirm payment and create donation record
+      confirmPayment(sessionId);
+    } else if (status === 'cancelled') {
+      toast.error('Donation was cancelled');
+      // Clear URL params
+      setSearchParams({});
+    }
+  }, []);
+
+  const fetchSavedPaymentMethods = async () => {
+    try {
+      const res = await fetch(`${API_URL}/payments/methods`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setSavedCards(data.payment_methods || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch saved cards:', error);
+    }
+  };
 
   useEffect(() => {
     fetchFunds();
