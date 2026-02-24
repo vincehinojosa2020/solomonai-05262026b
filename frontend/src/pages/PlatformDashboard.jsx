@@ -346,6 +346,86 @@ export default function PlatformDashboard() {
           </table>
         </div>
       </div>
+      )}
+
+      {/* Members Tab Content */}
+      {activeTab === 'members' && (
+      <div className="platform-section">
+        <div className="platform-section-header">
+          <h2>Member Directory</h2>
+          <div className="platform-filters">
+            <div className="platform-search">
+              <Search className="w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search members by name or email..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                data-testid="member-search"
+              />
+            </div>
+            <span className="member-count-badge">
+              {membersTotal.toLocaleString()} total members
+            </span>
+          </div>
+        </div>
+
+        <div className="platform-table-container">
+          {membersLoading ? (
+            <div className="loading-spinner-inline">Loading members...</div>
+          ) : (
+          <table className="platform-table" data-testid="members-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Church</th>
+                <th>Status</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map((member) => (
+                <tr key={member.user_id || member.id} data-testid={`member-row-${member.email}`}>
+                  <td>
+                    <div className="member-info">
+                      <div className="member-avatar">
+                        {member.name?.charAt(0)?.toUpperCase() || '?'}
+                      </div>
+                      <span className="member-name">{member.name || 'Unknown'}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span className="member-email">{member.email}</span>
+                  </td>
+                  <td>
+                    <span className="member-church">{member.church_name || 'N/A'}</span>
+                  </td>
+                  <td>
+                    <span className={`member-status ${member.membership_status?.toLowerCase() || 'active'}`}>
+                      {member.membership_status || 'Active'}
+                    </span>
+                  </td>
+                  <td>
+                    <span className="member-date">
+                      {member.created_at ? new Date(member.created_at).toLocaleDateString() : 'N/A'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+              {members.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="no-results">
+                    {searchQuery ? 'No members found matching your search' : 'No members yet'}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+          )}
+        </div>
+      </div>
+      )}
 
       {/* Quick Actions */}
       <div className="platform-quick-actions">
