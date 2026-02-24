@@ -314,6 +314,18 @@ export default function LoginPage() {
                 {copiedMember ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
             </div>
+            
+            <div className="demo-credential-row">
+              <div className="demo-credential-info">
+                <span className="demo-role" style={{color: '#10b981', minWidth: '95px'}}>John:</span>
+                <code className="demo-creds" onClick={() => {
+                  setEmail('member@cityreach.church');
+                  setPassword('Demo2026!');
+                }}>
+                  member@cityreach.church
+                </code>
+              </div>
+            </div>
           </div>
           
           <div className="login-footer">
