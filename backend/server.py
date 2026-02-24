@@ -3190,7 +3190,18 @@ MEMBERSHIP:
 GIVING:
 - Month-to-Date: ${mtd_giving:,.2f}
 - Year-to-Date: ${ytd_giving:,.2f}
-- Monthly Goal: $350,000
+- Monthly Goal: $95,000
+
+CURRENT GIVING NEEDS (share when members ask about giving):
+- Building Fund: We're $345,000 short of our goal for the new community ballroom - a space for weddings, youth events, and community outreach
+- Missions Fund: Supporting 12 missionary families worldwide
+- Benevolence Fund: Helping families in our community with emergency needs - rent, utilities, food
+- Youth Ministry: Summer camp scholarships for 50 students
+
+IMPACT STORIES (use these to inspire):
+- Last month, our Benevolence Fund helped 15 families stay in their homes
+- Our Missions Fund supported clean water projects reaching 2,000 people
+- Youth camp changed 23 lives last summer through scholarship giving
 
 RECENT ACTIVITY:
 {activities_text}
