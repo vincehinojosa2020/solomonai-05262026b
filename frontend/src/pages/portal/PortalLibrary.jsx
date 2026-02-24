@@ -443,14 +443,52 @@ export default function PortalLibrary() {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
-  const [filteredCourses, setFilteredCourses] = useState(COURSES);
+  const [allCourses, setAllCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
   const [videoModal, setVideoModal] = useState({ open: false, course: null, startPosition: 0 });
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [loading, setLoading] = useState(true);
   
   // Watch progress state
   const [continueWatching, setContinueWatching] = useState([]);
   const [watchProgress, setWatchProgress] = useState({});
   const [completedCount, setCompletedCount] = useState(0);
+
+  // Fetch videos from database
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/portal/media/videos`, {
+          credentials: 'include'
+        });
+        if (res.ok) {
+          const data = await res.json();
+          // Transform database format to UI format
+          const transformed = (data.videos || []).map(v => ({
+            id: v.id,
+            title: v.title,
+            instructor: v.instructor || 'Unknown Speaker',
+            format: 'Class',
+            duration: v.duration || '30:00',
+            durationSeconds: parseDuration(v.duration) || 1800,
+            category: v.category_id || 'faith',
+            badge: v.badge || (v.is_featured ? 'Featured' : null),
+            youtubeId: v.youtube_id,
+            thumbnail: v.thumbnail_url || `https://i.ytimg.com/vi/${v.youtube_id}/maxresdefault.jpg`,
+            description: v.description || '',
+            featured: v.is_featured || false
+          }));
+          setAllCourses(transformed);
+          setFilteredCourses(transformed);
+        }
+      } catch (err) {
+        console.error('Error fetching videos:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchVideos();
+  }, []);
 
   // Fetch watch progress on mount
   useEffect(() => {
