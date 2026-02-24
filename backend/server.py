@@ -59,7 +59,7 @@ logger = logging.getLogger(__name__)
 # ============== MULTI-TENANT CONFIGURATION ==============
 
 # Platform admin accounts (can access all tenants)
-PLATFORM_ADMIN_EMAILS = ["admin@samson.ai", "admin@abundant.org"]
+PLATFORM_ADMIN_EMAILS = ["admin@solomon.ai", "admin@abundant.org"]
 
 # Role hierarchy
 ROLES = {
