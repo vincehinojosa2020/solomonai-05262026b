@@ -397,18 +397,52 @@ const CarouselRow = ({ title, items, onPlay }) => {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MAIN COMPONENT
+// MAIN COMPONENT - Now fetches from database
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export default function PortalWatch() {
-  const { user } = useOutletContext();
+  const { user, tenant } = useOutletContext();
   const [viewMode, setViewMode] = useState('featured'); // 'featured' or 'browse'
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [videoModal, setVideoModal] = useState({ open: false, video: null });
+  const [allContent, setAllContent] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch videos from database
+  useEffect(() => {
+    fetchVideos();
+  }, []);
+
+  const fetchVideos = async () => {
+    try {
+      const res = await fetch(`${API_URL}/portal/media/videos`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        // Transform database format to UI format
+        const transformed = (data.videos || []).map(v => ({
+          id: v.id,
+          title: v.title,
+          instructor: v.instructor || 'Unknown Speaker',
+          duration: v.duration || '',
+          category: v.category_id || 'faith',
+          badge: v.badge || null,
+          youtubeId: v.youtube_id,
+          thumbnail: v.thumbnail_url || `https://i.ytimg.com/vi/${v.youtube_id}/maxresdefault.jpg`,
+          description: v.description || '',
+          featured: v.is_featured || false
+        }));
+        setAllContent(transformed);
+      }
+    } catch (error) {
+      console.error('Failed to fetch videos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filter content
-  const filteredContent = ALL_CONTENT.filter(item => {
+  const filteredContent = allContent.filter(item => {
     const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
     const matchesSearch = !searchQuery || 
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -417,10 +451,36 @@ export default function PortalWatch() {
   });
 
   // Group content for carousels
-  const newContent = ALL_CONTENT.filter(c => c.badge === 'New');
-  const popularContent = ALL_CONTENT.filter(c => c.badge === 'Popular' || c.badge === 'Featured');
-  const faithContent = ALL_CONTENT.filter(c => c.category === 'faith');
-  const growthContent = ALL_CONTENT.filter(c => c.category === 'growth');
+  const newContent = allContent.filter(c => c.badge === 'New');
+  const popularContent = allContent.filter(c => c.badge === 'Popular' || c.badge === 'Featured' || c.featured);
+  const faithContent = allContent.filter(c => c.category === 'faith');
+  const growthContent = allContent.filter(c => c.category === 'growth');
+
+  // Get church name for branding
+  const churchName = tenant?.name || 'Church';
+  const logoLetter = churchName.charAt(0);
+
+  if (loading) {
+    return (
+      <div className="atv-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <div style={{ textAlign: 'center', color: '#94a3b8' }}>
+          <div style={{ fontSize: '24px', marginBottom: '8px' }}>Loading videos...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (allContent.length === 0) {
+    return (
+      <div className="atv-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <div style={{ textAlign: 'center', color: '#94a3b8' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>📺</div>
+          <div style={{ fontSize: '20px', fontWeight: '600', marginBottom: '8px' }}>No videos available yet</div>
+          <div style={{ fontSize: '14px' }}>Check back soon for sermon videos and more!</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="atv-page" data-testid="watch-page">
@@ -430,8 +490,8 @@ export default function PortalWatch() {
       {/* Header */}
       <header className="atv-header">
         <div className="atv-logo">
-          <span className="atv-logo-mark">A</span>
-          <span className="atv-logo-text">Abundant TV</span>
+          <span className="atv-logo-mark">{logoLetter}</span>
+          <span className="atv-logo-text">{churchName} TV</span>
         </div>
 
         <div className="atv-search">
@@ -489,13 +549,13 @@ export default function PortalWatch() {
         {viewMode === 'featured' ? (
           <>
             {/* Hero */}
-            <HeroSection content={ALL_CONTENT} onPlay={(v) => setVideoModal({ open: true, video: v })} />
+            <HeroSection content={allContent} onPlay={(v) => setVideoModal({ open: true, video: v })} />
             
             {/* Carousels */}
-            <CarouselRow title="New This Week" items={newContent} onPlay={(v) => setVideoModal({ open: true, video: v })} />
-            <CarouselRow title="Popular Series" items={popularContent} onPlay={(v) => setVideoModal({ open: true, video: v })} />
-            <CarouselRow title="Faith & Spirituality" items={faithContent} onPlay={(v) => setVideoModal({ open: true, video: v })} />
-            <CarouselRow title="Personal Growth" items={growthContent} onPlay={(v) => setVideoModal({ open: true, video: v })} />
+            {newContent.length > 0 && <CarouselRow title="New This Week" items={newContent} onPlay={(v) => setVideoModal({ open: true, video: v })} />}
+            {popularContent.length > 0 && <CarouselRow title="Popular Series" items={popularContent} onPlay={(v) => setVideoModal({ open: true, video: v })} />}
+            {faithContent.length > 0 && <CarouselRow title="Faith & Spirituality" items={faithContent} onPlay={(v) => setVideoModal({ open: true, video: v })} />}
+            {growthContent.length > 0 && <CarouselRow title="Personal Growth" items={growthContent} onPlay={(v) => setVideoModal({ open: true, video: v })} />}
           </>
         ) : (
           /* Browse Grid View */
