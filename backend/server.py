@@ -3735,25 +3735,25 @@ async def seed_platform():
     
     results = {"churches": [], "platform_accounts": []}
     
-    # Create/update Samson platform admin accounts
+    # Create/update Solomon platform admin accounts
     platform_accounts = [
         {
             "user_id": "platform_admin_001",
-            "email": "admin@samson.ai",
-            "name": "Samson Platform Admin",
+            "email": "admin@solomon.ai",
+            "name": "Solomon Platform Admin",
             "role": "platform_admin",
             "tenant_id": None  # Platform admin has no tenant restriction
         },
         {
             "user_id": "platform_member_001",
-            "email": "member@samson.ai",
+            "email": "member@solomon.ai",
             "name": "Demo Member",
             "role": "member",
             "tenant_id": "abundant-church-001"  # Default to Abundant for demo
         },
         {
             "user_id": "platform_newmember_001",
-            "email": "newmember@samson.ai",
+            "email": "newmember@solomon.ai",
             "name": "New Member Demo",
             "role": "member",
             "tenant_id": "abundant-church-001"
@@ -3836,7 +3836,7 @@ async def seed_platform():
         "results": results,
         "demo_credentials": {
             "password": "Demo2026!",
-            "platform_admin": "admin@samson.ai",
+            "platform_admin": "admin@solomon.ai",
             "abundant_admin": "admin@abundant.church",
             "cityreach_admin": "admin@cityreach.church",
             "pottershouse_admin": "admin@pottershouse.church"
