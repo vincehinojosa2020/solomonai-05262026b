@@ -287,24 +287,28 @@ export default function AppShell() {
               <Bell className="w-4 h-4" />
             </button>
 
-            {/* Tenant Badge */}
-            <div className="flex items-center gap-2 px-2 py-1 bg-slate-100 border border-slate-200">
-              <Building2 className="w-3 h-3 text-slate-500" />
-              <span className="text-xs font-medium text-slate-600">
-                {tenant?.name || 'Abundant Church'}
-              </span>
-            </div>
+            {/* Tenant Badge - Hide for platform admin unless impersonating */}
+            {(user?.role !== 'platform_admin' || impersonatedTenant) && (
+              <div className="flex items-center gap-2 px-2 py-1 bg-slate-100 border border-slate-200">
+                <Building2 className="w-3 h-3 text-slate-500" />
+                <span className="text-xs font-medium text-slate-600">
+                  {impersonatedTenant?.name || tenant?.name || 'Church'}
+                </span>
+              </div>
+            )}
 
-            {/* Preview Portal Link */}
-            <a
-              href="/portal"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-blue-600 hover:underline flex items-center gap-1"
-              data-testid="preview-portal-link"
-            >
-              ↗ Preview Member Portal
-            </a>
+            {/* Preview Portal Link - Hide for platform admin unless impersonating */}
+            {(user?.role !== 'platform_admin' || impersonatedTenant) && (
+              <a
+                href="/portal"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+                data-testid="preview-portal-link"
+              >
+                ↗ Preview Member Portal
+              </a>
+            )}
 
             {/* User Menu */}
             <DropdownMenu>
@@ -313,15 +317,19 @@ export default function AppShell() {
                   <Avatar className="w-7 h-7">
                     <AvatarImage src={user?.picture} />
                     <AvatarFallback className="bg-blue-600 text-white text-xs">
-                      {user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
+                      {user?.role === 'platform_admin' ? 'S' : user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
                     </AvatarFallback>
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuLabel className="font-normal">
-                  <div className="text-sm font-medium">{user?.name}</div>
-                  <div className="text-xs text-slate-500">{user?.email}</div>
+                  <div className="text-sm font-medium">
+                    {user?.role === 'platform_admin' ? 'Solomon' : user?.name}
+                  </div>
+                  <div className="text-xs text-slate-500">
+                    {user?.role === 'platform_admin' ? 'Platform Admin' : user?.email}
+                  </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Profile</DropdownMenuItem>
