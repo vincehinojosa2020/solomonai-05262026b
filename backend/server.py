@@ -87,8 +87,8 @@ async def validate_tenant_subscription(tenant_id: str) -> bool:
 
 # ============== EMAIL HELPER FUNCTIONS ==============
 
-async def send_welcome_email(email: str, first_name: str):
-    """Send a creative welcome email from Samson AI when a new user registers"""
+async def send_welcome_email(email: str, first_name: str, church_name: str = "your church"):
+    """Send a creative welcome email from Solomon AI when a new user registers"""
     try:
         html_content = f"""
 <!DOCTYPE html>
@@ -112,7 +112,7 @@ async def send_welcome_email(email: str, first_name: str):
                     Hey {first_name},
                 </p>
                 <p style="font-size: 16px; color: #4a5568; margin: 0 0 20px 0;">
-                    I'm <strong>Samson</strong>, your AI assistant at Abundant Church. I just wanted to personally say <strong>thank you</strong> for joining our community! 
+                    I'm <strong>Solomon</strong>, your AI assistant at <strong>{church_name}</strong>. I just wanted to personally say <strong>thank you</strong> for joining our community! 
                 </p>
                 <p style="font-size: 16px; color: #4a5568; margin: 0 0 20px 0;">
                     Whether you're looking to grow in faith, connect with others, or simply find a place to belong — you're in the right place. We're so glad you're here.
@@ -120,25 +120,25 @@ async def send_welcome_email(email: str, first_name: str):
                 <div style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 20px; margin: 24px 0; border-radius: 0 8px 8px 0;">
                     <p style="margin: 0; color: #1e40af; font-size: 15px;">
                         <strong>What's next?</strong><br>
-                        Log in to explore sermon videos, join a group, or make your first gift. I'm always here if you need anything!
+                        Log in to explore sermon videos, join a small group, or make your first gift. I'm always here if you need anything!
                     </p>
                 </div>
                 <p style="font-size: 16px; color: #4a5568; margin: 0 0 8px 0;">
                     See you soon,
                 </p>
                 <p style="font-size: 18px; color: #1a1a2e; margin: 0; font-weight: 600;">
-                    Samson 🤖✨
+                    Solomon 🤖✨
                 </p>
                 <p style="font-size: 13px; color: #94a3b8; margin: 16px 0 0 0; font-style: italic;">
-                    Your AI Church Assistant at Abundant Church
+                    Your AI Church Assistant at {church_name}
                 </p>
             </td>
         </tr>
         <tr>
             <td style="text-align: center; padding: 24px;">
                 <p style="font-size: 12px; color: #94a3b8; margin: 0;">
-                    Abundant Church • El Paso, TX<br>
-                    Powered by SAMSON AI
+                    {church_name}<br>
+                    Powered by Solomon AI
                 </p>
             </td>
         </tr>
@@ -150,7 +150,7 @@ async def send_welcome_email(email: str, first_name: str):
         params = {
             "from": SENDER_EMAIL,
             "to": [email],
-            "subject": f"Welcome to Abundant Church, {first_name}! 🎉",
+            "subject": f"Welcome to {church_name}, {first_name}! 🎉",
             "html": html_content
         }
         
