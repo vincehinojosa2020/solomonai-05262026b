@@ -321,8 +321,8 @@ export default function AppShell() {
         <CommandPalette onClose={() => setCommandOpen(false)} />
       )}
 
-      {/* Samson AI Chat */}
-      <SamsonChat />
+      {/* Solomon AI Chat */}
+      <SolomonChat />
     </div>
   );
 }
