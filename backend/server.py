@@ -1085,7 +1085,20 @@ async def get_member_events(request: Request):
 @api_router.get("/portal/groups")
 async def get_available_groups(request: Request):
     """Get groups available to join for member portal"""
-    tenant_id = DEFAULT_TENANT_ID
+    # Get tenant from logged-in user
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
     
     groups = await db.groups.find(
         {"tenant_id": tenant_id, "is_active": True},
