@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, Send, Sparkles, ChevronRight, Loader2, Trash2 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 
-const SamsonChat = () => {
+const SolomonChat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -64,7 +64,7 @@ const SamsonChat = () => {
       };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Samson chat error:', error);
+      console.error('Solomon chat error:', error);
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: "I apologize, but I'm having trouble connecting right now. Please try again in a moment.",
@@ -116,10 +116,10 @@ const SamsonChat = () => {
         onClick={() => setIsOpen(true)}
         className={`solomon-fab ${isOpen ? 'hidden' : ''}`}
         data-testid="samson-fab"
-        aria-label="Ask Samson"
+        aria-label="Ask Solomon"
       >
         <Sparkles className="w-5 h-5" />
-        <span className="solomon-fab-label">Ask Samson</span>
+        <span className="solomon-fab-label">Ask Solomon</span>
       </button>
 
       {/* Chat Panel */}
@@ -163,7 +163,7 @@ const SamsonChat = () => {
               <div className="solomon-welcome-icon">
                 <Sparkles className="w-8 h-8" />
               </div>
-              <h4>Welcome! I'm Samson</h4>
+              <h4>Welcome! I'm Solomon</h4>
               <p>Your AI-powered church analyst. I can help you understand your data, provide pastoral insights, and suggest strategic actions.</p>
               
               <div className="solomon-prompts">
@@ -224,7 +224,7 @@ const SamsonChat = () => {
               </div>
               <div className="solomon-message-content loading">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Samson is thinking...</span>
+                <span>Solomon is thinking...</span>
               </div>
             </div>
           )}
@@ -239,7 +239,7 @@ const SamsonChat = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask Samson anything about your church..."
+            placeholder="Ask Solomon anything about your church..."
             className="solomon-input"
             rows={1}
             disabled={isLoading}
@@ -268,4 +268,4 @@ const SamsonChat = () => {
   );
 };
 
-export default SamsonChat;
+export default SolomonChat;
