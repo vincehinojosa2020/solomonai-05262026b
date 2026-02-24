@@ -99,10 +99,10 @@ export default function LoginPage() {
       <div className="login-sidebar">
         <div>
           <div className="login-logo">
-            SAMS<span className="accent">O</span>N
+            SOL<span className="accent">O</span>MON
           </div>
           <div className="login-tagline">
-            Enterprise Church Management System
+            AI-Powered Church Management
           </div>
           
           <div className="mt-12 space-y-6">
@@ -154,7 +154,7 @@ export default function LoginPage() {
       {/* Right Panel - Login */}
       <div className="login-main">
         <div className="login-box" style={{ maxWidth: '400px' }}>
-          <h1 className="login-title">Sign in to SAMSON</h1>
+          <h1 className="login-title">Sign in to Solomon AI</h1>
           <p className="login-subtitle">
             Access your church management platform
           </p>
@@ -242,10 +242,10 @@ export default function LoginPage() {
               <div className="demo-credential-info">
                 <span className="demo-role" style={{color: '#8b5cf6', minWidth: '95px'}}>Platform:</span>
                 <code className="demo-creds" onClick={() => {
-                  setEmail('admin@samson.ai');
+                  setEmail('admin@solomon.ai');
                   setPassword('Demo2026!');
                 }}>
-                  admin@samson.ai
+                  admin@solomon.ai
                 </code>
               </div>
             </div>
