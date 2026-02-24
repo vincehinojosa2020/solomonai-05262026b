@@ -984,7 +984,8 @@ async def get_member_profile(request: Request):
         
         last_gift_doc = await db.donations.find_one(
             {"person_id": person["id"]},
-            {"_id": 0}
+            {"_id": 0},
+            sort=[("donation_date", -1)]
         )
         if last_gift_doc:
             last_gift = serialize_doc(last_gift_doc)
