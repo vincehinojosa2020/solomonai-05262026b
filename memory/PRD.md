@@ -195,15 +195,23 @@ Each church is a tenant with isolated data:
 ## Changelog
 
 ### Feb 24, 2026 (Latest Session)
-- **Fixed P0 Bug**: Media Library sync - removed hardcoded content, portal now fetches from DB
-- **Fixed P1 Bug**: Platform Admin UI - clean interface without tenant-specific elements
-- **Added**: Bidirectional group member management (member join/leave, admin add/remove)
-- **Added**: Bidirectional event registration management (member register/cancel, admin manage)
-- **Added**: `/api/portal/my-groups` and `/api/portal/my-events` endpoints
-- **Added**: Admin modals for viewing/managing group members and event registrations
-- **Added**: Leave group functionality for members
-- **Updated**: AppShell.jsx with conditional rendering for platform admin role
-- **Created**: Test suite `/app/backend/tests/test_bidirectional_comm_iter10.py`
+- **Redesigned Login Page**: Clean, minimalist Prada-style aesthetic
+  - Removed demo credentials from public view
+  - Removed marketing copy (50K members, enterprise security, etc.)
+  - Centered form with elegant SOLOMON AI branding
+  - Rounded Google button to match other fields
+- **Updated Church Names**:
+  - "Abundant Living Faith Center" → "Abundant Church"
+  - "City Reach Church" → "Cristo Viene" (El Paso mega church)
+  - Kept "The Potter's House"
+- **Fixed P0 Bug**: Media Library sync - removed hardcoded content
+- **Fixed P1 Bug**: Platform Admin UI - clean interface
+- **Performance Fixes**: Optimized 3 N+1 database queries
+- **Added Features**:
+  - Bidirectional group/event management
+  - Saved payment methods API
+  - Giving reports with CSV export
+  - Year-end tax statements API
 
 ### Previous Session
 - Built Media Library Manager for church admins
