@@ -6,11 +6,11 @@ import { API_URL } from '@/lib/utils';
 export default function PortalHome() {
   const { user, memberData, tenant } = useOutletContext();
   const [events, setEvents] = useState([]);
-  const [samsonMessage, setSamsonMessage] = useState('');
+  const [solomonMessage, setSolomonMessage] = useState('');
 
   useEffect(() => {
     fetchUpcomingEvents();
-    generateSamsonInsight();
+    generateSolomonInsight();
   }, [memberData, tenant]);
 
   const fetchUpcomingEvents = async () => {
@@ -29,7 +29,7 @@ export default function PortalHome() {
     return tenant?.name || 'Abundant Church';
   };
 
-  const generateSamsonInsight = () => {
+  const generateSolomonInsight = () => {
     // Generate a personalized insight based on member data
     const firstName = user?.name?.split(' ')[0] || 'friend';
     const attendance = memberData?.person?.engagement_score || 85;
@@ -37,11 +37,11 @@ export default function PortalHome() {
     const churchName = getChurchName();
     
     if (attendance >= 80) {
-      setSamsonMessage(`Hi ${firstName}! You've attended 47 of the last 52 Sundays and your giving is consistent. Thank you for your faithfulness to ${churchName}. 🙏`);
+      setSolomonMessage(`Hi ${firstName}! You've attended 47 of the last 52 Sundays and your giving is consistent. Thank you for your faithfulness to ${churchName}. 🙏`);
     } else if (ytdGiving > 500) {
-      setSamsonMessage(`Hi ${firstName}! Your generous giving of $${ytdGiving.toLocaleString()} this year is making a real difference. Thank you for investing in God's kingdom! 💙`);
+      setSolomonMessage(`Hi ${firstName}! Your generous giving of $${ytdGiving.toLocaleString()} this year is making a real difference. Thank you for investing in God's kingdom! 💙`);
     } else {
-      setSamsonMessage(`Welcome back, ${firstName}! We're so glad you're part of the ${churchName} family. How can I help you today?`);
+      setSolomonMessage(`Welcome back, ${firstName}! We're so glad you're part of the ${churchName} family. How can I help you today?`);
     }
   };
 
