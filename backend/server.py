@@ -1637,6 +1637,166 @@ async def list_tenant_users(request: Request, tenant_id: str, skip: int = 0, lim
     
     return {"users": users, "total": total, "skip": skip, "limit": limit}
 
+# ============== PLATFORM STATS (REAL DATA) ==============
+
+@api_router.get("/platform/stats")
+async def get_platform_stats(request: Request):
+    """Get real platform-wide statistics for God Mode dashboard"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+    
+    # Get real counts
+    total_churches = await db.tenants.count_documents({})
+    active_churches = await db.tenants.count_documents({"subscription_status": "active"})
+    total_members = await db.users.count_documents({"role": "member"})
+    total_people = await db.people.count_documents({})
+    
+    # Get donation stats
+    today = datetime.now(timezone.utc)
+    month_start = today.replace(day=1).strftime("%Y-%m-%d")
+    year_start = today.replace(month=1, day=1).strftime("%Y-%m-%d")
+    
+    # MTD donations (across all tenants)
+    mtd_pipeline = [
+        {"$match": {"donation_date": {"$gte": month_start}}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}, "count": {"$sum": 1}}}
+    ]
+    mtd_result = await db.donations.aggregate(mtd_pipeline).to_list(1)
+    mtd_total = mtd_result[0]["total"] if mtd_result else 0
+    mtd_count = mtd_result[0]["count"] if mtd_result else 0
+    
+    # YTD donations
+    ytd_pipeline = [
+        {"$match": {"donation_date": {"$gte": year_start}}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}, "count": {"$sum": 1}}}
+    ]
+    ytd_result = await db.donations.aggregate(ytd_pipeline).to_list(1)
+    ytd_total = ytd_result[0]["total"] if ytd_result else 0
+    
+    # Get recent signups (last 30 days)
+    thirty_days_ago = (today - timedelta(days=30)).isoformat()
+    recent_signups = await db.users.count_documents({
+        "role": "member",
+        "created_at": {"$gte": thirty_days_ago}
+    })
+    
+    # Get giving by church
+    giving_by_tenant = await db.donations.aggregate([
+        {"$match": {"donation_date": {"$gte": month_start}}},
+        {"$group": {"_id": "$tenant_id", "total": {"$sum": "$amount"}, "count": {"$sum": 1}}},
+        {"$sort": {"total": -1}}
+    ]).to_list(10)
+    
+    # Enrich with church names
+    for g in giving_by_tenant:
+        tenant = await db.tenants.find_one({"id": g["_id"]}, {"_id": 0, "name": 1})
+        g["church_name"] = tenant["name"] if tenant else "Unknown"
+    
+    return {
+        "churches": {
+            "total": total_churches,
+            "active": active_churches,
+            "suspended": total_churches - active_churches
+        },
+        "members": {
+            "total_users": total_members,
+            "total_people": total_people,
+            "recent_signups": recent_signups
+        },
+        "giving": {
+            "mtd_total": mtd_total,
+            "mtd_count": mtd_count,
+            "ytd_total": ytd_total,
+            "by_church": [{"church": g["church_name"], "amount": g["total"], "count": g["count"]} for g in giving_by_tenant]
+        },
+        "generated_at": datetime.now(timezone.utc).isoformat()
+    }
+
+# ============== MEMBER DIRECTORY (ADMIN) ==============
+
+@api_router.get("/admin/members")
+async def get_admin_member_directory(
+    request: Request, 
+    skip: int = 0, 
+    limit: int = 50,
+    search: Optional[str] = None,
+    status: Optional[str] = None,
+    sort_by: str = "created_at",
+    sort_order: str = "desc"
+):
+    """Get member directory for church admin or platform admin"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Build query based on role
+    query = {"role": "member"}
+    
+    if user.get("role") == "church_admin":
+        # Church admin only sees their own church members
+        query["tenant_id"] = user.get("tenant_id")
+    elif user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    # Platform admin sees all members (no tenant filter)
+    
+    # Add search filter
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"email": {"$regex": search, "$options": "i"}},
+            {"first_name": {"$regex": search, "$options": "i"}},
+            {"last_name": {"$regex": search, "$options": "i"}}
+        ]
+    
+    # Add status filter
+    if status:
+        query["membership_status"] = status
+    
+    # Sort direction
+    sort_dir = -1 if sort_order == "desc" else 1
+    
+    # Execute query
+    members = await db.users.find(
+        query,
+        {"_id": 0, "password_hash": 0}
+    ).sort(sort_by, sort_dir).skip(skip).limit(limit).to_list(limit)
+    
+    total = await db.users.count_documents(query)
+    
+    # Enrich with tenant names
+    for member in members:
+        if member.get("tenant_id"):
+            tenant = await db.tenants.find_one({"id": member["tenant_id"]}, {"_id": 0, "name": 1})
+            member["church_name"] = tenant["name"] if tenant else "Unknown"
+    
+    return {
+        "members": members,
+        "total": total,
+        "skip": skip,
+        "limit": limit,
+        "filters": {
+            "search": search,
+            "status": status
+        }
+    }
+
 # --- SAMSON AI ROUTES ---
 # Store active chat sessions
 solomon_sessions: Dict[str, LlmChat] = {}
