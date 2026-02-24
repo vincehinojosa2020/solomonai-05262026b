@@ -84,7 +84,7 @@ export default function SettingsPage() {
                 <Label className="form-label">Subdomain</Label>
                 <div className="flex items-center gap-2">
                   <Input defaultValue={tenant?.subdomain || 'abundant'} className="flex-1" />
-                  <span className="text-slate-500">.samson.church</span>
+                  <span className="text-slate-500">.solomon.ai</span>
                 </div>
               </div>
               <div className="form-group">
