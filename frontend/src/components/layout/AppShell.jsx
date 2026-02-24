@@ -167,11 +167,19 @@ export default function AppShell() {
           ))}
           
           {navItems.map((section, idx) => {
-            // Filter out Media Library for platform admins (they don't manage media directly)
+            // For platform admin without impersonation: only show limited nav
+            // For platform admin WITH impersonation: show full church admin nav
+            const isPlatformAdmin = user?.role === 'platform_admin';
+            const isImpersonating = !!impersonatedTenant;
+            
             const filteredItems = section.items.filter(item => {
-              if (item.path === '/media' && user?.role === 'platform_admin') {
-                return false;
+              // If platform admin and NOT impersonating, hide church-specific items
+              if (isPlatformAdmin && !isImpersonating) {
+                // Only show Settings, Integrations for platform admin without context
+                const platformOnlyPaths = ['/settings', '/integrations'];
+                return platformOnlyPaths.includes(item.path);
               }
+              // If impersonating or regular church admin, show all items
               return true;
             });
             
