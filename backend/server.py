@@ -2402,6 +2402,344 @@ async def request_to_join_group(request: Request, group_id: str):
     
     return {"message": f"You have joined {group['name']}!"}
 
+# ============== ADMIN GROUP MEMBER MANAGEMENT ==============
+
+class AddMemberToGroupRequest(BaseModel):
+    person_id: str
+    role: str = "member"
+
+@api_router.post("/admin/groups/{group_id}/members")
+async def admin_add_member_to_group(request: Request, group_id: str, member_data: AddMemberToGroupRequest):
+    """Admin adds a member to a group"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    # Verify group exists
+    query = {"id": group_id}
+    if tenant_id:
+        query["tenant_id"] = tenant_id
+    
+    group = await db.groups.find_one(query, {"_id": 0})
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+    
+    # Verify person exists
+    person_query = {"id": member_data.person_id}
+    if tenant_id:
+        person_query["tenant_id"] = tenant_id
+    
+    person = await db.people.find_one(person_query, {"_id": 0})
+    if not person:
+        raise HTTPException(status_code=404, detail="Person not found")
+    
+    # Check if already a member
+    existing = await db.group_members.find_one({
+        "group_id": group_id,
+        "person_id": member_data.person_id,
+        "is_active": True
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="Person is already a member of this group")
+    
+    # Add membership
+    new_membership = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id or group.get("tenant_id"),
+        "group_id": group_id,
+        "person_id": member_data.person_id,
+        "role": member_data.role,
+        "joined_at": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "is_active": True,
+        "added_by_admin": True
+    }
+    
+    await db.group_members.insert_one(new_membership)
+    await db.groups.update_one({"id": group_id}, {"$inc": {"member_count": 1}})
+    
+    logger.info(f"Admin added {person.get('email', member_data.person_id)} to group {group['name']}")
+    
+    return {
+        "message": f"Added {person.get('first_name', '')} {person.get('last_name', '')} to {group['name']}",
+        "membership_id": new_membership["id"]
+    }
+
+@api_router.delete("/admin/groups/{group_id}/members/{person_id}")
+async def admin_remove_member_from_group(request: Request, group_id: str, person_id: str):
+    """Admin removes a member from a group"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    # Verify group exists
+    query = {"id": group_id}
+    if tenant_id:
+        query["tenant_id"] = tenant_id
+    
+    group = await db.groups.find_one(query, {"_id": 0})
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+    
+    # Remove membership
+    result = await db.group_members.delete_one({
+        "group_id": group_id,
+        "person_id": person_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Membership not found")
+    
+    await db.groups.update_one({"id": group_id}, {"$inc": {"member_count": -1}})
+    
+    logger.info(f"Admin removed person {person_id} from group {group['name']}")
+    
+    return {"message": "Member removed from group"}
+
+@api_router.get("/admin/groups/{group_id}/available-members")
+async def get_available_members_for_group(request: Request, group_id: str, search: str = ""):
+    """Get people who are not yet members of this group (for admin to add)"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    # Get current group members
+    current_members = await db.group_members.find(
+        {"group_id": group_id, "is_active": True},
+        {"person_id": 1, "_id": 0}
+    ).to_list(1000)
+    
+    current_member_ids = [m["person_id"] for m in current_members]
+    
+    # Build query for available people
+    query = {"id": {"$nin": current_member_ids}}
+    if tenant_id:
+        query["tenant_id"] = tenant_id
+    
+    if search:
+        query["$or"] = [
+            {"first_name": {"$regex": search, "$options": "i"}},
+            {"last_name": {"$regex": search, "$options": "i"}},
+            {"email": {"$regex": search, "$options": "i"}}
+        ]
+    
+    people = await db.people.find(
+        query,
+        {"_id": 0, "id": 1, "first_name": 1, "last_name": 1, "email": 1}
+    ).limit(20).to_list(20)
+    
+    return {"people": people}
+
+# ============== ADMIN EVENT REGISTRATION MANAGEMENT ==============
+
+@api_router.get("/admin/events/{event_id}/registrations")
+async def get_event_registrations(request: Request, event_id: str):
+    """Get all registrations for an event"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    # Verify event exists
+    query = {"id": event_id}
+    if tenant_id:
+        query["tenant_id"] = tenant_id
+    
+    event = await db.events.find_one(query, {"_id": 0})
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    # Get registrations
+    registrations = await db.event_registrations.find(
+        {"event_id": event_id},
+        {"_id": 0}
+    ).to_list(500)
+    
+    return {
+        "event": event,
+        "registrations": registrations,
+        "total": len(registrations)
+    }
+
+class AdminRegisterRequest(BaseModel):
+    user_id: Optional[str] = None
+    person_id: Optional[str] = None
+    name: str
+    email: Optional[str] = None
+
+@api_router.post("/admin/events/{event_id}/registrations")
+async def admin_register_for_event(request: Request, event_id: str, reg_data: AdminRegisterRequest):
+    """Admin registers someone for an event"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    # Verify event exists
+    query = {"id": event_id}
+    if tenant_id:
+        query["tenant_id"] = tenant_id
+    
+    event = await db.events.find_one(query, {"_id": 0})
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    # Check capacity
+    if event.get("capacity"):
+        current_count = await db.event_registrations.count_documents({"event_id": event_id})
+        if current_count >= event["capacity"]:
+            raise HTTPException(status_code=400, detail="This event is full")
+    
+    # Create registration
+    registration = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id or event.get("tenant_id"),
+        "event_id": event_id,
+        "user_id": reg_data.user_id,
+        "person_id": reg_data.person_id,
+        "user_name": reg_data.name,
+        "user_email": reg_data.email,
+        "registered_at": datetime.now(timezone.utc).isoformat(),
+        "registered_by_admin": True
+    }
+    
+    await db.event_registrations.insert_one(registration)
+    await db.events.update_one({"id": event_id}, {"$inc": {"registration_count": 1}})
+    
+    logger.info(f"Admin registered {reg_data.name} for event {event['name']}")
+    
+    return {"message": f"Registered {reg_data.name} for {event['name']}", "registration_id": registration["id"]}
+
+@api_router.delete("/admin/events/{event_id}/registrations/{registration_id}")
+async def admin_cancel_registration(request: Request, event_id: str, registration_id: str):
+    """Admin cancels a registration"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    # Verify event exists
+    query = {"id": event_id}
+    if tenant_id:
+        query["tenant_id"] = tenant_id
+    
+    event = await db.events.find_one(query, {"_id": 0})
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    # Delete registration
+    result = await db.event_registrations.delete_one({"id": registration_id, "event_id": event_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Registration not found")
+    
+    await db.events.update_one({"id": event_id}, {"$inc": {"registration_count": -1}})
+    
+    return {"message": "Registration cancelled"}
+
+# ============== MEMBER PORTAL - MY REGISTRATIONS ==============
+
+@api_router.get("/portal/my-groups")
+async def get_my_groups(request: Request):
+    """Get groups the current member belongs to"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    tenant_id = user.get("tenant_id")
+    
+    # Find person record
+    person = await db.people.find_one({"email": user["email"], "tenant_id": tenant_id}, {"_id": 0})
+    if not person:
+        return {"groups": []}
+    
+    # Get group memberships
+    memberships = await db.group_members.find(
+        {"person_id": person["id"], "is_active": True},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Get group details
+    groups = []
+    for m in memberships:
+        group = await db.groups.find_one({"id": m["group_id"]}, {"_id": 0})
+        if group:
+            groups.append({
+                **serialize_doc(group),
+                "joined_at": m.get("joined_at"),
+                "role": m.get("role", "member")
+            })
+    
+    return {"groups": groups}
+
+@api_router.get("/portal/my-events")
+async def get_my_registered_events(request: Request):
+    """Get events the current member is registered for"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Get registrations
+    registrations = await db.event_registrations.find(
+        {"user_id": user["user_id"]},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Get event details
+    events = []
+    for r in registrations:
+        event = await db.events.find_one({"id": r["event_id"]}, {"_id": 0})
+        if event:
+            events.append({
+                **serialize_doc(event),
+                "registration_id": r["id"],
+                "registered_at": r.get("registered_at")
+            })
+    
+    return {"events": events}
+
+@api_router.delete("/portal/groups/{group_id}/leave")
+async def leave_group(request: Request, group_id: str):
+    """Member leaves a group"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    tenant_id = user.get("tenant_id")
+    
+    # Find person record
+    person = await db.people.find_one({"email": user["email"], "tenant_id": tenant_id}, {"_id": 0})
+    if not person:
+        raise HTTPException(status_code=404, detail="Member profile not found")
+    
+    # Remove from group
+    result = await db.group_members.delete_one({
+        "group_id": group_id,
+        "person_id": person["id"]
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="You are not a member of this group")
+    
+    # Update count
+    await db.groups.update_one({"id": group_id}, {"$inc": {"member_count": -1}})
+    
+    return {"message": "You have left the group"}
+
 # ============== ADMIN EVENT MANAGEMENT API ==============
 
 class EventCreate(BaseModel):
