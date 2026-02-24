@@ -3645,8 +3645,9 @@ async def get_group(group_id: str):
     
     return serialize_doc(group)
 
-@api_router.get("/groups/{group_id}/members")
-async def get_group_members(group_id: str):
+@api_router.get("/groups/{group_id}/members/list")
+async def get_group_members_public(group_id: str):
+    """Public endpoint for getting group members (no auth required)"""
     tenant_id = DEFAULT_TENANT_ID
     
     pipeline = [
