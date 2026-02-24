@@ -3922,7 +3922,7 @@ async def seed_platform():
     
     for account in platform_accounts:
         await db.users.update_one(
-            {"email": account["email"]},
+            {"user_id": account["user_id"]},
             {"$set": {
                 **account,
                 "password_hash": demo_password_hash,
