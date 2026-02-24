@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { 
   Calendar, Plus, Search, Edit, Trash2, MapPin, Clock,
-  Users, ChevronRight, Loader2, CheckCircle, X
+  Users, ChevronRight, Loader2, CheckCircle, X, UserPlus
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
