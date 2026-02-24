@@ -28,8 +28,8 @@ const navItems = [
     { name: 'Households', path: '/households', icon: Home },
   ]},
   { section: 'MINISTRY', items: [
-    { name: 'Groups', path: '/groups', icon: UsersRound },
-    { name: 'Events', path: '/events', icon: Calendar },
+    { name: 'Groups', path: '/admin/groups', icon: UsersRound },
+    { name: 'Events', path: '/admin/events', icon: Calendar },
     { name: 'Attendance', path: '/attendance', icon: CheckSquare },
   ]},
   { section: 'STEWARDSHIP', items: [
