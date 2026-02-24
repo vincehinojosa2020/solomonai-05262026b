@@ -215,12 +215,16 @@ export default function AppShell() {
               <Avatar className="w-7 h-7">
                 <AvatarImage src={user.picture} />
                 <AvatarFallback className="bg-blue-600 text-white text-xs">
-                  {user.name?.split(' ').map(n => n[0]).join('') || 'U'}
+                  {user.role === 'platform_admin' ? 'S' : user.name?.split(' ').map(n => n[0]).join('') || 'U'}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-white truncate">{user.name}</p>
-                <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                <p className="text-xs font-medium text-white truncate">
+                  {user.role === 'platform_admin' ? 'Solomon' : user.name}
+                </p>
+                <p className="text-xs text-slate-500 truncate">
+                  {user.role === 'platform_admin' ? 'Platform Admin' : user.email}
+                </p>
               </div>
             </div>
           </div>
