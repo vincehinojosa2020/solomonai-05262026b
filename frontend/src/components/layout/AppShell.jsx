@@ -166,12 +166,24 @@ export default function AppShell() {
             </div>
           ))}
           
-          {navItems.map((section, idx) => (
+          {navItems.map((section, idx) => {
+            // Filter out Media Library for platform admins (they don't manage media directly)
+            const filteredItems = section.items.filter(item => {
+              if (item.path === '/media' && user?.role === 'platform_admin') {
+                return false;
+              }
+              return true;
+            });
+            
+            // Skip section if no items
+            if (filteredItems.length === 0) return null;
+            
+            return (
             <div key={idx} className="nav-section">
               {!collapsed && (
                 <div className="nav-section-label">{section.section}</div>
               )}
-              {section.items.map((item) => (
+              {filteredItems.map((item) => (
                 <NavLink
                   key={item.path}
                   to={item.path}
@@ -184,7 +196,8 @@ export default function AppShell() {
                 </NavLink>
               ))}
             </div>
-          ))}
+            );
+          })}
         </nav>
 
         {/* User Section */}
