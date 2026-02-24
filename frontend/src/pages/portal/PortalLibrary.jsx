@@ -726,7 +726,26 @@ export default function PortalLibrary() {
           <span className="prem-count">{filteredCourses.length} classes</span>
         </motion.div>
 
-        {filteredCourses.length > 0 ? (
+        {loading ? (
+          <motion.div 
+            className="prem-empty"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <div className="animate-spin w-8 h-8 border-2 border-white/20 border-t-white rounded-full" />
+            <p>Loading content...</p>
+          </motion.div>
+        ) : allCourses.length === 0 ? (
+          <motion.div 
+            className="prem-empty"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Tv className="w-12 h-12" />
+            <h3>No videos available yet</h3>
+            <p>Check back soon for new content from your church</p>
+          </motion.div>
+        ) : filteredCourses.length > 0 ? (
           <div className="prem-grid">
             {filteredCourses.map((course, index) => (
               <CourseCard 
