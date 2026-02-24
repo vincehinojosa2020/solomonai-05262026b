@@ -414,6 +414,80 @@ class Communication(BaseModel):
     recipient_count: int = 0
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+# ============== MEDIA MODELS ==============
+
+class MediaCategory(BaseModel):
+    """Categories for organizing media (Faith, Family, Leadership, etc.)"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    name: str
+    slug: str
+    icon: str = "video"  # lucide icon name
+    sort_order: int = 0
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class MediaSeries(BaseModel):
+    """Series/playlists for grouping related videos"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    title: str
+    description: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+    category_id: Optional[str] = None
+    sort_order: int = 0
+    is_active: bool = True
+    video_count: int = 0
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class MediaVideo(BaseModel):
+    """Individual video content"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    title: str
+    description: Optional[str] = None
+    youtube_id: str  # YouTube video ID (e.g., "dQw4w9WgXcQ")
+    youtube_url: Optional[str] = None  # Full YouTube URL
+    thumbnail_url: Optional[str] = None
+    duration: Optional[str] = None  # "45:30" format
+    instructor: Optional[str] = None  # Speaker/Pastor name
+    category_id: Optional[str] = None
+    series_id: Optional[str] = None
+    sort_order: int = 0
+    is_featured: bool = False
+    is_published: bool = True
+    badge: Optional[str] = None  # "New", "Popular", etc.
+    view_count: int = 0
+    published_at: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class MediaVideoCreate(BaseModel):
+    """Input model for creating a video"""
+    youtube_url: str
+    title: Optional[str] = None
+    description: Optional[str] = None
+    instructor: Optional[str] = None
+    category_id: Optional[str] = None
+    series_id: Optional[str] = None
+    is_featured: bool = False
+    badge: Optional[str] = None
+
+class WatchProgress(BaseModel):
+    """Track user's watch progress for continue watching feature"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    user_id: str
+    video_id: str
+    progress_seconds: int = 0
+    duration_seconds: int = 0
+    completed: bool = False
+    last_watched: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 class PaymentTransaction(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
