@@ -785,12 +785,21 @@ async def email_password_login(request: EmailLoginRequest, response: Response):
         max_age=7 * 24 * 60 * 60
     )
     
+    # Get tenant info if available
+    tenant_id = user_doc.get("tenant_id")
+    tenant_name = None
+    if tenant_id:
+        tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "name": 1})
+        tenant_name = tenant.get("name") if tenant else None
+    
     return {
         "user_id": user_doc["user_id"],
         "email": user_doc["email"],
         "name": user_doc["name"],
         "picture": user_doc.get("picture"),
-        "role": user_doc.get("role", "member")
+        "role": user_doc.get("role", "member"),
+        "tenant_id": tenant_id,
+        "tenant_name": tenant_name
     }
 
 # ============== USER REGISTRATION ==============
