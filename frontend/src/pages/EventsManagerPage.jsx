@@ -211,7 +211,7 @@ export default function EventsManagerPage() {
   );
 }
 
-function EventCard({ event, onEdit, onDelete }) {
+function EventCard({ event, onEdit, onDelete, onViewRegistrations }) {
   const eventDate = new Date(event.event_date);
   const isPast = eventDate < new Date();
   const isFull = event.capacity && event.registration_count >= event.capacity;
@@ -263,6 +263,9 @@ function EventCard({ event, onEdit, onDelete }) {
       </div>
 
       <div className="event-card-actions">
+        <button onClick={onViewRegistrations} className="action-btn" title="View Registrations">
+          <Users className="w-4 h-4" />
+        </button>
         <button onClick={onEdit} className="action-btn" title="Edit">
           <Edit className="w-4 h-4" />
         </button>
