@@ -1072,13 +1072,35 @@ async def get_member_giving_history(request: Request, limit: int = 50):
 @api_router.get("/portal/events")
 async def get_member_events(request: Request):
     """Get upcoming events for member portal"""
-    tenant_id = DEFAULT_TENANT_ID
+    # Get tenant from logged-in user
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     
+    # Try both date formats for events
     events = await db.events.find(
-        {"tenant_id": tenant_id, "start_datetime": {"$gte": today}},
+        {
+            "tenant_id": tenant_id,
+            "$or": [
+                {"start_datetime": {"$gte": today}},
+                {"event_date": {"$gte": today}}
+            ]
+        },
         {"_id": 0}
-    ).sort("start_datetime", 1).limit(20).to_list(20)
+    ).sort("event_date", 1).limit(50).to_list(50)
+    
+    return [serialize_doc(e) for e in events]
     
     return [serialize_doc(e) for e in events]
 
