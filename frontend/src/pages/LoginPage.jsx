@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, Copy, Check, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -20,8 +20,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [copiedAdmin, setCopiedAdmin] = useState(false);
-  const [copiedMember, setCopiedMember] = useState(false);
 
   const handleGoogleLogin = () => {
     const redirectUrl = window.location.origin + '/dashboard';
@@ -66,132 +64,47 @@ export default function LoginPage() {
     }
   };
 
-  const copyCredentials = async (type) => {
-    const creds = type === 'admin' 
-      ? 'admin@abundant.church / Demo2026!'
-      : 'member@abundant.church / Demo2026!';
-    
-    await navigator.clipboard.writeText(creds);
-    
-    if (type === 'admin') {
-      setCopiedAdmin(true);
-      setTimeout(() => setCopiedAdmin(false), 2000);
-    } else {
-      setCopiedMember(true);
-      setTimeout(() => setCopiedMember(false), 2000);
-    }
-    toast.success('Credentials copied!');
-  };
-
-  const fillCredentials = (type) => {
-    if (type === 'admin') {
-      setEmail('admin@abundant.church');
-      setPassword('Demo2026!');
-    } else {
-      setEmail('member@abundant.church');
-      setPassword('Demo2026!');
-    }
-  };
-
   return (
-    <div className="login-page" data-testid="login-page">
-      {/* Left Panel - System Info */}
-      <div className="login-sidebar">
-        <div>
-          <div className="login-logo">
-            SOL<span className="accent">O</span>MON
-          </div>
-          <div className="login-tagline">
-            AI-Powered Church Management
-          </div>
-          
-          <div className="mt-12 space-y-6">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-blue-600/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-white">50,000+ Member Scale</h4>
-                <p className="text-xs text-slate-400 mt-1">Built for mega church operations</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-blue-600/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-white">Enterprise Security</h4>
-                <p className="text-xs text-slate-400 mt-1">SOC 2 compliant infrastructure</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-blue-600/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-white">Multi-Channel Giving</h4>
-                <p className="text-xs text-slate-400 mt-1">Card, ACH, PayPal, Crypto</p>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="solomon-login" data-testid="login-page">
+      {/* Full-screen centered layout */}
+      <div className="solomon-login-container">
         
-        <div className="mt-auto pt-8">
-          <div className="text-xs text-slate-500">
-            Version 1.0.0 • Build 2026.02
-          </div>
+        {/* Logo */}
+        <div className="solomon-logo">
+          <span className="solomon-logo-text">SOLOMON</span>
+          <span className="solomon-logo-ai">AI</span>
         </div>
-      </div>
 
-      {/* Right Panel - Login */}
-      <div className="login-main">
-        <div className="login-box" style={{ maxWidth: '400px' }}>
-          <h1 className="login-title">Sign in to Solomon AI</h1>
-          <p className="login-subtitle">
-            Access your church management platform
-          </p>
+        {/* Login Card */}
+        <div className="solomon-login-card">
           
           {/* Email/Password Form */}
-          <form onSubmit={handleEmailLogin} className="space-y-4 mt-6">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Email address
-              </label>
+          <form onSubmit={handleEmailLogin} className="solomon-form">
+            <div className="solomon-input-group">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="login-input"
-                placeholder="you@church.org"
+                className="solomon-input"
+                placeholder="Email"
                 data-testid="email-input"
               />
             </div>
             
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Password
-              </label>
-              <div className="relative">
+            <div className="solomon-input-group">
+              <div className="solomon-password-wrapper">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="login-input pr-10"
-                  placeholder="••••••••"
+                  className="solomon-input"
+                  placeholder="Password"
                   data-testid="password-input"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="solomon-password-toggle"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -201,138 +114,237 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="btn-primary w-full"
+              className="solomon-submit-btn"
               data-testid="login-submit-btn"
             >
               {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  Signing in...
-                </>
+                <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                'Sign In →'
+                'Sign In'
               )}
             </button>
           </form>
 
           {/* Divider */}
-          <div className="login-divider">
+          <div className="solomon-divider">
             <span>or</span>
           </div>
 
           {/* Google OAuth */}
           <button 
             onClick={handleGoogleLogin}
-            className="btn-google"
+            className="solomon-google-btn"
             data-testid="google-login-btn"
           >
             <GoogleIcon />
-            Continue with Google
+            <span>Continue with Google</span>
           </button>
 
-          {/* Demo Credentials Box */}
-          <div className="demo-credentials-box" data-testid="demo-credentials-box">
-            <div className="demo-credentials-label">
-              <span className="demo-key-icon">🔑</span>
-              Demo Accounts (Password: Demo2026!)
-            </div>
-            
-            {/* Platform Admin - God Mode */}
-            <div className="demo-credential-row">
-              <div className="demo-credential-info">
-                <span className="demo-role" style={{color: '#8b5cf6', minWidth: '95px'}}>Platform:</span>
-                <code className="demo-creds" onClick={() => {
-                  setEmail('admin@solomon.ai');
-                  setPassword('Demo2026!');
-                }}>
-                  admin@solomon.ai
-                </code>
-              </div>
-            </div>
-            
-            {/* Church Admins */}
-            <div className="demo-credential-row">
-              <div className="demo-credential-info">
-                <span className="demo-role">Abundant:</span>
-                <code className="demo-creds" onClick={() => fillCredentials('admin')}>
-                  admin@abundant.church
-                </code>
-              </div>
-              <button 
-                onClick={() => copyCredentials('admin')}
-                className="demo-copy-btn"
-                title="Copy credentials"
-              >
-                {copiedAdmin ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
-            </div>
-            
-            <div className="demo-credential-row">
-              <div className="demo-credential-info">
-                <span className="demo-role" style={{color: '#dc2626'}}>Cristo Viene:</span>
-                <code className="demo-creds" onClick={() => {
-                  setEmail('admin@cristoviene.church');
-                  setPassword('Demo2026!');
-                }}>
-                  admin@cristoviene.church
-                </code>
-              </div>
-            </div>
-
-            <div className="demo-credential-row">
-              <div className="demo-credential-info">
-                <span className="demo-role" style={{color: '#7c3aed'}}>Potter's:</span>
-                <code className="demo-creds" onClick={() => {
-                  setEmail('admin@pottershouse.church');
-                  setPassword('Demo2026!');
-                }}>
-                  admin@pottershouse.church
-                </code>
-              </div>
-            </div>
-
-            {/* Member Account - Maria */}
-            <div className="demo-credentials-divider">
-              <span>Member Portal</span>
-            </div>
-            
-            <div className="demo-credential-row">
-              <div className="demo-credential-info">
-                <span className="demo-role" style={{color: '#f59e0b', minWidth: '95px'}}>Maria:</span>
-                <code className="demo-creds" onClick={() => {
-                  setEmail('member@abundant.church');
-                  setPassword('Demo2026!');
-                }}>
-                  member@abundant.church
-                </code>
-              </div>
-              <button 
-                onClick={() => copyCredentials('member')}
-                className="demo-copy-btn"
-                title="Copy credentials"
-              >
-                {copiedMember ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
-            </div>
-            
-            <div className="demo-credential-row">
-              <div className="demo-credential-info">
-                <span className="demo-role" style={{color: '#dc2626', minWidth: '95px'}}>Carlos:</span>
-                <code className="demo-creds" onClick={() => {
-                  setEmail('member@cristoviene.church');
-                  setPassword('Demo2026!');
-                }}>
-                  member@cristoviene.church
-                </code>
-              </div>
-            </div>
-          </div>
-          
-          <div className="login-footer">
-            Don't have an account? <Link to="/signup" className="text-blue-600 hover:underline">Create account →</Link>
-          </div>
         </div>
+
+        {/* Footer */}
+        <div className="solomon-footer">
+          <Link to="/signup" className="solomon-footer-link">Create account</Link>
+        </div>
+
       </div>
+
+      <style>{`
+        .solomon-login {
+          min-height: 100vh;
+          width: 100%;
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        }
+
+        .solomon-login-container {
+          width: 100%;
+          max-width: 380px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .solomon-logo {
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+          margin-bottom: 48px;
+        }
+
+        .solomon-logo-text {
+          font-family: 'Inter', -apple-system, sans-serif;
+          font-size: 28px;
+          font-weight: 200;
+          letter-spacing: 8px;
+          color: #ffffff;
+        }
+
+        .solomon-logo-ai {
+          font-family: 'Inter', -apple-system, sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          letter-spacing: 2px;
+          color: #3b82f6;
+        }
+
+        .solomon-login-card {
+          width: 100%;
+        }
+
+        .solomon-form {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .solomon-input-group {
+          width: 100%;
+        }
+
+        .solomon-input {
+          width: 100%;
+          height: 52px;
+          padding: 0 20px;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          color: #ffffff;
+          font-size: 15px;
+          font-weight: 300;
+          letter-spacing: 0.3px;
+          transition: all 0.2s ease;
+          outline: none;
+        }
+
+        .solomon-input::placeholder {
+          color: rgba(255, 255, 255, 0.35);
+          font-weight: 300;
+        }
+
+        .solomon-input:focus {
+          border-color: rgba(59, 130, 246, 0.5);
+          background: rgba(255, 255, 255, 0.08);
+        }
+
+        .solomon-password-wrapper {
+          position: relative;
+          width: 100%;
+        }
+
+        .solomon-password-wrapper .solomon-input {
+          padding-right: 48px;
+        }
+
+        .solomon-password-toggle {
+          position: absolute;
+          right: 16px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          color: rgba(255, 255, 255, 0.4);
+          cursor: pointer;
+          padding: 4px;
+          transition: color 0.2s ease;
+        }
+
+        .solomon-password-toggle:hover {
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        .solomon-submit-btn {
+          width: 100%;
+          height: 52px;
+          background: #3b82f6;
+          border: none;
+          border-radius: 8px;
+          color: #ffffff;
+          font-size: 15px;
+          font-weight: 400;
+          letter-spacing: 0.5px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 8px;
+        }
+
+        .solomon-submit-btn:hover {
+          background: #2563eb;
+        }
+
+        .solomon-submit-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+
+        .solomon-divider {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin: 28px 0;
+        }
+
+        .solomon-divider::before,
+        .solomon-divider::after {
+          content: '';
+          flex: 1;
+          height: 1px;
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        .solomon-divider span {
+          color: rgba(255, 255, 255, 0.35);
+          font-size: 12px;
+          font-weight: 300;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+        }
+
+        .solomon-google-btn {
+          width: 100%;
+          height: 52px;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          color: #ffffff;
+          font-size: 15px;
+          font-weight: 300;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+        }
+
+        .solomon-google-btn:hover {
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .solomon-footer {
+          margin-top: 40px;
+        }
+
+        .solomon-footer-link {
+          color: rgba(255, 255, 255, 0.4);
+          font-size: 13px;
+          font-weight: 300;
+          letter-spacing: 0.5px;
+          text-decoration: none;
+          transition: color 0.2s ease;
+        }
+
+        .solomon-footer-link:hover {
+          color: rgba(255, 255, 255, 0.7);
+        }
+      `}</style>
     </div>
   );
 }
