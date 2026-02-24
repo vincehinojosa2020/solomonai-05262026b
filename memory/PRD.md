@@ -5,7 +5,7 @@
 **Product Name:** SAMSON  
 **Tagline:** "Enterprise Church Management System"  
 **Target Scale:** 50,000+ members per tenant, 1M+ concurrent users platform-wide  
-**Demo URL:** https://samson-demo.preview.emergentagent.com
+**Demo URL:** https://samson-staging-1.preview.emergentagent.com
 **Architecture:** Multi-tenant SaaS with subdomain routing
 
 ---
