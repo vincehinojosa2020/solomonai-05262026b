@@ -25,6 +25,8 @@ import PlatformDashboard from "@/pages/PlatformDashboard";
 import MediaManagerPage from "@/pages/MediaManagerPage";
 import GroupsManagerPage from "@/pages/GroupsManagerPage";
 import EventsManagerPage from "@/pages/EventsManagerPage";
+import ThinkificPage from "@/pages/ThinkificPage";
+import AbundantPathwaysAdmin from "@/pages/AbundantPathwaysAdmin";
 // Portal Pages
 import PortalHome from "@/pages/portal/PortalHome";
 import PortalGive from "@/pages/portal/PortalGive";
@@ -32,6 +34,9 @@ import PortalGroups from "@/pages/portal/PortalGroups";
 import PortalEvents from "@/pages/portal/PortalEvents";
 import PortalMe from "@/pages/portal/PortalMe";
 import PortalLibrary from "@/pages/portal/PortalLibrary";
+import PortalThinkific from "@/pages/portal/PortalThinkific";
+import PortalPathways from "@/pages/portal/PortalPathways";
+import PortalPathwaysCourse from "@/pages/portal/PortalPathwaysCourse";
 import { API_URL } from "@/lib/utils";
 
 // Router wrapper to detect session_id in URL
