@@ -80,6 +80,7 @@ function AppRouter() {
         <Route path="/media" element={<MediaManagerPage />} />
         <Route path="/thinkific" element={<ThinkificPage />} />
         <Route path="/abundant-pathways" element={<AbundantPathwaysAdmin />} />
+        <Route path="/merch" element={<MerchAdminPage />} />
         <Route path="/admin/groups" element={<GroupsManagerPage />} />
         <Route path="/admin/events" element={<EventsManagerPage />} />
       </Route>
