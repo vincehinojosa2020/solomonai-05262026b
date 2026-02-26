@@ -27,6 +27,7 @@ import EventsManagerPage from "@/pages/EventsManagerPage";
 import ThinkificPage from "@/pages/ThinkificPage";
 import AbundantPathwaysAdmin from "@/pages/AbundantPathwaysAdmin";
 import MerchAdminPage from "@/pages/MerchAdminPage";
+import LeadershipNotesPage from "@/pages/LeadershipNotesPage";
 // Portal Pages
 import PortalHome from "@/pages/portal/PortalHome";
 import PortalGive from "@/pages/portal/PortalGive";
