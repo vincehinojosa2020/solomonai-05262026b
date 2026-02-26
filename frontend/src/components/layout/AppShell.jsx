@@ -198,7 +198,7 @@ export default function AppShell() {
                   key={item.path}
                   to={item.path}
                   className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                  data-testid={`nav-${item.name.toLowerCase()}`}
+                  data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                   title={collapsed ? item.name : undefined}
                 >
                   <item.icon className="icon" />
