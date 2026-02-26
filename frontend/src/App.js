@@ -100,6 +100,7 @@ function AppRouter() {
         <Route path="pathways" element={<PortalPathways />} />
         <Route path="pathways/:courseId" element={<PortalPathwaysCourse />} />
         <Route path="merch" element={<PortalMerch />} />
+        <Route path="cafe" element={<PortalCafe />} />
         <Route path="groups" element={<PortalGroups />} />
         <Route path="events" element={<PortalEvents />} />
         <Route path="me" element={<PortalMe />} />
