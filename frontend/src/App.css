@@ -5905,3 +5905,569 @@
   flex-direction: column;
   gap: 16px;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   THINKIFIC + ABUNDANT PATHWAYS (ADMIN)
+   ═══════════════════════════════════════════════════════════════ */
+
+.thinkific-page,
+.pathways-admin {
+  padding: 16px 20px 32px;
+}
+
+.thinkific-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.thinkific-card,
+.thinkific-preview {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.thinkific-card-header {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.thinkific-card-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.thinkific-card-header p {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.thinkific-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.thinkific-form input {
+  flex: 1 1 240px;
+}
+
+.thinkific-save-btn {
+  gap: 6px;
+}
+
+.thinkific-helper {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.thinkific-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.thinkific-preview-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.thinkific-external {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.thinkific-iframe {
+  width: 100%;
+  min-height: 420px;
+  border: none;
+  border-radius: 12px;
+  background: #0f172a;
+}
+
+.thinkific-empty,
+.thinkific-loading {
+  padding: 32px;
+  text-align: center;
+  color: #64748b;
+}
+
+.pathways-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.pathways-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 18px 32px rgba(15, 23, 42, 0.08);
+}
+
+.pathways-card-media {
+  position: relative;
+  height: 160px;
+  overflow: hidden;
+}
+
+.pathways-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pathways-card-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(15, 23, 42, 0.85);
+  color: white;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.pathways-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pathways-card-body h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.pathways-card-body p {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.pathways-card-meta,
+.pathways-card-tags {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #475569;
+}
+
+.pathways-card-meta span,
+.pathways-card-tags span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+}
+
+.pathways-card-actions {
+  display: flex;
+  gap: 10px;
+  padding: 0 16px 16px;
+  flex-wrap: wrap;
+}
+
+.pathways-add-btn {
+  gap: 6px;
+}
+
+.pathways-modal {
+  max-width: 720px;
+}
+
+.pathways-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pathways-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.pathways-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.pathways-lessons-list {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pathways-lesson-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  background: #f8fafc;
+}
+
+.pathways-lesson-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.pathways-lesson-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pathways-assignment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.pathways-assignment-list h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.pathways-assignment-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  background: #ffffff;
+  margin-bottom: 10px;
+}
+
+.pathways-progress {
+  margin-top: 8px;
+}
+
+.pathways-progress-bar {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.pathways-progress-bar div {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #38bdf8);
+}
+
+.pathways-loading,
+.pathways-empty {
+  padding: 32px;
+  text-align: center;
+  color: #64748b;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PORTAL THINKIFIC + PATHWAYS
+   ═══════════════════════════════════════════════════════════════ */
+
+.portal-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: #eef2ff;
+  color: #4338ca;
+  margin-bottom: 10px;
+}
+
+.portal-thinkific,
+.portal-pathways,
+.portal-pathways-course {
+  padding: 24px 20px 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.portal-thinkific-header,
+.portal-pathways-hero,
+.portal-pathways-course-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.portal-thinkific-header h1,
+.portal-pathways-hero h1,
+.portal-pathways-course-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.portal-thinkific-header p,
+.portal-pathways-hero p,
+.portal-pathways-course-header p {
+  color: #64748b;
+  max-width: 560px;
+}
+
+.portal-thinkific-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.portal-thinkific-body {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 12px;
+}
+
+.portal-thinkific-iframe {
+  width: 100%;
+  min-height: 520px;
+  border: none;
+  border-radius: 12px;
+  background: #0f172a;
+}
+
+.portal-thinkific-loading,
+.portal-thinkific-empty {
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+}
+
+.portal-pathways-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.portal-pathways-card {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 18px 32px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.portal-pathways-card-image {
+  height: 180px;
+  overflow: hidden;
+}
+
+.portal-pathways-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portal-pathways-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.portal-pathways-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.portal-pathways-progress-bar {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.portal-pathways-progress-bar div {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+}
+
+.portal-pathways-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #0f172a;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.portal-pathways-loading,
+.portal-pathways-empty {
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+}
+
+.portal-pathways-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  background: none;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+}
+
+.portal-pathways-course-progress {
+  min-width: 220px;
+}
+
+.portal-pathways-lessons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.portal-pathways-lesson {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.portal-pathways-lesson-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.portal-pathways-start,
+.portal-pathways-mark {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.portal-pathways-start {
+  background: #0f172a;
+  color: white;
+}
+
+.portal-pathways-mark {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.portal-pathways-complete {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #16a34a;
+  font-size: 13px;
+}
+
+.pathways-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  padding: 20px;
+}
+
+.pathways-modal-content {
+  background: #ffffff;
+  border-radius: 16px;
+  max-width: 900px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.pathways-modal-close {
+  border: none;
+  background: #f1f5f9;
+  border-radius: 999px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 12px;
+  font-size: 18px;
+}
+
+.pathways-modal-header {
+  padding: 0 20px 12px;
+}
+
+.pathways-modal-video {
+  position: relative;
+  padding-top: 56.25%;
+  background: #0f172a;
+}
+
+.pathways-modal-video iframe,
+.pathways-video-placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.pathways-video-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e2e8f0;
+  background: #0f172a;
+}
