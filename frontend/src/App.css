@@ -1552,9 +1552,16 @@
   background: white;
   border-top: 1px solid #e5e5e5;
   display: flex;
-  justify-content: space-around;
-  padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+  justify-content: flex-start;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
   z-index: 40;
+}
+
+.portal-bottom-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .portal-bottom-nav-item {
