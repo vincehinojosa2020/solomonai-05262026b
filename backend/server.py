@@ -591,6 +591,114 @@ class WatchProgress(BaseModel):
     completed: bool = False
     last_watched: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+# ============== ABUNDANT PATHWAYS (LMS) MODELS ==============
+
+class PathwaysCourse(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    title: str
+    description: Optional[str] = None
+    cover_image_url: Optional[str] = None
+    category: Optional[str] = None
+    level: Optional[str] = None
+    is_published: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class PathwaysLesson(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    course_id: str
+    title: str
+    description: Optional[str] = None
+    youtube_id: Optional[str] = None
+    video_url: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+    duration_label: Optional[str] = None
+    duration_seconds: int = 0
+    resource_url: Optional[str] = None
+    sort_order: int = 0
+    is_published: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class PathwaysEnrollment(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    course_id: str
+    user_id: str
+    assigned_by: Optional[str] = None
+    status: str = "assigned"  # assigned | in_progress | completed | dropped
+    assigned_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class PathwaysLessonProgress(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    course_id: str
+    lesson_id: str
+    user_id: str
+    position_seconds: int = 0
+    duration_seconds: int = 0
+    progress_percent: float = 0.0
+    completed: bool = False
+    last_watched: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class PathwaysCourseCreate(BaseModel):
+    title: str
+    description: Optional[str] = None
+    cover_image_url: Optional[str] = None
+    category: Optional[str] = None
+    level: Optional[str] = None
+    is_published: bool = True
+
+class PathwaysCourseUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    cover_image_url: Optional[str] = None
+    category: Optional[str] = None
+    level: Optional[str] = None
+    is_published: Optional[bool] = None
+
+class PathwaysLessonCreate(BaseModel):
+    title: str
+    description: Optional[str] = None
+    video_url: Optional[str] = None
+    youtube_id: Optional[str] = None
+    duration_label: Optional[str] = None
+    duration_seconds: Optional[int] = None
+    resource_url: Optional[str] = None
+    sort_order: int = 0
+    is_published: bool = True
+
+class PathwaysLessonUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    video_url: Optional[str] = None
+    youtube_id: Optional[str] = None
+    duration_label: Optional[str] = None
+    duration_seconds: Optional[int] = None
+    resource_url: Optional[str] = None
+    sort_order: Optional[int] = None
+    is_published: Optional[bool] = None
+
+class PathwaysEnrollmentRequest(BaseModel):
+    member_id: str
+
+class PathwaysProgressUpdate(BaseModel):
+    course_id: str
+    lesson_id: str
+    position_seconds: int
+    duration_seconds: int
+    title: Optional[str] = None
+
+class ThinkificUpdate(BaseModel):
+    thinkific_url: str
+
 # ============== HELPER FUNCTIONS ==============
 
 def serialize_doc(doc: dict) -> dict:
