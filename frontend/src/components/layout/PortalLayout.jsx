@@ -188,6 +188,7 @@ export default function PortalLayout() {
                 to={item.path}
                 end={item.exact}
                 onClick={() => setMobileMenuOpen(false)}
+                data-testid={`portal-mobile-nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                 className={({ isActive }) => 
                   `portal-mobile-nav-item ${isActive ? 'active' : ''}`
                 }
