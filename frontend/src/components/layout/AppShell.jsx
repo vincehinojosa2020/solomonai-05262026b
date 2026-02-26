@@ -40,6 +40,7 @@ const navItems = [
     { name: 'Media Library', path: '/media', icon: Video },
     { name: 'Thinkific', path: '/thinkific', icon: GraduationCap },
     { name: 'Abundant Pathways', path: '/abundant-pathways', icon: BookOpen },
+    { name: 'Merch', path: '/merch', icon: ShoppingBag },
   ]},
   { section: 'ANALYTICS', items: [
     { name: 'Reports', path: '/reports', icon: BarChart3 },
