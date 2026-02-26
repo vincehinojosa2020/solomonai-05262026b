@@ -4,7 +4,7 @@
 ### Overview
 **Product Name:** Solomon AI  
 **Target Scale:** 50,000+ members per tenant, 1M+ concurrent users platform-wide  
-**Demo URL:** https://learn-discipleship.preview.emergentagent.com
+**Demo URL:** https://learn-discipleship.preview.emergentagent.com  
 **Architecture:** Multi-tenant SaaS with subdomain routing
 
 ---
@@ -23,6 +23,7 @@ Each church is a tenant with isolated data:
 | Abundant Church | abundant | El Paso, TX |
 | Cristo Viene | cristoviene | El Paso, TX |
 | The Potter's House | pottershouse | Dallas, TX |
+| Eden X | edenx | Austin, TX |
 
 ### Role Hierarchy
 1. **platform_admin** - Access all tenants, manage subscriptions (admin@solomon.ai)
@@ -31,47 +32,36 @@ Each church is a tenant with isolated data:
 
 ---
 
-## What's Implemented (February 24, 2026)
+## What's Implemented (February 26, 2026)
+
+### P0: Solomon Discipleship (LMS)
+- **Thinkific (Admin + Member)**
+  - Admin sets Thinkific embed URL; preview available inside admin UI
+  - Members access Thinkific directly inside the portal
+- **Abundant Pathways (Homegrown LMS)**
+  - Admin creates courses, lessons, assigns members, tracks progress
+  - Members see assigned courses, watch lessons, and progress updates
+
+### P0: Merch Store (Admin + Member)
+- Admin dashboard for merch: embed store URL, product catalog, orders summary
+- Admin can add/edit/delete merch products (mugs, shirts, YETI, etc.)
+- Member portal merch experience with embedded storefront + curated product grid
+- Cart and checkout flow for demo ordering (**CHECKOUT IS MOCKED**)
 
 ### P0: Media Library Sync Bug - FIXED
 - Removed hardcoded `ALL_CONTENT` array from `PortalWatch.jsx`
-- Watch page now exclusively fetches from `/api/portal/media/videos` endpoint
+- Watch page now exclusively fetches from `/api/portal/media/videos`
 - Videos deleted by church admin no longer appear on member portal
-- Proper loading and empty states implemented
-
-### P1: Platform Admin UI - FIXED
-- Clean UI for `admin@solomon.ai` without church-specific elements
-- Sidebar shows "Solomon" as name (not full email)
-- Role displays as "Platform Admin"
-- Top bar greeting: "Good morning, Solomon"
-- Tenant badge hidden (no "Abundant Living Faith Center")
-- "Preview Member Portal" link hidden
-- Limited navigation: All Churches, Settings, Integrations only
-- Purple accent color for Platform section
-
-### P1: Platform Admin Impersonation Flow - IMPROVED
-- When impersonating a church, full Church Admin navigation appears
-- Impersonation banner shows which church is being viewed
-- "Back to All Churches" button to exit impersonation
 
 ### Bidirectional Communication Features - NEW
 
 #### Member Side (/portal)
-- **Groups Page**: View available groups, "Request to Join" for open groups, "Leave Group" option
-- **Events Page**: View upcoming events, "Register" button, "Cancel Registration" option
-- **My Groups API**: `/api/portal/my-groups` - Get member's joined groups
-- **My Events API**: `/api/portal/my-events` - Get member's registered events
+- **Groups Page**: View available groups, request to join, leave group
+- **Events Page**: View upcoming events, register, cancel registration
 
 #### Admin Side (/admin)
 - **Group Member Management**: View members, search & add people, remove members
 - **Event Registration Management**: View registrations, add manual registrations, remove registrations
-- **New APIs**:
-  - `POST /api/admin/groups/{id}/members` - Add member to group
-  - `DELETE /api/admin/groups/{id}/members/{personId}` - Remove member
-  - `GET /api/admin/groups/{id}/available-members` - Search non-members
-  - `GET /api/admin/events/{id}/registrations` - List event registrations
-  - `POST /api/admin/events/{id}/registrations` - Add registration
-  - `DELETE /api/admin/events/{id}/registrations/{id}` - Cancel registration
 
 ### Existing Features (Still Working)
 - **Authentication**: JWT-based with email/password, Google OAuth
@@ -85,7 +75,6 @@ Each church is a tenant with isolated data:
 ---
 
 ## Technical Stack
-
 - **Frontend:** React 18, React Router, TailwindCSS, shadcn/ui, Framer Motion
 - **Backend:** FastAPI, Motor (async MongoDB)
 - **Database:** MongoDB
@@ -113,35 +102,36 @@ Each church is a tenant with isolated data:
 ### Media (Member Portal)
 - `GET /api/portal/media/videos` - Get published videos
 
-### Groups (Admin)
-- `GET /api/admin/groups` - List groups
-- `POST /api/admin/groups` - Create group
-- `PUT /api/admin/groups/{id}` - Update group
-- `DELETE /api/admin/groups/{id}` - Delete group
-- `GET /api/admin/groups/{id}/members` - View members
-- `POST /api/admin/groups/{id}/members` - Add member
-- `DELETE /api/admin/groups/{id}/members/{personId}` - Remove member
+### LMS (Admin)
+- `GET /api/admin/thinkific` - Get Thinkific URL
+- `PATCH /api/admin/thinkific` - Update Thinkific URL
+- `GET /api/admin/pathways/courses` - List Pathways courses
+- `POST /api/admin/pathways/courses` - Create course
+- `PUT /api/admin/pathways/courses/{id}` - Update course
+- `DELETE /api/admin/pathways/courses/{id}` - Delete course
+- `POST /api/admin/pathways/courses/{id}/lessons` - Add lesson
+- `POST /api/admin/pathways/courses/{id}/assignments` - Assign members
 
-### Groups (Member Portal)
-- `GET /api/portal/groups` - Available groups
-- `GET /api/portal/my-groups` - My groups
-- `POST /api/portal/groups/{id}/join` - Join group
-- `DELETE /api/portal/groups/{id}/leave` - Leave group
+### LMS (Member)
+- `GET /api/portal/thinkific` - Member Thinkific URL
+- `GET /api/portal/pathways/courses` - Assigned courses
+- `GET /api/portal/pathways/courses/{id}/lessons` - Course lessons
+- `POST /api/portal/pathways/progress` - Update lesson progress
 
-### Events (Admin)
-- `GET /api/admin/events` - List events
-- `POST /api/admin/events` - Create event
-- `PUT /api/admin/events/{id}` - Update event
-- `DELETE /api/admin/events/{id}` - Delete event
-- `GET /api/admin/events/{id}/registrations` - View registrations
-- `POST /api/admin/events/{id}/registrations` - Add registration
-- `DELETE /api/admin/events/{id}/registrations/{id}` - Remove registration
+### Merch (Admin)
+- `GET /api/admin/merch/settings` - Merch embed URL
+- `PATCH /api/admin/merch/settings` - Update embed URL
+- `GET /api/admin/merch/products` - List products
+- `POST /api/admin/merch/products` - Create product
+- `PUT /api/admin/merch/products/{id}` - Update product
+- `DELETE /api/admin/merch/products/{id}` - Delete product
+- `GET /api/admin/merch/orders` - Recent orders
+- `GET /api/admin/merch/summary` - Stats summary
 
-### Events (Member Portal)
-- `GET /api/portal/events` - Upcoming events
-- `GET /api/portal/my-events` - My registered events
-- `POST /api/portal/events/{id}/register` - Register
-- `DELETE /api/portal/events/{id}/register` - Cancel registration
+### Merch (Member)
+- `GET /api/portal/merch/settings` - Merch embed URL
+- `GET /api/portal/merch/products` - Active products
+- `POST /api/portal/merch/orders` - Place order (**MOCKED**)
 
 ---
 
@@ -150,33 +140,25 @@ Each church is a tenant with isolated data:
 ### Platform Admin (God Mode)
 - **Email:** admin@solomon.ai
 - **Password:** Demo2026!
-- **Access:** All churches, member directory, platform stats
-- **Does NOT see:** Media Library, Groups, Events (church-specific)
 
 ### Church Admins
 - admin@abundant.church / Demo2026!
-- admin@cityreach.church / Demo2026!
+- admin@cristoviene.church / Demo2026!
 - admin@pottershouse.church / Demo2026!
-- **See:** Full navigation including Media Library, Groups Manager, Events Manager
+- admin@edenx.church / Demo2026!
 
 ### Members
-- member@abundant.church (Maria Gonzalez) / Demo2026!
-- member@cityreach.church (John Smith) / Demo2026!
-- **See:** Watch, Give, Groups, Events, Me
+- member@abundant.church / Demo2026!
+- member@cristoviene.church / Demo2026!
+- kaylen@edenx.church / Demo2026!
 
 ---
 
 ## Backlog (Priority Order)
 
-### P0 - Completed This Session
-- [x] Media Library Sync Bug - Videos sync between admin and portal
-- [x] Platform Admin UI cleanup - Clean interface for Solomon admin
-- [x] Bidirectional Group Management - Members join/leave, admins add/remove
-- [x] Bidirectional Event Management - Members register/cancel, admins manage
-
 ### P1 - Next Priority
-- [ ] Saved payment methods for members
-- [ ] Giving reports with CSV export
+- [ ] Saved payment methods for members (frontend wiring)
+- [ ] Giving reports with CSV export (frontend wiring)
 - [ ] Year-end tax statements (PDF generation)
 
 ### P2 - Medium Priority
@@ -194,36 +176,12 @@ Each church is a tenant with isolated data:
 
 ## Changelog
 
-### Feb 24, 2026 (Latest Session)
-- **Redesigned Login Page**: Clean, minimalist Prada-style aesthetic
-  - Removed demo credentials from public view
-  - Removed marketing copy (50K members, enterprise security, etc.)
-  - Centered form with elegant SOLOMON AI branding
-  - Rounded Google button to match other fields
-- **Updated Church Names**:
-  - "Abundant Living Faith Center" → "Abundant Church"
-  - "City Reach Church" → "Cristo Viene" (El Paso mega church)
-  - Kept "The Potter's House"
-- **Fixed P0 Bug**: Media Library sync - removed hardcoded content
-- **Fixed P1 Bug**: Platform Admin UI - clean interface
-- **Performance Fixes**: Optimized 3 N+1 database queries
-- **Added Features**:
-  - Bidirectional group/event management
-  - Saved payment methods API
-  - Giving reports with CSV export
-  - Year-end tax statements API
+### Feb 26, 2026 (Latest Session)
+- Added Thinkific integration + Abundant Pathways LMS flows
+- Built merch admin dashboard + member merch experience
+- Added merch embed + demo catalog + order placement (mocked)
 
-### Previous Session
-- Built Media Library Manager for church admins
-- Built Groups & Bible Studies Manager
-- Built Events & Services Manager
-- Connected portal Watch page to database (dynamic content)
-- Correctly scoped Media Library to church admins only
-- Platform admin no longer sees Media Library link
-- Rebranded from "Samson" to "Solomon AI"
-- Live platform dashboard with real aggregated stats
-
----
-
-## Test Reports
-- Latest: `/app/test_reports/iteration_10.json` - 100% pass rate (16/16 backend tests)
+### Feb 24, 2026
+- Redesigned Login Page to minimalist Prada-style aesthetic
+- Added Eden X tenant + updated demo credentials
+- Enabled Ask Solomon AI chat assistant
