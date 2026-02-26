@@ -10,10 +10,21 @@ export default function LeadershipNotesPage() {
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [tenantFilter, setTenantFilter] = useState(null);
 
+  useEffect(() => {
+    const storedTenant = sessionStorage.getItem('impersonate_tenant');
+    if (storedTenant) {
+      const parsed = JSON.parse(storedTenant);
+      setTenantFilter(parsed?.id || null);
+    } else {
+      setTenantFilter(null);
+    }
+  }, []);
+
   const fetchNotes = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/admin/notes`, { credentials: 'include' });
+      const url = tenantFilter ? `${API_URL}/admin/notes?tenant_id=${tenantFilter}` : `${API_URL}/admin/notes`;
+      const res = await fetch(url, { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
         setNotes(data.notes || []);
