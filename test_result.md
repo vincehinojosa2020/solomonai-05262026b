@@ -101,3 +101,113 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Test Merch feature - Admin and Member flows"
+
+backend:
+  - task: "Merch API endpoints"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Backend endpoints exist - will test via integration"
+
+frontend:
+  - task: "Admin Sidebar - Merch Navigation"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/layout/AppShell.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Initial status - needs testing"
+
+  - task: "Admin Merch Page - Stats and Settings"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/MerchAdminPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Initial status - needs testing for stats display, embed URL input, and recent orders"
+
+  - task: "Admin Merch Page - Product Management"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/MerchAdminPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Initial status - needs testing for add product functionality"
+
+  - task: "Portal Navigation - Merch Link"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/layout/PortalLayout.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Initial status - needs testing"
+
+  - task: "Portal Merch Page - Store Display"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/portal/PortalMerch.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Initial status - needs testing for embedded store iframe"
+
+  - task: "Portal Merch Page - Cart and Checkout"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/portal/PortalMerch.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Initial status - needs testing for add to cart and checkout"
+
+metadata:
+  created_by: "testing_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: true
+
+test_plan:
+  current_focus:
+    - "Admin Sidebar - Merch Navigation"
+    - "Admin Merch Page - Stats and Settings"
+    - "Admin Merch Page - Product Management"
+    - "Portal Navigation - Merch Link"
+    - "Portal Merch Page - Store Display"
+    - "Portal Merch Page - Cart and Checkout"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "sequential"
+
+agent_communication:
+    - agent: "testing"
+      message: "Starting UI tests for Merch feature. Will test admin and member flows comprehensively."
