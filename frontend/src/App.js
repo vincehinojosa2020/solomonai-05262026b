@@ -25,6 +25,7 @@ import MediaManagerPage from "@/pages/MediaManagerPage";
 import GroupsManagerPage from "@/pages/GroupsManagerPage";
 import EventsManagerPage from "@/pages/EventsManagerPage";
 import ThinkificPage from "@/pages/ThinkificPage";
+import AbundantPathwaysAdmin from "@/pages/AbundantPathwaysAdmin";
 import MerchAdminPage from "@/pages/MerchAdminPage";
 // Portal Pages
 import PortalHome from "@/pages/portal/PortalHome";
