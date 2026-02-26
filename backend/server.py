@@ -6241,7 +6241,8 @@ async def seed_platform():
             "website": "https://thepottershouse.org",
             "phone": "(214) 331-0954",
             "primary_color": "#7c3aed",
-            "accent_color": "#ec4899"
+            "accent_color": "#ec4899",
+            "thinkific_url": "https://pottershouse.thinkific.com"
         }
     ]
     
