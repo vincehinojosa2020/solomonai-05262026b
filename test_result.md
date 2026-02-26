@@ -215,17 +215,13 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus:
-    - "Admin Sidebar - Merch Navigation"
-    - "Admin Merch Page - Stats and Settings"
-    - "Admin Merch Page - Product Management"
-    - "Portal Navigation - Merch Link"
-    - "Portal Merch Page - Store Display"
-    - "Portal Merch Page - Cart and Checkout"
+  current_focus: []
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "sequential"
 
 agent_communication:
     - agent: "testing"
       message: "Starting UI tests for Merch feature. Will test admin and member flows comprehensively."
+    - agent: "testing"
+      message: "✅ ALL TESTS PASSED - Merch feature is fully functional. Admin flow: navigation, stats display, embed settings, product management all working. Member flow: navigation, store iframe display, product browsing, add to cart, quantity controls, and checkout all working correctly. 9 products displayed, cart functionality complete with successful order placement."
