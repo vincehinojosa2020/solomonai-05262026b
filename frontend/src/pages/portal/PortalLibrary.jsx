@@ -671,6 +671,40 @@ export default function PortalLibrary() {
         onPlay={handlePlay}
       />
 
+      <motion.section
+        className="prem-pathways"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        data-testid="discipleship-cta"
+      >
+        <div className="prem-pathways-content">
+          <div>
+            <span className="prem-pathways-label">Discipleship</span>
+            <h2>Choose Your Learning Track</h2>
+            <p>Jump into Thinkific or Abundant Pathways without leaving the watch experience.</p>
+          </div>
+          <div className="prem-pathways-actions">
+            <button
+              className="prem-pathways-btn"
+              onClick={() => navigate('/portal/thinkific')}
+              data-testid="cta-thinkific"
+            >
+              Thinkific
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <button
+              className="prem-pathways-btn alt"
+              onClick={() => navigate('/portal/pathways')}
+              data-testid="cta-pathways"
+            >
+              Abundant Pathways
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </motion.section>
+
       {/* Category Pills + Search */}
       <motion.nav 
         className="prem-categories"
