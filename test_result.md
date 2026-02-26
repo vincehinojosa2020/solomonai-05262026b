@@ -120,75 +120,93 @@ backend:
 frontend:
   - task: "Admin Sidebar - Merch Navigation"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/layout/AppShell.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "testing"
           comment: "Initial status - needs testing"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - Merch nav link (data-testid: nav-merch) is visible in admin sidebar and navigates correctly to /merch page"
 
   - task: "Admin Merch Page - Stats and Settings"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/pages/MerchAdminPage.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "testing"
           comment: "Initial status - needs testing for stats display, embed URL input, and recent orders"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - All elements working: Stats section (Products: 8, Featured: 2, Orders: 13, Members: 500, Revenue: $1,028), Embed URL input with Save button, Recent orders list with 8 orders displayed, Embed preview iframe functional"
 
   - task: "Admin Merch Page - Product Management"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/pages/MerchAdminPage.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "testing"
           comment: "Initial status - needs testing for add product functionality"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - Add Product modal opens correctly, form fields work (name, description, price, category, image_url, inventory, featured, active toggles), product saves successfully and appears in catalog. Tested with Test T-Shirt product at $25.99 in Apparel category"
 
   - task: "Portal Navigation - Merch Link"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/layout/PortalLayout.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "testing"
           comment: "Initial status - needs testing"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - Merch nav link (data-testid: portal-nav-merch) is visible in portal navigation and navigates correctly to /portal/merch page"
 
   - task: "Portal Merch Page - Store Display"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/pages/portal/PortalMerch.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "testing"
           comment: "Initial status - needs testing for embedded store iframe"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - Embed section visible with functional iframe displaying store (https://store.elevationchurch.org/collections/so-be-it-ew), product grid displays 9 products with search and category filters (All, Music, Apparel, Accessories, Drinkware), Featured products badge working"
 
   - task: "Portal Merch Page - Cart and Checkout"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/pages/portal/PortalMerch.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "testing"
           comment: "Initial status - needs testing for add to cart and checkout"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - Complete cart functionality working: Add to cart button opens cart drawer, cart displays items with product image/name/price, quantity controls (+ and -) work correctly, cart total updates, checkout button places order successfully via POST to /portal/merch/orders, cart empties after successful order, success toast appears"
 
 metadata:
   created_by: "testing_agent"
