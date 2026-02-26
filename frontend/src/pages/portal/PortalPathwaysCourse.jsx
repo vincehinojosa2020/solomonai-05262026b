@@ -122,6 +122,7 @@ export default function PortalPathwaysCourse() {
         })
       });
       await fetchLessons();
+      await fetchCourse();
     } catch (error) {
       console.error('Failed to update progress', error);
     }
