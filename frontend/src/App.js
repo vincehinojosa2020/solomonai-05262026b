@@ -94,6 +94,7 @@ function AppRouter() {
         <Route path="thinkific" element={<PortalThinkific />} />
         <Route path="pathways" element={<PortalPathways />} />
         <Route path="pathways/:courseId" element={<PortalPathwaysCourse />} />
+        <Route path="merch" element={<PortalMerch />} />
         <Route path="groups" element={<PortalGroups />} />
         <Route path="events" element={<PortalEvents />} />
         <Route path="me" element={<PortalMe />} />
