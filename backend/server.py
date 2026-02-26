@@ -4357,6 +4357,9 @@ MEMBERSHIP:
 - Active Members: {active_members:,}
 - Visitors: {visitors:,}
 - Active Groups: {total_groups}
+- Media Library Videos: {media_count}
+- Abundant Pathways Courses: {pathways_count}
+- Merch Products: {merch_count}
 
 GIVING:
 - Month-to-Date: ${mtd_giving:,.2f}
