@@ -56,6 +56,7 @@ const navItems = [
 const platformNavItems = [
   { section: 'PLATFORM', items: [
     { name: 'All Churches', path: '/platform', icon: Globe },
+    { name: 'Notes', path: '/notes', icon: MessageSquare },
   ]},
 ];
 
