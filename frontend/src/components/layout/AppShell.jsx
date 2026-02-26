@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, Home, UsersRound, Calendar, 
   CheckSquare, DollarSign, Mail, BarChart3, Settings, 
   Building2, Search, Bell, ChevronLeft, Menu, Command,
-  LogOut, Plug, Globe, Video, GraduationCap, BookOpen
+  LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
