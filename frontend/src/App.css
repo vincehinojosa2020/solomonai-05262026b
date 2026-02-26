@@ -6968,3 +6968,10 @@
   border-radius: 10px;
   cursor: pointer;
 }
+
+
+.portal-merch-empty {
+  padding: 24px;
+  text-align: center;
+  color: #64748b;
+}
