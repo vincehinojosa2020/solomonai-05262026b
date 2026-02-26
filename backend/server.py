@@ -2229,6 +2229,25 @@ async def get_current_admin_user(request: Request):
     
     return user
 
+async def get_current_member_user(request: Request):
+    """Helper to get current member user"""
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    if user.get("role") != "member":
+        raise HTTPException(status_code=403, detail="Member access required")
+    
+    return user
+
 # --- Media Categories ---
 
 @api_router.get("/admin/media/categories")
