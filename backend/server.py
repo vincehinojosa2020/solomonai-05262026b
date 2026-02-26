@@ -4900,6 +4900,8 @@ async def solomon_chat(request: Request, payload: SolomonChatRequest):
             ("merch", "Open Merch"),
             ("store", "Open Merch"),
             ("shop", "Open Merch"),
+            ("cafe", "Open Cafe"),
+            ("coffee", "Open Cafe"),
             ("notes", "View Notes"),
             ("leadership", "View Notes")
         ]
