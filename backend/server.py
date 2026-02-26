@@ -711,6 +711,28 @@ def serialize_doc(doc: dict) -> dict:
             result[key] = value.isoformat()
     return result
 
+def duration_to_seconds(duration_label: Optional[str], duration_seconds: Optional[int] = None) -> int:
+    if duration_seconds is not None:
+        try:
+            return max(int(duration_seconds), 0)
+        except (TypeError, ValueError):
+            return 0
+    if not duration_label:
+        return 0
+    parts = [p for p in duration_label.split(':') if p]
+    try:
+        numbers = list(map(int, parts))
+    except ValueError:
+        return 0
+    if len(numbers) == 3:
+        return numbers[0] * 3600 + numbers[1] * 60 + numbers[2]
+    if len(numbers) == 2:
+        return numbers[0] * 60 + numbers[1]
+    if len(numbers) == 1:
+        return numbers[0]
+    return 0
+
+
 # Default tenant ID for demo
 DEFAULT_TENANT_ID = "abundant-church-001"
 
