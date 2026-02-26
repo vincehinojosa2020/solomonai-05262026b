@@ -7183,3 +7183,514 @@
   padding: 4px 10px;
   border-radius: 999px;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   CAFE ADMIN + PORTAL
+   ═══════════════════════════════════════════════════════════════ */
+
+.cafe-admin {
+  padding: 16px 20px 40px;
+}
+
+.cafe-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.cafe-stat-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.cafe-stat-card span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.cafe-stat-card strong {
+  display: block;
+  font-size: 16px;
+  color: #0f172a;
+}
+
+.cafe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.cafe-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.cafe-card-header {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.cafe-card-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.cafe-card-header p {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.cafe-settings-form {
+  display: grid;
+  gap: 10px;
+}
+
+.cafe-toggle-row {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+}
+
+.cafe-orders {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cafe-order {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.cafe-order span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.cafe-order-status {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cafe-menu h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.cafe-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.cafe-menu-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.cafe-menu-image {
+  position: relative;
+  height: 160px;
+}
+
+.cafe-menu-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cafe-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(15, 23, 42, 0.9);
+  color: white;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.cafe-menu-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cafe-menu-body h3 {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.cafe-menu-body p {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.cafe-menu-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.cafe-menu-meta span {
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.cafe-menu-actions {
+  padding: 0 12px 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cafe-modal {
+  max-width: 700px;
+}
+
+.cafe-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cafe-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.cafe-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cafe-empty {
+  padding: 24px;
+  text-align: center;
+  color: #64748b;
+}
+
+.portal-cafe {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+}
+
+.portal-cafe-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.portal-cafe-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.portal-cafe-header p {
+  color: #64748b;
+  max-width: 520px;
+}
+
+.portal-cafe-info {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #475569;
+  margin-top: 10px;
+}
+
+.portal-cafe-info span {
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.portal-cafe-cart-btn {
+  border: none;
+  background: #0f172a;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.portal-cafe-closed {
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.portal-cafe-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.portal-cafe-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  flex: 1 1 220px;
+}
+
+.portal-cafe-search input {
+  border: none;
+  outline: none;
+  flex: 1;
+}
+
+.portal-cafe-categories {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.portal-cafe-category {
+  border: 1px solid #e2e8f0;
+  background: white;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.portal-cafe-category.active {
+  background: #0f172a;
+  color: white;
+}
+
+.portal-cafe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.portal-cafe-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+}
+
+.portal-cafe-image {
+  position: relative;
+  height: 170px;
+}
+
+.portal-cafe-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portal-cafe-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  color: white;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.portal-cafe-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.portal-cafe-body h3 {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.portal-cafe-body p {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.portal-cafe-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.portal-cafe-meta span {
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.portal-cafe-add {
+  border: none;
+  background: #0f172a;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.portal-cafe-cart {
+  position: fixed;
+  right: 24px;
+  top: 90px;
+  width: min(360px, 90vw);
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.2);
+  z-index: 50;
+}
+
+.portal-cafe-cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.portal-cafe-cart-header button {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.portal-cafe-cart-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.portal-cafe-cart-item img {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.portal-cafe-cart-item span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.portal-cafe-qty {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.portal-cafe-qty button {
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 999px;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+
+.portal-cafe-pickup,
+.portal-cafe-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.portal-cafe-pickup select,
+.portal-cafe-notes textarea {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.portal-cafe-cart-footer {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.portal-cafe-checkout {
+  border: none;
+  background: #2563eb;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.portal-cafe-empty {
+  padding: 24px;
+  text-align: center;
+  color: #64748b;
+}
