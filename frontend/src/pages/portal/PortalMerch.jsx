@@ -164,10 +164,13 @@ export default function PortalMerch() {
 
       {loading ? (
         <div className="portal-merch-empty" data-testid="merch-loading">Loading merch...</div>
+      ) : filteredProducts.length === 0 ? (
+        <div className="portal-merch-empty" data-testid="merch-empty">No merch available yet.</div>
       ) : (
         <div className="portal-merch-grid" data-testid="merch-product-grid">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="portal-merch-card" data-testid={`merch-product-${product.id}`}>
+            <div key={product.id} className="portal-merch-card" data-testid={`merch-product-${product.id}`}
+            >
               <div className="portal-merch-image">
                 <img src={product.image_url || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80'} alt={product.name} />
                 {product.is_featured && <span className="portal-merch-badge">Featured</span>}
