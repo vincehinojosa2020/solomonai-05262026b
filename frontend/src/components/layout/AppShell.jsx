@@ -157,7 +157,7 @@ export default function AppShell() {
                   key={item.path}
                   to={item.path}
                   className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                  data-testid={`nav-${item.name.toLowerCase().replace(' ', '-')}`}
+                  data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                   title={collapsed ? item.name : undefined}
                   style={({ isActive }) => isActive ? { background: 'rgba(168, 85, 247, 0.2)' } : {}}
                 >
