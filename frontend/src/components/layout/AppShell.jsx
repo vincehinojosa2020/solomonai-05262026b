@@ -42,6 +42,7 @@ const navItems = [
     { name: 'Thinkific', path: '/thinkific', icon: GraduationCap },
     { name: 'Abundant Pathways', path: '/abundant-pathways', icon: BookOpen },
     { name: 'Merch', path: '/merch', icon: ShoppingBag },
+    { name: 'Cafe', path: '/cafe', icon: Coffee },
   ]},
   { section: 'ANALYTICS', items: [
     { name: 'Reports', path: '/reports', icon: BarChart3 },
