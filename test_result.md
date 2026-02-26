@@ -102,12 +102,12 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test Merch feature - Admin and Member flows"
+user_problem_statement: "Test Leave a Note feature and Ask Solomon updates - Admin and Member flows"
 
 backend:
-  - task: "Merch API endpoints"
+  - task: "Notes API endpoints"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
@@ -116,9 +116,57 @@ backend:
         - working: "NA"
           agent: "testing"
           comment: "Backend endpoints exist - will test via integration"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - POST /api/portal/notes and GET /api/admin/notes working correctly. Note submission successful with subject, category, and message. Admin retrieval shows notes with member details."
 
 frontend:
-  - task: "Admin Sidebar - Merch Navigation"
+  - task: "Portal Home - Leave a Note Card"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/portal/PortalHome.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Initial status - needs testing for Leave a Note card on Portal Home"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - Leave a Note card (data-testid: leave-note-card) is visible on Portal Home next to Ask Solomon widget. All form fields working: subject input, category select (Prayer Request, Question, Praise, Other), message textarea. Form submits successfully and displays success toast 'Your note was sent'. Form fields clear after submission."
+
+  - task: "Portal Home - Ask Solomon Widget"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/portal/PortalHome.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Initial status - needs testing for Ask Solomon input and Open button"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - Ask Solomon widget displays correctly with input field (data-testid: ask-solomon-input) and Open button (data-testid: ask-solomon-open-btn). Open button successfully launches Solomon chat panel (data-testid: samson-panel) with 'open' class applied."
+
+  - task: "Solomon Chat Panel"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/SolomonChat.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Initial status - needs testing for Solomon chat panel opening"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - Solomon chat panel (data-testid: samson-panel) opens successfully when triggered by Open button or input focus. Panel displays with correct 'open' class and can be closed via close button."
+
+  - task: "Admin Sidebar - Notes Navigation"
     implemented: true
     working: true
     file: "/app/frontend/src/components/layout/AppShell.jsx"
@@ -128,90 +176,30 @@ frontend:
     status_history:
         - working: "NA"
           agent: "testing"
-          comment: "Initial status - needs testing"
+          comment: "Initial status - needs testing for Notes nav in admin sidebar"
         - working: true
           agent: "testing"
-          comment: "✅ PASSED - Merch nav link (data-testid: nav-merch) is visible in admin sidebar and navigates correctly to /merch page"
+          comment: "✅ PASSED - Notes navigation link (data-testid: nav-notes) is visible in PEOPLE section of admin sidebar. Navigation to /notes page works correctly."
 
-  - task: "Admin Merch Page - Stats and Settings"
+  - task: "Admin Notes Page - Display and Filtering"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/MerchAdminPage.jsx"
+    file: "/app/frontend/src/pages/LeadershipNotesPage.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: "NA"
           agent: "testing"
-          comment: "Initial status - needs testing for stats display, embed URL input, and recent orders"
+          comment: "Initial status - needs testing for notes admin page with submitted note display"
         - working: true
           agent: "testing"
-          comment: "✅ PASSED - All elements working: Stats section (Products: 8, Featured: 2, Orders: 13, Members: 500, Revenue: $1,028), Embed URL input with Save button, Recent orders list with 8 orders displayed, Embed preview iframe functional"
-
-  - task: "Admin Merch Page - Product Management"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/pages/MerchAdminPage.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "Initial status - needs testing for add product functionality"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASSED - Add Product modal opens correctly, form fields work (name, description, price, category, image_url, inventory, featured, active toggles), product saves successfully and appears in catalog. Tested with Test T-Shirt product at $25.99 in Apparel category"
-
-  - task: "Portal Navigation - Merch Link"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/components/layout/PortalLayout.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "Initial status - needs testing"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASSED - Merch nav link (data-testid: portal-nav-merch) is visible in portal navigation and navigates correctly to /portal/merch page"
-
-  - task: "Portal Merch Page - Store Display"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/pages/portal/PortalMerch.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "Initial status - needs testing for embedded store iframe"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASSED - Embed section visible with functional iframe displaying store (https://store.elevationchurch.org/collections/so-be-it-ew), product grid displays 9 products with search and category filters (All, Music, Apparel, Accessories, Drinkware), Featured products badge working"
-
-  - task: "Portal Merch Page - Cart and Checkout"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/pages/portal/PortalMerch.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-          agent: "testing"
-          comment: "Initial status - needs testing for add to cart and checkout"
-        - working: true
-          agent: "testing"
-          comment: "✅ PASSED - Complete cart functionality working: Add to cart button opens cart drawer, cart displays items with product image/name/price, quantity controls (+ and -) work correctly, cart total updates, checkout button places order successfully via POST to /portal/merch/orders, cart empties after successful order, success toast appears"
+          comment: "✅ PASSED - Notes admin page (data-testid: notes-admin-page) displays correctly. Submitted note appears in notes grid with all required details: Subject ('Test Note 9864'), Category ('Prayer Request'), Member name ('Maria Gonzalez'), Member email ('member@abundant.church'), and Message content. Search and filter controls present and functional."
 
 metadata:
   created_by: "testing_agent"
   version: "1.0"
-  test_sequence: 1
+  test_sequence: 2
   run_ui: true
 
 test_plan:
@@ -222,6 +210,6 @@ test_plan:
 
 agent_communication:
     - agent: "testing"
-      message: "Starting UI tests for Merch feature. Will test admin and member flows comprehensively."
+      message: "Starting UI tests for Leave a Note feature and Ask Solomon updates. Testing both member and admin flows with authentication."
     - agent: "testing"
-      message: "✅ ALL TESTS PASSED - Merch feature is fully functional. Admin flow: navigation, stats display, embed settings, product management all working. Member flow: navigation, store iframe display, product browsing, add to cart, quantity controls, and checkout all working correctly. 9 products displayed, cart functionality complete with successful order placement."
+      message: "✅ ALL TESTS PASSED - Leave a Note feature is fully functional. Member flow: Portal Home displays Leave a Note card with working form (subject, category, message), successful submission with toast confirmation, form clears after submit. Ask Solomon: Open button successfully launches chat panel. Admin flow: Notes navigation in sidebar works, Notes page displays submitted notes with all details (subject, category, member name/email, message). Screenshots captured: member_portal_home.png and admin_notes_page.png. Minor: Console warnings about HTML structure (select inside span) are hydration warnings and do not affect functionality."
