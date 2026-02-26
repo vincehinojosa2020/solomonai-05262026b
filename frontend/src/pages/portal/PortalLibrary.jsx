@@ -16,6 +16,8 @@ const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 const PORTAL_NAV = [
   { name: 'Home', path: '/portal', icon: Home },
   { name: 'Watch', path: '/portal/library', icon: Tv },
+  { name: 'Thinkific', path: '/portal/thinkific', icon: GraduationCap },
+  { name: 'Abundant Pathways', path: '/portal/pathways', icon: BookOpen },
   { name: 'Give', path: '/portal/give', icon: DollarSign },
   { name: 'Groups', path: '/portal/groups', icon: Users },
   { name: 'Events', path: '/portal/events', icon: Calendar },
