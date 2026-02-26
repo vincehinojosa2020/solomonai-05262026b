@@ -98,23 +98,26 @@ export default function LeadershipNotesPage() {
         <div className="notes-empty" data-testid="notes-empty">No notes yet.</div>
       ) : (
         <div className="notes-grid" data-testid="notes-grid">
-          {filteredNotes.map((note) => (
-            <div key={note.id} className="note-card" data-testid={`note-${note.id}`}>
-              <div className="note-card-header">
-                <div>
-                  <span className="note-category">{note.category || 'General'}</span>
-                  <h3>{note.subject}</h3>
+          {filteredNotes.map((note) => {
+            const createdAt = note.created_at ? new Date(note.created_at).toLocaleString() : 'Just now';
+            return (
+              <div key={note.id} className="note-card" data-testid={`note-${note.id}`}>
+                <div className="note-card-header">
+                  <div>
+                    <span className="note-category">{note.category || 'General'}</span>
+                    <h3>{note.subject}</h3>
+                  </div>
+                  <MessageSquare className="w-4 h-4" />
                 </div>
-                <MessageSquare className="w-4 h-4" />
+                <p className="note-message">{note.message}</p>
+                <div className="note-meta">
+                  <span>{note.member_name || 'Member'} • {note.member_email || 'member@church.com'}</span>
+                  {note.tenant_name && <span className="note-tenant">{note.tenant_name}</span>}
+                  <span>{createdAt}</span>
+                </div>
               </div>
-              <p className="note-message">{note.message}</p>
-              <div className="note-meta">
-                <span>{note.member_name || 'Member'} • {note.member_email || 'member@church.com'}</span>
-                {note.tenant_name && <span className="note-tenant">{note.tenant_name}</span>}
-                <span>{new Date(note.created_at).toLocaleString()}</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
