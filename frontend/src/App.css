@@ -1570,6 +1570,8 @@
   align-items: center;
   gap: 4px;
   padding: 8px 12px;
+  min-width: 72px;
+  flex: 0 0 auto;
   font-size: 10px;
   font-weight: 500;
   color: #94a3b8;
