@@ -699,6 +699,56 @@ class PathwaysProgressUpdate(BaseModel):
 class ThinkificUpdate(BaseModel):
     thinkific_url: str
 
+# ============== MERCH MODELS ==============
+
+class MerchProduct(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    name: str
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    price: float
+    category: Optional[str] = None
+    is_featured: bool = False
+    is_active: bool = True
+    inventory: int = 0
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class MerchProductCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    price: float
+    category: Optional[str] = None
+    is_featured: bool = False
+    is_active: bool = True
+    inventory: int = 0
+
+class MerchProductUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    price: Optional[float] = None
+    category: Optional[str] = None
+    is_featured: Optional[bool] = None
+    is_active: Optional[bool] = None
+    inventory: Optional[int] = None
+
+class MerchOrderItem(BaseModel):
+    product_id: str
+    name: str
+    price: float
+    quantity: int
+    image_url: Optional[str] = None
+
+class MerchOrderCreate(BaseModel):
+    items: List[MerchOrderItem]
+
+class MerchSettingsUpdate(BaseModel):
+    merch_embed_url: str
+
 # ============== HELPER FUNCTIONS ==============
 
 def serialize_doc(doc: dict) -> dict:
