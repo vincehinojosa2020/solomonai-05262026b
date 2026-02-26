@@ -2437,7 +2437,218 @@ async def create_merch_order(request: Request, payload: MerchOrderCreate):
     await db.merch_orders.insert_one(order)
     return {"order": serialize_doc(order)}
 
+# ============== CAFE ROUTES ==============
+
+@api_router.get("/admin/cafe/settings")
+async def get_admin_cafe_settings(request: Request):
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+
+    await ensure_demo_cafe_data(tenant_id)
+    settings = await db.cafe_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    return {"settings": serialize_doc(settings) if settings else None}
+
+@api_router.patch("/admin/cafe/settings")
+async def update_admin_cafe_settings(request: Request, payload: CafeSettingsUpdate):
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+
+    update_data = {k: v for k, v in payload.model_dump().items() if v is not None}
+    if update_data:
+        update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.cafe_settings.update_one(
+            {"tenant_id": tenant_id},
+            {"$set": update_data},
+            upsert=True
+        )
+
+    settings = await db.cafe_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    return {"settings": serialize_doc(settings) if settings else None}
+
+@api_router.get("/admin/cafe/items")
+async def get_admin_cafe_items(
+    request: Request,
+    search: Optional[str] = None,
+    category: Optional[str] = None,
+    is_active: Optional[bool] = None
+):
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+
+    await ensure_demo_cafe_data(tenant_id)
+
+    query = {"tenant_id": tenant_id}
+    if category:
+        query["category"] = category
+    if is_active is not None:
+        query["is_active"] = is_active
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"description": {"$regex": search, "$options": "i"}}
+        ]
+
+    items = await db.cafe_items.find(query, {"_id": 0}).sort("created_at", -1).to_list(200)
+    return {"items": [serialize_doc(item) for item in items]}
+
+@api_router.post("/admin/cafe/items")
+async def create_admin_cafe_item(request: Request, payload: CafeItemCreate):
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+
+    item = CafeItem(
+        tenant_id=tenant_id,
+        name=payload.name,
+        description=payload.description,
+        category=payload.category,
+        price=payload.price,
+        image_url=payload.image_url,
+        is_featured=payload.is_featured,
+        is_active=payload.is_active
+    ).model_dump()
+
+    await db.cafe_items.insert_one(item)
+    return {"item": serialize_doc(item)}
+
+@api_router.put("/admin/cafe/items/{item_id}")
+async def update_admin_cafe_item(request: Request, item_id: str, payload: CafeItemUpdate):
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+
+    update_data = {k: v for k, v in payload.model_dump().items() if v is not None}
+    if update_data:
+        update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.cafe_items.update_one({"id": item_id, "tenant_id": tenant_id}, {"$set": update_data})
+
+    item = await db.cafe_items.find_one({"id": item_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not item:
+        raise HTTPException(status_code=404, detail="Cafe item not found")
+
+    return {"item": serialize_doc(item)}
+
+@api_router.delete("/admin/cafe/items/{item_id}")
+async def delete_admin_cafe_item(request: Request, item_id: str):
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+
+    await db.cafe_items.delete_one({"id": item_id, "tenant_id": tenant_id})
+    return {"message": "Cafe item deleted"}
+
+@api_router.get("/admin/cafe/orders")
+async def get_admin_cafe_orders(request: Request, limit: int = 50):
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+
+    await ensure_demo_cafe_data(tenant_id)
+
+    orders = await db.cafe_orders.find({"tenant_id": tenant_id}, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    return {"orders": [serialize_doc(order) for order in orders]}
+
+@api_router.get("/admin/cafe/summary")
+async def get_admin_cafe_summary(request: Request):
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+
+    await ensure_demo_cafe_data(tenant_id)
+
+    items_total = await db.cafe_items.count_documents({"tenant_id": tenant_id})
+    active_items = await db.cafe_items.count_documents({"tenant_id": tenant_id, "is_active": True})
+    orders = await db.cafe_orders.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(200)
+    revenue = round(sum(order.get("total", 0) for order in orders), 2)
+    member_count = await db.people.count_documents({"tenant_id": tenant_id})
+    if member_count == 0 or member_count > 5000:
+        member_count = 500
+
+    return {
+        "items_total": items_total,
+        "active_items": active_items,
+        "orders_count": len(orders),
+        "revenue": revenue,
+        "member_count": member_count
+    }
+
+@api_router.get("/portal/cafe/settings")
+async def get_portal_cafe_settings(request: Request):
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+
+    await ensure_demo_cafe_data(tenant_id)
+    settings = await db.cafe_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    return {"settings": serialize_doc(settings) if settings else None}
+
+@api_router.get("/portal/cafe/items")
+async def get_portal_cafe_items(
+    request: Request,
+    search: Optional[str] = None,
+    category: Optional[str] = None
+):
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+
+    await ensure_demo_cafe_data(tenant_id)
+
+    query = {"tenant_id": tenant_id, "is_active": True}
+    if category:
+        query["category"] = category
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"description": {"$regex": search, "$options": "i"}}
+        ]
+
+    items = await db.cafe_items.find(query, {"_id": 0}).sort("is_featured", -1).to_list(200)
+    return {"items": [serialize_doc(item) for item in items]}
+
+@api_router.post("/portal/cafe/orders")
+async def create_portal_cafe_order(request: Request, payload: CafeOrderCreate):
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+
+    if not payload.items:
+        raise HTTPException(status_code=400, detail="No items in order")
+    if not payload.pickup_time:
+        raise HTTPException(status_code=400, detail="Pickup time is required")
+
+    items = []
+    total = 0
+    for item in payload.items:
+        total += item.price * item.quantity
+        items.append(item.model_dump())
+
+    total = round(total, 2)
+    order = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "user_id": user.get("user_id"),
+        "items": items,
+        "pickup_time": payload.pickup_time,
+        "notes": payload.notes or "",
+        "total": total,
+        "status": "placed",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+
+    await db.cafe_orders.insert_one(order)
+    return {"order": serialize_doc(order)}
+
 # ============== LEADERSHIP NOTES ROUTES ==============
+
 
 @api_router.post("/portal/notes")
 async def create_leadership_note(request: Request, payload: LeadershipNoteCreate):
