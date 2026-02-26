@@ -513,27 +513,30 @@ export default function AbundantPathwaysAdmin() {
               <h4>Assigned Members</h4>
               {assignments.length === 0 ? (
                 <p className="pathways-empty">No members assigned yet.</p>
-              ) : assignments.map((assignment) => (
-                <div key={assignment.id} className="pathways-assignment-card">
-                  <div>
-                    <strong>{assignment.member?.name || 'Member'}</strong>
-                    <span>{assignment.member?.email}</span>
-                    <div className="pathways-progress">
-                      <div className="pathways-progress-bar">
-                        <div style={{ width: `${assignment.progress_percent || 0}%` }} />
+              ) : assignments.map((assignment) => {
+                const memberId = assignment.member?.user_id || assignment.user_id;
+                return (
+                  <div key={assignment.id} className="pathways-assignment-card">
+                    <div>
+                      <strong>{assignment.member?.name || 'Member'}</strong>
+                      <span>{assignment.member?.email}</span>
+                      <div className="pathways-progress">
+                        <div className="pathways-progress-bar">
+                          <div style={{ width: `${assignment.progress_percent || 0}%` }} />
+                        </div>
+                        <small>{assignment.progress_percent || 0}% complete</small>
                       </div>
-                      <small>{assignment.progress_percent || 0}% complete</small>
                     </div>
+                    <Button
+                      variant="ghost"
+                      onClick={() => removeMember(memberId)}
+                      data-testid={`remove-member-${memberId}`}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
                   </div>
-                  <Button
-                    variant="ghost"
-                    onClick={() => removeMember(assignment.member?.user_id)}
-                    data-testid={`remove-member-${assignment.member?.user_id}`}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="pathways-assignment-list">
