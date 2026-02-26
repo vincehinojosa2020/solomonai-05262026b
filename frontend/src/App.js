@@ -90,6 +90,9 @@ function AppRouter() {
         <Route path="give" element={<PortalGive />} />
         <Route path="watch" element={<Navigate to="/portal/library" replace />} />
         <Route path="library" element={<PortalLibrary />} />
+        <Route path="thinkific" element={<PortalThinkific />} />
+        <Route path="pathways" element={<PortalPathways />} />
+        <Route path="pathways/:courseId" element={<PortalPathwaysCourse />} />
         <Route path="groups" element={<PortalGroups />} />
         <Route path="events" element={<PortalEvents />} />
         <Route path="me" element={<PortalMe />} />
