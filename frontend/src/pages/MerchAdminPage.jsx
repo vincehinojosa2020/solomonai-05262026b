@@ -186,35 +186,35 @@ export default function MerchAdminPage() {
       </div>
 
       <div className="merch-stats" data-testid="merch-stats">
-        <div className="merch-stat-card">
+        <div className="merch-stat-card" data-testid="merch-stat-products">
           <Package className="w-4 h-4" />
           <div>
             <span>Products</span>
             <strong>{summary?.products_total ?? 0}</strong>
           </div>
         </div>
-        <div className="merch-stat-card">
+        <div className="merch-stat-card" data-testid="merch-stat-featured">
           <Tags className="w-4 h-4" />
           <div>
             <span>Featured</span>
             <strong>{summary?.featured_products ?? 0}</strong>
           </div>
         </div>
-        <div className="merch-stat-card">
+        <div className="merch-stat-card" data-testid="merch-stat-orders">
           <ShoppingBag className="w-4 h-4" />
           <div>
             <span>Orders</span>
             <strong>{summary?.orders_count ?? 0}</strong>
           </div>
         </div>
-        <div className="merch-stat-card">
+        <div className="merch-stat-card" data-testid="merch-stat-members">
           <Users className="w-4 h-4" />
           <div>
             <span>Members</span>
             <strong>{summary?.member_count ?? 0}</strong>
           </div>
         </div>
-        <div className="merch-stat-card">
+        <div className="merch-stat-card" data-testid="merch-stat-revenue">
           <ShoppingBag className="w-4 h-4" />
           <div>
             <span>Revenue</span>
