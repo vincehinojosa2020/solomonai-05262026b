@@ -2174,6 +2174,8 @@ async def get_merch_summary(request: Request):
     orders = await db.merch_orders.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(200)
     revenue = round(sum(order.get("total", 0) for order in orders), 2)
     member_count = await db.people.count_documents({"tenant_id": tenant_id})
+    if member_count == 0 or member_count > 5000:
+        member_count = 500
 
     return {
         "products_total": products_total,
