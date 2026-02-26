@@ -7172,3 +7172,14 @@
   text-align: center;
   color: #64748b;
 }
+
+
+.portal-merch-delivery {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #2563eb;
+  background: #eff6ff;
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
