@@ -59,7 +59,7 @@ export default function AbundantPathwaysAdmin() {
   const [availableMembers, setAvailableMembers] = useState([]);
   const [saving, setSaving] = useState(false);
 
-  const fetchCourses = async () = {
+  const fetchCourses = async () => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/admin/pathways/courses`, { credentials: 'include' });
@@ -75,21 +75,21 @@ export default function AbundantPathwaysAdmin() {
     }
   };
 
-  useEffect(() = {
+  useEffect(() => {
     fetchCourses();
   }, []);
 
-  const resetCourseForm = () = {
+  const resetCourseForm = () => {
     setCourseForm(defaultCourseForm);
     setEditingCourse(null);
   };
 
-  const resetLessonForm = () = {
+  const resetLessonForm = () => {
     setLessonForm(defaultLessonForm);
     setEditingLesson(null);
   };
 
-  const openCourseModal = (course) = {
+  const openCourseModal = (course) => {
     if (course) {
       setEditingCourse(course);
       setCourseForm({
@@ -106,7 +106,7 @@ export default function AbundantPathwaysAdmin() {
     setCourseModalOpen(true);
   };
 
-  const openLessonsModal = async (course) = {
+  const openLessonsModal = async (course) => {
     setActiveCourse(course);
     setLessonModalOpen(true);
     resetLessonForm();
@@ -123,13 +123,13 @@ export default function AbundantPathwaysAdmin() {
     }
   };
 
-  const openAssignmentsModal = async (course) = {
+  const openAssignmentsModal = async (course) => {
     setActiveCourse(course);
     setAssignmentModalOpen(true);
     await refreshAssignments(course.id);
   };
 
-  const refreshAssignments = async (courseId) = {
+  const refreshAssignments = async (courseId) => {
     try {
       const [assignmentsRes, membersRes] = await Promise.all([
         fetch(`${API_URL}/admin/pathways/courses/${courseId}/assignments`, { credentials: 'include' }),
@@ -148,7 +148,7 @@ export default function AbundantPathwaysAdmin() {
     }
   };
 
-  const saveCourse = async () = {
+  const saveCourse = async () => {
     if (!courseForm.title.trim()) {
       toast.error('Course title is required');
       return;
@@ -176,7 +176,7 @@ export default function AbundantPathwaysAdmin() {
     }
   };
 
-  const deleteCourse = async (courseId) = {
+  const deleteCourse = async (courseId) => {
     if (!confirm('Delete this course and all lessons?')) return;
     try {
       const res = await fetch(`${API_URL}/admin/pathways/courses/${courseId}`, {
@@ -194,7 +194,7 @@ export default function AbundantPathwaysAdmin() {
     }
   };
 
-  const saveLesson = async () = {
+  const saveLesson = async () => {
     if (!lessonForm.title.trim()) {
       toast.error('Lesson title is required');
       return;
@@ -224,7 +224,7 @@ export default function AbundantPathwaysAdmin() {
     }
   };
 
-  const editLesson = (lesson) = {
+  const editLesson = (lesson) => {
     setEditingLesson(lesson);
     setLessonForm({
       title: lesson.title || '',
@@ -237,7 +237,7 @@ export default function AbundantPathwaysAdmin() {
     });
   };
 
-  const deleteLesson = async (lessonId) = {
+  const deleteLesson = async (lessonId) => {
     if (!confirm('Delete this lesson?')) return;
     try {
       const res = await fetch(`${API_URL}/admin/pathways/lessons/${lessonId}`, {
@@ -255,7 +255,7 @@ export default function AbundantPathwaysAdmin() {
     }
   };
 
-  const assignMember = async (memberId) = {
+  const assignMember = async (memberId) => {
     try {
       const res = await fetch(`${API_URL}/admin/pathways/courses/${activeCourse.id}/assignments`, {
         method: 'POST',
@@ -274,7 +274,7 @@ export default function AbundantPathwaysAdmin() {
     }
   };
 
-  const removeMember = async (memberId) = {
+  const removeMember = async (memberId) => {
     try {
       const res = await fetch(`${API_URL}/admin/pathways/courses/${activeCourse.id}/assignments/${memberId}`, {
         method: 'DELETE',
@@ -292,81 +292,84 @@ export default function AbundantPathwaysAdmin() {
   };
 
   return (
-    div className="pathways-admin" data-testid="pathways-admin-page">
-      div className="page-header">
-        div>
-          h1 className="page-title">Abundant Pathways</h1>
-          p className="page-subtitle">
+    <div className="pathways-admin" data-testid="pathways-admin-page">
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">Abundant Pathways</h1>
+          <p className="page-subtitle">
             Build discipleship courses, assign members, and track progress.
-          </p>
-        </div>
-        <Button
+          </p>
+        </div>
+        <Button
           className="pathways-add-btn"
-          onClick={() = openCourseModal(null)}
+          onClick={() => openCourseModal(null)}
           data-testid="add-course-btn"
-        >
-          <Plus className="w-4 h-4" />
+        >
+          <Plus className="w-4 h-4" />
           Create Course
-        </Button>
-      </div>
+        </Button>
+      </div>
 
       {loading ? (
-        <div className="pathways-loading" data-testid="pathways-loading">Loading courses...</div>
+        <div className="pathways-loading" data-testid="pathways-loading">Loading courses...</div>
       ) : (
-        <div className="pathways-grid" data-testid="pathways-course-grid">
-          {courses.map((course) => (
-            <div key={course.id} className="pathways-card" data-testid={`pathways-course-${course.id}`}>
-              <div className="pathways-card-media">
-                <img src={course.cover_image_url || 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80'} alt={course.title} />
-                <div className="pathways-card-badge">
+        <div className="pathways-grid" data-testid="pathways-course-grid">
+          {courses.map((course) => (
+            <div key={course.id} className="pathways-card" data-testid={`pathways-course-${course.id}`}>
+              <div className="pathways-card-media">
+                <img
+                  src={course.cover_image_url || 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80'}
+                  alt={course.title}
+                />
+                <div className="pathways-card-badge">
                   {course.is_published ? 'Published' : 'Draft'}
-                </div>
-              </div>
-              <div className="pathways-card-body">
-                <h3>{course.title}</h3>
-                <p>{course.description || 'No description yet.'}</p>
-                <div className="pathways-card-meta">
-                  <span><BookOpen className="w-4 h-4" /> {course.lesson_count} lessons</span>
-                  <span><Users className="w-4 h-4" /> {course.assigned_count} assigned</span>
-                </div>
-                <div className="pathways-card-tags">
-                  <span>{course.category || 'Discipleship'}</span>
-                  <span><GraduationCap className="w-4 h-4" /> {course.level || 'Beginner'}</span>
-                </div>
-              </div>
-              <div className="pathways-card-actions">
-                <Button
+                </div>
+              </div>
+              <div className="pathways-card-body">
+                <h3>{course.title}</h3>
+                <p>{course.description || 'No description yet.'}</p>
+                <div className="pathways-card-meta">
+                  <span><BookOpen className="w-4 h-4" /> {course.lesson_count} lessons</span>
+                  <span><Users className="w-4 h-4" /> {course.assigned_count} assigned</span>
+                </div>
+                <div className="pathways-card-tags">
+                  <span>{course.category || 'Discipleship'}</span>
+                  <span><GraduationCap className="w-4 h-4" /> {course.level || 'Beginner'}</span>
+                </div>
+              </div>
+              <div className="pathways-card-actions">
+                <Button
                   variant="outline"
-                  onClick={() = openLessonsModal(course)}
+                  onClick={() => openLessonsModal(course)}
                   data-testid={`manage-lessons-${course.id}`}
-                >
+                >
                   <Video className="w-4 h-4" /> Lessons
-                </Button>
-                <Button
+                </Button>
+                <Button
                   variant="outline"
-                  onClick={() = openAssignmentsModal(course)}
+                  onClick={() => openAssignmentsModal(course)}
                   data-testid={`assign-members-${course.id}`}
-                >
+                >
                   <UserPlus className="w-4 h-4" /> Assign
-                </Button>
-                <Button
+                </Button>
+                <Button
                   variant="ghost"
-                  onClick={() = openCourseModal(course)}
+                  onClick={() => openCourseModal(course)}
                   data-testid={`edit-course-${course.id}`}
-                >
+                >
                   <Edit className="w-4 h-4" />
-                </Button>
-                <Button
+                </Button>
+                <Button
                   variant="ghost"
-                  onClick={() = deleteCourse(course.id)}
+                  onClick={() => deleteCourse(course.id)}
                   data-testid={`delete-course-${course.id}`}
-                >
+                >
                   <Trash2 className="w-4 h-4 text-red-500" />
-                </Button>
-              </div>
-            </div>
+                </Button>
+              </div>
+            </div>
           ))}
-        </div>
+        </div>
       )}
 
       <Dialog open={courseModalOpen} onOpenChange={setCourseModalOpen}>
@@ -380,32 +383,32 @@ export default function AbundantPathwaysAdmin() {
           <div className="pathways-form">
             <Input
               value={courseForm.title}
-              onChange={(e) = setCourseForm((prev) = ({ ...prev, title: e.target.value }))}
+              onChange={(e) => setCourseForm((prev) => ({ ...prev, title: e.target.value }))}
               placeholder="Course title"
               data-testid="course-title-input"
             />
             <Textarea
               value={courseForm.description}
-              onChange={(e) = setCourseForm((prev) = ({ ...prev, description: e.target.value }))}
+              onChange={(e) => setCourseForm((prev) => ({ ...prev, description: e.target.value }))}
               placeholder="Course description"
               data-testid="course-description-input"
             />
             <Input
               value={courseForm.cover_image_url}
-              onChange={(e) = setCourseForm((prev) = ({ ...prev, cover_image_url: e.target.value }))}
+              onChange={(e) => setCourseForm((prev) => ({ ...prev, cover_image_url: e.target.value }))}
               placeholder="Cover image URL"
               data-testid="course-cover-input"
             />
             <div className="pathways-form-row">
               <Input
                 value={courseForm.category}
-                onChange={(e) = setCourseForm((prev) = ({ ...prev, category: e.target.value }))}
+                onChange={(e) => setCourseForm((prev) => ({ ...prev, category: e.target.value }))}
                 placeholder="Category (e.g. Discipleship)"
                 data-testid="course-category-input"
               />
               <Input
                 value={courseForm.level}
-                onChange={(e) = setCourseForm((prev) = ({ ...prev, level: e.target.value }))}
+                onChange={(e) => setCourseForm((prev) => ({ ...prev, level: e.target.value }))}
                 placeholder="Level (Beginner, Intermediate)"
                 data-testid="course-level-input"
               />
@@ -422,7 +425,7 @@ export default function AbundantPathwaysAdmin() {
       <Dialog open={lessonModalOpen} onOpenChange={setLessonModalOpen}>
         <DialogContent className="pathways-modal" data-testid="lesson-modal">
           <DialogHeader>
-            <DialogTitle>{activeCourse ? `Lessons for ${activeCourse.title}` : 'Lessons'}</DialogTitle>
+            <DialogTitle>{activeCourse ? `Lessons for ${activeCourse.title}` : 'Lessons'}</DialogTitle>
             <DialogDescription>
               Add lessons and videos to build out the course structure.
             </DialogDescription>
@@ -430,32 +433,32 @@ export default function AbundantPathwaysAdmin() {
           <div className="pathways-form">
             <Input
               value={lessonForm.title}
-              onChange={(e) = setLessonForm((prev) = ({ ...prev, title: e.target.value }))}
+              onChange={(e) => setLessonForm((prev) => ({ ...prev, title: e.target.value }))}
               placeholder="Lesson title"
               data-testid="lesson-title-input"
             />
             <Textarea
               value={lessonForm.description}
-              onChange={(e) = setLessonForm((prev) = ({ ...prev, description: e.target.value }))}
+              onChange={(e) => setLessonForm((prev) => ({ ...prev, description: e.target.value }))}
               placeholder="Lesson description"
               data-testid="lesson-description-input"
             />
             <Input
               value={lessonForm.video_url}
-              onChange={(e) = setLessonForm((prev) = ({ ...prev, video_url: e.target.value }))}
+              onChange={(e) => setLessonForm((prev) => ({ ...prev, video_url: e.target.value }))}
               placeholder="YouTube video URL"
               data-testid="lesson-video-input"
             />
             <div className="pathways-form-row">
               <Input
                 value={lessonForm.duration_label}
-                onChange={(e) = setLessonForm((prev) = ({ ...prev, duration_label: e.target.value }))}
+                onChange={(e) => setLessonForm((prev) => ({ ...prev, duration_label: e.target.value }))}
                 placeholder="Duration (MM:SS)"
                 data-testid="lesson-duration-input"
               />
               <Input
                 value={lessonForm.resource_url}
-                onChange={(e) = setLessonForm((prev) = ({ ...prev, resource_url: e.target.value }))}
+                onChange={(e) => setLessonForm((prev) => ({ ...prev, resource_url: e.target.value }))}
                 placeholder="Resource / PDF URL"
                 data-testid="lesson-resource-input"
               />
@@ -473,7 +476,7 @@ export default function AbundantPathwaysAdmin() {
           </div>
 
           <div className="pathways-lessons-list" data-testid="lessons-list">
-            {lessons.map((lesson) => (
+            {lessons.map((lesson) => (
               <div key={lesson.id} className="pathways-lesson-card">
                 <div>
                   <h4>{lesson.title}</h4>
@@ -484,10 +487,10 @@ export default function AbundantPathwaysAdmin() {
                   </div>
                 </div>
                 <div className="pathways-lesson-actions">
-                  <Button variant="ghost" onClick={() = editLesson(lesson)} data-testid={`edit-lesson-${lesson.id}`}>
+                  <Button variant="ghost" onClick={() => editLesson(lesson)} data-testid={`edit-lesson-${lesson.id}`}>
                     <Edit className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" onClick={() = deleteLesson(lesson.id)} data-testid={`delete-lesson-${lesson.id}`}>
+                  <Button variant="ghost" onClick={() => deleteLesson(lesson.id)} data-testid={`delete-lesson-${lesson.id}`}>
                     <Trash2 className="w-4 h-4 text-red-500" />
                   </Button>
                 </div>
@@ -500,7 +503,7 @@ export default function AbundantPathwaysAdmin() {
       <Dialog open={assignmentModalOpen} onOpenChange={setAssignmentModalOpen}>
         <DialogContent className="pathways-modal" data-testid="assignment-modal">
           <DialogHeader>
-            <DialogTitle>{activeCourse ? `Assign Members for ${activeCourse.title}` : 'Assign Members'}</DialogTitle>
+            <DialogTitle>{activeCourse ? `Assign Members for ${activeCourse.title}` : 'Assign Members'}</DialogTitle>
             <DialogDescription>
               Assign and track progress for members in this course.
             </DialogDescription>
@@ -510,7 +513,7 @@ export default function AbundantPathwaysAdmin() {
               <h4>Assigned Members</h4>
               {assignments.length === 0 ? (
                 <p className="pathways-empty">No members assigned yet.</p>
-              ) : assignments.map((assignment) => (
+              ) : assignments.map((assignment) => (
                 <div key={assignment.id} className="pathways-assignment-card">
                   <div>
                     <strong>{assignment.member?.name || 'Member'}</strong>
@@ -524,7 +527,7 @@ export default function AbundantPathwaysAdmin() {
                   </div>
                   <Button
                     variant="ghost"
-                    onClick={() = removeMember(assignment.member?.user_id)}
+                    onClick={() => removeMember(assignment.member?.user_id)}
                     data-testid={`remove-member-${assignment.member?.user_id}`}
                   >
                     <X className="w-4 h-4" />
@@ -537,7 +540,7 @@ export default function AbundantPathwaysAdmin() {
               <h4>Available Members</h4>
               {availableMembers.length === 0 ? (
                 <p className="pathways-empty">All members are assigned.</p>
-              ) : availableMembers.map((member) => (
+              ) : availableMembers.map((member) => (
                 <div key={member.user_id} className="pathways-assignment-card">
                   <div>
                     <strong>{member.name || 'Member'}</strong>
@@ -545,7 +548,7 @@ export default function AbundantPathwaysAdmin() {
                   </div>
                   <Button
                     variant="outline"
-                    onClick={() = assignMember(member.user_id)}
+                    onClick={() => assignMember(member.user_id)}
                     data-testid={`assign-member-${member.user_id}`}
                   >
                     Assign
@@ -556,6 +559,6 @@ export default function AbundantPathwaysAdmin() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </div>
   );
 }
