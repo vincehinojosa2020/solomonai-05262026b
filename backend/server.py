@@ -749,6 +749,26 @@ class MerchOrderCreate(BaseModel):
 class MerchSettingsUpdate(BaseModel):
     merch_embed_url: str
 
+# ============== LEADERSHIP NOTES MODELS ==============
+
+class LeadershipNote(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    user_id: str
+    subject: str
+    message: str
+    category: Optional[str] = None
+    status: str = "new"
+    member_name: Optional[str] = None
+    member_email: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class LeadershipNoteCreate(BaseModel):
+    subject: str
+    message: str
+    category: Optional[str] = None
+
 # ============== HELPER FUNCTIONS ==============
 
 def serialize_doc(doc: dict) -> dict:
