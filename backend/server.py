@@ -782,6 +782,122 @@ def duration_to_seconds(duration_label: Optional[str], duration_seconds: Optiona
         return numbers[0]
     return 0
 
+DEFAULT_MERCH_EMBED_URL = "https://store.elevationchurch.org/collections/so-be-it-ew"
+
+async def ensure_demo_merch_data(tenant_id: Optional[str]):
+    if not tenant_id:
+        return
+
+    product_count = await db.merch_products.count_documents({"tenant_id": tenant_id})
+    if product_count == 0:
+        demo_products = [
+            {
+                "name": "SO BE IT - Vinyl",
+                "description": "Limited edition worship vinyl for collectors.",
+                "image_url": "https://store.elevationchurch.org/cdn/shop/files/Background_6963f237-502c-48c7-9c0c-7d1a2a185a27.png?crop=center&height=1200&v=1770318508&width=1200",
+                "price": 40.00,
+                "category": "Music",
+                "is_featured": True,
+                "inventory": 120
+            },
+            {
+                "name": "SO BE IT Hoodie",
+                "description": "Soft fleece hoodie inspired by the SO BE IT collection.",
+                "image_url": "https://store.elevationchurch.org/cdn/shop/files/Background_22b72fee-5a5c-40ac-b88d-8dc43af1ba98.png?crop=center&height=1200&v=1770147858&width=1200",
+                "price": 60.00,
+                "category": "Apparel",
+                "is_featured": True,
+                "inventory": 80
+            },
+            {
+                "name": "SO BE IT Album T-Shirt",
+                "description": "Classic tee with album artwork. Perfect for Sundays and beyond.",
+                "image_url": "https://store.elevationchurch.org/cdn/shop/files/Background_7_55188e58-8c97-42a4-b48f-35ada8aabe12.png?crop=center&height=1200&v=1770316861&width=1200",
+                "price": 30.00,
+                "category": "Apparel",
+                "inventory": 150
+            },
+            {
+                "name": "SO BE IT Crest Camo Hat",
+                "description": "Structured camo hat with embroidered crest.",
+                "image_url": "https://store.elevationchurch.org/cdn/shop/files/Background_16_0b761a70-5ebc-4db6-bf03-5fab8a2cb0cb.png?crop=center&height=1200&v=1770317102&width=1200",
+                "price": 35.00,
+                "category": "Accessories",
+                "inventory": 90
+            },
+            {
+                "name": "SO BE IT Tote",
+                "description": "Canvas tote for carrying all the essentials.",
+                "image_url": "https://store.elevationchurch.org/cdn/shop/files/Background_18_f1900fee-6a54-4c49-b949-d516eb8aba6a.png?crop=center&height=1200&v=1770318552&width=1200",
+                "price": 20.00,
+                "category": "Accessories",
+                "inventory": 140
+            },
+            {
+                "name": "Abundant Ceramic Mug",
+                "description": "Signature mug for morning devotionals and coffee.",
+                "image_url": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80",
+                "price": 18.00,
+                "category": "Drinkware",
+                "inventory": 110
+            },
+            {
+                "name": "Abundant YETI Tumbler",
+                "description": "Insulated tumbler with laser-etched logo.",
+                "image_url": "https://images.unsplash.com/photo-1527169402691-feff5539e52c?auto=format&fit=crop&w=1200&q=80",
+                "price": 42.00,
+                "category": "Drinkware",
+                "inventory": 70
+            }
+        ]
+
+        for idx, product in enumerate(demo_products, start=1):
+            merch = MerchProduct(
+                tenant_id=tenant_id,
+                name=product["name"],
+                description=product.get("description"),
+                image_url=product.get("image_url"),
+                price=product["price"],
+                category=product.get("category"),
+                is_featured=product.get("is_featured", False),
+                is_active=True,
+                inventory=product.get("inventory", 0)
+            ).model_dump()
+            merch["id"] = f"merch_{tenant_id}_{idx}"
+            await db.merch_products.update_one({"id": merch["id"]}, {"$set": merch}, upsert=True)
+
+    order_count = await db.merch_orders.count_documents({"tenant_id": tenant_id})
+    if order_count == 0:
+        member = await db.users.find_one({"tenant_id": tenant_id, "role": "member"}, {"_id": 0})
+        if member:
+            products = await db.merch_products.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(10)
+            if products:
+                for i in range(6):
+                    item = random.choice(products)
+                    quantity = random.randint(1, 3)
+                    total = round(item["price"] * quantity, 2)
+                    order = {
+                        "id": str(uuid.uuid4()),
+                        "tenant_id": tenant_id,
+                        "user_id": member["user_id"],
+                        "items": [{
+                            "product_id": item["id"],
+                            "name": item["name"],
+                            "price": item["price"],
+                            "quantity": quantity,
+                            "image_url": item.get("image_url")
+                        }],
+                        "subtotal": total,
+                        "total": total,
+                        "status": "placed",
+                        "created_at": datetime.now(timezone.utc).isoformat()
+                    }
+                    await db.merch_orders.update_one({"id": order["id"]}, {"$set": order}, upsert=True)
+
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "merch_embed_url": 1})
+    if tenant is not None and not tenant.get("merch_embed_url"):
+        await db.tenants.update_one({"id": tenant_id}, {"$set": {"merch_embed_url": DEFAULT_MERCH_EMBED_URL}})
+
 
 # Default tenant ID for demo
 DEFAULT_TENANT_ID = "abundant-church-001"
