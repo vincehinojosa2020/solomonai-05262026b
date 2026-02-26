@@ -769,6 +769,71 @@ class LeadershipNoteCreate(BaseModel):
     message: str
     category: Optional[str] = None
 
+# ============== CAFE MODELS ==============
+
+class CafeSettings(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    pickup_start: str
+    pickup_end: str
+    pickup_interval_minutes: int = 15
+    location: Optional[str] = None
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CafeSettingsUpdate(BaseModel):
+    pickup_start: Optional[str] = None
+    pickup_end: Optional[str] = None
+    pickup_interval_minutes: Optional[int] = None
+    location: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class CafeItem(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    name: str
+    description: Optional[str] = None
+    category: Optional[str] = None
+    price: float
+    image_url: Optional[str] = None
+    is_featured: bool = False
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CafeItemCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    category: Optional[str] = None
+    price: float
+    image_url: Optional[str] = None
+    is_featured: bool = False
+    is_active: bool = True
+
+class CafeItemUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    price: Optional[float] = None
+    image_url: Optional[str] = None
+    is_featured: Optional[bool] = None
+    is_active: Optional[bool] = None
+
+class CafeOrderItem(BaseModel):
+    item_id: str
+    name: str
+    price: float
+    quantity: int
+    image_url: Optional[str] = None
+
+class CafeOrderCreate(BaseModel):
+    items: List[CafeOrderItem]
+    pickup_time: str
+    notes: Optional[str] = None
+
 # ============== HELPER FUNCTIONS ==============
 
 def serialize_doc(doc: dict) -> dict:
