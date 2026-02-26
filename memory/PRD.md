@@ -192,6 +192,8 @@ Each church is a tenant with isolated data:
 - Added Thinkific integration + Abundant Pathways LMS flows
 - Built merch admin dashboard + member merch experience
 - Added merch embed + demo catalog + order placement (mocked)
+- Added Leave a Note (member submission + admin review)
+- Expanded Ask Solomon coverage (Watch, Pathways, Thinkific, Merch)
 
 ### Feb 24, 2026
 - Redesigned Login Page to minimalist Prada-style aesthetic
