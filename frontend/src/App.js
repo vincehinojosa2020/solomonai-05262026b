@@ -36,7 +36,6 @@ import PortalLibrary from "@/pages/portal/PortalLibrary";
 import PortalThinkific from "@/pages/portal/PortalThinkific";
 import PortalPathways from "@/pages/portal/PortalPathways";
 import PortalPathwaysCourse from "@/pages/portal/PortalPathwaysCourse";
-import { API_URL } from "@/lib/utils";
 
 // Router wrapper to detect session_id in URL
 function AppRouter() {
