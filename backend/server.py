@@ -4379,15 +4379,24 @@ UPCOMING EVENTS:
     return context
 
 @api_router.post("/solomon/chat")
-async def solomon_chat(request: SolomonChatRequest):
+async def solomon_chat(request: Request, payload: SolomonChatRequest):
     """Chat with Solomon AI analyst"""
     try:
         # Validate message is not empty
-        if not request.message or not request.message.strip():
+        if not payload.message or not payload.message.strip():
             raise HTTPException(status_code=400, detail="Message cannot be empty")
         
         # Get or create session
-        session_id = request.session_id or str(uuid.uuid4())
+        session_id = payload.session_id or str(uuid.uuid4())
+
+        user = None
+        user_role = None
+        try:
+            user = await get_current_user(request)
+            user_role = user.get("role") if user else None
+        except Exception:
+            user = None
+            user_role = None
         
         # Get API key
         api_key = os.environ.get('EMERGENT_LLM_KEY')
@@ -4413,7 +4422,7 @@ async def solomon_chat(request: SolomonChatRequest):
             chat = solomon_sessions[session_id]
         
         # Create user message
-        user_message = UserMessage(text=request.message)
+        user_message = UserMessage(text=payload.message)
         
         # Get response from Claude
         response_text = await chat.send_message(user_message)
@@ -4425,7 +4434,7 @@ async def solomon_chat(request: SolomonChatRequest):
                 "$push": {
                     "messages": {
                         "$each": [
-                            {"role": "user", "content": request.message, "timestamp": datetime.now(timezone.utc).isoformat()},
+                            {"role": "user", "content": payload.message, "timestamp": datetime.now(timezone.utc).isoformat()},
                             {"role": "assistant", "content": response_text, "timestamp": datetime.now(timezone.utc).isoformat()}
                         ]
                     }
@@ -4439,23 +4448,81 @@ async def solomon_chat(request: SolomonChatRequest):
         # Parse response for potential actions/data
         actions = None
         data = None
-        
-        # Check if response suggests actions
-        if "follow-up" in response_text.lower() or "reach out" in response_text.lower():
-            actions = [
-                {"label": "View Members Needing Follow-up", "action": "navigate", "path": "/people?status=inactive"},
-                {"label": "Send Bulk Message", "action": "navigate", "path": "/communications"}
-            ]
-        elif "giving" in response_text.lower() or "donation" in response_text.lower():
-            actions = [
-                {"label": "View Giving Dashboard", "action": "navigate", "path": "/giving"},
-                {"label": "Generate Report", "action": "navigate", "path": "/reports"}
-            ]
-        elif "group" in response_text.lower() or "ministry" in response_text.lower():
-            actions = [
-                {"label": "View Groups", "action": "navigate", "path": "/groups"},
-                {"label": "Create New Group", "action": "modal", "type": "createGroup"}
-            ]
+
+        response_lower = response_text.lower()
+        query_lower = payload.message.lower()
+        combined_text = f"{query_lower} {response_lower}"
+        is_member = user_role == "member"
+
+        portal_paths = {
+            "giving": "/portal/give",
+            "groups": "/portal/groups",
+            "events": "/portal/events",
+            "watch": "/portal/library",
+            "media": "/portal/library",
+            "thinkific": "/portal/thinkific",
+            "pathways": "/portal/pathways",
+            "discipleship": "/portal/pathways",
+            "merch": "/portal/merch",
+            "store": "/portal/merch",
+            "shop": "/portal/merch"
+        }
+
+        admin_paths = {
+            "giving": "/giving",
+            "groups": "/admin/groups",
+            "events": "/admin/events",
+            "watch": "/media",
+            "media": "/media",
+            "thinkific": "/thinkific",
+            "pathways": "/abundant-pathways",
+            "discipleship": "/abundant-pathways",
+            "merch": "/merch",
+            "store": "/merch",
+            "shop": "/merch",
+            "notes": "/notes",
+            "leadership": "/notes"
+        }
+
+        path_map = portal_paths if is_member else admin_paths
+
+        action_candidates = [
+            ("giving", "Open Giving"),
+            ("groups", "View Groups"),
+            ("events", "View Events"),
+            ("thinkific", "Open Thinkific"),
+            ("pathways", "Open Abundant Pathways"),
+            ("discipleship", "Open Abundant Pathways"),
+            ("watch", "Open Watch"),
+            ("media", "Open Media Library"),
+            ("merch", "Open Merch"),
+            ("store", "Open Merch"),
+            ("shop", "Open Merch"),
+            ("notes", "View Notes"),
+            ("leadership", "View Notes")
+        ]
+
+        for keyword, label in action_candidates:
+            if keyword in combined_text:
+                actions = [
+                    {"label": label, "action": "navigate", "path": path_map[keyword]}
+                ]
+                break
+
+        if actions is None:
+            if "giving" in combined_text or "donation" in combined_text:
+                actions = [
+                    {"label": "View Giving Dashboard", "action": "navigate", "path": path_map.get("giving", "/giving")},
+                    {"label": "Generate Report", "action": "navigate", "path": "/reports"}
+                ]
+            elif "group" in combined_text or "ministry" in combined_text:
+                actions = [
+                    {"label": "View Groups", "action": "navigate", "path": path_map.get("groups", "/admin/groups")}
+                ]
+            elif "event" in combined_text:
+                actions = [
+                    {"label": "View Events", "action": "navigate", "path": path_map.get("events", "/admin/events")}
+                ]
         
         return SolomonChatResponse(
             response=response_text,
