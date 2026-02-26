@@ -2259,6 +2259,84 @@ async def create_merch_order(request: Request, payload: MerchOrderCreate):
     await db.merch_orders.insert_one(order)
     return {"order": serialize_doc(order)}
 
+# ============== LEADERSHIP NOTES ROUTES ==============
+
+@api_router.post("/portal/notes")
+async def create_leadership_note(request: Request, payload: LeadershipNoteCreate):
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+
+    if not payload.subject or not payload.subject.strip():
+        raise HTTPException(status_code=400, detail="Subject is required")
+    if not payload.message or not payload.message.strip():
+        raise HTTPException(status_code=400, detail="Message is required")
+
+    note = LeadershipNote(
+        tenant_id=tenant_id,
+        user_id=user.get("user_id"),
+        subject=payload.subject.strip(),
+        message=payload.message.strip(),
+        category=payload.category,
+        status="new",
+        member_name=user.get("name"),
+        member_email=user.get("email")
+    ).model_dump()
+    note["created_at"] = datetime.now(timezone.utc).isoformat()
+
+    await db.leadership_notes.insert_one(note)
+    return {"message": "Note submitted", "note": serialize_doc(note)}
+
+@api_router.get("/admin/notes")
+async def get_leadership_notes(
+    request: Request,
+    tenant_id: Optional[str] = None,
+    category: Optional[str] = None,
+    status: Optional[str] = None,
+    limit: int = 200
+):
+    user = await get_current_admin_user(request)
+    is_platform_admin = user.get("role") == "platform_admin"
+
+    query = {}
+    if is_platform_admin:
+        if tenant_id:
+            query["tenant_id"] = tenant_id
+    else:
+        if not user.get("tenant_id"):
+            raise HTTPException(status_code=400, detail="Tenant context required")
+        query["tenant_id"] = user.get("tenant_id")
+
+    if category:
+        query["category"] = category
+    if status:
+        query["status"] = status
+
+    notes = await db.leadership_notes.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+
+    user_ids = [note.get("user_id") for note in notes if note.get("user_id")]
+    users = []
+    if user_ids:
+        users = await db.users.find({"user_id": {"$in": user_ids}}, {"_id": 0, "user_id": 1, "name": 1, "email": 1}).to_list(500)
+    user_map = {u["user_id"]: u for u in users}
+
+    tenant_map = {}
+    if is_platform_admin and not tenant_id and notes:
+        tenant_ids = list({note.get("tenant_id") for note in notes if note.get("tenant_id")})
+        tenants = await db.tenants.find({"id": {"$in": tenant_ids}}, {"_id": 0, "id": 1, "name": 1}).to_list(200)
+        tenant_map = {t["id"]: t for t in tenants}
+
+    enriched_notes = []
+    for note in notes:
+        member = user_map.get(note.get("user_id"), {})
+        note["member_name"] = note.get("member_name") or member.get("name")
+        note["member_email"] = note.get("member_email") or member.get("email")
+        if is_platform_admin:
+            tenant_info = tenant_map.get(note.get("tenant_id"))
+            note["tenant_name"] = tenant_info.get("name") if tenant_info else None
+        enriched_notes.append(serialize_doc(note))
+
+    return {"notes": enriched_notes}
+
 # ============== STRIPE PAYMENT ROUTES ==============
 
 @api_router.get("/payments/config")
