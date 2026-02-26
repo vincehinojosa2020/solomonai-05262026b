@@ -40,7 +40,7 @@ export default function LeadershipNotesPage() {
 
   useEffect(() => {
     fetchNotes();
-  }, []);
+  }, [tenantFilter]);
 
   const categories = useMemo(() => {
     const set = new Set(['All']);
