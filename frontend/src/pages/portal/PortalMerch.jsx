@@ -117,6 +117,9 @@ export default function PortalMerch() {
           <span className="portal-tag">Merch</span>
           <h1>Church Merch Store</h1>
           <p>Shop curated merch, music, and accessories without leaving the member portal.</p>
+          <div className="portal-merch-delivery" data-testid="merch-delivery-note">
+            Free delivery available in {tenant?.city || 'your city'}.
+          </div>
         </div>
         <button
           className="portal-merch-cart-btn"
