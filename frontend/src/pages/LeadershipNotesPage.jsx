@@ -8,6 +8,7 @@ export default function LeadershipNotesPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
+  const [tenantFilter, setTenantFilter] = useState(null);
 
   const fetchNotes = async () => {
     setLoading(true);
