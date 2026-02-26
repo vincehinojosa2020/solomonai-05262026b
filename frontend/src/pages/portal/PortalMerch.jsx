@@ -5,6 +5,7 @@ import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export default function PortalMerch() {
+  const { tenant } = useOutletContext();
   const [products, setProducts] = useState([]);
   const [merchUrl, setMerchUrl] = useState('');
   const [loading, setLoading] = useState(true);
