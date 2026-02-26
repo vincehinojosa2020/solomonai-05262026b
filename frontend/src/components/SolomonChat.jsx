@@ -13,9 +13,11 @@ const SolomonChat = () => {
 
   // Sample prompts to get started
   const samplePrompts = [
-    "Where is our offerings best spent this season?",
-    "What groups can I join?",
-    "Tell me about upcoming events",
+    "How do I access Abundant Pathways?",
+    "Where can I watch the latest sermons?",
+    "How do I join a group?",
+    "What events are coming up?",
+    "Where can I find the merch store?",
     "How is my giving making an impact?"
   ];
 
