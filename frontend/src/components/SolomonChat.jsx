@@ -18,6 +18,7 @@ const SolomonChat = () => {
     "How do I join a group?",
     "What events are coming up?",
     "Where can I find the merch store?",
+    "Can I order coffee from Abundant Cafe?",
     "How is my giving making an impact?"
   ];
 
