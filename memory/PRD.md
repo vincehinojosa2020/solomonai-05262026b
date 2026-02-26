@@ -141,6 +141,10 @@ Each church is a tenant with isolated data:
 - `GET /api/portal/merch/products` - Active products
 - `POST /api/portal/merch/orders` - Place order (**MOCKED**)
 
+### Leave a Note
+- `POST /api/portal/notes` - Submit member note
+- `GET /api/admin/notes` - Admin review notes
+
 ---
 
 ## Demo Test Credentials
