@@ -629,7 +629,7 @@ export default function PortalLibrary() {
                 onClick={() => navigate(item.path)}
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                data-testid={`nav-${item.name.toLowerCase()}`}
+                data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
               >
                 <Icon className="w-4 h-4" />
                 <span>{item.name}</span>
