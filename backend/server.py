@@ -6600,7 +6600,8 @@ async def seed_platform():
             "phone": "(915) 598-4000",
             "primary_color": "#dc2626",
             "accent_color": "#fbbf24",
-            "thinkific_url": "https://cristoviene.thinkific.com"
+            "thinkific_url": "https://cristoviene.thinkific.com",
+            "merch_embed_url": DEFAULT_MERCH_EMBED_URL
         },
         {
             "id": "pottershouse-church-001",
