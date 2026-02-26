@@ -4037,7 +4037,8 @@ async def get_tenant(request: Request):
             "logo_url": None,
             "primary_color": "#4f6ef7",
             "accent_color": "#00c896",
-            "timezone": "America/Los_Angeles"
+            "timezone": "America/Los_Angeles",
+            "thinkific_url": "https://abundant.thinkific.com"
         }
     return serialize_doc(tenant)
 
