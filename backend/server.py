@@ -6569,7 +6569,162 @@ async def seed_platform():
             {"$set": video},
             upsert=True
         )
-    
+
+    # Seed Abundant Pathways courses
+    pathways_courses = [
+        {
+            "id": "pathway_course_001",
+            "tenant_id": "abundant-church-001",
+            "title": "Foundations of Faith",
+            "description": "A grounding journey through the core beliefs of the Christian faith.",
+            "cover_image_url": "https://i.ytimg.com/vi/FoPI3hMbXvw/maxresdefault.jpg",
+            "category": "Discipleship",
+            "level": "Beginner",
+            "is_published": True,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "pathway_course_002",
+            "tenant_id": "abundant-church-001",
+            "title": "Prayer & Hearing God",
+            "description": "Develop a consistent prayer rhythm and learn to discern God's voice.",
+            "cover_image_url": "https://i.ytimg.com/vi/wCjwUQMhCIY/maxresdefault.jpg",
+            "category": "Spiritual Practices",
+            "level": "Intermediate",
+            "is_published": True,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+
+    pathways_lessons = [
+        {
+            "id": "pathway_lesson_001",
+            "tenant_id": "abundant-church-001",
+            "course_id": "pathway_course_001",
+            "title": "What We Believe",
+            "description": "Explore the pillars of faith that guide our community.",
+            "youtube_id": "FoPI3hMbXvw",
+            "video_url": "https://youtube.com/watch?v=FoPI3hMbXvw",
+            "thumbnail_url": "https://i.ytimg.com/vi/FoPI3hMbXvw/maxresdefault.jpg",
+            "duration_label": "22:45",
+            "duration_seconds": 1365,
+            "sort_order": 1,
+            "is_published": True,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "pathway_lesson_002",
+            "tenant_id": "abundant-church-001",
+            "course_id": "pathway_course_001",
+            "title": "Grace & Salvation",
+            "description": "Understanding salvation through grace and faith.",
+            "youtube_id": "pzpbbibEWPE",
+            "video_url": "https://youtube.com/watch?v=pzpbbibEWPE",
+            "thumbnail_url": "https://i.ytimg.com/vi/pzpbbibEWPE/maxresdefault.jpg",
+            "duration_label": "18:30",
+            "duration_seconds": 1110,
+            "sort_order": 2,
+            "is_published": True,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "pathway_lesson_003",
+            "tenant_id": "abundant-church-001",
+            "course_id": "pathway_course_001",
+            "title": "Living the Word",
+            "description": "Practical steps for applying scripture to daily life.",
+            "youtube_id": "Lnj6vMvOLME",
+            "video_url": "https://youtube.com/watch?v=Lnj6vMvOLME",
+            "thumbnail_url": "https://i.ytimg.com/vi/Lnj6vMvOLME/maxresdefault.jpg",
+            "duration_label": "25:00",
+            "duration_seconds": 1500,
+            "sort_order": 3,
+            "is_published": True,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "pathway_lesson_004",
+            "tenant_id": "abundant-church-001",
+            "course_id": "pathway_course_002",
+            "title": "Building a Prayer Habit",
+            "description": "Create a daily rhythm of prayer and reflection.",
+            "youtube_id": "wCjwUQMhCIY",
+            "video_url": "https://youtube.com/watch?v=wCjwUQMhCIY",
+            "thumbnail_url": "https://i.ytimg.com/vi/wCjwUQMhCIY/maxresdefault.jpg",
+            "duration_label": "20:15",
+            "duration_seconds": 1215,
+            "sort_order": 1,
+            "is_published": True,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": "pathway_lesson_005",
+            "tenant_id": "abundant-church-001",
+            "course_id": "pathway_course_002",
+            "title": "Discerning God's Voice",
+            "description": "Learn how to hear and respond to God's guidance.",
+            "youtube_id": "0grr2E0kuFg",
+            "video_url": "https://youtube.com/watch?v=0grr2E0kuFg",
+            "thumbnail_url": "https://i.ytimg.com/vi/0grr2E0kuFg/maxresdefault.jpg",
+            "duration_label": "24:10",
+            "duration_seconds": 1450,
+            "sort_order": 2,
+            "is_published": True,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+    ]
+
+    for course in pathways_courses:
+        await db.pathways_courses.update_one(
+            {"id": course["id"]},
+            {"$set": course},
+            upsert=True
+        )
+
+    for lesson in pathways_lessons:
+        await db.pathways_lessons.update_one(
+            {"id": lesson["id"]},
+            {"$set": lesson},
+            upsert=True
+        )
+
+    # Assign demo member to pathways courses
+    await db.pathways_enrollments.update_one(
+        {"id": "pathway_enroll_001"},
+        {"$set": {
+            "id": "pathway_enroll_001",
+            "tenant_id": "abundant-church-001",
+            "course_id": "pathway_course_001",
+            "user_id": "member_abundant",
+            "assigned_by": "admin_abundant",
+            "status": "assigned",
+            "assigned_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    await db.pathways_enrollments.update_one(
+        {"id": "pathway_enroll_002"},
+        {"$set": {
+            "id": "pathway_enroll_002",
+            "tenant_id": "abundant-church-001",
+            "course_id": "pathway_course_002",
+            "user_id": "member_abundant",
+            "assigned_by": "admin_abundant",
+            "status": "assigned",
+            "assigned_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+
     return {
         "message": "Platform seeded successfully",
         "results": results,
