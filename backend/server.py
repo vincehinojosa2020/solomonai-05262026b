@@ -6224,7 +6224,8 @@ async def seed_platform():
             "website": "https://cristoviene.org",
             "phone": "(915) 598-4000",
             "primary_color": "#dc2626",
-            "accent_color": "#fbbf24"
+            "accent_color": "#fbbf24",
+            "thinkific_url": "https://cristoviene.thinkific.com"
         },
         {
             "id": "pottershouse-church-001",
