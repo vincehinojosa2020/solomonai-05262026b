@@ -231,7 +231,7 @@ class TestDonationFlow:
                 "package_id": "custom",
                 "custom_amount": 25.00,
                 "fund_id": TestDonationFlow.fund_id,
-                "origin_url": "https://faith-ops-platform.preview.emergentagent.com/portal/give",
+                "origin_url": "https://learn-discipleship.preview.emergentagent.com/portal/give",
                 "recurring": False,
                 "donor_name": "Test Donor",
                 "donor_email": "member@abundant.org"
@@ -255,7 +255,7 @@ class TestDonationFlow:
                 "package_id": "custom",
                 "custom_amount": 0.50,  # Less than $1 minimum
                 "fund_id": "general",
-                "origin_url": "https://faith-ops-platform.preview.emergentagent.com/portal/give",
+                "origin_url": "https://learn-discipleship.preview.emergentagent.com/portal/give",
                 "recurring": False
             }
         )
@@ -271,7 +271,7 @@ class TestDonationFlow:
                 "package_id": "custom",
                 "custom_amount": 150000.00,  # Exceeds $100,000 max
                 "fund_id": "general",
-                "origin_url": "https://faith-ops-platform.preview.emergentagent.com/portal/give",
+                "origin_url": "https://learn-discipleship.preview.emergentagent.com/portal/give",
                 "recurring": False
             }
         )
@@ -286,7 +286,7 @@ class TestDonationFlow:
             json={
                 "package_id": "tithe_50",  # Preset $50 package
                 "fund_id": "general",
-                "origin_url": "https://faith-ops-platform.preview.emergentagent.com/portal/give",
+                "origin_url": "https://learn-discipleship.preview.emergentagent.com/portal/give",
                 "recurring": False
             }
         )
