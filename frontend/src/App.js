@@ -27,6 +27,7 @@ import EventsManagerPage from "@/pages/EventsManagerPage";
 import ThinkificPage from "@/pages/ThinkificPage";
 import AbundantPathwaysAdmin from "@/pages/AbundantPathwaysAdmin";
 import MerchAdminPage from "@/pages/MerchAdminPage";
+import CafeAdminPage from "@/pages/CafeAdminPage";
 import LeadershipNotesPage from "@/pages/LeadershipNotesPage";
 // Portal Pages
 import PortalHome from "@/pages/portal/PortalHome";
@@ -39,6 +40,7 @@ import PortalThinkific from "@/pages/portal/PortalThinkific";
 import PortalPathways from "@/pages/portal/PortalPathways";
 import PortalPathwaysCourse from "@/pages/portal/PortalPathwaysCourse";
 import PortalMerch from "@/pages/portal/PortalMerch";
+import PortalCafe from "@/pages/portal/PortalCafe";
 
 // Router wrapper to detect session_id in URL
 function AppRouter() {
