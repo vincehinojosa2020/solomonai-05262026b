@@ -6618,7 +6618,8 @@ async def seed_platform():
             "phone": "(214) 331-0954",
             "primary_color": "#7c3aed",
             "accent_color": "#ec4899",
-            "thinkific_url": "https://pottershouse.thinkific.com"
+            "thinkific_url": "https://pottershouse.thinkific.com",
+            "merch_embed_url": DEFAULT_MERCH_EMBED_URL
         }
     ]
     
