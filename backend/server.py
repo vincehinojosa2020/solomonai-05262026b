@@ -4863,7 +4863,9 @@ async def solomon_chat(request: Request, payload: SolomonChatRequest):
             "discipleship": "/portal/pathways",
             "merch": "/portal/merch",
             "store": "/portal/merch",
-            "shop": "/portal/merch"
+            "shop": "/portal/merch",
+            "cafe": "/portal/cafe",
+            "coffee": "/portal/cafe"
         }
 
         admin_paths = {
@@ -4879,7 +4881,9 @@ async def solomon_chat(request: Request, payload: SolomonChatRequest):
             "store": "/merch",
             "shop": "/merch",
             "notes": "/notes",
-            "leadership": "/notes"
+            "leadership": "/notes",
+            "cafe": "/cafe",
+            "coffee": "/cafe"
         }
 
         path_map = portal_paths if is_member else admin_paths
