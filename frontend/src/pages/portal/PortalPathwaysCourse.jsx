@@ -39,7 +39,7 @@ function LessonVideoModal({ lesson, onClose, onProgress }) {
     <div className="pathways-modal-overlay" data-testid="lesson-video-modal" onClick={handleClose}>
       <div className="pathways-modal-content" onClick={(e) => e.stopPropagation()}>
         <button className="pathways-modal-close" onClick={handleClose} data-testid="lesson-video-close">
-          6
+          ×
         </button>
         <div className="pathways-modal-header">
           <h2>{lesson.title}</h2>
