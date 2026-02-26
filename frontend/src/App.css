@@ -1433,6 +1433,14 @@
 .portal-nav-desktop {
   display: none;
   gap: 8px;
+  flex: 1;
+  justify-content: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.portal-nav-desktop::-webkit-scrollbar {
+  display: none;
 }
 
 @media (min-width: 768px) {
