@@ -28,6 +28,12 @@ const SolomonChat = () => {
   }, [isOpen]);
 
   useEffect(() => {
+    const handler = () => setIsOpen(true);
+    window.addEventListener('solomon:open', handler);
+    return () => window.removeEventListener('solomon:open', handler);
+  }, []);
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
