@@ -6207,7 +6207,8 @@ async def seed_platform():
             "website": "https://www.abundant.org",
             "phone": "(915) 755-3000",
             "primary_color": "#4f6ef7",
-            "accent_color": "#00c896"
+            "accent_color": "#00c896",
+            "thinkific_url": "https://abundant.thinkific.com"
         },
         {
             "id": "cristoviene-church-001",
