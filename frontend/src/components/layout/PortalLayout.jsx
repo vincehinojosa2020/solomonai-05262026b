@@ -155,7 +155,7 @@ export default function PortalLayout() {
             <button className="portal-notification-btn" data-testid="portal-notifications">
               <Bell className="w-5 h-5" />
             </button>
-            <Avatar className="w-8 h-8 cursor-pointer" onClick={() => navigate('/portal/me')}>
+            <Avatar className="w-8 h-8 cursor-pointer" onClick={() => navigate('/portal/me')} data-testid="portal-avatar">
               <AvatarImage src={user?.picture} />
               <AvatarFallback className="bg-teal-500 text-white text-xs font-semibold">
                 {getInitials(user?.name)}
