@@ -224,6 +224,7 @@ export default function PortalLayout() {
               key={item.path}
               to={item.path}
               end={item.exact}
+              data-testid={`portal-bottom-nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
               className={({ isActive }) => 
                 `portal-bottom-nav-item ${isActive ? 'active' : ''}`
               }
