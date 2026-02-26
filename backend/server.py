@@ -4310,6 +4310,10 @@ async def get_church_context() -> str:
     
     # Get groups info
     total_groups = await db.groups.count_documents({"tenant_id": tenant_id, "is_active": True})
+
+    media_count = await db.media_videos.count_documents({"tenant_id": tenant_id})
+    pathways_count = await db.pathways_courses.count_documents({"tenant_id": tenant_id})
+    merch_count = await db.merch_products.count_documents({"tenant_id": tenant_id})
     
     # Get giving stats
     today = datetime.now(timezone.utc)
