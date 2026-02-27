@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, Send, Sparkles, ChevronRight, Loader2, Trash2 } from 'lucide-react';
+import { MessageSquare, X, Send, Sparkles, ChevronRight, Loader2, Trash2, Mic } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
+import { toast } from 'sonner';
 
 const SolomonChat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
