@@ -1221,6 +1221,14 @@ async def summarize_meeting_with_claude(transcript: str, topic: Optional[str] = 
     response_text = await chat.send_message(UserMessage(text=prompt))
     return response_text
 
+async def notify_meeting_event(event: str, meeting: dict) -> dict:
+    return {
+        "event": event,
+        "slack": "MOCKED",
+        "teams": "MOCKED",
+        "meeting_id": meeting.get("id") if meeting else None
+    }
+
 # Default tenant ID for demo
 DEFAULT_TENANT_ID = "abundant-church-001"
 
