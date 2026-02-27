@@ -1771,8 +1771,16 @@ async def update_admin_thinkific(request: Request, payload: ThinkificUpdate):
 async def get_portal_thinkific(request: Request):
     """Get Thinkific URL for member portal"""
     user = await get_current_member_user(request)
-    tenant = await db.tenants.find_one({"id": user.get("tenant_id")}, {"_id": 0, "thinkific_url": 1})
-    return {"thinkific_url": tenant.get("thinkific_url") if tenant else None}
+    tenant_id = user.get("tenant_id")
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "thinkific_url": 1})
+    thinkific_url = tenant.get("thinkific_url") if tenant else None
+    if tenant_id == "abundant-church-001" and not thinkific_url:
+        thinkific_url = "https://abundantchurch.thinkific.com/collections"
+        await db.tenants.update_one(
+            {"id": tenant_id},
+            {"$set": {"thinkific_url": thinkific_url, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+    return {"thinkific_url": thinkific_url}
 
 # ============== ABUNDANT PATHWAYS (LMS) ROUTES ==============
 
