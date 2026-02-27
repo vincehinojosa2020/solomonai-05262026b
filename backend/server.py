@@ -834,6 +834,51 @@ class CafeOrderCreate(BaseModel):
     pickup_time: str
     notes: Optional[str] = None
 
+# ============== PASTOR MEETINGS MODELS ==============
+
+class PastorMeetingSlot(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    start_time: str
+    end_time: str
+    location: Optional[str] = None
+    status: str = "open"  # open | booked
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class PastorMeetingSlotCreate(BaseModel):
+    start_time: str
+    end_time: str
+    location: Optional[str] = None
+
+class PastorMeetingBooking(BaseModel):
+    slot_id: str
+    topic: Optional[str] = None
+    notes: Optional[str] = None
+
+class PastorMeeting(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    slot_id: str
+    user_id: str
+    member_name: Optional[str] = None
+    member_email: Optional[str] = None
+    topic: Optional[str] = None
+    notes: Optional[str] = None
+    transcript: Optional[str] = None
+    summary: Optional[str] = None
+    recording_filename: Optional[str] = None
+    status: str = "scheduled"  # scheduled | completed
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class PastorMeetingUpdate(BaseModel):
+    notes: Optional[str] = None
+    status: Optional[str] = None
+
+
 # ============== HELPER FUNCTIONS ==============
 
 def serialize_doc(doc: dict) -> dict:
