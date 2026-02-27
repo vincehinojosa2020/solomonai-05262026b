@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import "@/App.css";
 import "@/library.css";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
@@ -114,11 +113,6 @@ function AppRouter() {
 }
 
 function App() {
-  useEffect(() => {
-    document.body.classList.add('ngo-theme');
-    return () => document.body.classList.remove('ngo-theme');
-  }, []);
-
   return (
     <div className="App">
       <BrowserRouter>
