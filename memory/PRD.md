@@ -34,11 +34,32 @@ Each church is a tenant with isolated data:
 
 ## What's Implemented (February 27, 2026)
 
+### P0: Pastor's CRM / Meeting Scheduler - ✅ COMPLETE
+- **Admin Features** (`/meetings`):
+  - Create meeting time slots (date, time, location)
+  - View all meeting slots with OPEN/BOOKED status
+  - View scheduled meetings with member info
+  - Save meeting notes, record sessions, upload audio
+  - **MOCKED**: Teams/Slack notifications return simulated responses
+- **Member Features** (`/portal/meet`):
+  - View available open time slots
+  - Book meetings with topic and notes
+  - View upcoming scheduled sessions
+
 ### P0: Solomon Discipleship (LMS)
 - **Thinkific (Admin + Member)**
   - Admin sets Thinkific embed URL; preview available inside admin UI
   - Members access Thinkific directly inside the portal
-- **Abundant Pathways (Homegrown LMS)**
+- **Abundant Pathways (Homegrown LMS)** - ✅ 8 COURSES SEEDED
+  - 8 courses with real content:
+    1. Abundant Next Steps (New Members Track)
+    2. Preparing for Baptism (Baptism Track)
+    3. Foundations of Discipleship (Discipleship Track)
+    4. Financial Peace University (Stewardship Track)
+    5. Serving with Purpose (Leadership Track)
+    6. Prayer & Presence (Spiritual Practices)
+    7. Marriage & Family Care (Family Track)
+    8. Mission & Outreach (Outreach Track)
   - Admin creates courses, lessons, assigns members, tracks progress
   - Members see assigned courses, watch lessons, and progress updates
 
