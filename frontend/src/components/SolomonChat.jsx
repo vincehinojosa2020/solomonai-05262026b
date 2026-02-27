@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, Send, Sparkles, ChevronRight, Loader2, Trash2, Mic } from 'lucide-react';
+import { MessageSquare, X, Send, Sparkles, ChevronRight, Loader2, Trash2, Mic, MicOff } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
