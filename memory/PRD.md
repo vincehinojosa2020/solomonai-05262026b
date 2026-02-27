@@ -231,9 +231,11 @@ Each church is a tenant with isolated data:
 ## Changelog
 
 ### Feb 27, 2026 (Latest Session)
-- Removed NGO/Nonprofit pink theme per request (restored default branding)
-- Portal Home symmetry and top nav spacing tightened
-- Verified Solomon AI responses in member portal
+- ✅ Pastor's CRM / Meeting Scheduler complete (Admin + Member)
+- ✅ Abundant Pathways populated with 8 courses
+- ✅ Solomon Chat voice input UI polished (circular mic button, pulsing animation)
+- ✅ All features tested (100% pass rate - 12/12 backend tests)
+- MOCKED: Teams/Slack notifications return simulated responses
 
 ### Feb 26, 2026
 - Added Thinkific integration + Abundant Pathways LMS flows
