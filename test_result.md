@@ -121,52 +121,52 @@ backend:
           comment: "✅ PASSED - POST /api/portal/notes and GET /api/admin/notes working correctly. Note submission successful with subject, category, and message. Admin retrieval shows notes with member details."
 
 frontend:
-  - task: "Portal Home - Leave a Note Card"
+  - task: "Portal Navigation - Required Tabs Visibility"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/portal/PortalHome.jsx"
+    file: "/app/frontend/src/components/layout/PortalLayout.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: "NA"
           agent: "testing"
-          comment: "Initial status - needs testing for Leave a Note card on Portal Home"
+          comment: "Initial status - needs testing for portal top nav items: Watch, Thinkific, Abundant Pathways, Merch, Cafe"
         - working: true
           agent: "testing"
-          comment: "✅ PASSED - Leave a Note card (data-testid: leave-note-card) is visible on Portal Home next to Ask Solomon widget. All form fields working: subject input, category select (Prayer Request, Question, Praise, Other), message textarea. Form submits successfully and displays success toast 'Your note was sent'. Form fields clear after submission."
+          comment: "✅ PASSED - All required portal navigation items visible in top nav with correct data-testids: portal-nav-watch, portal-nav-thinkific, portal-nav-abundant-pathways, portal-nav-merch, portal-nav-cafe. Navigation working correctly."
 
-  - task: "Portal Home - Ask Solomon Widget"
+  - task: "Portal Cafe - Member Flow"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/portal/PortalHome.jsx"
+    file: "/app/frontend/src/pages/portal/PortalCafe.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: "NA"
           agent: "testing"
-          comment: "Initial status - needs testing for Ask Solomon input and Open button"
+          comment: "Initial status - needs testing for cafe ordering flow: add item to cart, select pickup time, place order"
         - working: true
           agent: "testing"
-          comment: "✅ PASSED - Ask Solomon widget displays correctly with input field (data-testid: ask-solomon-input) and Open button (data-testid: ask-solomon-open-btn). Open button successfully launches Solomon chat panel (data-testid: samson-panel) with 'open' class applied."
+          comment: "✅ PASSED - Cafe page (data-testid: portal-cafe-page) loads successfully. Menu grid displays cafe items. Successfully added item to cart, selected pickup time (7:30 AM), and placed order. Order placement confirmed by cart closure and success behavior."
 
-  - task: "Solomon Chat Panel"
+  - task: "Portal Merch - Free Delivery Note"
     implemented: true
     working: true
-    file: "/app/frontend/src/components/SolomonChat.jsx"
+    file: "/app/frontend/src/pages/portal/PortalMerch.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: "NA"
           agent: "testing"
-          comment: "Initial status - needs testing for Solomon chat panel opening"
+          comment: "Initial status - needs testing for merch page free delivery note visibility"
         - working: true
           agent: "testing"
-          comment: "✅ PASSED - Solomon chat panel (data-testid: samson-panel) opens successfully when triggered by Open button or input focus. Panel displays with correct 'open' class and can be closed via close button."
+          comment: "✅ PASSED - Merch page (data-testid: portal-merch-page) loads successfully. Free delivery note (data-testid: merch-delivery-note) is visible with text: 'Free delivery available in El Paso.'"
 
-  - task: "Admin Sidebar - Notes Navigation"
+  - task: "Admin Sidebar - Required Navigation Items"
     implemented: true
     working: true
     file: "/app/frontend/src/components/layout/AppShell.jsx"
@@ -176,25 +176,40 @@ frontend:
     status_history:
         - working: "NA"
           agent: "testing"
-          comment: "Initial status - needs testing for Notes nav in admin sidebar"
+          comment: "Initial status - needs testing for admin sidebar nav items: Media Library, Thinkific, Abundant Pathways, Merch, Cafe"
         - working: true
           agent: "testing"
-          comment: "✅ PASSED - Notes navigation link (data-testid: nav-notes) is visible in PEOPLE section of admin sidebar. Navigation to /notes page works correctly."
+          comment: "✅ PASSED - All required admin sidebar navigation items visible with correct data-testids: nav-media-library, nav-thinkific, nav-abundant-pathways, nav-merch, nav-cafe. All items in CONNECT section are accessible and navigation works correctly."
 
-  - task: "Admin Notes Page - Display and Filtering"
+  - task: "Merch Admin - Product Catalog"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/LeadershipNotesPage.jsx"
+    file: "/app/frontend/src/pages/MerchAdminPage.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
         - working: "NA"
           agent: "testing"
-          comment: "Initial status - needs testing for notes admin page with submitted note display"
+          comment: "Initial status - needs testing for merch admin product catalog visibility and loading"
         - working: true
           agent: "testing"
-          comment: "✅ PASSED - Notes admin page (data-testid: notes-admin-page) displays correctly. Submitted note appears in notes grid with all required details: Subject ('Test Note 9864'), Category ('Prayer Request'), Member name ('Maria Gonzalez'), Member email ('member@abundant.church'), and Message content. Search and filter controls present and functional."
+          comment: "✅ PASSED - Merch admin page (data-testid: merch-admin-page) loads successfully. Product catalog section (data-testid: merch-products) visible with product grid displaying 8 products. Product cards render correctly with images, names, prices, and actions."
+
+  - task: "Cafe Admin - Pickup Window Form & Menu Grid"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/CafeAdminPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Initial status - needs testing for cafe admin pickup window form and menu grid visibility"
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - Cafe admin page (data-testid: cafe-admin-page) loads successfully. Pickup window settings card (data-testid: cafe-settings-card) visible with all form fields: cafe-pickup-start, cafe-pickup-end, cafe-pickup-interval. Menu section (data-testid: cafe-menu) displays menu grid with 7 items. Screenshots captured: member_cafe_page.png and admin_cafe_page.png."
 
 metadata:
   created_by: "testing_agent"
