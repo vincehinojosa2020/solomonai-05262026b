@@ -1435,6 +1435,7 @@
   gap: 8px;
   flex: 1;
   justify-content: center;
+  align-items: center;
   overflow-x: auto;
   scrollbar-width: none;
 }
