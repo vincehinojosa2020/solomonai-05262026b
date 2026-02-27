@@ -1388,24 +1388,29 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
         await db.pathways_enrollments.update_one({"id": enrollment["id"]}, {"$set": enrollment}, upsert=True)
 
 async def transcribe_audio_with_whisper(file_path: Path) -> str:
+    """Transcribe audio file using OpenAI Whisper via emergentintegrations"""
     api_key = os.environ.get('EMERGENT_LLM_KEY')
     if not api_key:
         raise HTTPException(status_code=500, detail="Whisper is not configured")
 
-    async with httpx.AsyncClient(timeout=120.0) as client:
-        with file_path.open('rb') as file_obj:
-            files = {"file": (file_path.name, file_obj, "application/octet-stream")}
-            data = {"model": "whisper-1"}
-            headers = {"Authorization": f"Bearer {api_key}"}
-            response = await client.post(
-                "https://api.openai.com/v1/audio/transcriptions",
-                data=data,
-                files=files,
-                headers=headers
+    try:
+        from emergentintegrations.llm.openai import OpenAISpeechToText
+        
+        stt = OpenAISpeechToText(api_key=api_key)
+        
+        with file_path.open('rb') as audio_file:
+            response = await stt.transcribe(
+                file=audio_file,
+                model="whisper-1",
+                response_format="text",
+                language="en",
+                prompt="This is a pastoral counseling session between a pastor and church member."
             )
-    response.raise_for_status()
-    payload = response.json()
-    return payload.get("text", "")
+        
+        return response if isinstance(response, str) else response.text
+    except Exception as e:
+        logger.error(f"Whisper transcription error: {e}")
+        raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
 
 async def summarize_meeting_with_claude(transcript: str, topic: Optional[str] = None) -> str:
     api_key = os.environ.get('EMERGENT_LLM_KEY')
