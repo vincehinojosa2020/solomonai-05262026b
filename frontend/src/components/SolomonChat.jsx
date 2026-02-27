@@ -315,6 +315,15 @@ const SolomonChat = () => {
             data-testid="samson-input"
           />
           <button
+            onClick={toggleListening}
+            disabled={isLoading}
+            className={`solomon-mic-btn ${isListening ? 'listening' : ''}`}
+            data-testid="samson-mic-btn"
+            aria-label="Voice input"
+          >
+            <Mic className="w-4 h-4" />
+          </button>
+          <button
             onClick={() => handleSend()}
             disabled={!inputValue.trim() || isLoading}
             className="solomon-send-btn"
@@ -323,6 +332,11 @@ const SolomonChat = () => {
             <Send className="w-4 h-4" />
           </button>
         </div>
+        {isListening && (
+          <div className="solomon-mic-status" data-testid="samson-mic-status">
+            Listening... click mic to stop
+          </div>
+        )}
       </div>
 
       {/* Backdrop */}
