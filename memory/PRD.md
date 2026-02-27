@@ -141,6 +141,21 @@ Each church is a tenant with isolated data:
 - `GET /api/admin/merch/orders` - Recent orders
 - `GET /api/admin/merch/summary` - Stats summary
 
+### Cafe (Admin)
+- `GET /api/admin/cafe/settings` - Cafe pickup window
+- `PATCH /api/admin/cafe/settings` - Update pickup window
+- `GET /api/admin/cafe/items` - List menu items
+- `POST /api/admin/cafe/items` - Create menu item
+- `PUT /api/admin/cafe/items/{id}` - Update menu item
+- `DELETE /api/admin/cafe/items/{id}` - Delete menu item
+- `GET /api/admin/cafe/orders` - Recent cafe orders
+- `GET /api/admin/cafe/summary` - Cafe stats summary
+
+### Cafe (Member)
+- `GET /api/portal/cafe/settings` - Pickup settings
+- `GET /api/portal/cafe/items` - Active menu items
+- `POST /api/portal/cafe/orders` - Place cafe order (**MOCKED**)
+
 ### Merch (Member)
 - `GET /api/portal/merch/settings` - Merch embed URL
 - `GET /api/portal/merch/products` - Active products
