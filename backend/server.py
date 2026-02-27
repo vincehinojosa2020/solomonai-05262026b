@@ -1878,7 +1878,7 @@ async def get_admin_thinkific(request: Request):
         raise HTTPException(status_code=400, detail="Tenant context required")
     tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "thinkific_url": 1})
     thinkific_url = tenant.get("thinkific_url") if tenant else None
-    if tenant_id == "abundant-church-001" and not thinkific_url:
+    if tenant_id == "abundant-church-001" and (not thinkific_url or "abundant.thinkific.com" in thinkific_url):
         thinkific_url = "https://abundantchurch.thinkific.com/collections"
         await db.tenants.update_one(
             {"id": tenant_id},
@@ -1906,7 +1906,7 @@ async def get_portal_thinkific(request: Request):
     tenant_id = user.get("tenant_id")
     tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "thinkific_url": 1})
     thinkific_url = tenant.get("thinkific_url") if tenant else None
-    if tenant_id == "abundant-church-001" and not thinkific_url:
+    if tenant_id == "abundant-church-001" and (not thinkific_url or "abundant.thinkific.com" in thinkific_url):
         thinkific_url = "https://abundantchurch.thinkific.com/collections"
         await db.tenants.update_one(
             {"id": tenant_id},
