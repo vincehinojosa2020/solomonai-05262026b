@@ -202,7 +202,7 @@ export default function MeetingsAdminPage() {
                 <div key={slot.id} className="meetings-slot-item" data-testid={`meeting-slot-admin-${slot.id}`}>
                   <div>
                     <strong>{formatSlotTime(slot)}</strong>
-                    <span>{slot.location || 'Pastor's office'}</span>
+                    <span>{slot.location || "Pastor's office"}</span>
                   </div>
                   <span className="meeting-status">{slot.status}</span>
                 </div>
