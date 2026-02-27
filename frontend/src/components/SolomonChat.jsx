@@ -308,7 +308,7 @@ const SolomonChat = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask Solomon anything about your church..."
+            placeholder="Ask Solomon..."
             className="solomon-input"
             rows={1}
             disabled={isLoading}
