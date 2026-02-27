@@ -2124,6 +2124,10 @@ async def get_portal_thinkific(request: Request):
 async def get_admin_pathways_courses(request: Request):
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id")
+    
+    # Ensure demo data exists for Abundant Church
+    await ensure_abundant_pathways_data(tenant_id)
+    
     query = {}
     if tenant_id:
         query["tenant_id"] = tenant_id
