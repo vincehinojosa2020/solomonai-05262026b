@@ -106,23 +106,34 @@ export default function MeetingsAdminPage() {
   };
 
   const uploadRecording = async (meetingId, blob) => {
+    setUploadingMeetingId(meetingId);
     try {
       const formData = new FormData();
       formData.append('file', blob, `meeting-${meetingId}.webm`);
+      toast.info('Transcribing and analyzing recording...', { duration: 10000 });
       const res = await fetch(`${API_URL}/admin/meetings/${meetingId}/recording`, {
         method: 'POST',
         credentials: 'include',
         body: formData
       });
       if (res.ok) {
-        toast.success('Recording analyzed');
+        const data = await res.json();
+        toast.success('Recording transcribed and summarized!');
+        setExpandedMeetings(prev => ({ ...prev, [meetingId]: true }));
         fetchData();
       } else {
-        toast.error('Unable to process recording');
+        const err = await res.json();
+        toast.error(err.detail || 'Unable to process recording');
       }
     } catch (error) {
       toast.error('Unable to process recording');
+    } finally {
+      setUploadingMeetingId(null);
     }
+  };
+
+  const toggleExpand = (meetingId) => {
+    setExpandedMeetings(prev => ({ ...prev, [meetingId]: !prev[meetingId] }));
   };
 
   const startRecording = async (meetingId) => {
