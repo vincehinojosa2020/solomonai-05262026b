@@ -235,6 +235,10 @@ Each church is a tenant with isolated data:
 - ✅ Abundant Pathways populated with 8 courses
 - ✅ Solomon Chat voice input UI polished (circular mic button, pulsing animation)
 - ✅ All features tested (100% pass rate - 12/12 backend tests)
+- ✅ Whisper transcription + Claude summarization for meeting recordings
+  - Uses emergentintegrations library for OpenAI Whisper (whisper-1 model)
+  - Claude Sonnet 4.5 generates pastoral meeting summaries with action items
+  - Summary includes: Key Discussion Points, Spiritual Needs, Action Items, Next Steps, Prayer Points
 - MOCKED: Teams/Slack notifications return simulated responses
 
 ### Feb 26, 2026
