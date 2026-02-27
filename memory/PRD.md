@@ -48,12 +48,17 @@ Each church is a tenant with isolated data:
 - Member portal merch experience with embedded storefront + curated product grid
 - Cart and checkout flow for demo ordering (**CHECKOUT IS MOCKED**)
 
+### P0: Abundant Cafe (Admin + Member)
+- Admin manages cafe pickup window + menu CRUD + order feed
+- Members order coffee with pickup time selection inside portal
+- Cafe order placement is demo-only (**PAYMENT IS MOCKED**)
+
 ### P0: Leave a Note (Member + Admin)
 - Members submit subject + optional category + message on Portal Home
 - Church and platform admins review notes in the /notes dashboard
 
 ### P0: Ask Solomon Upgrade
-- Updated Solomon prompt to cover giving, groups, events, Watch, Thinkific, Abundant Pathways, and Merch
+- Updated Solomon prompt to cover giving, groups, events, Watch, Thinkific, Abundant Pathways, Merch, Cafe
 - Portal Home “Open” button launches the Ask Solomon chat
 
 ### P0: Media Library Sync Bug - FIXED
