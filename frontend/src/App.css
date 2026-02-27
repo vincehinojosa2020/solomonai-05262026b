@@ -6991,6 +6991,7 @@
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
   margin: 24px 0;
+  align-items: stretch;
 }
 
 .portal-solomon-widget,
