@@ -78,7 +78,7 @@ Each church is a tenant with isolated data:
 - Members submit subject + optional category + message on Portal Home
 - Church and platform admins review notes in the /notes dashboard
 
-### P0: Ask Solomon Upgrade
+### P0: Ask Solomon Upgrade - UI POLISHED
 - Updated Solomon prompt to cover giving, groups, events, Watch, Thinkific, Abundant Pathways, Merch, Cafe
 - Portal Home “Open” button launches the Ask Solomon chat
 - Added voice input mic (browser Web Speech API) for members + admins
