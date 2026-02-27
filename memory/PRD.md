@@ -221,6 +221,7 @@ Each church is a tenant with isolated data:
 - Added Abundant Cafe admin + member ordering experience (orders mocked)
 - Added Leave a Note (member submission + admin review)
 - Expanded Ask Solomon coverage (Watch, Pathways, Thinkific, Merch, Cafe)
+- Added voice mic input for Ask Solomon (members + admins)
 - Polished Portal Home layout for card symmetry + nav spacing
 
 ### Feb 24, 2026
