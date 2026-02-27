@@ -4987,7 +4987,7 @@ async def get_tenant(request: Request):
             "primary_color": "#4f6ef7",
             "accent_color": "#00c896",
             "timezone": "America/Los_Angeles",
-            "thinkific_url": "https://abundant.thinkific.com",
+            "thinkific_url": "https://abundantchurch.thinkific.com/collections",
             "merch_embed_url": DEFAULT_MERCH_EMBED_URL
         }
     return serialize_doc(tenant)
@@ -7159,7 +7159,7 @@ async def seed_platform():
             "phone": "(915) 755-3000",
             "primary_color": "#4f6ef7",
             "accent_color": "#00c896",
-            "thinkific_url": "https://abundant.thinkific.com",
+            "thinkific_url": "https://abundantchurch.thinkific.com/collections",
             "merch_embed_url": DEFAULT_MERCH_EMBED_URL
         },
         {
