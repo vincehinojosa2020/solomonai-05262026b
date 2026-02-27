@@ -10,7 +10,7 @@ export default function MeetingsAdminPage() {
     date: '',
     start_time: '',
     end_time: '',
-    location: 'Pastor's office'
+    location: "Pastor's office"
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
