@@ -211,6 +211,42 @@ frontend:
           agent: "testing"
           comment: "✅ PASSED - Cafe admin page (data-testid: cafe-admin-page) loads successfully. Pickup window settings card (data-testid: cafe-settings-card) visible with all form fields: cafe-pickup-start, cafe-pickup-end, cafe-pickup-interval. Menu section (data-testid: cafe-menu) displays menu grid with 7 items. Screenshots captured: member_cafe_page.png and admin_cafe_page.png."
 
+  - task: "Portal Home - Card Height Symmetry (Ask Solomon & Leave a Note)"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/App.css"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ FAILED - Ask Solomon and Leave a Note cards are NOT equal height or aligned in same row. Measured: Ask Solomon (Y: 312px, H: 340px) vs Leave a Note (Y: 288px, H: 364px). 24px height diff and 24px Y-position diff. CSS .portal-home-grid has align-items: stretch but cards render at natural content height. Both cards defined at lines 6989-7008 in App.css. Need to ensure grid items stretch to equal height regardless of content."
+
+  - task: "Portal Navigation - Top Nav Layout & Spacing"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/layout/PortalLayout.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - All 10 navigation items display correctly in single line with even spacing. Abundant Pathways nav item (data-testid: portal-nav-abundant-pathways) is visible, single-line with no text wrapping (Height: 37px, Width: 167px). All nav items aligned on same Y-axis (Y range: 0.0px). CSS .portal-nav-desktop styling working correctly."
+
+  - task: "Portal Home - Ask Solomon Chat Panel"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/SolomonChat.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - Ask Solomon Open button (data-testid: ask-solomon-open-btn) successfully opens Solomon chat panel (.solomon-panel). Panel displays correctly and can be closed using close button (.solomon-close-btn). Chat functionality working as expected."
+
 metadata:
   created_by: "testing_agent"
   version: "1.0"
