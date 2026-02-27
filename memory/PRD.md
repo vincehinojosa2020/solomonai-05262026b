@@ -60,6 +60,7 @@ Each church is a tenant with isolated data:
 ### P0: Ask Solomon Upgrade
 - Updated Solomon prompt to cover giving, groups, events, Watch, Thinkific, Abundant Pathways, Merch, Cafe
 - Portal Home “Open” button launches the Ask Solomon chat
+- Added voice input mic (browser Web Speech API) for members + admins
 
 ### P0: Media Library Sync Bug - FIXED
 - Removed hardcoded `ALL_CONTENT` array from `PortalWatch.jsx`
