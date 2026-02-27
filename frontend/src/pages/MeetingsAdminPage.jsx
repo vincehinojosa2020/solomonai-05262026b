@@ -237,7 +237,7 @@ export default function MeetingsAdminPage() {
                       <strong>{meeting.member_name || 'Member'} · {meeting.topic || 'Meeting'}</strong>
                       <span>{formatSlotTime(meeting.slot)}</span>
                     </div>
-                    <span className="meeting-status">{meeting.status}</span>
+                    <span className={`meeting-status ${meeting.status}`}>{meeting.status}</span>
                   </div>
                   <textarea
                     defaultValue={meeting.notes || ''}
@@ -256,18 +256,25 @@ export default function MeetingsAdminPage() {
                     >
                       <Save className="w-4 h-4" /> Save Notes
                     </button>
-                    <button
-                      className={`meeting-record-btn ${recordingMeetingId === meeting.id ? 'recording' : ''}`}
-                      onClick={() => recordingMeetingId === meeting.id ? stopRecording() : startRecording(meeting.id)}
-                      data-testid={`meeting-record-${meeting.id}`}
-                    >
-                      <Mic className="w-4 h-4" /> {recordingMeetingId === meeting.id ? 'Stop Recording' : 'Record Meeting'}
-                    </button>
-                    <label className="meeting-upload">
+                    {uploadingMeetingId === meeting.id ? (
+                      <button className="meeting-record-btn processing" disabled>
+                        <Loader2 className="w-4 h-4 animate-spin" /> Processing...
+                      </button>
+                    ) : (
+                      <button
+                        className={`meeting-record-btn ${recordingMeetingId === meeting.id ? 'recording' : ''}`}
+                        onClick={() => recordingMeetingId === meeting.id ? stopRecording() : startRecording(meeting.id)}
+                        data-testid={`meeting-record-${meeting.id}`}
+                      >
+                        <Mic className="w-4 h-4" /> {recordingMeetingId === meeting.id ? 'Stop Recording' : 'Record Meeting'}
+                      </button>
+                    )}
+                    <label className={`meeting-upload ${uploadingMeetingId === meeting.id ? 'disabled' : ''}`}>
                       <FileAudio className="w-4 h-4" /> Upload Audio
                       <input
                         type="file"
                         accept="audio/*"
+                        disabled={uploadingMeetingId === meeting.id}
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) uploadRecording(meeting.id, file);
@@ -276,10 +283,39 @@ export default function MeetingsAdminPage() {
                       />
                     </label>
                   </div>
-                  {meeting.summary && (
-                    <div className="meeting-summary" data-testid={`meeting-summary-${meeting.id}`}>
-                      <strong>Summary</strong>
-                      <p>{meeting.summary}</p>
+                  
+                  {/* AI Summary Section */}
+                  {(meeting.summary || meeting.transcript) && (
+                    <div className="meeting-ai-section" data-testid={`meeting-ai-${meeting.id}`}>
+                      <button 
+                        className="meeting-ai-toggle"
+                        onClick={() => toggleExpand(meeting.id)}
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        <span>AI Meeting Summary</span>
+                        {expandedMeetings[meeting.id] ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </button>
+                      
+                      {expandedMeetings[meeting.id] && (
+                        <div className="meeting-ai-content">
+                          {meeting.summary && (
+                            <div className="meeting-summary-box" data-testid={`meeting-summary-${meeting.id}`}>
+                              <h4><Sparkles className="w-4 h-4" /> AI Summary</h4>
+                              <div className="meeting-summary-text" dangerouslySetInnerHTML={{ 
+                                __html: meeting.summary
+                                  .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                  .replace(/\n/g, '<br/>') 
+                              }} />
+                            </div>
+                          )}
+                          {meeting.transcript && (
+                            <div className="meeting-transcript-box" data-testid={`meeting-transcript-${meeting.id}`}>
+                              <h4><FileText className="w-4 h-4" /> Transcript</h4>
+                              <p className="meeting-transcript-text">{meeting.transcript}</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
