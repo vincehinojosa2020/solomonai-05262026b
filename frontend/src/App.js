@@ -114,6 +114,11 @@ function AppRouter() {
 }
 
 function App() {
+  useEffect(() => {
+    document.body.classList.add('ngo-theme');
+    return () => document.body.classList.remove('ngo-theme');
+  }, []);
+
   return (
     <div className="App">
       <BrowserRouter>
