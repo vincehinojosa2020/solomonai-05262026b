@@ -26,6 +26,7 @@ const navItems = [
   { section: 'PEOPLE', items: [
     { name: 'Members', path: '/people', icon: Users },
     { name: 'Households', path: '/households', icon: Home },
+    { name: 'Meetings', path: '/meetings', icon: Calendar },
     { name: 'Notes', path: '/notes', icon: MessageSquare },
   ]},
   { section: 'MINISTRY', items: [
