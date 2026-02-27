@@ -7888,3 +7888,17 @@ body.ngo-theme .solomon-input:focus {
   border-color: var(--ngo-primary);
   box-shadow: 0 0 0 2px var(--ngo-primary-light);
 }
+
+
+body.ngo-theme .portal-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+body.ngo-theme .solomon-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
