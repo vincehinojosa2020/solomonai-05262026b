@@ -133,6 +133,7 @@ export default function PortalLayout() {
             >
               {getChurchDisplayName()}
             </span>
+            <span className="ngo-mode-badge" data-testid="portal-ngo-badge">NGO Mode</span>
           </div>
 
           {/* Desktop Nav */}
