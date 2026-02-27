@@ -2436,6 +2436,9 @@ async def get_member_pathways_courses(request: Request):
     user = await get_current_member_user(request)
     tenant_id = user.get("tenant_id")
 
+    # Ensure demo data exists for Abundant Church
+    await ensure_abundant_pathways_data(tenant_id)
+
     enrollments = await db.pathways_enrollments.find(
         {"user_id": user.get("user_id"), "tenant_id": tenant_id, "status": {"$ne": "dropped"}},
         {"_id": 0}
