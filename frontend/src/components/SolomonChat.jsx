@@ -334,7 +334,7 @@ const SolomonChat = () => {
         </div>
         {isListening && (
           <div className="solomon-mic-status" data-testid="samson-mic-status">
-            Listening... click mic to stop
+            Listening... tap mic to stop
           </div>
         )}
       </div>
