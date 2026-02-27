@@ -1413,6 +1413,7 @@ async def transcribe_audio_with_whisper(file_path: Path) -> str:
         raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
 
 async def summarize_meeting_with_claude(transcript: str, topic: Optional[str] = None) -> str:
+    """Summarize meeting transcript using Claude via emergentintegrations"""
     api_key = os.environ.get('EMERGENT_LLM_KEY')
     if not api_key:
         raise HTTPException(status_code=500, detail="Claude is not configured")
@@ -1421,12 +1422,29 @@ async def summarize_meeting_with_claude(transcript: str, topic: Optional[str] = 
         api_key=api_key,
         session_id=str(uuid.uuid4()),
         system_message=(
-            "You are a pastoral meeting assistant. Summarize the meeting into: "
-            "(1) Key themes, (2) Action items, (3) Follow-up reminders. Keep it concise."
+            "You are a pastoral meeting assistant helping pastors document their sessions with church members. "
+            "Your summaries should be warm, pastoral in tone, and respect confidentiality. "
+            "Format your response with clear sections using markdown."
         )
     )
     chat.with_model("anthropic", "claude-sonnet-4-5-20250929")
-    prompt = f"Meeting topic: {topic or 'General'}\n\nTranscript:\n{transcript[:6000]}"
+    
+    prompt = f"""Please summarize this pastoral meeting session.
+
+**Meeting Topic:** {topic or 'General Check-in'}
+
+**Transcript:**
+{transcript[:8000]}
+
+---
+
+Please provide a summary with:
+1. **Key Discussion Points** - Main topics covered
+2. **Spiritual/Emotional Needs Identified** - Any concerns or prayer requests
+3. **Action Items** - Specific follow-ups for the pastor
+4. **Recommended Next Steps** - Suggested future engagement
+5. **Prayer Points** - Key items for continued prayer"""
+
     response_text = await chat.send_message(UserMessage(text=prompt))
     return response_text
 
