@@ -7022,6 +7022,7 @@
 .portal-solomon-input {
   display: flex;
   gap: 8px;
+  margin-top: auto;
 }
 
 .portal-solomon-input-field {
