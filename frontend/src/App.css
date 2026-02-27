@@ -7005,7 +7005,9 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-height: 240px;
+  min-height: 360px;
+  height: 100%;
+  align-self: stretch;
 }
 
 .portal-solomon-header,
