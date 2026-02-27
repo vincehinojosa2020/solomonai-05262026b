@@ -76,6 +76,7 @@ export default function LoginPage() {
           <span className="solomon-logo-text">SOLOMON</span>
           <span className="solomon-logo-ai">AI</span>
         </div>
+        <div className="ngo-mode-banner" data-testid="ngo-mode-banner">Nonprofit / NGO Mode</div>
 
         {/* Login Card */}
         <div className="solomon-login-card">
