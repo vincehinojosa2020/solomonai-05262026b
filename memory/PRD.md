@@ -209,7 +209,7 @@ Each church is a tenant with isolated data:
 ## Changelog
 
 ### Feb 27, 2026 (Latest Session)
-- Applied NGO/Nonprofit pink theme across the app with NGO Mode badges
+- Removed NGO/Nonprofit pink theme per request (restored default branding)
 - Portal Home symmetry and top nav spacing tightened
 - Verified Solomon AI responses in member portal
 
