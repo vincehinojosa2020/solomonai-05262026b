@@ -87,6 +87,7 @@ function AppRouter() {
         <Route path="/abundant-pathways" element={<AbundantPathwaysAdmin />} />
         <Route path="/merch" element={<MerchAdminPage />} />
         <Route path="/cafe" element={<CafeAdminPage />} />
+        <Route path="/meetings" element={<MeetingsAdminPage />} />
         <Route path="/notes" element={<LeadershipNotesPage />} />
         <Route path="/admin/groups" element={<GroupsManagerPage />} />
         <Route path="/admin/events" element={<EventsManagerPage />} />
