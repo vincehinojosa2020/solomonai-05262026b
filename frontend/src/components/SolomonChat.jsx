@@ -13,6 +13,7 @@ const SolomonChat = () => {
   const [sessionId, setSessionId] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const recognitionRef = useRef(null);
 
   // Sample prompts to get started
   const samplePrompts = [
