@@ -1745,7 +1745,14 @@ async def get_admin_thinkific(request: Request):
     if not tenant_id:
         raise HTTPException(status_code=400, detail="Tenant context required")
     tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "thinkific_url": 1})
-    return {"thinkific_url": tenant.get("thinkific_url") if tenant else None}
+    thinkific_url = tenant.get("thinkific_url") if tenant else None
+    if tenant_id == "abundant-church-001" and not thinkific_url:
+        thinkific_url = "https://abundantchurch.thinkific.com/collections"
+        await db.tenants.update_one(
+            {"id": tenant_id},
+            {"$set": {"thinkific_url": thinkific_url, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+    return {"thinkific_url": thinkific_url}
 
 @api_router.patch("/admin/thinkific")
 async def update_admin_thinkific(request: Request, payload: ThinkificUpdate):
