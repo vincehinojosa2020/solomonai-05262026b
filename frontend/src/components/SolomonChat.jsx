@@ -39,8 +39,60 @@ const SolomonChat = () => {
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setSpeechSupported(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = true;
+    recognition.continuous = false;
+
+    recognition.onresult = (event) => {
+      const transcript = Array.from(event.results)
+        .map((result) => result[0].transcript)
+        .join('');
+      setInputValue(transcript);
+      if (event.results[0]?.isFinal) {
+        setIsListening(false);
+      }
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+      toast.error('Voice input failed. Please try again.');
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognitionRef.current = recognition;
+    setSpeechSupported(true);
+  }, []);
+
+  const toggleListening = () => {
+    if (!speechSupported) {
+      toast.error('Voice input is not supported in this browser.');
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      recognitionRef.current?.start();
+      setIsListening(true);
+    } catch (error) {
+      setIsListening(false);
+      toast.error('Unable to start voice input.');
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
