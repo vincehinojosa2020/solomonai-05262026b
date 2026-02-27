@@ -15,6 +15,8 @@ export default function MeetingsAdminPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [recordingMeetingId, setRecordingMeetingId] = useState(null);
+  const [uploadingMeetingId, setUploadingMeetingId] = useState(null);
+  const [expandedMeetings, setExpandedMeetings] = useState({});
   const recorderRef = useRef(null);
   const recordedChunksRef = useRef([]);
 
