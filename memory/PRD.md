@@ -32,7 +32,12 @@ Each church is a tenant with isolated data:
 
 ---
 
-## What's Implemented (February 26, 2026)
+## What's Implemented (February 27, 2026)
+
+### P0: NGO / Nonprofit Mode Preview
+- Global pink/white skin applied across login, admin, and member portals (Airbnb/Lemonade-inspired)
+- NGO Mode badges surfaced on login + portal/admin headers
+- Easy revert by removing the `ngo-theme` body class in App.js
 
 ### P0: Solomon Discipleship (LMS)
 - **Thinkific (Admin + Member)**
