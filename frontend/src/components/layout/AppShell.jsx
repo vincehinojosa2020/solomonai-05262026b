@@ -268,6 +268,7 @@ export default function AppShell() {
                 SOL<span className="text-blue-600">O</span>MON
               </span>
             )}
+            <span className="ngo-mode-badge" data-testid="ngo-mode-badge">NGO Mode</span>
           </div>
 
           {/* Search */}
