@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test Cafe + Required Tabs Visibility - Admin and Member flows"
+user_problem_statement: "NGO Pink Theme & Badge Verification"
 
 backend:
   - task: "Notes API endpoints"
