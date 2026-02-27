@@ -7705,3 +7705,186 @@
   text-align: center;
   color: #64748b;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   NGO / NONPROFIT PINK THEME (EASY REVERT VIA BODY CLASS)
+   ═══════════════════════════════════════════════════════════════ */
+
+body.ngo-theme {
+  --ngo-primary: #ff4f8b;
+  --ngo-primary-dark: #c81e6f;
+  --ngo-primary-light: #ffe4ef;
+  --ngo-bg: #fff5f9;
+  --ngo-ink: #1f2937;
+  background: var(--ngo-bg);
+  color: var(--ngo-ink);
+}
+
+body.ngo-theme .app-shell,
+body.ngo-theme .portal-layout {
+  background: var(--ngo-bg);
+}
+
+body.ngo-theme .app-sidebar {
+  background: linear-gradient(180deg, #ff4f8b 0%, #f472b6 100%);
+}
+
+body.ngo-theme .logo-text,
+body.ngo-theme .logo-accent {
+  color: #ffffff;
+}
+
+body.ngo-theme .nav-section-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+body.ngo-theme .nav-item {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.ngo-theme .nav-item:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+body.ngo-theme .nav-item.active {
+  background: rgba(255, 255, 255, 0.28);
+  border-left-color: #ffffff;
+  color: #ffffff;
+}
+
+body.ngo-theme .app-topbar,
+body.ngo-theme .portal-header {
+  border-bottom-color: var(--ngo-primary-light);
+}
+
+body.ngo-theme .page-header {
+  border-bottom-color: var(--ngo-primary-light);
+}
+
+body.ngo-theme .page-title {
+  color: var(--ngo-primary-dark);
+}
+
+body.ngo-theme .page-subtitle {
+  color: #9f1239;
+}
+
+body.ngo-theme .portal-nav-item.active,
+body.ngo-theme .portal-bottom-nav-item.active,
+body.ngo-theme .portal-mobile-nav-item.active {
+  background: var(--ngo-primary-light);
+  color: var(--ngo-primary-dark);
+}
+
+body.ngo-theme .portal-bottom-nav-item.active {
+  color: var(--ngo-primary-dark);
+}
+
+body.ngo-theme .portal-tag,
+body.ngo-theme .note-category,
+body.ngo-theme .merch-order-status,
+body.ngo-theme .cafe-order-status {
+  background: var(--ngo-primary-light);
+  color: var(--ngo-primary-dark);
+}
+
+body.ngo-theme .bento-card,
+body.ngo-theme .thinkific-card,
+body.ngo-theme .thinkific-preview,
+body.ngo-theme .pathways-card,
+body.ngo-theme .merch-card,
+body.ngo-theme .merch-product-card,
+body.ngo-theme .cafe-card,
+body.ngo-theme .cafe-menu-card,
+body.ngo-theme .portal-solomon-widget,
+body.ngo-theme .portal-note-card,
+body.ngo-theme .portal-pathways-card,
+body.ngo-theme .portal-merch-card,
+body.ngo-theme .portal-cafe-card {
+  border-color: var(--ngo-primary-light);
+}
+
+body.ngo-theme .portal-pathways-progress-bar div,
+body.ngo-theme .pathways-progress-bar div,
+body.ngo-theme .portal-merch-progress-bar div,
+body.ngo-theme .portal-cafe-progress-bar div {
+  background: linear-gradient(90deg, #ff4f8b, #f472b6);
+}
+
+body.ngo-theme .portal-solomon-button,
+body.ngo-theme .portal-note-submit,
+body.ngo-theme .portal-merch-add,
+body.ngo-theme .portal-merch-checkout,
+body.ngo-theme .portal-merch-cart-btn,
+body.ngo-theme .portal-cafe-add,
+body.ngo-theme .portal-cafe-checkout,
+body.ngo-theme .portal-cafe-cart-btn,
+body.ngo-theme .portal-pathways-cta,
+body.ngo-theme .solomon-fab,
+body.ngo-theme .solomon-send-btn,
+body.ngo-theme .thinkific-save-btn,
+body.ngo-theme .merch-add-btn,
+body.ngo-theme .cafe-add-btn,
+body.ngo-theme .pathways-add-btn {
+  background: var(--ngo-primary) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+
+body.ngo-theme .portal-merch-category.active,
+body.ngo-theme .portal-cafe-category.active {
+  background: var(--ngo-primary);
+  border-color: var(--ngo-primary);
+  color: #ffffff;
+}
+
+body.ngo-theme .solomon-action-btn {
+  border-color: var(--ngo-primary-light);
+  color: var(--ngo-primary-dark);
+}
+
+body.ngo-theme .ngo-mode-badge,
+body.ngo-theme .ngo-mode-banner {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border: 1px solid var(--ngo-primary-light);
+  color: var(--ngo-primary-dark);
+  background: #ffffff;
+}
+
+body.ngo-theme .ngo-mode-banner {
+  margin: 10px 0 18px;
+}
+
+body.ngo-theme .solomon-login {
+  background: linear-gradient(180deg, #fff5f9 0%, #ffe4ef 100%);
+}
+
+body.ngo-theme .solomon-login-card {
+  border-color: var(--ngo-primary-light);
+  box-shadow: 0 20px 40px rgba(236, 72, 153, 0.18);
+}
+
+body.ngo-theme .solomon-logo-ai {
+  color: var(--ngo-primary);
+}
+
+body.ngo-theme .solomon-submit-btn {
+  background: var(--ngo-primary);
+}
+
+body.ngo-theme .solomon-submit-btn:hover {
+  background: var(--ngo-primary-dark);
+}
+
+body.ngo-theme .solomon-input:focus {
+  border-color: var(--ngo-primary);
+  box-shadow: 0 0 0 2px var(--ngo-primary-light);
+}
