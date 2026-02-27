@@ -7075,6 +7075,7 @@
   padding: 10px 14px;
   font-size: 12px;
   cursor: pointer;
+  margin-top: auto;
 }
 
 .portal-note-submit:disabled {
