@@ -1166,7 +1166,7 @@
 /* Input */
 .solomon-input-container {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 8px;
   padding: 12px 16px;
   border-top: 1px solid #e2e8f0;
