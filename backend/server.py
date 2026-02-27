@@ -1141,6 +1141,85 @@ async def ensure_demo_cafe_data(tenant_id: Optional[str]):
                     }
                     await db.cafe_orders.update_one({"id": order["id"]}, {"$set": order}, upsert=True)
 
+async def ensure_demo_meetings_data(tenant_id: Optional[str]):
+    if not tenant_id:
+        return
+
+    slot_count = await db.pastor_meeting_slots.count_documents({"tenant_id": tenant_id})
+    if slot_count == 0:
+        today = datetime.now(timezone.utc)
+        days_until_sunday = (6 - today.weekday()) % 7
+        next_sunday = (today + timedelta(days=days_until_sunday)).date()
+        base_time = datetime.combine(next_sunday, datetime.min.time()).replace(tzinfo=timezone.utc)
+        slots = []
+        for offset in [9, 9.5, 10, 10.5]:
+            start = base_time + timedelta(hours=offset)
+            end = start + timedelta(minutes=30)
+            slot = PastorMeetingSlot(
+                tenant_id=tenant_id,
+                start_time=start.isoformat(),
+                end_time=end.isoformat(),
+                location="Pastor's office"
+            ).model_dump()
+            slots.append(slot)
+        for slot in slots:
+            await db.pastor_meeting_slots.update_one({"id": slot["id"]}, {"$set": slot}, upsert=True)
+
+    meeting_count = await db.pastor_meetings.count_documents({"tenant_id": tenant_id})
+    if meeting_count == 0:
+        member = await db.users.find_one({"tenant_id": tenant_id, "role": "member"}, {"_id": 0})
+        slot = await db.pastor_meeting_slots.find_one({"tenant_id": tenant_id, "status": "open"}, {"_id": 0})
+        if member and slot:
+            await db.pastor_meeting_slots.update_one({"id": slot["id"]}, {"$set": {"status": "booked"}})
+            meeting = PastorMeeting(
+                tenant_id=tenant_id,
+                slot_id=slot["id"],
+                user_id=member.get("user_id"),
+                member_name=member.get("name"),
+                member_email=member.get("email"),
+                topic="Personal check-in",
+                notes="",
+                status="scheduled"
+            ).model_dump()
+            await db.pastor_meetings.insert_one(meeting)
+
+async def transcribe_audio_with_whisper(file_path: Path) -> str:
+    api_key = os.environ.get('EMERGENT_LLM_KEY')
+    if not api_key:
+        raise HTTPException(status_code=500, detail="Whisper is not configured")
+
+    async with httpx.AsyncClient(timeout=120.0) as client:
+        with file_path.open('rb') as file_obj:
+            files = {"file": (file_path.name, file_obj, "application/octet-stream")}
+            data = {"model": "whisper-1"}
+            headers = {"Authorization": f"Bearer {api_key}"}
+            response = await client.post(
+                "https://api.openai.com/v1/audio/transcriptions",
+                data=data,
+                files=files,
+                headers=headers
+            )
+    response.raise_for_status()
+    payload = response.json()
+    return payload.get("text", "")
+
+async def summarize_meeting_with_claude(transcript: str, topic: Optional[str] = None) -> str:
+    api_key = os.environ.get('EMERGENT_LLM_KEY')
+    if not api_key:
+        raise HTTPException(status_code=500, detail="Claude is not configured")
+
+    chat = LlmChat(
+        api_key=api_key,
+        session_id=str(uuid.uuid4()),
+        system_message=(
+            "You are a pastoral meeting assistant. Summarize the meeting into: "
+            "(1) Key themes, (2) Action items, (3) Follow-up reminders. Keep it concise."
+        )
+    )
+    chat.with_model("anthropic", "claude-sonnet-4-5-20250929")
+    prompt = f"Meeting topic: {topic or 'General'}\n\nTranscript:\n{transcript[:6000]}"
+    response_text = await chat.send_message(UserMessage(text=prompt))
+    return response_text
 
 # Default tenant ID for demo
 DEFAULT_TENANT_ID = "abundant-church-001"
