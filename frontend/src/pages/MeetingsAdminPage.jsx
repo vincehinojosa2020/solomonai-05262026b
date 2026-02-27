@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Calendar, Clock, Mic, Plus, Save, FileAudio, Users } from 'lucide-react';
+import { Calendar, Clock, Mic, Plus, Save, FileAudio, Users, ChevronDown, ChevronUp, FileText, Sparkles, Loader2 } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 
