@@ -213,7 +213,12 @@ Each church is a tenant with isolated data:
 
 ## Changelog
 
-### Feb 26, 2026 (Latest Session)
+### Feb 27, 2026 (Latest Session)
+- Applied NGO/Nonprofit pink theme across the app with NGO Mode badges
+- Portal Home symmetry and top nav spacing tightened
+- Verified Solomon AI responses in member portal
+
+### Feb 26, 2026
 - Added Thinkific integration + Abundant Pathways LMS flows
 - Built merch admin dashboard + member merch experience
 - Added merch embed + demo catalog + order placement (mocked)
