@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, Home, UsersRound, Calendar, 
   CheckSquare, DollarSign, Mail, BarChart3, Settings, 
   Building2, Search, Bell, ChevronLeft, Menu, Command,
-  LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, MessageSquare, Coffee
+  LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, MessageSquare, Coffee, Code
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -51,6 +51,7 @@ const navItems = [
   { section: 'ADMIN', items: [
     { name: 'Settings', path: '/settings', icon: Settings },
     { name: 'Integrations', path: '/integrations', icon: Plug },
+    { name: 'Developer API', path: '/developer', icon: Code },
   ]},
 ];
 
