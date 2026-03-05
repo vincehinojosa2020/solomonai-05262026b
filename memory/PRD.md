@@ -239,6 +239,21 @@ Each church is a tenant with isolated data:
   - Uses emergentintegrations library for OpenAI Whisper (whisper-1 model)
   - Claude Sonnet 4.5 generates pastoral meeting summaries with action items
   - Summary includes: Key Discussion Points, Spiritual Needs, Action Items, Next Steps, Prayer Points
+- ✅ **AGENT-READY API PLATFORM** (100% - 24/24 tests passed)
+  - API Key Management: Admins generate keys with scoped permissions
+  - Agent Endpoints (/api/v1/agent/*):
+    - `/scout` - Handshake, verify connection
+    - `/visitors` - New members in manifest schema for outreach
+    - `/members` - Member directory with search
+    - `/events` - Upcoming events with registration counts
+    - `/groups` - Groups with member counts
+    - `/meetings` - Pastoral meetings
+    - `/giving/summary` - Aggregate stats (READ-ONLY - no amounts)
+    - `/notes` - Leadership notes
+    - `/webhooks` - Webhook registration for real-time events
+    - `/docs` - Public API documentation
+  - Circuit Breaker: Anomaly detection for bulk operations
+  - External agents (MoltBot/OpenClaw) can now connect to Solomon AI!
 - MOCKED: Teams/Slack notifications return simulated responses
 
 ### Feb 26, 2026
