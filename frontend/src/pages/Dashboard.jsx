@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext, Link } from 'react-router-dom';
+import { useOutletContext, Link, useNavigate } from 'react-router-dom';
 import { 
   Users, UsersRound, Calendar, DollarSign, TrendingUp, 
   ArrowUpRight, ArrowDownRight, RefreshCw, Video, ExternalLink, 
@@ -93,12 +93,20 @@ const EventCard = ({ event }) => {
 
 export default function Dashboard() {
   const { greeting, user } = useOutletContext();
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [givingTrend, setGivingTrend] = useState([]);
   const [attendanceTrend, setAttendanceTrend] = useState([]);
   const [activities, setActivities] = useState([]);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Redirect platform admins to their dashboard
+  useEffect(() => {
+    if (user?.role === 'platform_admin') {
+      navigate('/platform', { replace: true });
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
