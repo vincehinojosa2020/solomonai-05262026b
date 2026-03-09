@@ -84,7 +84,6 @@ export default function PortalLayout() {
     { name: 'Watch', path: '/portal/watch', icon: Tv },
     { name: 'Merch', path: '/portal/merch', icon: ShoppingBag },
     { name: 'Cafe', path: '/portal/cafe', icon: Coffee },
-    { name: 'Meet', path: '/portal/meetings', icon: MessageSquare },
     { name: 'Give', path: '/portal/give', icon: DollarSign },
     { name: 'Groups', path: '/portal/groups', icon: Users },
     { name: 'Events', path: '/portal/events', icon: Calendar },
