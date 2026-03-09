@@ -10618,12 +10618,12 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════
-   KIDS CHECK-IN - ISRAEL THEMED (Blue & White with Star of David)
+   KIDS CHECK-IN - CHRISTIAN THEME (Colorful, Cross, Bible)
    ═══════════════════════════════════════════════════════════════ */
 
 .kc-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #FFFFFF 0%, #EFF6FF 30%, #DBEAFE 60%, #F0F9FF 100%);
+  background: linear-gradient(180deg, #FFF7ED 0%, #FEF3C7 30%, #ECFDF5 60%, #EFF6FF 100%);
   padding: 24px;
   position: relative;
   overflow: hidden;
@@ -10662,19 +10662,19 @@
   align-items: center;
   justify-content: center;
   min-height: 60vh;
-  color: #1D4ED8;
+  color: #7C3AED;
 }
 
 .kc-loading-spinner {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: kc-spin 2s linear infinite;
-  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 8px 30px rgba(124, 58, 237, 0.4);
 }
 
 .kc-spin-icon {
@@ -10692,10 +10692,10 @@
   margin-top: 16px;
   font-size: 18px;
   font-weight: 600;
-  color: #1E3A8A;
+  color: #6D28D9;
 }
 
-/* Header - Israel Blue */
+/* Header - Warm Purple/Gold */
 .kc-header {
   position: relative;
   display: flex;
@@ -10704,10 +10704,10 @@
   flex-wrap: wrap;
   gap: 16px;
   padding: 28px 32px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 50%, #3B82F6 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #A855F7 50%, #EC4899 100%);
   border-radius: 28px;
   margin-bottom: 28px;
-  box-shadow: 0 12px 40px rgba(30, 58, 138, 0.35);
+  box-shadow: 0 12px 40px rgba(124, 58, 237, 0.35);
   overflow: hidden;
 }
 
@@ -10799,7 +10799,7 @@
   gap: 10px;
   padding: 16px 28px;
   background: white;
-  color: #1E40AF;
+  color: #7C3AED;
   border: none;
   border-radius: 50px;
   font-size: 16px;
@@ -10816,16 +10816,16 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
-/* Ready Banner - Israel Blue */
+/* Ready Banner - Emerald Green */
 .kc-ready-banner {
   display: flex;
   align-items: center;
   gap: 20px;
   padding: 24px 28px;
-  background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+  background: linear-gradient(135deg, #059669 0%, #34D399 100%);
   border-radius: 24px;
   margin-bottom: 28px;
-  box-shadow: 0 8px 30px rgba(30, 64, 175, 0.3);
+  box-shadow: 0 8px 30px rgba(5, 150, 105, 0.3);
 }
 
 .kc-ready-icon {
@@ -10869,7 +10869,7 @@
   padding: 60px 32px;
   background: white;
   border-radius: 32px;
-  border: 4px dashed #93C5FD;
+  border: 4px dashed #DDD6FE;
   text-align: center;
   position: relative;
 }
@@ -10892,7 +10892,7 @@
 
 .kc-star {
   position: absolute;
-  color: #3B82F6;
+  color: #F59E0B;
   animation: kc-twinkle 1.5s ease-in-out infinite;
 }
 
@@ -10908,13 +10908,13 @@
 .kc-empty h3 {
   font-size: 26px;
   font-weight: 800;
-  color: #1E3A8A;
+  color: #7C3AED;
   margin: 0 0 12px 0;
 }
 
 .kc-empty p {
   font-size: 16px;
-  color: #3B82F6;
+  color: #A78BFA;
   margin: 0 0 28px 0;
   max-width: 300px;
 }
@@ -10924,7 +10924,7 @@
   align-items: center;
   gap: 10px;
   padding: 18px 36px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 50%, #3B82F6 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #A855F7 50%, #EC4899 100%);
   color: white;
   border: none;
   border-radius: 50px;
@@ -10932,12 +10932,12 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 25px rgba(30, 58, 138, 0.4);
+  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
 }
 
 .kc-empty-btn:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 35px rgba(30, 58, 138, 0.5);
+  box-shadow: 0 12px 35px rgba(124, 58, 237, 0.5);
 }
 
 /* Child Card */
@@ -10958,13 +10958,13 @@
 .kc-child-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
-  border-color: #93C5FD;
+  border-color: #DDD6FE;
 }
 
 .kc-child-card.kc-checked-in {
-  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
-  border-color: #3B82F6;
-  box-shadow: 0 10px 35px rgba(59, 130, 246, 0.2);
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border-color: #34D399;
+  box-shadow: 0 10px 35px rgba(5, 150, 105, 0.2);
 }
 
 .kc-card-confetti {
@@ -11044,7 +11044,7 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #1D4ED8;
+  color: #7C3AED;
   font-weight: 500;
   margin: 4px 0 0 0;
 }
@@ -11106,12 +11106,12 @@
   align-items: center;
   gap: 8px;
   padding: 10px 18px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 100%);
+  background: linear-gradient(135deg, #059669 0%, #10B981 100%);
   color: white;
   font-size: 14px;
   font-weight: 700;
   border-radius: 24px;
-  box-shadow: 0 4px 15px rgba(30, 58, 138, 0.35);
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.35);
 }
 
 .kc-pickup-code {
@@ -11119,15 +11119,15 @@
   flex-direction: column;
   align-items: center;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
   border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.3);
 }
 
 .kc-code-label {
   font-size: 10px;
   font-weight: 600;
-  color: #93C5FD;
+  color: #DDD6FE;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -11135,7 +11135,7 @@
 .kc-code-value {
   font-size: 22px;
   font-weight: 800;
-  color: white;
+  color: #FDE68A;
   font-family: 'Monaco', 'Consolas', monospace;
   letter-spacing: 3px;
   margin-top: 2px;
@@ -11147,19 +11147,19 @@
   gap: 6px;
   font-size: 13px;
   font-weight: 600;
-  color: #1D4ED8;
-  background: rgba(59, 130, 246, 0.1);
+  color: #059669;
+  background: rgba(5, 150, 105, 0.1);
   padding: 6px 12px;
   border-radius: 20px;
 }
 
-/* Summary Section - Israel Blue */
+/* Summary Section - Purple/Gold */
 .kc-summary {
   margin-top: 32px;
   padding: 28px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 50%, #3B82F6 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #A855F7 50%, #EC4899 100%);
   border-radius: 28px;
-  box-shadow: 0 12px 40px rgba(30, 58, 138, 0.35);
+  box-shadow: 0 12px 40px rgba(124, 58, 237, 0.35);
   max-width: 900px;
   margin-left: auto;
   margin-right: auto;
@@ -11168,7 +11168,7 @@
 }
 
 .kc-summary::before {
-  content: "✡️";
+  content: "✝️";
   position: absolute;
   top: 20px;
   right: 30px;
@@ -11262,13 +11262,13 @@
   width: 90px;
   height: 90px;
   margin: 0 auto 24px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+  background: linear-gradient(135deg, #059669 0%, #34D399 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 10px 35px rgba(30, 58, 138, 0.4);
+  box-shadow: 0 10px 35px rgba(5, 150, 105, 0.4);
   animation: kc-pop 0.5s ease-out;
 }
 
@@ -11281,7 +11281,7 @@
 .kc-success-modal h2 {
   font-size: 26px;
   font-weight: 800;
-  color: #1E3A8A;
+  color: #059669;
   margin: 0 0 8px 0;
 }
 
@@ -11293,7 +11293,7 @@
 
 .kc-success-code {
   padding: 20px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
   border-radius: 20px;
   margin-bottom: 20px;
 }
@@ -11302,7 +11302,7 @@
   display: block;
   font-size: 12px;
   font-weight: 600;
-  color: #93C5FD;
+  color: #DDD6FE;
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 8px;
@@ -11312,7 +11312,7 @@
   display: block;
   font-size: 36px;
   font-weight: 800;
-  color: white;
+  color: #FDE68A;
   font-family: 'Monaco', 'Consolas', monospace;
   letter-spacing: 6px;
 }
@@ -11323,7 +11323,7 @@
   justify-content: center;
   gap: 8px;
   font-size: 14px;
-  color: #1D4ED8;
+  color: #059669;
   font-weight: 500;
   margin-bottom: 24px;
 }
@@ -11331,7 +11331,7 @@
 .kc-success-btn {
   width: 100%;
   padding: 18px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #A855F7 100%);
   color: white;
   border: none;
   border-radius: 50px;
@@ -11339,19 +11339,19 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 25px rgba(30, 58, 138, 0.35);
+  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.35);
 }
 
 .kc-success-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 35px rgba(30, 58, 138, 0.45);
+  box-shadow: 0 12px 35px rgba(124, 58, 237, 0.45);
 }
 
 /* Add Child Modal */
 .kc-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(30, 58, 138, 0.3);
+  background: rgba(124, 58, 237, 0.3);
   backdrop-filter: blur(8px);
   z-index: 1000;
   display: flex;
@@ -11368,7 +11368,7 @@
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 25px 60px rgba(30, 58, 138, 0.35);
+  box-shadow: 0 25px 60px rgba(124, 58, 237, 0.35);
 }
 
 .kc-modal-close {
@@ -11380,50 +11380,50 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #DBEAFE;
+  background: #F3E8FF;
   border: none;
   border-radius: 50%;
-  color: #1D4ED8;
+  color: #7C3AED;
   cursor: pointer;
   transition: all 0.3s ease;
   z-index: 10;
 }
 
 .kc-modal-close:hover {
-  background: #BFDBFE;
+  background: #E9D5FF;
   transform: rotate(90deg) scale(1.1);
 }
 
 .kc-modal-header {
   padding: 36px 32px 20px;
   text-align: center;
-  border-bottom: 2px dashed #93C5FD;
+  border-bottom: 2px dashed #E9D5FF;
 }
 
 .kc-modal-icon {
   width: 80px;
   height: 80px;
   margin: 0 auto 16px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 50%, #3B82F6 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #A855F7 50%, #EC4899 100%);
   border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 44px;
-  box-shadow: 0 10px 30px rgba(30, 58, 138, 0.3);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
   animation: kc-bounce 2s ease-in-out infinite;
 }
 
 .kc-modal-header h2 {
   font-size: 28px;
   font-weight: 800;
-  color: #1E3A8A;
+  color: #7C3AED;
   margin: 0 0 8px 0;
 }
 
 .kc-modal-header p {
   font-size: 15px;
-  color: #3B82F6;
+  color: #A78BFA;
   margin: 0;
 }
 
@@ -11441,7 +11441,7 @@
   gap: 8px;
   font-size: 14px;
   font-weight: 700;
-  color: #1E3A8A;
+  color: #6D28D9;
   margin-bottom: 10px;
 }
 
@@ -11454,23 +11454,23 @@
   width: 100%;
   padding: 16px 18px;
   font-size: 16px;
-  border: 3px solid #BFDBFE;
+  border: 3px solid #E9D5FF;
   border-radius: 16px;
   transition: all 0.2s ease;
-  background: #EFF6FF;
+  background: #FAF5FF;
 }
 
 .kc-form-group input:focus,
 .kc-form-group textarea:focus {
   outline: none;
-  border-color: #3B82F6;
+  border-color: #A855F7;
   background: white;
-  box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.12);
+  box-shadow: 0 0 0 5px rgba(168, 85, 247, 0.12);
 }
 
 .kc-form-group input::placeholder,
 .kc-form-group textarea::placeholder {
-  color: #93C5FD;
+  color: #C4B5FD;
 }
 
 .kc-form-divider {
@@ -11478,7 +11478,7 @@
   align-items: center;
   gap: 12px;
   margin: 28px 0 20px;
-  color: #1D4ED8;
+  color: #A855F7;
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
@@ -11490,7 +11490,7 @@
   content: '';
   flex: 1;
   height: 2px;
-  background: linear-gradient(90deg, #BFDBFE 0%, #93C5FD 100%);
+  background: linear-gradient(90deg, #E9D5FF 0%, #DDD6FE 100%);
   border-radius: 2px;
 }
 
@@ -11507,7 +11507,7 @@
   gap: 12px;
   width: 100%;
   padding: 20px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 50%, #3B82F6 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #A855F7 50%, #EC4899 100%);
   color: white;
   border: none;
   border-radius: 50px;
@@ -11516,12 +11516,12 @@
   cursor: pointer;
   margin-top: 12px;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 30px rgba(30, 58, 138, 0.35);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.35);
 }
 
 .kc-modal-submit:hover {
   transform: translateY(-4px);
-  box-shadow: 0 14px 40px rgba(30, 58, 138, 0.45);
+  box-shadow: 0 14px 40px rgba(124, 58, 237, 0.45);
 }
 
 /* Mobile Responsive */
@@ -11578,12 +11578,12 @@
 
 
 /* ═══════════════════════════════════════════════════════════════
-   KIDS CHECK-IN ADMIN - Front Desk Station (Israel Theme)
+   KIDS CHECK-IN ADMIN - Front Desk Station (Colorful Christian Theme)
    ═══════════════════════════════════════════════════════════════ */
 
 .kca-page {
   padding: 24px;
-  background: linear-gradient(180deg, #FFFFFF 0%, #EFF6FF 50%, #DBEAFE 100%);
+  background: linear-gradient(180deg, #FFF7ED 0%, #FEF3C7 50%, #ECFDF5 100%);
   min-height: 100vh;
 }
 
@@ -11598,13 +11598,13 @@
 .kca-loading-spinner {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: kcaSpin 1.5s linear infinite;
-  box-shadow: 0 8px 30px rgba(30, 58, 138, 0.4);
+  box-shadow: 0 8px 30px rgba(124, 58, 237, 0.4);
 }
 
 @keyframes kcaSpin {
@@ -11616,19 +11616,19 @@
   margin-top: 16px;
   font-size: 16px;
   font-weight: 600;
-  color: #1E3A8A;
+  color: #7C3AED;
 }
 
-/* Header - Israel Blue */
+/* Header - Colorful Purple/Pink */
 .kca-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 24px 28px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 50%, #3B82F6 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #A855F7 50%, #EC4899 100%);
   border-radius: 20px;
   margin-bottom: 24px;
-  box-shadow: 0 10px 40px rgba(30, 58, 138, 0.3);
+  box-shadow: 0 10px 40px rgba(124, 58, 237, 0.3);
 }
 
 .kca-header-left {
@@ -11654,7 +11654,7 @@
   position: absolute;
   top: -8px;
   right: -8px;
-  color: white;
+  color: #FDE68A;
   width: 20px;
   height: 20px;
 }
@@ -11751,13 +11751,13 @@
 }
 
 .kca-tab:hover {
-  background: #EFF6FF;
+  background: #FAF5FF;
 }
 
 .kca-tab.active {
-  background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #A855F7 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
 }
 
 .kca-tab-count {
@@ -11800,9 +11800,9 @@
 }
 
 .kca-child-card:hover {
-  border-color: #93C5FD;
+  border-color: #DDD6FE;
   transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 12px 30px rgba(124, 58, 237, 0.15);
 }
 
 .kca-card-status {
@@ -11813,7 +11813,7 @@
   align-items: center;
   gap: 4px;
   padding: 6px 12px;
-  background: #1D4ED8;
+  background: #059669;
   color: white;
   font-size: 11px;
   font-weight: 700;
@@ -11883,7 +11883,7 @@
 
 .kca-pickup-code {
   padding: 12px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
   border-radius: 12px;
   margin-bottom: 12px;
 }
@@ -11892,7 +11892,7 @@
   display: block;
   font-size: 10px;
   font-weight: 600;
-  color: #93C5FD;
+  color: #DDD6FE;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -11901,7 +11901,7 @@
   display: block;
   font-size: 22px;
   font-weight: 800;
-  color: white;
+  color: #FDE68A;
   font-family: 'Monaco', 'Consolas', monospace;
   letter-spacing: 3px;
   margin-top: 4px;
@@ -12022,8 +12022,8 @@
 }
 
 .kca-kid-row:hover {
-  border-color: #93C5FD;
-  background: #EFF6FF;
+  border-color: #DDD6FE;
+  background: #FAF5FF;
 }
 
 .kca-kid-avatar {
@@ -12077,7 +12077,7 @@
   align-items: center;
   gap: 8px;
   padding: 14px 24px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+  background: linear-gradient(135deg, #059669 0%, #10B981 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -12085,12 +12085,12 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
 }
 
 .kca-checkin-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(30, 58, 138, 0.4);
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
 }
 
 /* Checkout Tab */
@@ -12102,9 +12102,9 @@
 .kca-verify-section {
   text-align: center;
   padding: 40px;
-  background: linear-gradient(135deg, #FFFFFF 0%, #EFF6FF 100%);
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF5FF 100%);
   border-radius: 20px;
-  border: 2px dashed #93C5FD;
+  border: 2px dashed #DDD6FE;
   margin-bottom: 24px;
 }
 
@@ -12112,19 +12112,19 @@
   width: 80px;
   height: 80px;
   margin: 0 auto 20px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #A855F7 100%);
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 8px 30px rgba(30, 58, 138, 0.3);
+  box-shadow: 0 8px 30px rgba(124, 58, 237, 0.3);
 }
 
 .kca-verify-section h2 {
   font-size: 24px;
   font-weight: 700;
-  color: #1E3A8A;
+  color: #6D28D9;
   margin: 0 0 8px 0;
 }
 
@@ -12149,7 +12149,7 @@
   font-family: 'Monaco', 'Consolas', monospace;
   text-align: center;
   letter-spacing: 2px;
-  border: 3px solid #BFDBFE;
+  border: 3px solid #E9D5FF;
   border-radius: 14px;
   text-transform: uppercase;
   transition: all 0.2s ease;
@@ -12157,13 +12157,13 @@
 
 .kca-verify-input:focus {
   outline: none;
-  border-color: #3B82F6;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  border-color: #A855F7;
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.1);
 }
 
 .kca-verify-btn {
   padding: 16px 28px;
-  background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #A855F7 100%);
   color: white;
   border: none;
   border-radius: 14px;
@@ -12172,12 +12172,12 @@
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
 }
 
 .kca-verify-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(30, 58, 138, 0.4);
+  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
 }
 
 /* Verification Result */

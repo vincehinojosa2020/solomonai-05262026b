@@ -3,27 +3,49 @@ import { useOutletContext } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, Check, X, Clock, AlertCircle,
-  Phone, Heart, QrCode, Sparkles, Star
+  Phone, Heart, Sparkles, Star, Cross
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
-// Bible-themed avatar styles with Israel colors (blue & white)
+// Colorful Bible-themed avatar styles (warm, vibrant colors - no rainbow)
 const AVATAR_COLORS = [
-  { bg: 'linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%)', emoji: '🦁', character: 'Daniel' },      // Daniel & Lions
-  { bg: 'linear-gradient(135deg, #1D4ED8 0%, #60A5FA 100%)', emoji: '🐑', character: 'David' },       // David the Shepherd
-  { bg: 'linear-gradient(135deg, #1E40AF 0%, #93C5FD 100%)', emoji: '🌊', character: 'Moses' },       // Moses & Red Sea
-  { bg: 'linear-gradient(135deg, #2563EB 0%, #BFDBFE 100%)', emoji: '⭐', character: 'Abraham' },     // Stars of Abraham
-  { bg: 'linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%)', emoji: '🕊️', character: 'Noah' },       // Noah's Dove
-  { bg: 'linear-gradient(135deg, #1D4ED8 0%, #60A5FA 100%)', emoji: '🐋', character: 'Jonah' },       // Jonah & Whale
-  { bg: 'linear-gradient(135deg, #1E40AF 0%, #93C5FD 100%)', emoji: '👑', character: 'Esther' },      // Queen Esther
-  { bg: 'linear-gradient(135deg, #2563EB 0%, #BFDBFE 100%)', emoji: '🏹', character: 'Jonathan' },    // Jonathan
+  { bg: 'linear-gradient(135deg, #E11D48 0%, #F43F5E 100%)', emoji: '🦁', character: 'Daniel' },      // Rose/Red - Daniel & Lions
+  { bg: 'linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%)', emoji: '🐑', character: 'David' },       // Purple - David the Shepherd
+  { bg: 'linear-gradient(135deg, #0891B2 0%, #22D3EE 100%)', emoji: '🌊', character: 'Moses' },       // Cyan - Moses & Red Sea
+  { bg: 'linear-gradient(135deg, #EA580C 0%, #FB923C 100%)', emoji: '⭐', character: 'Abraham' },     // Orange - Stars of Abraham
+  { bg: 'linear-gradient(135deg, #059669 0%, #34D399 100%)', emoji: '🕊️', character: 'Noah' },       // Emerald - Noah's Dove
+  { bg: 'linear-gradient(135deg, #2563EB 0%, #60A5FA 100%)', emoji: '🐋', character: 'Jonah' },       // Blue - Jonah & Whale
+  { bg: 'linear-gradient(135deg, #DB2777 0%, #F472B6 100%)', emoji: '👑', character: 'Esther' },      // Pink - Queen Esther
+  { bg: 'linear-gradient(135deg, #CA8A04 0%, #FACC15 100%)', emoji: '💪', character: 'Samson' },      // Gold - Samson
 ];
 
 // Get consistent style for a child based on their name
 const getAvatarStyle = (name) => {
   const index = name.charCodeAt(0) % AVATAR_COLORS.length;
   return AVATAR_COLORS[index];
+};
+
+// Calculate age - works for any age
+const getAge = (birthdate) => {
+  if (!birthdate) return null;
+  const today = new Date();
+  const birth = new Date(birthdate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
+};
+
+// Format age display
+const formatAge = (birthdate) => {
+  const age = getAge(birthdate);
+  if (age === null) return 'Age not set';
+  if (age === 0) return 'Under 1 year';
+  if (age === 1) return '1 year old';
+  return `${age} years old`;
 };
 
 export default function PortalKidsCheckin() {
@@ -146,7 +168,7 @@ export default function PortalKidsCheckin() {
     return (
       <div className="kc-loading" data-testid="kids-checkin-loading">
         <div className="kc-loading-spinner">
-          <Star className="kc-spin-icon" />
+          <Cross className="kc-spin-icon" />
         </div>
         <p>Preparing for Sunday School...</p>
       </div>
@@ -155,13 +177,13 @@ export default function PortalKidsCheckin() {
 
   return (
     <div className="kc-page" data-testid="kids-checkin-page">
-      {/* Floating decorations - Stars of David and Bible themes */}
+      {/* Floating decorations - Christian & Bible themes */}
       <div className="kc-decorations">
-        <span className="kc-deco kc-deco-1">✡️</span>
+        <span className="kc-deco kc-deco-1">✝️</span>
         <span className="kc-deco kc-deco-2">⭐</span>
         <span className="kc-deco kc-deco-3">🕊️</span>
-        <span className="kc-deco kc-deco-4">📜</span>
-        <span className="kc-deco kc-deco-5">✡️</span>
+        <span className="kc-deco kc-deco-4">📖</span>
+        <span className="kc-deco kc-deco-5">💜</span>
       </div>
 
       {/* Header */}
@@ -171,13 +193,13 @@ export default function PortalKidsCheckin() {
         </div>
         <div className="kc-header-content">
           <div className="kc-header-icon">
-            <span className="kc-header-emoji">✡️</span>
+            <span className="kc-header-emoji">✝️</span>
             <Sparkles className="kc-sparkle kc-sparkle-1" />
             <Sparkles className="kc-sparkle kc-sparkle-2" />
           </div>
           <div className="kc-header-text">
             <h1>Kids Check-in</h1>
-            <p>Sunday School with Bible Heroes! 📖</p>
+            <p>Sunday School Adventures! 📖</p>
           </div>
         </div>
         <button 
@@ -216,15 +238,15 @@ export default function PortalKidsCheckin() {
             animate={{ opacity: 1, scale: 1 }}
           >
             <div className="kc-empty-illustration">
-              <span className="kc-empty-emoji">✡️</span>
+              <span className="kc-empty-emoji">✝️</span>
               <div className="kc-empty-stars">
                 <Star className="kc-star kc-star-1" />
                 <Star className="kc-star kc-star-2" />
                 <Star className="kc-star kc-star-3" />
               </div>
             </div>
-            <h3>No Little Ones Yet!</h3>
-            <p>Add your children to enable quick check-in for Sunday School</p>
+            <h3>No Children Yet!</h3>
+            <p>Add your children of any age for Sunday School check-in</p>
             <button 
               className="kc-empty-btn"
               onClick={() => setShowAddChild(true)}
@@ -251,7 +273,7 @@ export default function PortalKidsCheckin() {
               >
                 {checkedIn && (
                   <div className="kc-card-confetti">
-                    <span>✡️</span>
+                    <span>✝️</span>
                     <span>⭐</span>
                     <span>🕊️</span>
                   </div>
@@ -269,7 +291,7 @@ export default function PortalKidsCheckin() {
                   <h3>{child.name}</h3>
                   <p className="kc-child-age">
                     <span className="kc-age-emoji">🎂</span>
-                    {getAge(child.birthdate)} years old
+                    {formatAge(child.birthdate)}
                   </p>
                   <p className="kc-bible-character">
                     <span>📖</span> Like {avatarStyle.character}
@@ -323,11 +345,11 @@ export default function PortalKidsCheckin() {
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="kc-summary-header">
-            <span className="kc-summary-emoji">📖</span>
+            <span className="kc-summary-emoji">✝️</span>
             <h3>Currently in Sunday School</h3>
           </div>
           <p className="kc-summary-count">
-            {checkins.filter(c => c.status === 'checked_in').length} {checkins.filter(c => c.status === 'checked_in').length === 1 ? 'child' : 'children'} learning about Bible heroes!
+            {checkins.filter(c => c.status === 'checked_in').length} {checkins.filter(c => c.status === 'checked_in').length === 1 ? 'child' : 'children'} learning God's Word!
           </p>
           <div className="kc-summary-note">
             <Phone className="w-4 h-4" />
@@ -354,13 +376,13 @@ export default function PortalKidsCheckin() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="kc-success-confetti">
-                <span>✡️</span><span>⭐</span><span>🕊️</span><span>📜</span><span>✨</span>
+                <span>✝️</span><span>⭐</span><span>🕊️</span><span>📖</span><span>✨</span>
               </div>
               <div className="kc-success-icon">
                 <Check className="w-12 h-12" />
               </div>
-              <h2>Shalom! {showSuccess.child.name} is Checked In!</h2>
-              <p>Have a blessed time learning in Sunday School! 📖</p>
+              <h2>{showSuccess.child.name} is Checked In!</h2>
+              <p>Have a blessed time in Sunday School! 📖</p>
               <div className="kc-success-code">
                 <span className="kc-success-code-label">Your Pickup Code</span>
                 <span className="kc-success-code-value">{showSuccess.pickup_code}</span>
@@ -373,7 +395,7 @@ export default function PortalKidsCheckin() {
                 className="kc-success-btn"
                 onClick={() => setShowSuccess(null)}
               >
-                Amen! ✡️
+                God Bless! ✝️
               </button>
             </motion.div>
           </motion.div>
@@ -403,10 +425,10 @@ export default function PortalKidsCheckin() {
               
               <div className="kc-modal-header">
                 <div className="kc-modal-icon">
-                  <span>✡️</span>
+                  <span>✝️</span>
                 </div>
-                <h2>Add a Little One</h2>
-                <p>Register your child for Sunday School!</p>
+                <h2>Add a Child</h2>
+                <p>Register for Sunday School (any age welcome!)</p>
               </div>
 
               <div className="kc-modal-form">
@@ -427,7 +449,7 @@ export default function PortalKidsCheckin() {
                 <div className="kc-form-group">
                   <label>
                     <span className="kc-label-emoji">🎂</span>
-                    Birthday
+                    Date of Birth
                   </label>
                   <input
                     type="date"

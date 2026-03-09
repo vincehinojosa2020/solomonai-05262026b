@@ -2,22 +2,22 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, RefreshCw, UserCheck, UserX, Clock, 
-  AlertCircle, CheckCircle2, Phone, User,
-  QrCode, Baby, Sparkles, Shield, Star
+  AlertCircle, CheckCircle2, Phone, User, Users,
+  QrCode, Sparkles, Shield, Cross
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
-// Bible-themed avatar styles with Israel colors (blue & white)
+// Colorful Bible-themed avatar styles (warm, vibrant - no rainbow)
 const AVATAR_COLORS = [
-  { bg: 'linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%)', emoji: '🦁', character: 'Daniel' },
-  { bg: 'linear-gradient(135deg, #1D4ED8 0%, #60A5FA 100%)', emoji: '🐑', character: 'David' },
-  { bg: 'linear-gradient(135deg, #1E40AF 0%, #93C5FD 100%)', emoji: '🌊', character: 'Moses' },
-  { bg: 'linear-gradient(135deg, #2563EB 0%, #BFDBFE 100%)', emoji: '⭐', character: 'Abraham' },
-  { bg: 'linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%)', emoji: '🕊️', character: 'Noah' },
-  { bg: 'linear-gradient(135deg, #1D4ED8 0%, #60A5FA 100%)', emoji: '🐋', character: 'Jonah' },
-  { bg: 'linear-gradient(135deg, #1E40AF 0%, #93C5FD 100%)', emoji: '👑', character: 'Esther' },
-  { bg: 'linear-gradient(135deg, #2563EB 0%, #BFDBFE 100%)', emoji: '🏹', character: 'Jonathan' },
+  { bg: 'linear-gradient(135deg, #E11D48 0%, #F43F5E 100%)', emoji: '🦁', character: 'Daniel' },
+  { bg: 'linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%)', emoji: '🐑', character: 'David' },
+  { bg: 'linear-gradient(135deg, #0891B2 0%, #22D3EE 100%)', emoji: '🌊', character: 'Moses' },
+  { bg: 'linear-gradient(135deg, #EA580C 0%, #FB923C 100%)', emoji: '⭐', character: 'Abraham' },
+  { bg: 'linear-gradient(135deg, #059669 0%, #34D399 100%)', emoji: '🕊️', character: 'Noah' },
+  { bg: 'linear-gradient(135deg, #2563EB 0%, #60A5FA 100%)', emoji: '🐋', character: 'Jonah' },
+  { bg: 'linear-gradient(135deg, #DB2777 0%, #F472B6 100%)', emoji: '👑', character: 'Esther' },
+  { bg: 'linear-gradient(135deg, #CA8A04 0%, #FACC15 100%)', emoji: '💪', character: 'Samson' },
 ];
 
 const getAvatarStyle = (name) => {
@@ -26,7 +26,7 @@ const getAvatarStyle = (name) => {
 };
 
 const getAge = (birthdate) => {
-  if (!birthdate) return '?';
+  if (!birthdate) return null;
   const today = new Date();
   const birth = new Date(birthdate);
   let age = today.getFullYear() - birth.getFullYear();
@@ -35,6 +35,14 @@ const getAge = (birthdate) => {
     age--;
   }
   return age;
+};
+
+const formatAge = (birthdate) => {
+  const age = getAge(birthdate);
+  if (age === null) return 'Age not set';
+  if (age === 0) return 'Under 1 year';
+  if (age === 1) return '1 year old';
+  return `${age} years old`;
 };
 
 export default function KidsCheckinAdmin() {
@@ -73,8 +81,8 @@ export default function KidsCheckinAdmin() {
 
   useEffect(() => {
     fetchData();
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(fetchData, 30000);
+    // Auto-refresh every 5 seconds for real-time updates
+    const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
   }, [fetchData]);
 
@@ -178,7 +186,7 @@ export default function KidsCheckinAdmin() {
     return (
       <div className="kca-loading">
         <div className="kca-loading-spinner">
-          <Star className="w-10 h-10 text-white" />
+          <Cross className="w-10 h-10 text-white" />
         </div>
         <p>Loading Kids Check-in...</p>
       </div>
@@ -191,12 +199,12 @@ export default function KidsCheckinAdmin() {
       <div className="kca-header">
         <div className="kca-header-left">
           <div className="kca-header-icon">
-            <span>✡️</span>
+            <span>✝️</span>
             <Sparkles className="kca-sparkle" />
           </div>
           <div>
             <h1>Kids Check-in Station</h1>
-            <p>Front Desk • Sunday School</p>
+            <p>Front Desk • Live Updates</p>
           </div>
         </div>
         <div className="kca-header-right">
@@ -230,7 +238,7 @@ export default function KidsCheckinAdmin() {
           onClick={() => setActiveTab('checkin')}
           data-testid="tab-check-in"
         >
-          <Baby className="w-5 h-5" />
+          <Users className="w-5 h-5" />
           <span>Check In</span>
         </button>
         <button 
@@ -289,7 +297,7 @@ export default function KidsCheckinAdmin() {
                       
                       <h3>{checkin.child?.name || 'Unknown'}</h3>
                       <p className="kca-card-age">
-                        <span>🎂</span> {getAge(checkin.child?.birthdate)} years old
+                        <span>🎂</span> {formatAge(checkin.child?.birthdate)}
                       </p>
                       
                       {checkin.child?.allergies && (
@@ -374,7 +382,7 @@ export default function KidsCheckinAdmin() {
                         <div className="kca-kid-info">
                           <h4>{kid.name}</h4>
                           <div className="kca-kid-details">
-                            <span>🎂 {getAge(kid.birthdate)} yrs</span>
+                            <span>🎂 {formatAge(kid.birthdate)}</span>
                             <span>👤 {kid.parent_name}</span>
                             {kid.allergies && (
                               <span className="kca-allergy-small">
@@ -461,7 +469,7 @@ export default function KidsCheckinAdmin() {
                           </div>
                           <div className="kca-result-info">
                             <h4>{verifyResult.child?.name}</h4>
-                            <p>🎂 {getAge(verifyResult.child?.birthdate)} years old</p>
+                            <p>🎂 {formatAge(verifyResult.child?.birthdate)}</p>
                             {verifyResult.child?.allergies && (
                               <div className="kca-allergy-badge">
                                 <AlertCircle className="w-3 h-3" />
