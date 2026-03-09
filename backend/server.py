@@ -10001,6 +10001,481 @@ async def seed_church_members(tenant_id: str, church_name: str, count: int = 500
     logger.info(f"Seeded {len(people)} members for {church_name}")
     return len(people)
 
+# ============== SUMMIT ENHANCEMENTS - SERVICE MODE & ATTENDANCE STREAKS ==============
+
+class ServiceModeStatus(BaseModel):
+    is_service_day: bool
+    is_service_time: bool
+    current_service: Optional[Dict[str, Any]] = None
+    next_service: Optional[Dict[str, Any]] = None
+    attendance_streak: int = 0
+    check_in_status: Optional[str] = None  # 'in_person', 'online', None
+
+class AttendanceStreakData(BaseModel):
+    current_streak: int = 0
+    longest_streak: int = 0
+    total_attended: int = 0
+    last_attendance: Optional[str] = None
+    streak_badges: List[Dict[str, Any]] = []
+
+class PrayerRequest(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    user_id: str
+    user_name: str
+    category: str = "general"  # general, healing, family, financial, guidance, thanksgiving
+    title: str
+    content: str
+    is_public: bool = False  # For prayer wall
+    is_anonymous: bool = False
+    prayer_count: int = 0  # How many people prayed
+    status: str = "active"  # active, answered, closed
+    admin_notes: Optional[str] = None
+    follow_up_date: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: Optional[datetime] = None
+
+class PrayerRequestCreate(BaseModel):
+    category: str = "general"
+    title: str
+    content: str
+    is_public: bool = False
+    is_anonymous: bool = False
+
+class MemberCheckIn(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    user_id: str
+    service_id: Optional[str] = None
+    check_in_type: str = "in_person"  # 'in_person' or 'online'
+    service_date: str
+    check_in_time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+# ============== SERVICE MODE ENDPOINTS ==============
+
+@api_router.get("/portal/service-mode")
+async def get_service_mode_status(request: Request):
+    """Get current service mode status for the homepage"""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    
+    now = datetime.now(timezone.utc)
+    today = now.date()
+    current_day = today.strftime("%A")  # Sunday, Monday, etc.
+    current_time = now.time()
+    
+    # Check if today is a service day (typically Sunday or Wednesday)
+    service_days = ["Sunday", "Wednesday"]
+    is_service_day = current_day in service_days
+    
+    # Define service times
+    services = [
+        {"name": "Sunday 9AM", "day": "Sunday", "start": "09:00", "end": "10:30"},
+        {"name": "Sunday 11AM", "day": "Sunday", "start": "11:00", "end": "12:30"},
+        {"name": "Wednesday Night", "day": "Wednesday", "start": "19:00", "end": "20:30"},
+    ]
+    
+    current_service = None
+    next_service = None
+    is_service_time = False
+    
+    for svc in services:
+        if svc["day"] == current_day:
+            start_time = datetime.strptime(svc["start"], "%H:%M").time()
+            end_time = datetime.strptime(svc["end"], "%H:%M").time()
+            
+            # Allow check-in 30 minutes before service
+            early_start = (datetime.combine(today, start_time) - timedelta(minutes=30)).time()
+            
+            if early_start <= current_time <= end_time:
+                is_service_time = True
+                current_service = svc
+                break
+            elif current_time < start_time:
+                if not next_service:
+                    next_service = svc
+    
+    # Get user's check-in status for today
+    check_in_status = None
+    today_checkin = await db.member_checkins.find_one({
+        "tenant_id": tenant_id,
+        "user_id": user_id,
+        "service_date": today.isoformat()
+    }, {"_id": 0})
+    
+    if today_checkin:
+        check_in_status = today_checkin.get("check_in_type")
+    
+    # Get attendance streak
+    streak_data = await calculate_attendance_streak(tenant_id, user_id)
+    
+    return {
+        "is_service_day": is_service_day,
+        "is_service_time": is_service_time,
+        "current_service": current_service,
+        "next_service": next_service,
+        "attendance_streak": streak_data["current_streak"],
+        "check_in_status": check_in_status,
+        "today": today.isoformat(),
+        "current_day": current_day
+    }
+
+@api_router.post("/portal/service-checkin")
+async def check_in_to_service(
+    request: Request,
+    check_in_type: str = "in_person"
+):
+    """Check in to current service (in-person or online)"""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    
+    today = datetime.now(timezone.utc).date().isoformat()
+    
+    # Check if already checked in today
+    existing = await db.member_checkins.find_one({
+        "tenant_id": tenant_id,
+        "user_id": user_id,
+        "service_date": today
+    })
+    
+    if existing:
+        return {"message": "Already checked in today", "check_in_type": existing.get("check_in_type")}
+    
+    # Create check-in
+    checkin = MemberCheckIn(
+        tenant_id=tenant_id,
+        user_id=user_id,
+        check_in_type=check_in_type,
+        service_date=today
+    )
+    
+    await db.member_checkins.insert_one(checkin.model_dump())
+    
+    # Calculate new streak
+    streak_data = await calculate_attendance_streak(tenant_id, user_id)
+    
+    return {
+        "message": "Checked in successfully!",
+        "check_in_type": check_in_type,
+        "current_streak": streak_data["current_streak"],
+        "badges_earned": streak_data.get("new_badges", [])
+    }
+
+async def calculate_attendance_streak(tenant_id: str, user_id: str) -> Dict[str, Any]:
+    """Calculate attendance streak for a user"""
+    # Get all check-ins sorted by date
+    checkins = await db.member_checkins.find(
+        {"tenant_id": tenant_id, "user_id": user_id},
+        {"_id": 0, "service_date": 1}
+    ).sort("service_date", -1).to_list(length=52)  # Last year of Sundays
+    
+    if not checkins:
+        return {"current_streak": 0, "longest_streak": 0, "total_attended": 0}
+    
+    dates = [c["service_date"] for c in checkins]
+    total_attended = len(dates)
+    
+    # Calculate current streak (consecutive Sundays)
+    current_streak = 0
+    longest_streak = 0
+    temp_streak = 1
+    
+    today = datetime.now(timezone.utc).date()
+    
+    # Find the most recent Sunday
+    days_since_sunday = today.weekday()  # Monday is 0, Sunday is 6
+    if days_since_sunday != 6:
+        days_since_sunday = (days_since_sunday + 1) % 7
+    # Note: last_sunday calculation kept for potential future use
+    _ = today - timedelta(days=days_since_sunday)
+    
+    # Check if they attended last Sunday (or today if it's Sunday)
+    if dates:
+        most_recent = datetime.fromisoformat(dates[0]).date()
+        # They have a streak if their most recent attendance was within the last week
+        if (today - most_recent).days <= 7:
+            current_streak = 1
+            
+            # Count consecutive weeks
+            for i in range(1, len(dates)):
+                curr_date = datetime.fromisoformat(dates[i-1]).date()
+                prev_date = datetime.fromisoformat(dates[i]).date()
+                diff = (curr_date - prev_date).days
+                
+                # If difference is 7 days (one week), continue streak
+                if 5 <= diff <= 9:  # Allow some flexibility
+                    current_streak += 1
+                else:
+                    break
+    
+    # Calculate longest streak
+    temp_streak = 1
+    for i in range(1, len(dates)):
+        curr_date = datetime.fromisoformat(dates[i-1]).date()
+        prev_date = datetime.fromisoformat(dates[i]).date()
+        diff = (curr_date - prev_date).days
+        
+        if 5 <= diff <= 9:
+            temp_streak += 1
+            longest_streak = max(longest_streak, temp_streak)
+        else:
+            temp_streak = 1
+    
+    longest_streak = max(longest_streak, current_streak, 1)
+    
+    # Determine badges earned
+    badges = []
+    if current_streak >= 4:
+        badges.append({"name": "Month Strong", "icon": "🔥", "threshold": 4})
+    if current_streak >= 8:
+        badges.append({"name": "2 Month Champion", "icon": "⭐", "threshold": 8})
+    if current_streak >= 12:
+        badges.append({"name": "Quarter Master", "icon": "🏆", "threshold": 12})
+    if current_streak >= 26:
+        badges.append({"name": "Half Year Hero", "icon": "👑", "threshold": 26})
+    if current_streak >= 52:
+        badges.append({"name": "Year of Faith", "icon": "💎", "threshold": 52})
+    
+    return {
+        "current_streak": current_streak,
+        "longest_streak": longest_streak,
+        "total_attended": total_attended,
+        "last_attendance": dates[0] if dates else None,
+        "streak_badges": badges
+    }
+
+@api_router.get("/portal/attendance-streak")
+async def get_attendance_streak(request: Request):
+    """Get user's attendance streak and badges"""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    
+    streak_data = await calculate_attendance_streak(tenant_id, user_id)
+    return streak_data
+
+# ============== PRAYER REQUEST ENDPOINTS ==============
+
+PRAYER_CATEGORIES = [
+    {"id": "general", "name": "General", "icon": "🙏"},
+    {"id": "healing", "name": "Healing", "icon": "💚"},
+    {"id": "family", "name": "Family", "icon": "👨‍👩‍👧‍👦"},
+    {"id": "financial", "name": "Financial", "icon": "💰"},
+    {"id": "guidance", "name": "Guidance", "icon": "🧭"},
+    {"id": "thanksgiving", "name": "Thanksgiving", "icon": "🙌"},
+    {"id": "salvation", "name": "Salvation", "icon": "✝️"},
+    {"id": "relationships", "name": "Relationships", "icon": "❤️"},
+]
+
+@api_router.get("/portal/prayer/categories")
+async def get_prayer_categories():
+    """Get available prayer request categories"""
+    return {"categories": PRAYER_CATEGORIES}
+
+@api_router.post("/portal/prayer/requests")
+async def create_prayer_request(
+    data: PrayerRequestCreate,
+    request: Request
+):
+    """Submit a new prayer request"""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    user_name = user.get("name", "Anonymous")
+    
+    prayer_request = PrayerRequest(
+        tenant_id=tenant_id,
+        user_id=user_id,
+        user_name="Anonymous" if data.is_anonymous else user_name,
+        category=data.category,
+        title=data.title,
+        content=data.content,
+        is_public=data.is_public,
+        is_anonymous=data.is_anonymous
+    )
+    
+    await db.prayer_requests.insert_one(prayer_request.model_dump())
+    
+    return {"message": "Prayer request submitted", "id": prayer_request.id}
+
+@api_router.get("/portal/prayer/requests")
+async def get_my_prayer_requests(
+    request: Request
+):
+    """Get user's own prayer requests"""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    
+    requests = await db.prayer_requests.find(
+        {"tenant_id": tenant_id, "user_id": user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(length=50)
+    
+    return {"requests": requests}
+
+@api_router.get("/portal/prayer/wall")
+async def get_prayer_wall(
+    request: Request,
+    category: Optional[str] = None
+):
+    """Get public prayer wall - requests shared with community"""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    tenant_id = user.get("tenant_id")
+    
+    query = {
+        "tenant_id": tenant_id,
+        "is_public": True,
+        "status": "active"
+    }
+    
+    if category and category != "all":
+        query["category"] = category
+    
+    requests = await db.prayer_requests.find(query, {"_id": 0}).sort("created_at", -1).to_list(length=50)
+    
+    return {"requests": requests, "categories": PRAYER_CATEGORIES}
+
+@api_router.post("/portal/prayer/requests/{request_id}/pray")
+async def pray_for_request(
+    request_id: str,
+    request: Request
+):
+    """Increment prayer count for a request"""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    
+    # Check if user already prayed (optional - could track in separate collection)
+    prayer_log = await db.prayer_logs.find_one({
+        "request_id": request_id,
+        "user_id": user_id
+    })
+    
+    if prayer_log:
+        return {"message": "Already prayed for this request", "prayed": True}
+    
+    # Increment prayer count
+    await db.prayer_requests.update_one(
+        {"id": request_id, "tenant_id": tenant_id},
+        {"$inc": {"prayer_count": 1}}
+    )
+    
+    # Log the prayer
+    await db.prayer_logs.insert_one({
+        "id": str(uuid.uuid4()),
+        "request_id": request_id,
+        "user_id": user_id,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {"message": "Prayer recorded", "prayed": True}
+
+# ============== ADMIN PRAYER DASHBOARD ==============
+
+@api_router.get("/admin/prayer/dashboard")
+async def get_prayer_dashboard(
+    request: Request,
+    status: Optional[str] = None,
+    category: Optional[str] = None
+):
+    """Admin dashboard for prayer requests"""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    if user.get("role") not in ["admin", "church_admin", "platform_admin"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    tenant_id = user.get("tenant_id")
+    
+    query = {"tenant_id": tenant_id}
+    if status:
+        query["status"] = status
+    if category and category != "all":
+        query["category"] = category
+    
+    requests = await db.prayer_requests.find(query, {"_id": 0}).sort("created_at", -1).to_list(length=100)
+    
+    # Get stats
+    total_active = await db.prayer_requests.count_documents({"tenant_id": tenant_id, "status": "active"})
+    total_answered = await db.prayer_requests.count_documents({"tenant_id": tenant_id, "status": "answered"})
+    needs_followup = await db.prayer_requests.count_documents({
+        "tenant_id": tenant_id,
+        "follow_up_date": {"$lte": datetime.now(timezone.utc).isoformat()}
+    })
+    
+    return {
+        "requests": requests,
+        "stats": {
+            "total_active": total_active,
+            "total_answered": total_answered,
+            "needs_followup": needs_followup
+        },
+        "categories": PRAYER_CATEGORIES
+    }
+
+@api_router.put("/admin/prayer/requests/{request_id}")
+async def update_prayer_request(
+    request_id: str,
+    request: Request
+):
+    """Update prayer request status/notes (admin)"""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    if user.get("role") not in ["admin", "church_admin", "platform_admin"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    tenant_id = user.get("tenant_id")
+    body = await request.json()
+    
+    update_fields = {}
+    if "status" in body:
+        update_fields["status"] = body["status"]
+    if "admin_notes" in body:
+        update_fields["admin_notes"] = body["admin_notes"]
+    if "follow_up_date" in body:
+        update_fields["follow_up_date"] = body["follow_up_date"]
+    
+    update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.prayer_requests.update_one(
+        {"id": request_id, "tenant_id": tenant_id},
+        {"$set": update_fields}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Prayer request not found")
+    
+    return {"message": "Prayer request updated"}
+
 # Include router
 app.include_router(api_router)
 

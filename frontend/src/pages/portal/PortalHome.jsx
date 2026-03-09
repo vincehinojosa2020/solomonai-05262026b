@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
-import { DollarSign, Users, Calendar, Sparkles, ChevronRight, MessageSquare } from 'lucide-react';
+import { DollarSign, Users, Calendar, Sparkles, ChevronRight, MessageSquare, Heart, Flame, Play } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
+import { ServiceModeBanner, AttendanceStreakCard, PrayerWallCard } from '@/components/ServiceMode';
 
 const NOTE_CATEGORIES = ['Prayer Request', 'Question', 'Praise', 'Other'];
 
@@ -14,10 +15,18 @@ export default function PortalHome() {
   const [noteMessage, setNoteMessage] = useState('');
   const [noteCategory, setNoteCategory] = useState('');
   const [noteSubmitting, setNoteSubmitting] = useState(false);
+  
+  // Service Mode State
+  const [serviceMode, setServiceMode] = useState(null);
+  const [streakData, setStreakData] = useState(null);
+  const [prayerWall, setPrayerWall] = useState([]);
 
   useEffect(() => {
     fetchUpcomingEvents();
     generateSolomonInsight();
+    fetchServiceMode();
+    fetchStreakData();
+    fetchPrayerWall();
   }, [memberData, tenant]);
 
   const fetchUpcomingEvents = async () => {
@@ -29,6 +38,62 @@ export default function PortalHome() {
       }
     } catch (error) {
       console.error('Failed to fetch events:', error);
+    }
+  };
+
+  const fetchServiceMode = async () => {
+    try {
+      const res = await fetch(`${API_URL}/portal/service-mode`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setServiceMode(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch service mode:', error);
+    }
+  };
+
+  const fetchStreakData = async () => {
+    try {
+      const res = await fetch(`${API_URL}/portal/attendance-streak`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setStreakData(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch streak data:', error);
+    }
+  };
+
+  const fetchPrayerWall = async () => {
+    try {
+      const res = await fetch(`${API_URL}/portal/prayer/wall`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setPrayerWall(data.requests || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch prayer wall:', error);
+    }
+  };
+
+  const handleServiceCheckIn = async (checkInType) => {
+    try {
+      const res = await fetch(`${API_URL}/portal/service-checkin?check_in_type=${checkInType}`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(data.message);
+        // Refresh service mode
+        fetchServiceMode();
+        fetchStreakData();
+      } else {
+        toast.error('Check-in failed');
+      }
+    } catch (error) {
+      toast.error('Error during check-in');
     }
   };
 
@@ -116,6 +181,19 @@ export default function PortalHome() {
 
   return (
     <div className="portal-home" data-testid="portal-home">
+      {/* Service Mode Banner - Shows on service days */}
+      {serviceMode && (serviceMode.is_service_day || serviceMode.is_service_time) && (
+        <ServiceModeBanner
+          isServiceDay={serviceMode.is_service_day}
+          isServiceTime={serviceMode.is_service_time}
+          currentService={serviceMode.current_service}
+          nextService={serviceMode.next_service}
+          checkInStatus={serviceMode.check_in_status}
+          onCheckIn={handleServiceCheckIn}
+          streak={serviceMode.attendance_streak}
+        />
+      )}
+
       {/* Welcome Banner */}
       <div className="portal-welcome">
         <h1 className="portal-welcome-title">
@@ -129,6 +207,13 @@ export default function PortalHome() {
             day: 'numeric' 
           })}
         </p>
+        {/* Streak Badge on Welcome */}
+        {streakData && streakData.current_streak > 0 && (
+          <div className="portal-streak-badge" data-testid="home-streak-badge">
+            <Flame className="w-4 h-4" />
+            <span>{streakData.current_streak} Week Streak!</span>
+          </div>
+        )}
       </div>
 
       {/* Quick Actions */}
@@ -174,6 +259,22 @@ export default function PortalHome() {
             </button>
           </div>
         </div>
+
+        {/* Attendance Streak Card */}
+        {streakData && (
+          <AttendanceStreakCard
+            currentStreak={streakData.current_streak}
+            longestStreak={streakData.longest_streak}
+            totalAttended={streakData.total_attended}
+            badges={streakData.streak_badges}
+          />
+        )}
+
+        {/* Prayer Wall Preview */}
+        <PrayerWallCard
+          requests={prayerWall}
+          onViewAll={() => window.location.href = '/portal/prayer'}
+        />
       </div>
 
       {/* Upcoming Events */}

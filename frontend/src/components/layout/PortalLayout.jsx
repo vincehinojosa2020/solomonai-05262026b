@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Home, DollarSign, Users, Calendar, User, Bell, LogOut, Menu, X, Tv, GraduationCap, BookOpen, ShoppingBag, Coffee, MessageSquare } from 'lucide-react';
+import { Home, DollarSign, Users, Calendar, User, Bell, LogOut, Menu, X, Tv, GraduationCap, BookOpen, ShoppingBag, Coffee, MessageSquare, Heart } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { API_URL } from '@/lib/utils';
 import SolomonChat from '@/components/SolomonChat';
@@ -86,6 +86,7 @@ export default function PortalLayout() {
     { name: 'Home', path: '/portal', icon: Home, exact: true },
     { name: 'Kids Check-in', path: '/portal/kids', icon: Users },
     { name: 'Watch', path: '/portal/watch', icon: Tv },
+    { name: 'Prayer', path: '/portal/prayer', icon: Heart },
     { name: 'Merch', path: '/portal/merch', icon: ShoppingBag },
     { name: 'Cafe', path: '/portal/cafe', icon: Coffee },
     { name: 'Give', path: '/portal/give', icon: DollarSign },

@@ -47,6 +47,7 @@ import PortalMerch from "@/pages/portal/PortalMerch";
 import PortalCafe from "@/pages/portal/PortalCafe";
 import PortalMeetings from "@/pages/portal/PortalMeetings";
 import PortalKidsCheckin from "@/pages/portal/PortalKidsCheckin";
+import PortalPrayer from "@/pages/portal/PortalPrayer";
 
 // Router wrapper to detect session_id in URL
 function AppRouter() {
@@ -112,6 +113,7 @@ function AppRouter() {
         <Route path="merch" element={<PortalMerch />} />
         <Route path="cafe" element={<PortalCafe />} />
         <Route path="meetings" element={<PortalMeetings />} />
+        <Route path="prayer" element={<PortalPrayer />} />
         <Route path="groups" element={<PortalGroups />} />
         <Route path="events" element={<PortalEvents />} />
         <Route path="me" element={<PortalMe />} />

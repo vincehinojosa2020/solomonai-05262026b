@@ -1,106 +1,92 @@
 <analysis>**original_problem_statement:**
-The user's primary goal is to build Solomon AI, an enterprise-grade, multi-tenant SaaS Church Management System (ChMS).
+The user's goal is to build Solomon AI, an enterprise-grade SaaS Church Management System. The project has pivoted to focus on a large set of new features outlined in a detailed document titled SOLOMON AI — SUMMIT ENHANCEMENTS PROMPT.
 
-Initially, the focus was on preparing for a live demo by implementing a viral video sharing feature, a Masterclass-style search, and a My Notes feature for members.
+This prompt details a significant expansion of the platform, with a **strict requirement to only add new features and preserve all existing functionality**. The user wants to use content from  to populate the application for an MVP.
 
-The user's priority then shifted dramatically to a new killer feature: a **Kids Check-in system for Sunday School**. This includes member-facing child registration, a check-in/check-out flow, and automated SMS notifications to parents. The user also requested a significant decluttering of the member portal UI to focus the demo on this new feature, including the removal of the bottom navigation bar, the Meet with Pastor feature, and the Leave a Note function.
-
-PRODUCT REQUIREMENTS:
-1.  **Kids Check-in System (P0)**:
-    -   A UI for parents to add/manage their children's profiles (name, DOB, allergies).
-    -   A check-in process that generates a unique pickup code.
-    -   An automated (mocked for now) SMS sent to the parent's phone upon check-in.
-    -   A UI for church admins to view checked-in children and perform check-out.
-    -   A visually appealing, colorful, and fun UI for the Kids Check-in section.
-2.  **UI/UX Revamp**:
-    -   Remove the bottom tab navigation bar from the member portal.
-    -   Remove the Meet with a Pastor feature.
-    -   Remove the Leave a Note feature from the member home page.
-    -   Improve the Watch page video tiles to look more professional and less like blobs.
-    -   Add a Give button to the video player modal.
-    -   In the Cafe section, replace the Tip option with an Offering feature with preset amounts (, 0, 5).
-3.  **Perfect Masterclass Search UI**: Make the search bar on the Watch page an exact visual replica of a user-provided screenshot.
+PRODUCT REQUIREMENTS (from the new prompt):
+The user has provided a comprehensive list of enhancements across ten categories, structured into four implementation phases. Key additions include:
+-   **Watch Section Upgrades**: Search bar, share button, AI transcripts/summaries, My Notes, and livestream support.
+-   **Service Mode**: A dynamic homepage that activates on service days, showing a special layout based on user check-in status (in-person vs. online). Includes attendance streak tracking.
+-   **Kids Check-In Enhancements**: Post-service parent SMS notifications with lesson summaries.
+-   **Prayer Request Upgrades**: Adding categories, a public Prayer Wall, and an admin dashboard for tracking and follow-up.
+-   **Café Upgrades**: Pickup time selection, round-up donations, and a new member welcome coupon.
+-   **Giving Upgrades**: Household-linked giving history and automated prompts for lapsed/recurring givers.
+-   **Admin Communications Hub**: A central place for admins to send mass messages (SMS, Email, Push) to filtered groups of members.
+-   **AI Upgrades**: AI-powered sermon transcription/summarization, and an Admin Insights dashboard.
+-   **Gamification**: Profile badges and a Pathways progress bar for new members.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack SaaS platform (React/FastAPI/MongoDB). The recent session introduced a complete, mocked Kids Check-in system. Parents can add children, check them in, and receive a unique pickup code. The backend generates a check-in record and logs a mock SMS message. The admin side of this feature is not yet built.
-
-Significant UI changes were also made: the bottom navigation bar has been removed, along with the Meet and Leave a note features. The Cafe now has an Offering system instead of a tip jar. The Watch page UI has been refined with better video card styling and Give & Share buttons in the video player.
+The application is a full-stack React/FastAPI/MongoDB platform. It features a member portal and an admin dashboard. The main completed feature is a comprehensive Kids Check-in system, which includes:
+-   A visually themed member-facing UI for parents to add children (of any age) and check them in.
+-   An admin-facing Check-in Station for church staff to view currently checked-in children, perform walk-in check-ins, and manage check-outs by verifying a unique pickup code.
+-   Real-time synchronization (via 5-second polling) between the parent check-in action and the admin dashboard view.
+-   The UI for this feature has been iteratively redesigned from a rainbow theme to an Israel theme, and finally to a colorful, non-rainbow Christian theme with cross icons, per user feedback.
 
 **Last working item**:
--   **Last item agent was working**: The user requested a redesign of the newly created Kids Check-in page to make it more colorful, flavorful and less basic. The agent acknowledged the request and was about to start the design work.
+-   **Last item agent was working**: The user provided a massive new product requirements document and requested that the agent populate the app with content scraped from  for the MVP. The agent acknowledged this and was preparing to crawl the website.
 -   **Status**: NOT STARTED
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: frontend testing agent
+-   **Which testing method agent to use?**: NA (This is a data gathering task. Subsequent implementation will require testing).
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1 (P0)**: Redesign the Kids Check-in page UI to be colorful and engaging.
--   **Issue 2 (P2)**: User reported a small H character appearing next to the Abundant logo in the top left. The agent could not reproduce this, but it should be re-investigated.
+-   **Issue 1: Process and Plan SUMMIT ENHANCEMENTS PROMPT (P0)**: The user has provided a large, detailed set of requirements. The next step is to analyze this document, reconcile it with the existing application, and create a concrete implementation plan. The user has specified a build order in the document, which should be the primary guide.
 
 **Issues Detail**:
--   **Issue 1: Redesign Kids Check-in UI**
-    -   **Attempted fixes**: None. This is a new request.
+-   **Issue 1: Process and Plan SUMMIT ENHANCEMENTS PROMPT**
+    -   **Attempted fixes**: The agent has acknowledged the prompt but has not yet started planning or implementation.
     -   **Next debug checklist**:
-        1.  Analyze the current  and its associated CSS in .
-        2.  Develop a new color palette and design language appropriate for a children's feature (e.g., bright colors, playful fonts, friendly icons/illustrations).
-        3.  Update the JSX and CSS to implement the new design for the main page, child cards, and modals.
-        4.  Ensure the new design is responsive and does not break functionality.
-    -   **Why fix this issue and what will be achieved with the fix?**: The user wants this feature to be a highlight of a live demo and feels the current UI is too basic. A better design will improve the demo's impact.
+        1.  Carefully read the entire SOLOMON AI — SUMMIT ENHANCEMENTS PROMPT.
+        2.  Identify which features are entirely new vs. enhancements to existing modules.
+        3.  Note the database schema changes (provided in SQL) and map them to the current MongoDB structure. This signals a potential future migration to PostgreSQL.
+        4.  Prioritize tasks according to the BUILD ORDER section in the prompt.
+        5.  Present a clear, phased plan to the user for approval before starting implementation.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is the new roadmap for the entire project. Planning is critical to ensure the enhancements are built correctly and in the user's preferred order.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: frontend
-    -   **Blocked on other issue**: None
-
--   **Issue 2: Investigate mysterious H character**
-    -   **Attempted fixes**: The agent inspected  and other relevant components but could not find or reproduce the stray H character reported by the user.
-    -   **Next debug checklist**:
-        1.  Carefully re-examine the latest screenshots, focusing on the top-left corner near the logo.
-        2.  Inspect  and  for any stray characters outside of component returns.
-        3.  Check the browser's DOM inspector for any pseudo-elements or injected content that might be causing the character to appear.
-    -   **Why fix this issue and what will be achieved with the fix?**: It's a minor visual glitch that detracts from the app's professional appearance.
-    -   **Status**: NOT STARTED
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: frontend
-    -   **Blocked on other issue**: None
+    -   **Should Test frontend/backend/both after fix?**: both
+    -   **Blocked on other issue**: None.
 
 **In progress Task List**:
--   **Task 1: Kids Check-in UI Redesign**
-    -   **Where to resume**: Start by viewing  and .
-    -   **What will be achieved with this?**: A visually appealing and fun user interface for the Kids Check-in feature, per the user's explicit request.
+-   **Task 1: Scrape  for MVP Content (P0)**
+    -   **Where to resume**: Use the  with the  action on .
+    -   **What will be achieved with this?**: Gather real-world content (service times, sermon topics, event info) to populate the application, making the MVP demo more realistic.
     -   **Status**: NOT STARTED
-    -   **Should Test frontend/backend/both after fix?**: frontend
-    -   **Blocked on something**: None
+    -   **Should Test frontend/backend/both after fix?**: frontend (to verify content is displayed).
+    -   **Blocked on something**: None.
 
 **Upcoming and Future Tasks**
--   **Upcoming Tasks:**
-    -   **P0: Enable Real SMS for Kids Check-in**: Integrate Twilio to send actual text messages. This is blocked on the user providing API credentials.
-    -   **P1: Build Admin UI for Kids Check-in**: Create the interface for church staff to view checked-in kids and perform check-out.
-    -   **P1: Twilio/WhatsApp Integration**: Connect MoltBot to a messaging service.
-    -   **P1: Full Calendly Integration**: Replace the mocked iframe with a native API integration.
+The user has provided a clear build order.
+
+-   **Upcoming Tasks (Phase 1 - Demo-Ready):**
+    -   **P0**: Add Search bar to Watch section.
+    -   **P0**: Add Share button to video player with pre-populated message.
+    -   **P0**: Add Give button on video pages.
 -   **Future Tasks:**
-    -   **P2: Backend Refactor**: Decompose the monolithic .
-    -   **P2: Prayer Wall / Community Feature**.
-    -   **P2: AI Sermon Transcription and Summaries**.
+    -   **Phase 2 (Core Summit Features):** Implement Service Mode, enhance Kids Check-In (SMS notifications), and build the Admin Prayer dashboard.
+    -   **Phase 3 (Engagement):** Implement My Notes/Transcript on videos, attendance streaks, and Café enhancements.
+    -   **Phase 4 (Admin Power):** Build the Communications hub, AI Insights dashboard, and household linking for giving.
+    -   **Technical Debt**: Refactor the monolithic  and the bloated .
+    -   **Technical Debt**: Plan for the potential database migration from MongoDB to PostgreSQL, as indicated by the user's SQL schema definitions.
 
 **Completed work in this session**
--   **Kids Check-in Feature (v1)**: Successfully built the end-to-end flow for parents. Includes child management, check-in with a unique pickup code, and a mocked SMS notification system.
--   **Major UI Decluttering**:
-    -   Removed the entire bottom tab navigation bar from the member portal.
-    -   Removed the Meet (pastor scheduling) feature from navigation.
-    -   Removed the Leave a Note feature from the member homepage.
-    -   Removed Thinkific and Abundant Pathways links from navigation.
--   **Watch Page Enhancements**:
-    -   Implemented a highly-praised Masterclass-style tile layout for video cards.
-    -   Added Give and Share buttons to the video player modal.
-    -   Perfected the Masterclass-style search bar in the header.
--   **Cafe Offering Feature**: Replaced the Tip functionality with an Add an Offering section, allowing users to add preset donation amounts to their coffee order.
--   **My Notes Feature**: Implemented a complete notes system for members to take notes on videos and view them in a side panel.
--   **Viral Video Share Feature**: Completed the share modal with personalized, pre-populated messages.
+-   **Kids Check-in UI/UX Overhaul**:
+    -   Redesigned the entire Kids Check-in feature (member and admin) to a colorful, non-rainbow Christian theme, replacing Star of David icons with cross icons.
+-   **Admin Kids Check-in Station (Completed)**:
+    -   Built the full admin dashboard for Kids Check-in.
+    -   Implemented tabs for Currently Checked In, Check In, and Check Out.
+    -   Created the check-out flow with pickup code verification.
+-   **Feature Enhancements**:
+    -   Removed age restrictions for adding a child.
+    -   Implemented real-time updates on the admin dashboard (polling every 10 seconds) to reflect parent check-ins instantly.
+-   **Testing and Bug Fixes**:
+    -   Successfully used the  twice, achieving 100% pass rates on both backend and frontend tests for the new admin features.
+    -   The testing agent identified and fixed a bug in the admin direct check-in endpoint.
 
 **Earlier issues found/mentioned but not fixed**
--   **Minor Frontend Loading Timing Issue**: An old, uninvestigated test report mentioned a minor loading timing issue on the frontend. This was never prioritized.
+-   **Minor Frontend Loading Timing Issue**: An old, uninvestigated test report mentioned a minor loading timing issue on the frontend.
 -   **Member Portal UI Asymmetry**: The initial handoff mentioned asymmetry on . This was not addressed as priorities shifted.
 
 **Known issue recurrence from previous fork**
@@ -110,79 +96,80 @@ Significant UI changes were also made: the bottom navigation bar has been remove
 
 
 **Key Technical Concepts**
--   **Feature Mocking**: The SMS notification for Kids Check-in is mocked by logging to the console, allowing for rapid demo development without requiring live credentials.
--   **Rapid UI Prototyping**: Quickly built a new, complex feature (Kids Check-in) and significantly refactored the UI layout based on immediate user feedback for a demo.
--   **API-First Backend**: Continued adding new, self-contained API endpoints (, , ) to the backend monolith.
+-   **UI Theming/Re-skinning**: Rapidly changed the color palette, icons, and branding of a feature based on user feedback.
+-   **Real-time UI Updates (Polling)**: The admin dashboard uses  to poll the backend every 10 seconds, providing a near real-time view of check-ins.
+-   **Feature Mocking**: SMS notifications remain mocked (logged to console).
 
 **key DB schema**
 -   **kids**: 
 -   **check_ins**: 
--   **video_notes**: 
--   **api_keys**: 
+-   **Note**: The user provided new, detailed SQL schemas for a significant database extension/migration, which are not yet implemented.
 
 **changes in tech stack**
--   None.
+-   None implemented. However, the user's new prompt provides all database extensions in **SQL format**, strongly suggesting a future migration from MongoDB to PostgreSQL is desired.
 
 **All files of reference**
--   : New file containing the entire Kids Check-in UI.
--   : Major additions for Kids Check-in and Video Notes models and API endpoints.
--   : Heavily modified to implement the Notes feature, improved card styling, and updated video player.
--   : Modified to remove the bottom navigation bar and update nav links.
--   : Modified to implement the new Offering feature.
--   : Contains all new CSS for Notes, Share Modal, Kids Check-in, and layout refinements.
--   : Updated routes for Kids Check-in.
+-   : New file for the admin-facing check-in station.
+-   : Heavily modified for theming and age restriction removal.
+-   : Modified to add admin-specific endpoints for listing all kids and direct check-in/check-out.
+-   : Heavily modified with new CSS for both member and admin check-in pages.
+-   : Modified to add the new route for the admin page.
+-   : Modified to add the Kids Check-in link to the admin sidebar.
 
 **Areas that need refactoring**:
--   ****: The top priority. It has grown even larger with the addition of three new features' worth of models and endpoints.
--   ****: This file is now extremely large and contains styles for many disparate features. It should be broken up into component-specific or feature-specific CSS files/modules.
--   ****: This file manages the logic for the search, video player, share modal, and notes panel. It is a candidate for being broken down into smaller, more manageable components.
+-   ****: Remains a large monolith and is a top candidate for being broken into a proper route/model structure.
+-   ****: Continues to grow and should be broken into CSS Modules or component-specific stylesheets.
+-   The real-time update on the admin page is done via polling (). This should be upgraded to WebSockets for better efficiency and scalability.
 
 **key api endpoints**
--   : ,  for managing children.
--   : ,  for a specific child.
--   :  to check in a child.
--   :  to check out a child.
--   : ,  for video notes.
+-   :  for the admin dashboard summary.
+-   :  to list currently checked-in children.
+-   :  for the admin check-in tab.
+-   :  for admins to check in a child directly.
+-   :  to verify a pickup code.
+-   :  to finalize a checkout.
 
 **Critical Info for New Agent**
--   **Demo is King**: The user's top priority is the Kids Check-in feature for an imminent demo. Focus all efforts on making this feature look and feel great.
--   **SMS is MOCKED**: The Twilio integration is not live. The backend successfully logs the exact SMS message and the target phone number () to the supervisor logs. Do not attempt to send real SMS until the user provides credentials.
--   **UI Decluttering**: Be aware that many features were intentionally removed from the member view (, , ). Do not re-introduce them unless explicitly asked. The goal was to simplify the UI for the demo.
+-   **New Source of Truth**: The SOLOMON AI — SUMMIT ENHANCEMENTS PROMPT is now the primary requirements document. The user has explicitly stated **DO NOT modify, replace, or rebuild any existing features.** All work should be additive.
+-   **Build Order is Key**: The user provided a phased build order in the new prompt. Follow it closely, starting with Phase 1.
+-   **Immediate Task**: The first action is to scrape  to gather content for the MVP, as per the user's latest instruction.
+-   **Database Shift**: The user provided all new schemas in SQL, not as Mongo collections. This is a strong signal that a migration to a PostgreSQL database is expected. While new collections can be created in Mongo for now, keep the eventual migration in mind.
+-   **Real-time is Polling**: The real-time admin dashboard update is a simple polling mechanism. This is a temporary solution that should eventually be replaced with WebSockets.
 
 **documents and test reports created in this job**
 -   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
-10. **User**: Requests to make the Kids Check-in UI more colorful and less basic. (PENDING)
-9. **User**: Praises the work and gives detailed requirements for a new Kids Check-in feature, including mocked SMS notifications. (COMPLETED)
-8. **User**: Requests to remove the Meet feature from the member view. (COMPLETED)
-7. **User**: Provides detailed feedback: revert the Watch page to a better tile layout, add a Give button to the video player, and replace the Tip option in the Cafe with a preset Offering system. (COMPLETED)
-6. **User**: Reports that the Watch area seems to be missing and that there is a stray H character on the screen. (COMPLETED - Watch area fixed, H not reproduced)
-5. **User**: Asks to remove Thinkific and Abundant Pathways and to make the search bar an EXACT copy of a Masterclass screenshot. (COMPLETED)
-4. **User**: Confirms the My Notes plan. (COMPLETED)
-3. **User**: Provides a screenshot and asks to build a My Notes feature similar to Masterclass, allowing members to take and share notes on videos. (COMPLETED)
-2. **User**: Confirms the proposed plan. (COMPLETED)
-1. **User**: Gives approval to proceed with the initial plan. (COMPLETED)
+10. **User**: Requests to populate the app with content from  for the MVP. (PENDING)
+9. **User**: Provides the massive SOLOMON AI — SUMMIT ENHANCEMENTS PROMPT document. (PENDING IMPLEMENTATION)
+8. **User**: Requests to remove the Star of David, add a kid-friendly Christian cross, make the theme colorful without rainbows, remove age restrictions, and ensure bidirectional communication between parent check-in and the admin view. (COMPLETED)
+7.  **User**: Asks to remove the rainbow coloring and use a theme based on Israel colors, the Star of David, and Bible characters. (COMPLETED)
+6.  **User**: Requests an admin interface for the Kids Check-in system for church staff to use at a front desk, including check-in/out flows. (COMPLETED)
+5.  **User**: Confirms the new rainbow-themed Kids Check-in UI looks great. (COMPLETED)
+4.  **User**: Approves the plan to redesign the Kids Check-in UI. (COMPLETED)
+3.  **User**: Asks to redesign the Kids Check-in page to be more colorful, flavorful and less basic. (COMPLETED)
+2.  **User**: Praises the previous work and gives initial requirements for the Kids Check-in feature. (COMPLETED)
+1.  **User**: Requests to remove the Meet feature. (COMPLETED)
 
 **Project Health Check:**
 -   **Broken**: Resend email integration is still in test mode.
 -   **Mocked**:
-    -   **Kids Check-in SMS**: SMS notifications are mocked and logged to the backend console. Requires Twilio integration to go live.
+    -   **Kids Check-in SMS**: SMS notifications are mocked and logged to the backend console.
     -   Abundant Cafe (UI/backend models exist, no live payment processing).
-    -   Thinkific Integration (Placeholder page removed from nav).
 
 **3rd Party Integrations**
 -   **Stripe (Payments)**: Live integration for donations.
 -   **Resend (Email)**: Integrated but in test mode.
 -   **Emergent-managed Google Auth**: Available for social login.
 -   **Anthropic Claude**: Powers the Ask Solomon AI chat. (Uses Emergent LLM Key)
--   **OpenAI Whisper**: Used for meeting transcription. (Uses Emergent LLM Key)
--   **Twilio (SMS)**: Required for the Kids Check-in feature but not yet integrated. The user needs to provide credentials.
+-   **OpenAI Whisper**: Previously used for meeting transcription. (Uses Emergent LLM Key)
+-   **Twilio (SMS)**: Required for the Kids Check-in feature but not yet integrated.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES. A comprehensive test was run after implementing the Share and My Notes features, which passed 100%.
+-   **Testing agent used after significant changes**: YES. The agent was used twice to validate the new admin-side Kids Check-in functionality, passing with 100% on both occasions and fixing one backend bug.
 -   **Troubleshoot agent used after agent stuck in loop**: NO
--   **Test files created**: Yes,  was created.
+-   **Test files created**: Yes,  and  were created.
 -   **Known regressions**: None.
 
 **Credentials to test flow:**
@@ -193,4 +180,4 @@ Significant UI changes were also made: the bottom navigation bar has been remove
 | Member (Abundant) |  |  |
 
 **What agent forgot to execute**
--   The agent successfully implemented all of the user's rapid-fire requests. The only outstanding action is the most recent one: redesigning the Kids Check-in UI to be more colorful.</analysis>
+-   The agent was about to start on the user's latest and most significant request (the SUMMIT ENHANCEMENTS PROMPT and the  scraping). No prior tasks were forgotten; this is the start of a new, major phase of development.</analysis>
