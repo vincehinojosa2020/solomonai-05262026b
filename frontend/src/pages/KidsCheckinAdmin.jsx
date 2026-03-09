@@ -2,22 +2,22 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, RefreshCw, UserCheck, UserX, Clock, 
-  AlertCircle, CheckCircle2, Phone, Mail, User,
-  QrCode, Baby, Sparkles, PartyPopper, Shield
+  AlertCircle, CheckCircle2, Phone, User,
+  QrCode, Baby, Sparkles, Shield, Star
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
-// Avatar colors matching member portal
+// Bible-themed avatar styles with Israel colors (blue & white)
 const AVATAR_COLORS = [
-  { bg: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%)', emoji: '🦁' },
-  { bg: 'linear-gradient(135deg, #4ECDC4 0%, #7EDAD4 100%)', emoji: '🐸' },
-  { bg: 'linear-gradient(135deg, #FFE66D 0%, #FFF09D 100%)', emoji: '🌻' },
-  { bg: 'linear-gradient(135deg, #95E1D3 0%, #B8EDE3 100%)', emoji: '🐢' },
-  { bg: 'linear-gradient(135deg, #DDA0DD 0%, #E8C0E8 100%)', emoji: '🦋' },
-  { bg: 'linear-gradient(135deg, #87CEEB 0%, #ADD8E6 100%)', emoji: '🐬' },
-  { bg: 'linear-gradient(135deg, #F4A460 0%, #F7C797 100%)', emoji: '🦊' },
-  { bg: 'linear-gradient(135deg, #98D8C8 0%, #BCE4D8 100%)', emoji: '🐢' },
+  { bg: 'linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%)', emoji: '🦁', character: 'Daniel' },
+  { bg: 'linear-gradient(135deg, #1D4ED8 0%, #60A5FA 100%)', emoji: '🐑', character: 'David' },
+  { bg: 'linear-gradient(135deg, #1E40AF 0%, #93C5FD 100%)', emoji: '🌊', character: 'Moses' },
+  { bg: 'linear-gradient(135deg, #2563EB 0%, #BFDBFE 100%)', emoji: '⭐', character: 'Abraham' },
+  { bg: 'linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%)', emoji: '🕊️', character: 'Noah' },
+  { bg: 'linear-gradient(135deg, #1D4ED8 0%, #60A5FA 100%)', emoji: '🐋', character: 'Jonah' },
+  { bg: 'linear-gradient(135deg, #1E40AF 0%, #93C5FD 100%)', emoji: '👑', character: 'Esther' },
+  { bg: 'linear-gradient(135deg, #2563EB 0%, #BFDBFE 100%)', emoji: '🏹', character: 'Jonathan' },
 ];
 
 const getAvatarStyle = (name) => {
@@ -178,7 +178,7 @@ export default function KidsCheckinAdmin() {
     return (
       <div className="kca-loading">
         <div className="kca-loading-spinner">
-          <Baby className="w-10 h-10 text-white" />
+          <Star className="w-10 h-10 text-white" />
         </div>
         <p>Loading Kids Check-in...</p>
       </div>
@@ -191,12 +191,12 @@ export default function KidsCheckinAdmin() {
       <div className="kca-header">
         <div className="kca-header-left">
           <div className="kca-header-icon">
-            <span>👶</span>
+            <span>✡️</span>
             <Sparkles className="kca-sparkle" />
           </div>
           <div>
             <h1>Kids Check-in Station</h1>
-            <p>Front Desk Management</p>
+            <p>Front Desk • Sunday School</p>
           </div>
         </div>
         <div className="kca-header-right">

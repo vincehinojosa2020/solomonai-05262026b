@@ -234,6 +234,16 @@ Each church is a tenant with isolated data:
 ## Changelog
 
 ### March 9, 2026 (Latest Session)
+- ✅ **Kids Check-in UI - Israel Theme Update**
+  - Replaced rainbow colors with Israel blue & white palette
+  - Star of David (✡️) icons throughout
+  - Bible story character avatars (Daniel/Lion, David/Sheep, Moses/Sea, Noah/Dove, Jonah/Whale, Esther/Crown)
+  - "Like [Bible Character]" labels on child cards
+  - "Sunday School with Bible Heroes!" tagline
+  - Floating Star of David decorations
+  - Blue gradient headers, buttons, and pickup code boxes
+  - Applied to both Member Portal and Admin views
+
 - ✅ **Kids Check-in UI Redesign - COMPLETE**
   - Transformed basic purple UI into vibrant, playful design
   - Rainbow gradient animated header with sparkles
