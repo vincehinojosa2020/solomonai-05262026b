@@ -213,6 +213,14 @@ Each church is a tenant with isolated data:
 
 ## Backlog (Priority Order)
 
+### P0 - In Progress (SUMMIT ENHANCEMENTS)
+- [x] Service Mode - dynamic homepage on service days ✅
+- [x] Attendance Streaks with badges ✅
+- [x] Prayer Request categories & Prayer Wall ✅
+- [ ] AI Transcripts/Summaries for videos (Phase 3)
+- [ ] Kids Check-in SMS notifications to parents (Phase 2)
+- [ ] Admin Communications Hub (Phase 4)
+
 ### P1 - Next Priority
 - [ ] Saved payment methods for members (frontend wiring)
 - [ ] Giving reports with CSV export (frontend wiring)
@@ -233,7 +241,48 @@ Each church is a tenant with isolated data:
 
 ## Changelog
 
-### March 9, 2026 (Latest Session)
+### March 9, 2026 (Current Session - SUMMIT ENHANCEMENTS Phase 1-2)
+- ✅ **Service Mode Infrastructure - COMPLETE**
+  - Dynamic homepage banner that activates on service days (Sunday/Wednesday)
+  - In-person vs Online check-in options
+  - API endpoint: `/api/portal/service-mode`
+  - API endpoint: `/api/portal/service-checkin`
+  - Tracks check-in status for current service day
+
+- ✅ **Attendance Streak & Gamification - COMPLETE**
+  - Tracks consecutive weeks of attendance
+  - Badge system: 🔥 Month Strong (4 weeks), ⭐ 2 Month Champion (8), 🏆 Quarter Master (12), 👑 Half Year Hero (26), 💎 Year of Faith (52)
+  - Progress bar to next badge
+  - Streak card on Portal Home showing current streak, best streak, total services
+  - API endpoint: `/api/portal/attendance-streak`
+  - 100% test pass rate (24/24 backend + 12/12 frontend)
+
+- ✅ **Prayer Request System - COMPLETE**
+  - 8 prayer categories: General, Healing, Family, Financial, Guidance, Thanksgiving, Salvation, Relationships
+  - Prayer Wall for community sharing (public requests)
+  - My Requests tab for personal prayer tracking
+  - "Pray" button with counter (tracks unique prayers, prevents duplicates)
+  - Anonymous posting option
+  - Category filtering on Prayer Wall
+  - New Prayer Request modal with category selection
+  - Prayer link added to portal navigation
+  - API endpoints:
+    - `GET /api/portal/prayer/categories`
+    - `POST /api/portal/prayer/requests`
+    - `GET /api/portal/prayer/requests` (my requests)
+    - `GET /api/portal/prayer/wall` (public wall)
+    - `POST /api/portal/prayer/requests/{id}/pray`
+    - `GET /api/admin/prayer/dashboard`
+    - `PUT /api/admin/prayer/requests/{id}`
+  - 100% test pass rate (24/24 backend + 12/12 frontend)
+
+- ✅ **Portal Home Enhancements**
+  - Added Attendance Streak Card component
+  - Added Prayer Wall preview card with View All link
+  - Streak badge displays in welcome banner when user has streak
+  - ServiceModeBanner component (shows on service days)
+
+### March 9, 2026 (Previous - Kids Check-in)
 - ✅ **Kids Check-in - Christian Theme Update**
   - Replaced Star of David with Christian Cross ✝️
   - Colorful (non-rainbow) theme: purple/pink gradients, emerald greens, warm oranges
