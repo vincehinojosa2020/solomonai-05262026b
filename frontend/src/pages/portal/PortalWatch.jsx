@@ -5,7 +5,8 @@ import {
   Play, ChevronLeft, ChevronRight, Clock, Search, Plus, X,
   BookmarkPlus, Info, LayoutGrid, Rows3, User, Sparkles,
   Heart, Users, Briefcase, Music, Book, Home, ChevronDown,
-  Share2, MessageCircle, Copy, Check, Instagram, Facebook, Twitter, Mail, Smartphone
+  Share2, MessageCircle, Copy, Check, Instagram, Facebook, Twitter, Mail, Smartphone,
+  FileText, Edit3, Trash2, Send, Globe, Lock, UserPlus
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -209,6 +210,501 @@ const ShareModal = ({ isOpen, onClose, video, userName, churchName }) => {
         <div className="share-footer">
           <p>When you share, you're helping spread God's word and inviting others to join our community! 🙏</p>
         </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// NOTES PANEL - Masterclass-style notes with sharing
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const NotesPanel = ({ video, user, isOpen, onClose }) => {
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('my'); // 'my' or 'shared'
+  const [editingNote, setEditingNote] = useState(null);
+  const [shareModalNote, setShareModalNote] = useState(null);
+  
+  useEffect(() => {
+    if (isOpen && video) {
+      fetchNotes();
+    }
+  }, [isOpen, video?.id, activeTab]);
+  
+  const fetchNotes = async () => {
+    if (!video?.id) return;
+    setLoading(true);
+    try {
+      const endpoint = activeTab === 'shared' 
+        ? `${API_URL}/portal/video-notes/shared`
+        : `${API_URL}/portal/video-notes/video/${video.id}`;
+      const res = await fetch(endpoint, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        // Ensure is_own is set for filtering
+        const processedNotes = (data.notes || []).map(note => ({
+          ...note,
+          is_own: note.is_own !== undefined ? note.is_own : true  // Default to own if not specified
+        }));
+        setNotes(processedNotes);
+      }
+    } catch (error) {
+      console.error('Failed to fetch notes:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const createNote = async () => {
+    if (!newNote.trim()) return;
+    
+    try {
+      const res = await fetch(`${API_URL}/portal/video-notes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          video_id: video.id,
+          content: newNote.trim(),
+          is_public: false
+        })
+      });
+      
+      if (res.ok) {
+        toast.success('Note saved!');
+        setNewNote('');
+        fetchNotes();
+      }
+    } catch (error) {
+      toast.error('Failed to save note');
+    }
+  };
+  
+  const updateNote = async (noteId, content) => {
+    try {
+      const res = await fetch(`${API_URL}/portal/video-notes/${noteId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ content })
+      });
+      
+      if (res.ok) {
+        toast.success('Note updated');
+        setEditingNote(null);
+        fetchNotes();
+      }
+    } catch (error) {
+      toast.error('Failed to update note');
+    }
+  };
+  
+  const deleteNote = async (noteId) => {
+    if (!window.confirm('Delete this note?')) return;
+    
+    try {
+      const res = await fetch(`${API_URL}/portal/video-notes/${noteId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      
+      if (res.ok) {
+        toast.success('Note deleted');
+        fetchNotes();
+      }
+    } catch (error) {
+      toast.error('Failed to delete note');
+    }
+  };
+  
+  if (!isOpen) return null;
+  
+  const myNotes = notes.filter(n => n.is_own);
+  const sharedNotes = notes.filter(n => !n.is_own);
+  const displayNotes = activeTab === 'my' ? myNotes : sharedNotes;
+  
+  return (
+    <div
+      className="notes-panel"
+      style={{
+        position: 'fixed',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        width: '420px',
+        maxWidth: '100%',
+        background: '#ffffff',
+        zIndex: 9999,
+        display: 'flex',
+        flexDirection: 'column',
+        boxShadow: '-8px 0 40px rgba(0, 0, 0, 0.2)'
+      }}
+    >
+      <div className="notes-panel-header">
+        <div className="notes-panel-title">
+          <FileText className="w-5 h-5" />
+          <h3>Notes</h3>
+        </div>
+        <button className="notes-panel-close" onClick={onClose}>
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+      
+      {/* Tabs */}
+      <div className="notes-tabs">
+        <button 
+          className={`notes-tab ${activeTab === 'my' ? 'active' : ''}`}
+          onClick={() => setActiveTab('my')}
+        >
+          <Lock className="w-4 h-4" />
+          My Notes
+        </button>
+        <button 
+          className={`notes-tab ${activeTab === 'shared' ? 'active' : ''}`}
+          onClick={() => setActiveTab('shared')}
+        >
+          <Globe className="w-4 h-4" />
+          Shared with Me
+        </button>
+      </div>
+      
+      {/* Video Info */}
+      {video && (
+        <div className="notes-video-info">
+          <img 
+            src={video.thumbnail} 
+            alt={video.title}
+            style={{ width: '60px', height: '36px', objectFit: 'cover', borderRadius: '4px', flexShrink: 0 }}
+          />
+          <div>
+            <h4>{video.title}</h4>
+            <p>{video.instructor}</p>
+          </div>
+        </div>
+      )}
+      
+      {/* New Note Input */}
+      {activeTab === 'my' && (
+        <div className="notes-input-area">
+          <textarea
+            value={newNote}
+            onChange={(e) => setNewNote(e.target.value)}
+            placeholder="Take a note while watching..."
+            rows={3}
+          />
+          <button 
+            className="notes-save-btn"
+            onClick={createNote}
+            disabled={!newNote.trim()}
+          >
+            <Plus className="w-4 h-4" />
+            Add Note
+          </button>
+        </div>
+      )}
+      
+      {/* Notes List */}
+      <div className="notes-list">
+        {loading ? (
+          <div className="notes-loading">Loading notes...</div>
+        ) : displayNotes.length === 0 ? (
+          <div className="notes-empty">
+            {activeTab === 'my' ? (
+              <>
+                <FileText className="w-12 h-12" />
+                <p>No notes yet</p>
+                <span>Start taking notes while you watch!</span>
+              </>
+            ) : (
+              <>
+                <Users className="w-12 h-12" />
+                <p>No shared notes</p>
+                <span>Notes shared with you will appear here</span>
+              </>
+            )}
+          </div>
+        ) : (
+          displayNotes.map((note) => (
+            <NoteCard 
+              key={note.id}
+              note={note}
+              isOwn={note.is_own}
+              onEdit={() => setEditingNote(note)}
+              onDelete={() => deleteNote(note.id)}
+              onShare={() => setShareModalNote(note)}
+            />
+          ))
+        )}
+      </div>
+      
+      {/* Edit Modal */}
+      <AnimatePresence>
+        {editingNote && (
+          <EditNoteModal
+            note={editingNote}
+            onSave={(content) => updateNote(editingNote.id, content)}
+            onClose={() => setEditingNote(null)}
+          />
+        )}
+      </AnimatePresence>
+      
+      {/* Share Note Modal */}
+      <AnimatePresence>
+        {shareModalNote && (
+          <ShareNoteModal
+            note={shareModalNote}
+            onClose={() => setShareModalNote(null)}
+            onShared={() => {
+              setShareModalNote(null);
+              fetchNotes();
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const NoteCard = ({ note, isOwn, onEdit, onDelete, onShare }) => {
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+  
+  return (
+    <div className={`note-card ${isOwn ? 'own' : 'shared'}`}>
+      <div className="note-card-header">
+        <div className="note-card-author">
+          <div className="note-card-avatar">
+            {note.author_name?.charAt(0) || 'U'}
+          </div>
+          <div>
+            <span className="note-card-name">{note.author_name || 'Unknown'}</span>
+            <span className="note-card-date">{formatDate(note.created_at)}</span>
+          </div>
+        </div>
+        {isOwn && (
+          <div className="note-card-actions">
+            <button onClick={onShare} title="Share note">
+              <Share2 className="w-4 h-4" />
+            </button>
+            <button onClick={onEdit} title="Edit note">
+              <Edit3 className="w-4 h-4" />
+            </button>
+            <button onClick={onDelete} title="Delete note">
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
+      
+      {note.timestamp && (
+        <div className="note-card-timestamp">
+          <Clock className="w-3 h-3" />
+          {note.timestamp}
+        </div>
+      )}
+      
+      <div className="note-card-content">
+        {note.content}
+      </div>
+      
+      {(note.is_public || (note.shared_with && note.shared_with.length > 0)) && (
+        <div className="note-card-sharing">
+          {note.is_public ? (
+            <span className="note-sharing-badge public">
+              <Globe className="w-3 h-3" /> Shared with church
+            </span>
+          ) : (
+            <span className="note-sharing-badge private">
+              <Users className="w-3 h-3" /> Shared privately
+            </span>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const EditNoteModal = ({ note, onSave, onClose }) => {
+  const [content, setContent] = useState(note.content);
+  
+  return (
+    <motion.div
+      className="edit-note-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="edit-note-modal"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3>Edit Note</h3>
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={5}
+        />
+        <div className="edit-note-actions">
+          <button className="btn-cancel" onClick={onClose}>Cancel</button>
+          <button className="btn-save" onClick={() => onSave(content)}>
+            Save Changes
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const ShareNoteModal = ({ note, onClose, onShared }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [members, setMembers] = useState([]);
+  const [selectedMembers, setSelectedMembers] = useState([]);
+  const [shareWithChurch, setShareWithChurch] = useState(note.is_public || false);
+  const [loading, setLoading] = useState(false);
+  
+  useEffect(() => {
+    fetchMembers();
+  }, [searchQuery]);
+  
+  const fetchMembers = async () => {
+    try {
+      const url = searchQuery 
+        ? `${API_URL}/portal/church-members?search=${encodeURIComponent(searchQuery)}`
+        : `${API_URL}/portal/church-members`;
+      const res = await fetch(url, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setMembers(data.members || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch members:', error);
+    }
+  };
+  
+  const toggleMember = (memberId) => {
+    setSelectedMembers(prev => 
+      prev.includes(memberId)
+        ? prev.filter(id => id !== memberId)
+        : [...prev, memberId]
+    );
+  };
+  
+  const shareNote = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/portal/video-notes/${note.id}/share`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          user_ids: selectedMembers,
+          is_public: shareWithChurch
+        })
+      });
+      
+      if (res.ok) {
+        toast.success('Note shared successfully!');
+        onShared();
+      }
+    } catch (error) {
+      toast.error('Failed to share note');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  return (
+    <motion.div
+      className="share-note-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="share-note-modal"
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button className="share-note-close" onClick={onClose}>
+          <X className="w-5 h-5" />
+        </button>
+        
+        <div className="share-note-header">
+          <UserPlus className="w-6 h-6" />
+          <h3>Share Your Note</h3>
+        </div>
+        
+        <div className="share-note-preview">
+          <p>{note.content.length > 100 ? note.content.slice(0, 100) + '...' : note.content}</p>
+        </div>
+        
+        {/* Share with entire church option */}
+        <div className="share-note-option">
+          <label className="share-option-checkbox">
+            <input
+              type="checkbox"
+              checked={shareWithChurch}
+              onChange={(e) => setShareWithChurch(e.target.checked)}
+            />
+            <Globe className="w-4 h-4" />
+            <span>Share with entire church</span>
+          </label>
+          <p className="share-option-desc">All members of your church will be able to see this note</p>
+        </div>
+        
+        <div className="share-note-divider">
+          <span>or share with specific people</span>
+        </div>
+        
+        {/* Search members */}
+        <div className="share-note-search">
+          <Search className="w-4 h-4" />
+          <input
+            type="text"
+            placeholder="Search members by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        
+        {/* Members list */}
+        <div className="share-note-members">
+          {members.map(member => (
+            <label key={member.user_id} className="share-member-item">
+              <input
+                type="checkbox"
+                checked={selectedMembers.includes(member.user_id)}
+                onChange={() => toggleMember(member.user_id)}
+              />
+              <div className="share-member-avatar">
+                {member.name?.charAt(0) || 'U'}
+              </div>
+              <div className="share-member-info">
+                <span className="share-member-name">{member.name}</span>
+                <span className="share-member-email">{member.email}</span>
+              </div>
+            </label>
+          ))}
+        </div>
+        
+        <button 
+          className="share-note-btn"
+          onClick={shareNote}
+          disabled={loading || (!shareWithChurch && selectedMembers.length === 0)}
+        >
+          {loading ? 'Sharing...' : 'Share Note'}
+        </button>
       </motion.div>
     </motion.div>
   );
@@ -462,6 +958,7 @@ export default function PortalWatch() {
   const [searchQuery, setSearchQuery] = useState('');
   const [videoModal, setVideoModal] = useState({ open: false, video: null });
   const [shareModal, setShareModal] = useState({ open: false, video: null });
+  const [notesPanel, setNotesPanel] = useState({ open: false, video: null });
   const [allContent, setAllContent] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -522,6 +1019,11 @@ export default function PortalWatch() {
     setShareModal({ open: true, video });
   };
 
+  // Handle notes
+  const handleNotes = (video) => {
+    setNotesPanel({ open: true, video });
+  };
+
   if (loading) {
     return (
       <div className="atv-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
@@ -557,6 +1059,14 @@ export default function PortalWatch() {
         </div>
 
         <div className="atv-header-actions">
+          <button 
+            className="atv-notes-btn"
+            onClick={() => setNotesPanel({ open: true, video: allContent[0] || null })}
+            data-testid="my-notes-btn"
+          >
+            <FileText className="w-4 h-4" />
+            My Notes
+          </button>
           <div className="atv-view-toggle">
             <button 
               className={viewMode === 'featured' ? 'active' : ''}
@@ -661,6 +1171,16 @@ export default function PortalWatch() {
           />
         )}
       </AnimatePresence>
+
+      {/* Notes Panel */}
+      {notesPanel.open && (
+        <NotesPanel
+          video={notesPanel.video}
+          user={user}
+          isOpen={notesPanel.open}
+          onClose={() => setNotesPanel({ open: false, video: null })}
+        />
+      )}
     </div>
   );
 }

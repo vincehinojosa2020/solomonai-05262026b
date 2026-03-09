@@ -769,6 +769,39 @@ class LeadershipNoteCreate(BaseModel):
     message: str
     category: Optional[str] = None
 
+# ============== VIDEO NOTES MODELS (Masterclass-style) ==============
+
+class VideoNote(BaseModel):
+    """Notes that members can take while watching videos - shareable with other church members"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    user_id: str
+    video_id: str
+    content: str
+    timestamp: Optional[str] = None  # Video timestamp like "12:34" when note was taken
+    is_public: bool = False  # Visible to all church members
+    shared_with: List[str] = Field(default_factory=list)  # List of user_ids
+    author_name: Optional[str] = None
+    video_title: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class VideoNoteCreate(BaseModel):
+    video_id: str
+    content: str
+    timestamp: Optional[str] = None
+    is_public: bool = False
+
+class VideoNoteUpdate(BaseModel):
+    content: Optional[str] = None
+    timestamp: Optional[str] = None
+    is_public: Optional[bool] = None
+
+class VideoNoteShare(BaseModel):
+    user_ids: List[str] = Field(default_factory=list)  # Share with specific users
+    is_public: Optional[bool] = None  # Share with entire church
+
 # ============== CAFE MODELS ==============
 
 class CafeSettings(BaseModel):
@@ -3441,6 +3474,208 @@ async def get_leadership_notes(
         enriched_notes.append(serialize_doc(note))
 
     return {"notes": enriched_notes}
+
+# ============== VIDEO NOTES ROUTES (Masterclass-style) ==============
+
+@api_router.post("/portal/video-notes")
+async def create_video_note(request: Request, payload: VideoNoteCreate):
+    """Create a note for a video"""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    
+    if not payload.content or not payload.content.strip():
+        raise HTTPException(status_code=400, detail="Note content is required")
+    
+    # Get video title for reference
+    video = await db.media_videos.find_one({"id": payload.video_id}, {"_id": 0, "title": 1})
+    video_title = video.get("title") if video else None
+    
+    note = VideoNote(
+        tenant_id=tenant_id,
+        user_id=user_id,
+        video_id=payload.video_id,
+        content=payload.content.strip(),
+        timestamp=payload.timestamp,
+        is_public=payload.is_public,
+        author_name=user.get("name"),
+        video_title=video_title
+    ).model_dump()
+    note["created_at"] = datetime.now(timezone.utc).isoformat()
+    note["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.video_notes.insert_one(note)
+    return {"message": "Note created", "note": serialize_doc(note)}
+
+@api_router.get("/portal/video-notes")
+async def get_my_video_notes(
+    request: Request,
+    video_id: Optional[str] = None,
+    limit: int = 100
+):
+    """Get current user's notes, optionally filtered by video"""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    
+    query = {"tenant_id": tenant_id, "user_id": user_id}
+    if video_id:
+        query["video_id"] = video_id
+    
+    notes = await db.video_notes.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    return {"notes": [serialize_doc(n) for n in notes]}
+
+@api_router.get("/portal/video-notes/video/{video_id}")
+async def get_video_notes_for_video(request: Request, video_id: str):
+    """Get all notes for a specific video (own notes + shared notes)"""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    
+    # Get own notes + notes shared with me + public notes from same tenant
+    query = {
+        "tenant_id": tenant_id,
+        "video_id": video_id,
+        "$or": [
+            {"user_id": user_id},  # Own notes
+            {"shared_with": user_id},  # Shared with me
+            {"is_public": True}  # Public notes from same church
+        ]
+    }
+    
+    notes = await db.video_notes.find(query, {"_id": 0}).sort("created_at", -1).to_list(200)
+    
+    # Mark which notes are own vs shared
+    result = []
+    for note in notes:
+        note_data = serialize_doc(note)
+        note_data["is_own"] = note.get("user_id") == user_id
+        note_data["is_shared_with_me"] = user_id in (note.get("shared_with") or [])
+        result.append(note_data)
+    
+    return {"notes": result}
+
+@api_router.get("/portal/video-notes/shared")
+async def get_notes_shared_with_me(request: Request, limit: int = 100):
+    """Get all notes shared with the current user"""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    
+    query = {
+        "tenant_id": tenant_id,
+        "user_id": {"$ne": user_id},  # Not my own notes
+        "$or": [
+            {"shared_with": user_id},
+            {"is_public": True}
+        ]
+    }
+    
+    notes = await db.video_notes.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    return {"notes": [serialize_doc(n) for n in notes]}
+
+@api_router.put("/portal/video-notes/{note_id}")
+async def update_video_note(request: Request, note_id: str, payload: VideoNoteUpdate):
+    """Update a note (only own notes)"""
+    user = await get_current_member_user(request)
+    user_id = user.get("user_id")
+    
+    # Find note and verify ownership
+    note = await db.video_notes.find_one({"id": note_id}, {"_id": 0})
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+    if note.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Cannot edit someone else's note")
+    
+    update_data = {}
+    if payload.content is not None:
+        update_data["content"] = payload.content.strip()
+    if payload.timestamp is not None:
+        update_data["timestamp"] = payload.timestamp
+    if payload.is_public is not None:
+        update_data["is_public"] = payload.is_public
+    
+    if update_data:
+        update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.video_notes.update_one({"id": note_id}, {"$set": update_data})
+    
+    updated_note = await db.video_notes.find_one({"id": note_id}, {"_id": 0})
+    return {"message": "Note updated", "note": serialize_doc(updated_note)}
+
+@api_router.delete("/portal/video-notes/{note_id}")
+async def delete_video_note(request: Request, note_id: str):
+    """Delete a note (only own notes)"""
+    user = await get_current_member_user(request)
+    user_id = user.get("user_id")
+    
+    note = await db.video_notes.find_one({"id": note_id}, {"_id": 0})
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+    if note.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Cannot delete someone else's note")
+    
+    await db.video_notes.delete_one({"id": note_id})
+    return {"message": "Note deleted"}
+
+@api_router.post("/portal/video-notes/{note_id}/share")
+async def share_video_note(request: Request, note_id: str, payload: VideoNoteShare):
+    """Share a note with specific users or the entire church"""
+    user = await get_current_member_user(request)
+    user_id = user.get("user_id")
+    tenant_id = user.get("tenant_id")
+    
+    note = await db.video_notes.find_one({"id": note_id}, {"_id": 0})
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+    if note.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Cannot share someone else's note")
+    
+    update_data = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    
+    # Add users to share list
+    if payload.user_ids:
+        # Verify users exist and are in same tenant
+        valid_users = await db.users.find(
+            {"user_id": {"$in": payload.user_ids}, "tenant_id": tenant_id},
+            {"_id": 0, "user_id": 1}
+        ).to_list(100)
+        valid_user_ids = [u["user_id"] for u in valid_users]
+        
+        # Merge with existing shared_with list
+        existing_shared = set(note.get("shared_with") or [])
+        existing_shared.update(valid_user_ids)
+        update_data["shared_with"] = list(existing_shared)
+    
+    # Update public status if provided
+    if payload.is_public is not None:
+        update_data["is_public"] = payload.is_public
+    
+    await db.video_notes.update_one({"id": note_id}, {"$set": update_data})
+    
+    updated_note = await db.video_notes.find_one({"id": note_id}, {"_id": 0})
+    return {"message": "Note shared", "note": serialize_doc(updated_note)}
+
+@api_router.get("/portal/church-members")
+async def get_church_members_for_sharing(request: Request, search: Optional[str] = None):
+    """Get list of church members for sharing notes (excluding self)"""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    
+    query = {"tenant_id": tenant_id, "user_id": {"$ne": user_id}}
+    
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"email": {"$regex": search, "$options": "i"}}
+        ]
+    
+    members = await db.users.find(
+        query,
+        {"_id": 0, "user_id": 1, "name": 1, "email": 1}
+    ).limit(50).to_list(50)
+    
+    return {"members": members}
 
 # ============== STRIPE PAYMENT ROUTES ==============
 
