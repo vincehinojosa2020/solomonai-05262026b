@@ -8919,6 +8919,67 @@
   gap: 12px;
 }
 
+.atv-btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: #ffffff;
+  color: #0a0a0a;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.atv-btn-primary:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: scale(1.02);
+}
+
+.atv-btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.atv-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.atv-btn-share {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.atv-btn-share:hover {
+  background: rgba(59, 130, 246, 0.35);
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
 .atv-play-btn {
   display: flex;
   align-items: center;
@@ -9177,4 +9238,327 @@
   background: rgba(0, 0, 0, 0.7);
   border-color: #dc2626;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SHARE MODAL - Viral Video Sharing
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.share-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.share-modal {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.share-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.share-modal-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.share-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 24px 0 24px;
+}
+
+.share-modal-header svg {
+  width: 28px;
+  height: 28px;
+  color: #3b82f6;
+}
+
+.share-modal-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.share-video-preview {
+  display: flex;
+  gap: 16px;
+  padding: 20px 24px;
+  margin: 16px 24px;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.share-video-preview img {
+  width: 100px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.share-video-info h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+.share-video-info p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.share-message-selector {
+  padding: 0 24px;
+  margin-bottom: 16px;
+}
+
+.share-message-selector label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 10px;
+}
+
+.share-message-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.share-message-option {
+  padding: 8px 16px;
+  background: #f1f5f9;
+  border: 2px solid transparent;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.share-message-option:hover {
+  background: #e2e8f0;
+}
+
+.share-message-option.active {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.share-message-preview {
+  padding: 0 24px;
+  margin-bottom: 20px;
+}
+
+.share-message-preview label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 10px;
+}
+
+.share-message-text {
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #334155;
+  white-space: pre-wrap;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.share-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 0 24px;
+  margin-bottom: 20px;
+}
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.share-btn:hover {
+  transform: translateY(-2px);
+}
+
+.share-btn.sms {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: #ffffff;
+}
+
+.share-btn.sms:hover {
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
+}
+
+.share-btn.whatsapp {
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: #ffffff;
+}
+
+.share-btn.whatsapp:hover {
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.35);
+}
+
+.share-btn.email {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #ffffff;
+}
+
+.share-btn.email:hover {
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
+}
+
+.share-btn.copy {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.share-btn.copy:hover {
+  background: #1e293b;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+}
+
+.share-footer {
+  padding: 16px 24px 24px;
+  text-align: center;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 4px;
+}
+
+.share-footer p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Share button on video cards */
+.atv-share-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #3b82f6;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.atv-share-btn:hover {
+  background: #ffffff;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Share icon in card info */
+.atv-card-info-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.atv-card-share-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.atv-card-share-icon:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+/* Mobile responsiveness for share modal */
+@media (max-width: 520px) {
+  .share-modal {
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    max-height: 85vh;
+  }
+  
+  .share-buttons {
+    grid-template-columns: 1fr;
+  }
+  
+  .share-video-preview {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .share-video-preview img {
+    width: 160px;
+    height: 90px;
+  }
 }

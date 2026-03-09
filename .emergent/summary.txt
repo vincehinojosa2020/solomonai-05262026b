@@ -1,161 +1,180 @@
 <analysis>**original_problem_statement:**
-The user's goal is to build Solomon AI, an enterprise-grade, multi-tenant SaaS Church Management System (ChMS). The platform allows churches to subscribe and manage their operations, while members can sign up, donate, and engage with their specific church's content.
+The user's primary goal is to build Solomon AI, an enterprise-grade, multi-tenant SaaS Church Management System (ChMS). In this session, the focus shifted to preparing the application for a live demo for Abundant Church. This involved a full QA pass, fixing the platform-wide GMV display, validating the user signup flow, and adding new, highly-requested UI/UX features to enhance member engagement.
 
-The user's latest request is to add a Learning Management System (LMS) feature, referred to as Solomon Discipleship. The user has provided a requirements document () and wants to explore two options:
-1.  **Integrate**: Integrate with an existing LMS platform like Thinkific, allowing content to be viewed within Solomon AI.
-2.  **Build**: Find a suitable open-source LMS on GitHub and build a native Discipleship platform within Solomon AI.
+A significant new direction was to make Solomon AI an API-first, agent-ready platform, enabling external agents like MoltBot to connect and interact with the application's data via a secure API key system.
 
-This new feature should be accessible to Church Admins from the main navigation, near the Media Library.
+PRODUCT REQUIREMENTS:
+1.  **Agent-Ready API**: Create a system for generating API keys so external agents can securely access data (visitors, members, events, etc.).
+2.  **Platform Admin GMV**: Ensure the platform admin dashboard correctly displays the total Gross Merchandise Volume (GMV) aggregated across all church tenants for demo purposes.
+3.  **Signup Flow Reliability**: Verify that the user registration process works seamlessly and instantly populates the user in the database.
+4.  **Masterclass-Style Search**: On the member-facing Watch page, implement a large, prominent search bar in the hero section, aesthetically identical to the Masterclass website.
+5.  **Viral Share Feature**: Add a feature for members to share videos via text or social media with a pre-populated, personalized message to drive user acquisition. The message should include the sender's name and a link to download the Solomon AI app.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack, multi-tenant SaaS platform with a React frontend and a monolithic FastAPI/MongoDB backend.
--   **Core Roles**: Platform Admin (), Church Admin (e.g., ), and Member (e.g., ) with robust data isolation via .
--   **Dashboards**: Role-specific dashboards for platform-wide stats (Platform Admin), church-specific management (Church Admin), and content consumption (Member).
--   **Key Features**:
-    -   **Authentication**: JWT-based auth with demo accounts for all roles.
-    -   **Media Library**: Church Admins can perform full CRUD operations on YouTube videos, which are dynamically displayed on the member portal's Watch page.
-    -   **Groups & Events**: Bidirectional management is implemented. Admins can create and manage groups/events, and members can request to join or register.
-    -   **Giving**: Live Stripe integration for donations, with backend APIs created for saved payment methods and CSV export for giving reports.
-    -   **AI Assistant**: A fully functional Ask Solomon chat widget powered by Anthropic's Claude is available in the member portal, providing context-aware responses about giving and church activities.
--   **Tenants**: The platform is configured with four demo churches: Abundant Church, The Potter's House, Cristo Viene, and Eden X.
+The application is a full-stack, multi-tenant SaaS platform with a React frontend and a monolithic FastAPI/MongoDB backend. Key features include:
+-   **Core Modules**: Auth, Media Library (Watch), Groups, Events, Giving, AI Chat (Ask Solomon).
+-   **Commercial Features**: A full CRUD Merch Store and placeholder Abundant Cafe.
+-   **LMS**: A custom-built LMS (Abundant Pathways) with 8 seeded courses, and a placeholder for Thinkific integration.
+-   **Pastor's CRM**: A fully functional meeting scheduler for pastors and members.
+-   **Agent API Platform**: A new Developer section in the admin portal for creating and managing API keys. A suite of secure, agent-specific API endpoints () has been created for external services to interact with Solomon AI data.
+-   **UI Enhancements**: The Watch page now features a prominent Masterclass-style search bar in the hero section. The AI chat microphone UI has been polished.
 
 **Last working item**:
--   **Last item agent was working**: The user requested the implementation of an LMS/Discipleship platform. The user uploaded a markdown file () with detailed requirements. The agent reviewed this document to understand the scope but has not yet started planning or implementation.
--   **Status**: NOT STARTED
--   **Agent Testing Done**: N/A
--   **Which testing method agent to use?**: Integration planning and web search first. Then, depending on the chosen path (build vs. integrate), the testing will involve either backend/frontend testing for the new feature or testing the integration flow.
+-   **Last item agent was working**: Implementing the video sharing functionality on the Watch page. The agent was building a share modal and the logic to generate a personalized, pre-populated message for sharing via text or social media. This was based on the user's detailed request for a viral loop feature.
+-   **Status**: IN PROGRESS
+-   **Agent Testing Done**: N
+-   **Which testing method agent to use?**: frontend testing agent
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   None. The agent has just received a new feature request. All previously reported bugs have been resolved.
+-   **Issue 1 (P0)**: Complete the video Share feature with personalized, pre-populated messages.
+-   **Issue 2 (P1)**: The user wants the search feature on the Watch page to *exactly* match the Masterclass screenshot provided. The current implementation is close but needs further visual refinement.
+
+**Issues Detail**:
+-   **Issue 1: Complete Video Share Feature**
+    -   **Attempted fixes**: The agent started creating a  component and adding the necessary state and handler logic to .
+    -   **Next debug checklist**:
+        1.  Finalize the UI of  to display the pre-populated message and sharing options (copy link, text, social media).
+        2.  Add a Share icon/button to each video card and the video player view.
+        3.  Implement the  function in  to dynamically generate the personalized message using the logged-in user's name (e.g., Hey, this is Vince, sharing a great video...).
+        4.  Integrate the  API for a native mobile sharing experience. Provide a fallback (e.g., copy to clipboard) for desktop browsers.
+        5.  Ensure the shared URL points to the specific video.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a key user request to create a viral growth loop for the platform, making it easy for members to evangelize content and attract new users.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: frontend
+    -   **Blocked on other issue**: None
+
+-   **Issue 2: Perfect the Masterclass Search UI**
+    -   **Attempted fixes**: The agent successfully identified the correct React component (), fixed the routing from , and implemented a large search bar in the hero section.
+    -   **Next debug checklist**:
+        1.  Analyze the user-provided screenshot of the Masterclass UI again.
+        2.  Fine-tune the CSS in  and the JSX in .
+        3.  Focus on getting the dark transparent background, font style, padding, and search icon placement to be an exact match.
+    -   **Why fix this issue and what will be achieved with the fix?**: The user is highly focused on visual polish for the upcoming demo and specifically requested this exact design.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: frontend
+    -   **Blocked on other issue**: None
 
 **In progress Task List**:
--   None.
+-   **Task 1: Video Share Feature**
+    -   **Where to resume**:  and the newly created .
+    -   **What will be achieved with this?**: A user-facing feature to share videos with a personalized, pre-populated message, driving engagement and user growth.
+    -   **Status**: IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?**: frontend
+    -   **Blocked on something**: None
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   **P0: Implement Solomon Discipleship (LMS) Platform**:
-        -   **Description**: Based on the user's request and the provided , the agent needs to propose a plan to add an LMS feature.
-        -   **Action Items**:
-            1.  Propose two distinct paths to the user:
-                -   **Option A (Integrate)**: Research and outline the steps to integrate with Thinkific's API.
-                -   **Option B (Build)**: Use  to find the best open-source LMS on GitHub suitable for integration into a React/FastAPI stack.
-            2.  Add a new navigation item (e.g., Discipleship or Academy) in the Church Admin's .
-            3.  Create placeholder pages for the new feature.
-            4.  Seek user approval on the chosen path before full implementation.
-
+    -   **P1: Twilio/WhatsApp Integration**: Connect MoltBot to a messaging service to send the welcome texts initiated from the new Agent API.
+    -   **P1: Full Calendly Integration**: Replace the mocked iframe with a native API integration.
+    -   **P2: Teams & Slack Integration**: Implement real-time notifications.
 -   **Future Tasks:**
-    -   **P1: Implement Saved Payment Methods (Frontend)**: The backend APIs are complete. The frontend UI on the member's Give page needs to be connected to list, use, and delete saved cards.
-    -   **P1: Implement Giving Reports (Frontend)**: The backend API with CSV export is ready. The Church Admin's Giving dashboard needs a UI to view reports and trigger the CSV download.
-    -   **P2: High-Value AI Features**: AI Sermon Transcription, AI Sermon Summaries, and Engagement Scoring. The user has tabled these for now. Dummy buttons exist.
-    -   **P2: Backend Refactor**: Decompose the monolithic  into a modular structure (e.g., , , ) to improve maintainability.
+    -   **P2: Backend Refactor**: Decompose the monolithic  into a modular structure.
+    -   **P2: Prayer Wall / Community Feature**: Evolve the Leave a Note feature.
+    -   **P2: AI Sermon Transcription and Summaries**.
 
 **Completed work in this session**
--   **Media Sync Bug FIXED**: Resolved a recurring data synchronization issue where deleted/added videos were not reflected in the member portal. The root cause was hardcoded content in , which has now been removed and replaced with dynamic data fetching.
--   **Bidirectional Sync for Groups/Events FIXED**: Corrected a bug where member-facing pages for groups and events were using a hardcoded  instead of the logged-in user's .
--   **MongoDB Atlas Deployment Errors FIXED**: Resolved  by adding robust connection settings (, , , ) to the MongoClient initialization, making it compatible with managed services like MongoDB Atlas.
--   **Database Query Optimization**: Fixed three N+1 query performance warnings identified by the deployment agent, related to fetching last gift, group memberships, and donation funds.
--   **Tenant Data Cleanup & Addition**:
-    -   Renamed Abundant Living Faith Center to Abundant Church and City Reach Church to Cristo Viene across the codebase and database.
-    -   Added a new tenant church, Eden X, with a unique theme color, an admin account (), and a member account ().
--   **Platform Admin UX Improvement**: The platform admin's view now defaults to the  All Churches dashboard upon login.
--   **Login Page Redesign**: The public login page () was completely redesigned to have a clean, minimalist, Prada-style aesthetic, removing all demo credentials and marketing text.
--   **Ask Solomon AI Feature Enabled**: The AI chat assistant was fully implemented in the member portal, connected to a Claude backend, and enhanced with a member-centric system prompt and contextual data about church giving needs.
--   **Browser Tab Title Fixed**: Corrected the application's HTML title from Samson to Solomon AI in .
--   **Password Standardization**: Updated all 21 demo user accounts to use the password .
+-   **Agent-Ready API Platform**: Successfully built a complete API key management system for admins and a suite of secure, agent-specific endpoints (). End-to-end tested creation and usage of an API key.
+-   **Platform Admin GMV Fix**: Corrected the platform admin dashboard logic to properly aggregate and display platform-wide MTD GMV. Implemented a redirect to ensure platform admins always see the correct dashboard.
+-   **Signup Flow QA**: Investigated, tested, and verified the entire user signup flow from UI to database. Confirmed that new user accounts are created instantly and reliably.
+-   **Masterclass-Style Search UI (v1)**: Implemented a large, prominent search bar on the Watch page hero section, resolving routing issues to ensure the correct component is displayed.
+-   **User Account Management**: Successfully created and deleted user accounts () from the database per the user's testing requests.
+-   **QA & Demo Readiness**: Performed a comprehensive QA check of all user roles (Platform Admin, Church Admin, Member), confirming all major features are functional for the demo.
+-   **Abundant Pathways Seeding**: Verified the backend logic correctly seeds the 8 demo courses for the LMS.
+-   **AI Chat UI Polish**: Improved the styling of the microphone button and input field in the Ask Solomon chat widget.
 
 **Earlier issues found/mentioned but not fixed**
--   **Minor Frontend Loading Timing Issue**: An old, uninvestigated test report from a previous session mentioned a minor loading timing issue on the frontend. This was never prioritized or investigated.
+-   **Minor Frontend Loading Timing Issue**: An old, uninvestigated test report mentioned a minor loading timing issue on the frontend. This was never prioritized.
+-   **Member Portal UI Asymmetry**: The initial handoff mentioned asymmetry on . This was not addressed in this session as priorities shifted to the Agent API and Watch page.
 
 **Known issue recurrence from previous fork**
--   **Issue**: Media Library Sync Bug.
--   **Recurrence count**: The user reported this bug twice. The agent initially fixed it in  but missed a second component, , which also contained hardcoded data.
--   **Status**: RESOLVED. The final fix involved removing all hardcoded video arrays from the frontend and ensuring all member-facing video components fetch data dynamically. The next agent should be aware of this pattern if similar bugs arise.
+-   None. The Media Library Sync Bug was not observed in this session.
 
 **Code Architecture**
-COURSES
+
 
 **Key Technical Concepts**
--   **Multi-Tenancy**: Data isolation by  is critical. Bugs were caused when this was not respected.
--   **Role-Based Access Control (RBAC)**: Differentiating UI/API access for , , and .
--   **Dynamic Content Management**: Admin-managed content (media, groups, events) must sync to member-facing portals in real-time. Recurring bugs have highlighted the importance of avoiding hardcoded data on the frontend.
--   **AI Integration**: Using Anthropic's Claude API to power a context-aware chatbot.
+-   **API-First Architecture**: Shifted the platform to support external integrations by creating a secure, versioned, and documented API for agents.
+-   **API Key Authentication**: Implemented a dependency for validating Bearer tokens against hashed keys stored in the database.
+-   **UI/UX Replication**: Attempting to match a specific design pattern (Masterclass) for a key user-facing feature.
+-   **Viral Loop Mechanics**: Designing a Share feature with pre-populated, personalized messages to encourage user-driven growth.
+-   **End-to-End Testing**: Validated the entire user signup and login flows to ensure system reliability before going live.
 
 **key DB schema**
--   **tenants**: 
--   **users**: 
--   **media**: 
--   **groups**: 
--   **events**: 
--   **donations**: 
+-   **api_keys**: 
 
 **changes in tech stack**
--   The MongoDB connection logic in  was updated with Atlas-specific settings (, , etc.) to prevent timeout errors during deployment.
+-   None.
 
 **All files of reference**
--   : The monolithic backend where all API logic resides. Was modified for bug fixes, new features (giving reports, saved payments), performance optimizations, and tenant data seeding.
--   : The source of the final media sync bug. Was refactored to remove hardcoded data.
--   : Redesigned for a minimalist aesthetic.
--   : Modified for role-based navigation and redirects.
--   : Modified to fix the browser tab title.
--   : User-provided requirements for the next major feature.
+-   : Major additions for the Agent API, API key models/logic, and the platform-wide GMV aggregation fix.
+-   : The main focus of recent UI work. Corrected routing to use this file and added the new search bar. Share feature logic is being added here.
+-   : New page for API key management.
+-   : Updated to route  to  and add the  route.
+-   : New styles for the Masterclass search bar and Developer page.
+-   : Added a Developer link.
+-   : A prompt for connecting an external agent to the new API.
 
 **Areas that need refactoring**:
--   ****: This monolithic file is over 5000 lines long and contains all application logic. It is the top priority for a future refactoring effort to improve maintainability.
--   **Frontend Data Fetching**: The recurrence of data sync bugs suggests that data fetching logic is scattered and inconsistent. A centralized data fetching layer (e.g., using React Query or a similar library with shared queries) could prevent future issues with hardcoded fallbacks.
+-   ****: This remains the highest priority for refactoring. It has grown even larger and more complex, making it a significant source of technical debt.
+-   ****: This file is becoming very large with multiple view modes, data fetching, and now share logic. It could be broken down into smaller components.
 
 **key api endpoints**
--   : User authentication.
--   : Get all tenant churches.
--   : Get the current user's tenant branding info.
--   : CRUD for media library.
--   : Fetch videos for the member portal.
--   : CRUD for groups.
--   : Fetch groups for the member portal. (Bug fixed here).
--   : CRUD for events.
--   : Fetch events for the member portal. (Bug fixed here).
--   : The endpoint for the Ask Solomon AI assistant.
+-   : , ,  for managing API keys.
+-   :  - Handshake endpoint for agents.
+-   :  - Retrieve new visitors.
+-   :  - Update member status.
+-   :  - Register a webhook.
+-   :  - Endpoint for platform-wide aggregated stats (GMV).
 
 **Critical Info for New Agent**
--   **Top Priority is LMS**: The user's most recent and urgent request is to implement the Solomon Discipleship LMS feature. You must start by analyzing the provided markdown file and proposing a plan with build vs. integrate options.
--   **Beware of Hardcoded Data**: The application has a history of data sync bugs caused by hardcoded data arrays (, ) in frontend components. When debugging or building new features, be vigilant for this anti-pattern. Always ensure member-facing content is fetched dynamically based on the logged-in user's .
--   **Monolithic Backend**: All backend logic is in . While a full refactor is a future task, be mindful that any new backend features will need to be added to this large file for now.
+-   The user is preparing for a live demo and has a high standard for visual polish. The Masterclass-style search and Viral Share features are top priorities.
+-   The user signup flow was a critical point of concern but has been thoroughly tested and verified. You can assure the user it is reliable.
+-   The Watch page is now correctly using  after a routing issue was discovered and fixed. All future Watch page changes go there.
+-   The new Agent API is a major new pillar of the application. A prompt for connecting MoltBot has been created and saved in .
 
 **documents and test reports created in this job**
--   : User-provided requirements for the new LMS feature.
--   : Updated to reflect completed tasks.
+-   
+-   
+-   
+-   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
-10. **User**: Reports that deleting all videos for Eden X doesn't remove them from Kaylen's member account, re-iterating the need for bidirectional capabilities. (IN PROGRESS)
-9.  **User**: Confirms the bidirectional sync for groups/events is still not working correctly. (RESOLVED)
-8.  **User**: Reports that adding a group or video in the admin panel does not show up for the member. (RESOLVED)
-7.  **User**: Reports deployment is failing due to a MongoDB timeout error. (RESOLVED)
-6.  **User**: Asks to enable the Ask Solomon functionality in the member portal with example conversations. (COMPLETED)
-5.  **User**: Asks for all demo account passwords to be set to . (COMPLETED)
-4.  **User**: Requests adding a fourth church, Eden X, with a specific pastor, member, and theme color. Also asks for the platform admin view to default to All Churches. (COMPLETED)
-3.  **User**: Requests a complete redesign of the login page to be minimalist and Prada-style, removing all demo accounts and marketing copy. (COMPLETED)
-2.  **User**: Asks to rename City Reach to Cristo Viene and remove any mention of Abundant Living Faith Center. (COMPLETED)
-1.  **User**: After seeing the deployment agent's report, requests that the agent fix the performance warnings before deploying. (COMPLETED)
-0.  **User**: **(LATEST/PENDING)** Asks the agent to build or integrate an LMS (like Thinkific) into Solomon AI, providing a detailed prompt in a markdown file.
+10. **User**: done! is it in the database? - Asks to verify their new registration. (COMPLETED)
+9.  **User**: k one second - Acknowledges they will register a new account for testing. (COMPLETED)
+8.  **User**: skip emails for demo. go ahead and delet and wipe away jacob account, and let me test again... - Decides to skip fixing email sending and wants to re-test the live signup flow. (COMPLETED)
+7.  **User**: Asks how to enable email notifications for new user registrations and how long it takes for a new user to appear in the database. (COMPLETED)
+6.  **User**: how do i make it so someone registers online, and they get an email notification they now have an account... (COMPLETED)
+5.  **User**: do you create this account, or after jacob registered, thats wehre you saw account? need to know that system works... - Expresses concern that the signup system isn't working and needs assurance. (COMPLETED)
+4.  **User**: im logged in as member! do you whatever you need to do so thworks. we are going live soon! - Confirms they are logged in but urges the agent to fix the admin promotion. (COMPLETED)
+3.  **User**: it works! im signed in as member for jacob pacheco! can you see the email user miniagent1@yahoo.com - Confirms successful signup and asks agent to find the user. (COMPLETED)
+2.  **User**: Initiates a full QA and design quality check of the entire application, and states intent to create a new yahoo user and promote them to admin for Abundant Church. (COMPLETED)
+1.  **User**: Asks to implement a Masterclass-style search on the Watch page and a viral video sharing feature with personalized, pre-populated messages. (IN PROGRESS)
 
 **Project Health Check:**
--   **Broken**: None. All known user-reported bugs have been fixed.
+-   **Broken**: Resend email integration is in test mode and can only send to a verified email, not to new signups. The user opted to skip fixing this for the demo.
 -   **Mocked**:
-    -   Backend APIs for Saved Payment Methods and Giving Reports exist, but the frontend UI is not connected.
-    -   AI features like Sermon Transcription have dummy buttons.
+    -   Abundant Cafe (UI/backend models exist, no business logic).
+    -   Thinkific Integration (Placeholder page).
+    -   Teams/Slack Integration (Not started).
 
 **3rd Party Integrations**
--   **Stripe (Payments)**: Live integration for donations. Requires User API Key.
--   **Resend (Email)**: For sending welcome emails. Requires User API Key.
+-   **Stripe (Payments)**: Live integration for donations.
+-   **Resend (Email)**: Integrated but in test mode. Requires a production key or verified domain to be fully functional.
 -   **Emergent-managed Google Auth**: Available for social login.
--   **Anthropic Claude**: Powers the Ask Solomon AI chat assistant. Uses Emergent LLM Key.
+-   **Anthropic Claude**: Powers the Ask Solomon AI chat. Uses Emergent LLM Key.
+-   **OpenAI Whisper**: Used for meeting transcription. Uses Emergent LLM Key.
+-   **MoltBot/OpenClaw**: The newly built Agent API is designed for this integration.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES, the deployment agent was used to check for deployment readiness and identified performance issues that were then fixed.
+-   **Testing agent used after significant changes**: YES. Used multiple times to validate the Agent API and perform a full QA pass.
 -   **Troubleshoot agent used after agent stuck in loop**: NO
--   **Test files created**: None.
+-   **Test files created**: Yes, new test files were created by the testing agent in .
 -   **Known regressions**: None.
 
 **Credentials to test flow:**
@@ -163,13 +182,8 @@ COURSES
 |---|---|---|
 | Platform Admin |  |  |
 | Abundant Admin |  |  |
-| Cristo Viene Admin |  |  |
-| Potter's House Admin |  |  |
-| Eden X Admin |  |  |
 | Member (Abundant) |  |  |
-| Member (Cristo Viene) |  |  |
-| Member (Eden X) |  |  |
+| New Member (Test) |  |  |
 
 **What agent forgot to execute**
--   The agent has not yet created a plan of action for the user's latest and most critical request: implementing the LMS/Discipleship feature.
--   The Minor Frontend Loading Timing Issue from the initial handover summary remains uninvestigated.</analysis>
+-   The agent correctly identified and fixed a major routing issue ( vs ) that was preventing UI changes from appearing. No major tasks were forgotten, but the  is the primary piece of unfinished work.</analysis>
