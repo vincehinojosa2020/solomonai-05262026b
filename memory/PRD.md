@@ -234,6 +234,24 @@ Each church is a tenant with isolated data:
 ## Changelog
 
 ### March 9, 2026 (Latest Session)
+- ✅ **Kids Check-in - Christian Theme Update**
+  - Replaced Star of David with Christian Cross ✝️
+  - Colorful (non-rainbow) theme: purple/pink gradients, emerald greens, warm oranges
+  - Bible story character avatars (Daniel🦁, David🐑, Moses🌊, Noah🕊️, Jonah🐋, Esther👑, Abraham⭐, Samson💪)
+  - Golden yellow pickup codes on purple backgrounds
+  - "Sunday School Adventures!" tagline
+  - "God Bless! ✝️" on success modal
+  - Applied to both Member Portal and Admin views
+
+- ✅ **Real-time Bidirectional Sync**
+  - Admin dashboard auto-refreshes every 5 seconds
+  - When parent checks in child → Admin sees it instantly
+  - "Front Desk • Live Updates" indicator
+
+- ✅ **Any Age Support**
+  - Removed age restrictions - all ages welcome
+  - Better age display: "Under 1 year", "1 year old", "X years old"
+
 - ✅ **Kids Check-in UI - Israel Theme Update**
   - Replaced rainbow colors with Israel blue & white palette
   - Star of David (✡️) icons throughout
