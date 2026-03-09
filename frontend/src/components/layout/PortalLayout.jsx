@@ -18,6 +18,9 @@ export default function PortalLayout() {
   
   // Library/Watch page has its own full navigation, so hide portal header
   const isLibraryPage = location.pathname === '/portal/watch' || location.pathname === '/portal/library';
+  
+  // Kids check-in page gets full-width treatment
+  const isKidsPage = location.pathname === '/portal/kids';
 
   useEffect(() => {
     fetchMemberData();
@@ -211,8 +214,8 @@ export default function PortalLayout() {
       )}
 
       {/* Main Content */}
-      <main className={`portal-main ${isDarkPage ? 'portal-main-dark' : ''}`}>
-        <div className={isDarkPage ? 'portal-content-full' : 'portal-content'}>
+      <main className={`portal-main ${isDarkPage ? 'portal-main-dark' : ''} ${isKidsPage ? 'portal-main-kids' : ''}`}>
+        <div className={isDarkPage ? 'portal-content-full' : isKidsPage ? 'portal-content-kids' : 'portal-content'}>
           <Outlet context={{ user, memberData, tenant, refreshData: fetchMemberData }} />
         </div>
       </main>

@@ -2,12 +2,30 @@ import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Baby, Plus, Check, X, Clock, AlertCircle, Shield,
-  Phone, User, Calendar, Heart, CheckCircle2, QrCode,
-  MessageSquare, Edit2, Trash2
+  Plus, Check, X, Clock, AlertCircle,
+  Phone, Heart, QrCode, Sparkles, Star,
+  PartyPopper, Sun, CloudSun
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
+
+// Fun avatar colors for children
+const AVATAR_COLORS = [
+  { bg: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%)', emoji: '🦁' },
+  { bg: 'linear-gradient(135deg, #4ECDC4 0%, #7EDAD4 100%)', emoji: '🐸' },
+  { bg: 'linear-gradient(135deg, #FFE66D 0%, #FFF09D 100%)', emoji: '🌻' },
+  { bg: 'linear-gradient(135deg, #95E1D3 0%, #B8EDE3 100%)', emoji: '🐢' },
+  { bg: 'linear-gradient(135deg, #DDA0DD 0%, #E8C0E8 100%)', emoji: '🦋' },
+  { bg: 'linear-gradient(135deg, #87CEEB 0%, #ADD8E6 100%)', emoji: '🐬' },
+  { bg: 'linear-gradient(135deg, #F4A460 0%, #F7C797 100%)', emoji: '🦊' },
+  { bg: 'linear-gradient(135deg, #98D8C8 0%, #BCE4D8 100%)', emoji: '🐢' },
+];
+
+// Get consistent color for a child based on their name
+const getAvatarStyle = (name) => {
+  const index = name.charCodeAt(0) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[index];
+};
 
 export default function PortalKidsCheckin() {
   const { user, tenant } = useOutletContext();
@@ -17,6 +35,7 @@ export default function PortalKidsCheckin() {
   const [showAddChild, setShowAddChild] = useState(false);
   const [showCheckin, setShowCheckin] = useState(false);
   const [selectedChild, setSelectedChild] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(null);
   
   // New child form
   const [newChild, setNewChild] = useState({
@@ -93,15 +112,9 @@ export default function PortalKidsCheckin() {
 
       if (res.ok) {
         const data = await res.json();
-        toast.success(
-          <div className="flex flex-col gap-1">
-            <strong>{child.name} checked in!</strong>
-            <span className="text-sm">Pickup Code: <strong>{data.pickup_code}</strong></span>
-            <span className="text-xs text-green-600">SMS sent to {user?.phone || 'your phone'}</span>
-          </div>,
-          { duration: 8000 }
-        );
-        setShowCheckin(false);
+        // Show success celebration
+        setShowSuccess({ child, pickup_code: data.pickup_code });
+        setTimeout(() => setShowSuccess(null), 5000);
         fetchData();
       } else {
         toast.error('Check-in failed');
@@ -132,115 +145,167 @@ export default function PortalKidsCheckin() {
 
   if (loading) {
     return (
-      <div className="kids-checkin-loading">
-        <Baby className="w-12 h-12 animate-pulse" />
-        <p>Loading...</p>
+      <div className="kc-loading" data-testid="kids-checkin-loading">
+        <div className="kc-loading-spinner">
+          <Sun className="kc-spin-icon" />
+        </div>
+        <p>Getting ready for fun...</p>
       </div>
     );
   }
 
   return (
-    <div className="kids-checkin-page">
+    <div className="kc-page" data-testid="kids-checkin-page">
+      {/* Floating decorations */}
+      <div className="kc-decorations">
+        <span className="kc-deco kc-deco-1">🎈</span>
+        <span className="kc-deco kc-deco-2">⭐</span>
+        <span className="kc-deco kc-deco-3">🌈</span>
+        <span className="kc-deco kc-deco-4">☁️</span>
+        <span className="kc-deco kc-deco-5">🎨</span>
+      </div>
+
       {/* Header */}
-      <div className="kids-checkin-header">
-        <div className="kids-header-content">
-          <div className="kids-header-icon">
-            <Baby className="w-8 h-8" />
+      <div className="kc-header">
+        <div className="kc-header-bg">
+          <div className="kc-header-wave"></div>
+        </div>
+        <div className="kc-header-content">
+          <div className="kc-header-icon">
+            <span className="kc-header-emoji">👶</span>
+            <Sparkles className="kc-sparkle kc-sparkle-1" />
+            <Sparkles className="kc-sparkle kc-sparkle-2" />
           </div>
-          <div>
+          <div className="kc-header-text">
             <h1>Kids Check-in</h1>
-            <p>Sunday School & Children's Ministry</p>
+            <p>Sunday School Adventure Awaits! ✨</p>
           </div>
         </div>
         <button 
-          className="kids-add-btn"
+          className="kc-add-btn"
           onClick={() => setShowAddChild(true)}
           data-testid="add-child-btn"
         >
           <Plus className="w-5 h-5" />
-          Add Child
+          <span>Add Child</span>
         </button>
       </div>
 
-      {/* Quick Check-in Banner */}
-      {children.length > 0 && (
-        <div className="kids-quick-checkin">
-          <div className="quick-checkin-info">
-            <CheckCircle2 className="w-6 h-6" />
-            <div>
-              <h3>Ready to Check In?</h3>
-              <p>Tap a child below to check them in for today's service</p>
-            </div>
+      {/* Ready to Check-in Banner */}
+      {children.length > 0 && !checkins.some(c => c.status === 'checked_in') && (
+        <motion.div 
+          className="kc-ready-banner"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="kc-ready-icon">
+            <CloudSun className="w-8 h-8" />
           </div>
-        </div>
+          <div className="kc-ready-text">
+            <h3>Ready for Today's Adventure? 🎉</h3>
+            <p>Tap a child below to check them in for Sunday School!</p>
+          </div>
+        </motion.div>
       )}
 
-      {/* Children List */}
-      <div className="kids-list">
+      {/* Children Grid */}
+      <div className="kc-children-grid">
         {children.length === 0 ? (
-          <div className="kids-empty">
-            <Baby className="w-16 h-16" />
-            <h3>No Children Added Yet</h3>
+          <motion.div 
+            className="kc-empty"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
+            <div className="kc-empty-illustration">
+              <span className="kc-empty-emoji">🧒👧</span>
+              <div className="kc-empty-stars">
+                <Star className="kc-star kc-star-1" />
+                <Star className="kc-star kc-star-2" />
+                <Star className="kc-star kc-star-3" />
+              </div>
+            </div>
+            <h3>No Little Ones Yet!</h3>
             <p>Add your children to enable quick check-in for Sunday School</p>
             <button 
-              className="kids-empty-btn"
+              className="kc-empty-btn"
               onClick={() => setShowAddChild(true)}
+              data-testid="add-first-child-btn"
             >
               <Plus className="w-5 h-5" />
               Add Your First Child
             </button>
-          </div>
+          </motion.div>
         ) : (
-          children.map((child) => {
+          children.map((child, index) => {
             const checkedIn = isCheckedIn(child.id);
             const checkinInfo = getCheckinInfo(child.id);
+            const avatarStyle = getAvatarStyle(child.name);
             
             return (
               <motion.div
                 key={child.id}
-                className={`kids-card ${checkedIn ? 'checked-in' : ''}`}
-                initial={{ opacity: 0, y: 20 }}
+                className={`kc-child-card ${checkedIn ? 'kc-checked-in' : ''}`}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
                 data-testid={`child-card-${child.id}`}
               >
-                <div className="kids-card-avatar">
-                  {child.name.charAt(0)}
+                {checkedIn && (
+                  <div className="kc-card-confetti">
+                    <span>🎉</span>
+                    <span>⭐</span>
+                    <span>🎊</span>
+                  </div>
+                )}
+                
+                <div 
+                  className="kc-child-avatar"
+                  style={{ background: avatarStyle.bg }}
+                >
+                  <span className="kc-avatar-letter">{child.name.charAt(0).toUpperCase()}</span>
+                  <span className="kc-avatar-emoji">{avatarStyle.emoji}</span>
                 </div>
-                <div className="kids-card-info">
+                
+                <div className="kc-child-info">
                   <h3>{child.name}</h3>
-                  <p>{getAge(child.birthdate)} years old</p>
+                  <p className="kc-child-age">
+                    <span className="kc-age-emoji">🎂</span>
+                    {getAge(child.birthdate)} years old
+                  </p>
                   {child.allergies && (
-                    <span className="kids-allergy-badge">
+                    <div className="kc-allergy-tag">
                       <AlertCircle className="w-3 h-3" />
-                      {child.allergies}
-                    </span>
+                      <span>{child.allergies}</span>
+                    </div>
                   )}
                 </div>
                 
                 {checkedIn ? (
-                  <div className="kids-card-status">
-                    <div className="kids-checked-in-badge">
+                  <div className="kc-checked-status">
+                    <div className="kc-status-badge">
                       <Check className="w-4 h-4" />
-                      Checked In
+                      <span>Checked In!</span>
                     </div>
-                    <div className="kids-pickup-code">
-                      <QrCode className="w-4 h-4" />
-                      {checkinInfo?.pickup_code}
+                    <div className="kc-pickup-code">
+                      <span className="kc-code-label">Pickup Code</span>
+                      <span className="kc-code-value">{checkinInfo?.pickup_code}</span>
                     </div>
-                    <span className="kids-checkin-time">
+                    <div className="kc-checkin-time">
                       <Clock className="w-3 h-3" />
                       {new Date(checkinInfo?.checked_in_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+                    </div>
                   </div>
                 ) : (
-                  <button
-                    className="kids-checkin-btn"
+                  <motion.button
+                    className="kc-checkin-btn"
                     onClick={() => checkInChild(child)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     data-testid={`checkin-btn-${child.id}`}
                   >
-                    <Check className="w-5 h-5" />
-                    Check In
-                  </button>
+                    <span className="kc-btn-icon">✓</span>
+                    <span>Check In</span>
+                  </motion.button>
                 )}
               </motion.div>
             );
@@ -249,60 +314,119 @@ export default function PortalKidsCheckin() {
       </div>
 
       {/* Active Check-ins Summary */}
-      {checkins.length > 0 && (
-        <div className="kids-active-summary">
-          <h3>
-            <Shield className="w-5 h-5" />
-            Currently Checked In
-          </h3>
-          <p>{checkins.length} {checkins.length === 1 ? 'child' : 'children'} in Sunday School</p>
-          <div className="kids-active-note">
-            <MessageSquare className="w-4 h-4" />
-            You'll receive a text if your child needs you during service
+      {checkins.filter(c => c.status === 'checked_in').length > 0 && (
+        <motion.div 
+          className="kc-summary"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="kc-summary-header">
+            <span className="kc-summary-emoji">🎓</span>
+            <h3>Currently in Sunday School</h3>
           </div>
-        </div>
+          <p className="kc-summary-count">
+            {checkins.filter(c => c.status === 'checked_in').length} {checkins.filter(c => c.status === 'checked_in').length === 1 ? 'child' : 'children'} having fun!
+          </p>
+          <div className="kc-summary-note">
+            <Phone className="w-4 h-4" />
+            <span>We'll text you if your child needs you during service</span>
+          </div>
+        </motion.div>
       )}
+
+      {/* Success Celebration Modal */}
+      <AnimatePresence>
+        {showSuccess && (
+          <motion.div
+            className="kc-success-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowSuccess(null)}
+          >
+            <motion.div
+              className="kc-success-modal"
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="kc-success-confetti">
+                <span>🎉</span><span>🎊</span><span>⭐</span><span>🌟</span><span>✨</span>
+              </div>
+              <div className="kc-success-icon">
+                <PartyPopper className="w-12 h-12" />
+              </div>
+              <h2>Yay! {showSuccess.child.name} is Checked In!</h2>
+              <p>Have a wonderful time in Sunday School! 🌈</p>
+              <div className="kc-success-code">
+                <span className="kc-success-code-label">Your Pickup Code</span>
+                <span className="kc-success-code-value">{showSuccess.pickup_code}</span>
+              </div>
+              <div className="kc-success-sms">
+                <Phone className="w-4 h-4" />
+                <span>SMS notification sent to your phone</span>
+              </div>
+              <button 
+                className="kc-success-btn"
+                onClick={() => setShowSuccess(null)}
+              >
+                Got it! 👍
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Add Child Modal */}
       <AnimatePresence>
         {showAddChild && (
           <motion.div
-            className="kids-modal-overlay"
+            className="kc-modal-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowAddChild(false)}
           >
             <motion.div
-              className="kids-modal"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              className="kc-modal"
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <button className="kids-modal-close" onClick={() => setShowAddChild(false)}>
+              <button className="kc-modal-close" onClick={() => setShowAddChild(false)}>
                 <X className="w-5 h-5" />
               </button>
               
-              <div className="kids-modal-header">
-                <Baby className="w-8 h-8" />
-                <h2>Add a Child</h2>
+              <div className="kc-modal-header">
+                <div className="kc-modal-icon">
+                  <span>👶</span>
+                </div>
+                <h2>Add a Little One</h2>
+                <p>Let's get your child ready for Sunday School!</p>
               </div>
 
-              <div className="kids-modal-form">
-                <div className="kids-form-group">
-                  <label>Child's Name *</label>
+              <div className="kc-modal-form">
+                <div className="kc-form-group">
+                  <label>
+                    <span className="kc-label-emoji">📝</span>
+                    Child's Name
+                  </label>
                   <input
                     type="text"
                     value={newChild.name}
                     onChange={(e) => setNewChild({ ...newChild, name: e.target.value })}
-                    placeholder="Enter child's full name"
+                    placeholder="Enter your child's name"
                     data-testid="child-name-input"
                   />
                 </div>
 
-                <div className="kids-form-group">
-                  <label>Birthdate *</label>
+                <div className="kc-form-group">
+                  <label>
+                    <span className="kc-label-emoji">🎂</span>
+                    Birthday
+                  </label>
                   <input
                     type="date"
                     value={newChild.birthdate}
@@ -311,30 +435,43 @@ export default function PortalKidsCheckin() {
                   />
                 </div>
 
-                <div className="kids-form-group">
-                  <label>Allergies</label>
+                <div className="kc-form-group">
+                  <label>
+                    <span className="kc-label-emoji">⚠️</span>
+                    Any Allergies?
+                  </label>
                   <input
                     type="text"
                     value={newChild.allergies}
                     onChange={(e) => setNewChild({ ...newChild, allergies: e.target.value })}
-                    placeholder="e.g., Peanuts, Dairy"
+                    placeholder="e.g., Peanuts, Dairy (leave blank if none)"
                     data-testid="child-allergies-input"
                   />
                 </div>
 
-                <div className="kids-form-group">
-                  <label>Special Needs / Notes</label>
+                <div className="kc-form-group">
+                  <label>
+                    <span className="kc-label-emoji">💝</span>
+                    Special Needs / Notes
+                  </label>
                   <textarea
                     value={newChild.special_needs}
                     onChange={(e) => setNewChild({ ...newChild, special_needs: e.target.value })}
-                    placeholder="Any special accommodations needed?"
+                    placeholder="Any special accommodations we should know about?"
                     rows={2}
                   />
                 </div>
 
-                <div className="kids-form-row">
-                  <div className="kids-form-group">
-                    <label>Emergency Contact</label>
+                <div className="kc-form-divider">
+                  <span>Emergency Contact</span>
+                </div>
+
+                <div className="kc-form-row">
+                  <div className="kc-form-group">
+                    <label>
+                      <span className="kc-label-emoji">👤</span>
+                      Contact Name
+                    </label>
                     <input
                       type="text"
                       value={newChild.emergency_contact}
@@ -342,8 +479,11 @@ export default function PortalKidsCheckin() {
                       placeholder="Contact name"
                     />
                   </div>
-                  <div className="kids-form-group">
-                    <label>Emergency Phone</label>
+                  <div className="kc-form-group">
+                    <label>
+                      <span className="kc-label-emoji">📞</span>
+                      Phone Number
+                    </label>
                     <input
                       type="tel"
                       value={newChild.emergency_phone}
@@ -354,12 +494,12 @@ export default function PortalKidsCheckin() {
                 </div>
 
                 <button 
-                  className="kids-modal-submit"
+                  className="kc-modal-submit"
                   onClick={addChild}
                   data-testid="save-child-btn"
                 >
-                  <Plus className="w-5 h-5" />
-                  Add Child
+                  <Heart className="w-5 h-5" />
+                  <span>Add Child</span>
                 </button>
               </div>
             </motion.div>
