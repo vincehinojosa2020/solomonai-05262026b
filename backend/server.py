@@ -3251,6 +3251,117 @@ async def get_checkin_history(request: Request, days: int = 30):
     
     return {"checkins": [serialize_doc(c) for c in checkins], "days": days}
 
+@api_router.get("/admin/kids/all")
+async def get_all_kids_admin(request: Request):
+    """Get all registered children for admin view"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    # Get all children with parent info
+    children = await db.children.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(500)
+    
+    # Enrich with parent info
+    enriched = []
+    for child in children:
+        parent = await db.users.find_one({"id": child.get("parent_user_id")}, {"_id": 0, "password_hash": 0})
+        enriched.append({
+            **serialize_doc(child),
+            "parent_name": parent.get("name") if parent else "Unknown",
+            "parent_phone": parent.get("phone") if parent else None,
+            "parent_email": parent.get("email") if parent else None
+        })
+    
+    return {"children": enriched}
+
+@api_router.post("/admin/kids/{child_id}/checkin")
+async def admin_checkin_child(request: Request, child_id: str, payload: dict = None):
+    """Admin: Check in a child directly"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    # Get child
+    child = await db.children.find_one({"id": child_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not child:
+        raise HTTPException(status_code=404, detail="Child not found")
+    
+    # Check if already checked in
+    existing = await db.checkins.find_one({
+        "child_id": child_id,
+        "status": "checked_in"
+    }, {"_id": 0})
+    if existing:
+        raise HTTPException(status_code=400, detail="Child is already checked in")
+    
+    # Generate pickup code
+    pickup_code = generate_pickup_code()
+    
+    # Get parent info
+    parent = await db.users.find_one({"user_id": child.get("parent_user_id")}, {"_id": 0})
+    parent_name = parent.get("name", "Unknown Parent") if parent else "Unknown Parent"
+    parent_phone = parent.get("phone") if parent else None
+    
+    checkin = Checkin(
+        tenant_id=tenant_id,
+        child_id=child_id,
+        child_name=child.get("name", "Unknown Child"),
+        parent_user_id=child.get("parent_user_id"),
+        parent_name=parent_name,
+        parent_phone=parent_phone,
+        pickup_code=pickup_code,
+        classroom=payload.get("classroom", "Sunday School") if payload else "Sunday School"
+    ).model_dump()
+    checkin["checked_in_at"] = datetime.now(timezone.utc).isoformat()
+    checkin["checked_in_by"] = user.get("name", "Admin")
+    
+    await db.checkins.insert_one(checkin)
+    
+    # Mock SMS notification (parent info already retrieved above)
+    print(f"[MOCK SMS] To: {parent_phone or 'No phone'}")
+    print(f"[MOCK SMS] Message: Hi {parent_name}! {child.get('name')} has been checked into Sunday School by {user.get('name', 'Staff')}. Pickup code: {pickup_code}")
+    
+    return {
+        "message": f"{child.get('name')} checked in successfully",
+        "pickup_code": pickup_code,
+        "checkin": serialize_doc(checkin)
+    }
+
+@api_router.post("/admin/kids/verify-pickup")
+async def verify_pickup_code(request: Request, payload: dict):
+    """Admin: Verify a pickup code and get child info"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    code = payload.get("code", "").upper().strip()
+    if not code:
+        raise HTTPException(status_code=400, detail="Pickup code required")
+    
+    # Find active check-in with this code
+    checkin = await db.checkins.find_one({
+        "tenant_id": tenant_id,
+        "pickup_code": code,
+        "status": "checked_in"
+    }, {"_id": 0})
+    
+    if not checkin:
+        return {"valid": False, "message": "Invalid or expired pickup code"}
+    
+    # Get child info
+    child = await db.children.find_one({"id": checkin.get("child_id")}, {"_id": 0})
+    
+    # Get parent info
+    parent = await db.users.find_one({"id": checkin.get("parent_user_id")}, {"_id": 0, "password_hash": 0})
+    
+    return {
+        "valid": True,
+        "checkin": serialize_doc(checkin),
+        "child": serialize_doc(child) if child else None,
+        "parent": {
+            "name": parent.get("name") if parent else "Unknown",
+            "phone": parent.get("phone") if parent else None,
+            "email": parent.get("email") if parent else None
+        }
+    }
+
 # ============== CAFE ROUTES ==============
 
 @api_router.get("/admin/cafe/settings")

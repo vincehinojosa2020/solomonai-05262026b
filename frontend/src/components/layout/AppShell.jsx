@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, Home, UsersRound, Calendar, 
   CheckSquare, DollarSign, Mail, BarChart3, Settings, 
   Building2, Search, Bell, ChevronLeft, Menu, Command,
-  LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, MessageSquare, Coffee, Code
+  LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, MessageSquare, Coffee, Code, Baby
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -32,6 +32,7 @@ const navItems = [
   { section: 'MINISTRY', items: [
     { name: 'Groups', path: '/admin/groups', icon: UsersRound },
     { name: 'Events', path: '/admin/events', icon: Calendar },
+    { name: 'Kids Check-in', path: '/kids-checkin', icon: Baby },
     { name: 'Attendance', path: '/attendance', icon: CheckSquare },
   ]},
   { section: 'STEWARDSHIP', items: [

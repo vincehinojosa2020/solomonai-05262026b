@@ -31,6 +31,7 @@ import CafeAdminPage from "@/pages/CafeAdminPage";
 import MeetingsAdminPage from "@/pages/MeetingsAdminPage";
 import LeadershipNotesPage from "@/pages/LeadershipNotesPage";
 import DeveloperAPIPage from "@/pages/admin/DeveloperAPIPage";
+import KidsCheckinAdmin from "@/pages/KidsCheckinAdmin";
 // Portal Pages
 import PortalHome from "@/pages/portal/PortalHome";
 import PortalGive from "@/pages/portal/PortalGive";
@@ -93,6 +94,7 @@ function AppRouter() {
         <Route path="/meetings" element={<MeetingsAdminPage />} />
         <Route path="/notes" element={<LeadershipNotesPage />} />
         <Route path="/developer" element={<DeveloperAPIPage />} />
+        <Route path="/kids-checkin" element={<KidsCheckinAdmin />} />
         <Route path="/admin/groups" element={<GroupsManagerPage />} />
         <Route path="/admin/events" element={<EventsManagerPage />} />
       </Route>
