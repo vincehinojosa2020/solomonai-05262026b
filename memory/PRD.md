@@ -46,7 +46,13 @@ Each church is a tenant with isolated data:
     - Colorful avatar cards with animal emojis
     - Success celebration modal with confetti
     - Purple gradient summary section
-  - **MOCKED**: SMS notifications (logged to console instead of Twilio)
+- **Admin Front Desk UI** (`/kids-checkin`):
+  - View all checked-in children across all parents
+  - Direct check-in for walk-ins (search by child/parent name)
+  - Verify pickup codes and release children safely
+  - Child cards with pickup codes, timestamps, parent info
+  - Auto-refresh every 30 seconds
+- **MOCKED**: SMS notifications (logged to console instead of Twilio)
 
 ### P0: Pastor's CRM / Meeting Scheduler - ✅ COMPLETE
 - **Admin Features** (`/meetings`):
@@ -237,7 +243,20 @@ Each church is a tenant with isolated data:
   - Success celebration modal with confetti and party animations
   - Purple gradient "Currently in Sunday School" summary card
   - 100% test pass rate (12/12 UI features verified)
-  - Note: SMS notifications remain MOCKED (logged to console)
+
+- ✅ **Admin Kids Check-in Station - COMPLETE (NEW)**
+  - Front desk management interface at `/kids-checkin` route
+  - Added to MINISTRY section in admin navigation
+  - Three tabs for complete workflow:
+    1. **Currently Checked In**: View all checked-in children with pickup codes
+    2. **Check In**: Direct check-in for walk-ins with search
+    3. **Check Out**: Verify pickup code and release child to parent
+  - Child cards show: name, age, allergies, pickup code, check-in time, parent info
+  - Pickup code verification with valid/invalid states
+  - "Release Child to Parent" button for safe checkout
+  - Auto-refresh every 30 seconds + manual refresh button
+  - 100% test pass rate (19/19 backend + 18/18 frontend)
+  - Note: SMS notifications remain **MOCKED** (logged to console)
 
 ### Feb 27, 2026 (Latest Session)
 - ✅ Pastor's CRM / Meeting Scheduler complete (Admin + Member)
