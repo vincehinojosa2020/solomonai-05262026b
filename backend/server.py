@@ -804,6 +804,50 @@ class VideoNoteShare(BaseModel):
 
 # ============== CAFE MODELS ==============
 
+# ============== KIDS CHECK-IN MODELS ==============
+
+class Child(BaseModel):
+    """Child profile for check-in system"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    parent_user_id: str
+    name: str
+    birthdate: str
+    allergies: Optional[str] = None
+    special_needs: Optional[str] = None
+    emergency_contact: Optional[str] = None
+    emergency_phone: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ChildCreate(BaseModel):
+    name: str
+    birthdate: str
+    allergies: Optional[str] = None
+    special_needs: Optional[str] = None
+    emergency_contact: Optional[str] = None
+    emergency_phone: Optional[str] = None
+
+class Checkin(BaseModel):
+    """Check-in record for a child"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    child_id: str
+    child_name: str
+    parent_user_id: str
+    parent_name: str
+    parent_phone: Optional[str] = None
+    pickup_code: str
+    classroom: Optional[str] = None
+    status: str = "checked_in"  # checked_in, checked_out
+    checked_in_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    checked_out_at: Optional[datetime] = None
+    checked_out_by: Optional[str] = None
+    notes: Optional[str] = None
+
+# ============== CAFE MODELS (continued) ==============
+
 class CafeSettings(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -3022,6 +3066,190 @@ async def create_merch_order(request: Request, payload: MerchOrderCreate):
 
     await db.merch_orders.insert_one(order)
     return {"order": serialize_doc(order)}
+
+# ============== KIDS CHECK-IN ROUTES ==============
+
+def generate_pickup_code():
+    """Generate a unique pickup code like 'ABC-1234'"""
+    import random
+    import string
+    letters = ''.join(random.choices(string.ascii_uppercase, k=3))
+    numbers = ''.join(random.choices(string.digits, k=4))
+    return f"{letters}-{numbers}"
+
+@api_router.get("/portal/kids")
+async def get_my_kids(request: Request):
+    """Get all children for the current user"""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    
+    children = await db.children.find(
+        {"tenant_id": tenant_id, "parent_user_id": user_id},
+        {"_id": 0}
+    ).to_list(50)
+    
+    return {"children": [serialize_doc(c) for c in children]}
+
+@api_router.post("/portal/kids")
+async def add_child(request: Request, payload: ChildCreate):
+    """Add a new child"""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    
+    child = Child(
+        tenant_id=tenant_id,
+        parent_user_id=user_id,
+        name=payload.name,
+        birthdate=payload.birthdate,
+        allergies=payload.allergies,
+        special_needs=payload.special_needs,
+        emergency_contact=payload.emergency_contact,
+        emergency_phone=payload.emergency_phone
+    ).model_dump()
+    child["created_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.children.insert_one(child)
+    return {"message": "Child added", "child": serialize_doc(child)}
+
+@api_router.delete("/portal/kids/{child_id}")
+async def delete_child(request: Request, child_id: str):
+    """Delete a child"""
+    user = await get_current_member_user(request)
+    user_id = user.get("user_id")
+    
+    child = await db.children.find_one({"id": child_id}, {"_id": 0})
+    if not child or child.get("parent_user_id") != user_id:
+        raise HTTPException(status_code=404, detail="Child not found")
+    
+    await db.children.delete_one({"id": child_id})
+    return {"message": "Child deleted"}
+
+@api_router.post("/portal/kids/{child_id}/checkin")
+async def checkin_child(request: Request, child_id: str, payload: dict = None):
+    """Check in a child for Sunday School"""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    
+    # Get child
+    child = await db.children.find_one({"id": child_id, "parent_user_id": user_id}, {"_id": 0})
+    if not child:
+        raise HTTPException(status_code=404, detail="Child not found")
+    
+    # Check if already checked in
+    existing = await db.checkins.find_one({
+        "child_id": child_id,
+        "status": "checked_in"
+    }, {"_id": 0})
+    if existing:
+        raise HTTPException(status_code=400, detail="Child is already checked in")
+    
+    # Generate pickup code
+    pickup_code = generate_pickup_code()
+    
+    # Get parent info
+    parent = await db.users.find_one({"user_id": user_id}, {"_id": 0, "name": 1, "phone": 1})
+    parent_name = parent.get("name", "Parent") if parent else "Parent"
+    parent_phone = parent.get("phone", "") if parent else ""
+    
+    # Create checkin record
+    checkin = Checkin(
+        tenant_id=tenant_id,
+        child_id=child_id,
+        child_name=child.get("name"),
+        parent_user_id=user_id,
+        parent_name=parent_name,
+        parent_phone=parent_phone,
+        pickup_code=pickup_code,
+        classroom=payload.get("classroom") if payload else "Sunday School",
+        status="checked_in"
+    ).model_dump()
+    checkin["checked_in_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.checkins.insert_one(checkin)
+    
+    # Mock SMS - In production, this would use Twilio
+    sms_message = f"Thanks for bringing {child.get('name')} to Sunday School! Pickup code: {pickup_code}. We'll text you if there's an emergency or {child.get('name')} needs pickup. Have a great service!"
+    print(f"[SMS MOCK] To: {parent_phone or '915-929-4023'} | Message: {sms_message}")
+    
+    return {
+        "message": "Child checked in successfully",
+        "pickup_code": pickup_code,
+        "checkin": serialize_doc(checkin),
+        "sms_sent": True,
+        "sms_message": sms_message
+    }
+
+@api_router.get("/portal/kids/checkins/active")
+async def get_active_checkins(request: Request):
+    """Get all active check-ins for the current user's children"""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+    
+    checkins = await db.checkins.find({
+        "tenant_id": tenant_id,
+        "parent_user_id": user_id,
+        "status": "checked_in"
+    }, {"_id": 0}).to_list(50)
+    
+    return {"checkins": [serialize_doc(c) for c in checkins]}
+
+# Admin routes for Kids Check-in
+@api_router.get("/admin/kids/checkins")
+async def get_all_checkins(request: Request, status: str = None):
+    """Get all check-ins for admin view"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    query = {"tenant_id": tenant_id}
+    if status:
+        query["status"] = status
+    
+    checkins = await db.checkins.find(query, {"_id": 0}).sort("checked_in_at", -1).to_list(200)
+    return {"checkins": [serialize_doc(c) for c in checkins]}
+
+@api_router.post("/admin/kids/checkins/{checkin_id}/checkout")
+async def checkout_child(request: Request, checkin_id: str):
+    """Admin: Check out a child"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    checkin = await db.checkins.find_one({"id": checkin_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not checkin:
+        raise HTTPException(status_code=404, detail="Check-in not found")
+    
+    if checkin.get("status") == "checked_out":
+        raise HTTPException(status_code=400, detail="Child is already checked out")
+    
+    await db.checkins.update_one(
+        {"id": checkin_id},
+        {"$set": {
+            "status": "checked_out",
+            "checked_out_at": datetime.now(timezone.utc).isoformat(),
+            "checked_out_by": user.get("name", "Admin")
+        }}
+    )
+    
+    updated = await db.checkins.find_one({"id": checkin_id}, {"_id": 0})
+    return {"message": "Child checked out", "checkin": serialize_doc(updated)}
+
+@api_router.get("/admin/kids/checkins/history")
+async def get_checkin_history(request: Request, days: int = 30):
+    """Get check-in history for reporting"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    
+    checkins = await db.checkins.find({
+        "tenant_id": tenant_id,
+        "checked_in_at": {"$gte": cutoff.isoformat()}
+    }, {"_id": 0}).sort("checked_in_at", -1).to_list(500)
+    
+    return {"checkins": [serialize_doc(c) for c in checkins], "days": days}
 
 # ============== CAFE ROUTES ==============
 

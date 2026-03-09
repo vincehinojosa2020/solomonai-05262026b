@@ -174,52 +174,6 @@ export default function PortalHome() {
             </button>
           </div>
         </div>
-
-        {/* Leave a Note */}
-        <form className="portal-note-card" onSubmit={handleSubmitNote} data-testid="leave-note-card">
-          <div className="portal-note-header">
-            <MessageSquare className="w-5 h-5 text-indigo-500" />
-            <div>
-              <h3>Leave a Note</h3>
-              <p>Send a message to church leadership or share a prayer request.</p>
-            </div>
-          </div>
-          <input
-            type="text"
-            value={noteSubject}
-            onChange={(event) => setNoteSubject(event.target.value)}
-            placeholder="Subject"
-            className="portal-note-input"
-            data-testid="leave-note-subject-input"
-          />
-          <select
-            value={noteCategory}
-            onChange={(event) => setNoteCategory(event.target.value)}
-            className="portal-note-select"
-            data-testid="leave-note-category-select"
-          >
-            <option value="">Optional category</option>
-            {NOTE_CATEGORIES.map((category) => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </select>
-          <textarea
-            value={noteMessage}
-            onChange={(event) => setNoteMessage(event.target.value)}
-            placeholder="Write your note..."
-            rows={4}
-            className="portal-note-textarea"
-            data-testid="leave-note-message-input"
-          />
-          <button
-            type="submit"
-            className="portal-note-submit"
-            disabled={noteSubmitting}
-            data-testid="leave-note-submit-button"
-          >
-            {noteSubmitting ? 'Sending...' : 'Send Note'}
-          </button>
-        </form>
       </div>
 
       {/* Upcoming Events */}

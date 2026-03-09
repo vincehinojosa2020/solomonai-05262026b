@@ -81,6 +81,7 @@ export default function PortalLayout() {
 
   const navItems = [
     { name: 'Home', path: '/portal', icon: Home, exact: true },
+    { name: 'Kids Check-in', path: '/portal/kids', icon: Users },
     { name: 'Watch', path: '/portal/watch', icon: Tv },
     { name: 'Merch', path: '/portal/merch', icon: ShoppingBag },
     { name: 'Cafe', path: '/portal/cafe', icon: Coffee },
@@ -215,26 +216,6 @@ export default function PortalLayout() {
           <Outlet context={{ user, memberData, tenant, refreshData: fetchMemberData }} />
         </div>
       </main>
-
-      {/* Mobile Bottom Nav - Hidden on Library page */}
-      {!isLibraryPage && (
-        <nav className={`portal-bottom-nav md:hidden ${isDarkPage ? 'portal-bottom-nav-dark' : ''}`} data-testid="portal-bottom-nav">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.exact}
-              data-testid={`portal-bottom-nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
-              className={({ isActive }) => 
-                `portal-bottom-nav-item ${isActive ? 'active' : ''}`
-              }
-            >
-              <item.icon className="w-5 h-5" />
-              <span>{item.name}</span>
-            </NavLink>
-          ))}
-        </nav>
-      )}
 
       {/* Solomon AI Chat */}
       <SolomonChat />
