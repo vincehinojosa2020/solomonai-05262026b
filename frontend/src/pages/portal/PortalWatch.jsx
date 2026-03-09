@@ -31,8 +31,12 @@ const CATEGORIES = [
 // VIDEO PLAYER MODAL
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const VideoPlayer = ({ isOpen, onClose, video }) => {
+const VideoPlayer = ({ isOpen, onClose, video, onShare }) => {
   if (!isOpen || !video) return null;
+
+  const handleGive = () => {
+    window.location.href = '/portal/give';
+  };
 
   return (
     <motion.div
@@ -63,6 +67,16 @@ const VideoPlayer = ({ isOpen, onClose, video }) => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
+        </div>
+        <div className="atv-modal-actions">
+          <button className="atv-modal-btn give" onClick={handleGive} data-testid="video-give-btn">
+            <Heart className="w-5 h-5" />
+            Give
+          </button>
+          <button className="atv-modal-btn share" onClick={() => onShare && onShare(video)} data-testid="video-share-btn">
+            <Share2 className="w-5 h-5" />
+            Share
+          </button>
         </div>
       </motion.div>
     </motion.div>
@@ -1161,6 +1175,7 @@ export default function PortalWatch() {
             isOpen={videoModal.open}
             video={videoModal.video}
             onClose={() => setVideoModal({ open: false, video: null })}
+            onShare={handleShare}
           />
         )}
       </AnimatePresence>

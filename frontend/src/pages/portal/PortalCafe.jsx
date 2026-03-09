@@ -37,6 +37,7 @@ export default function PortalCafe() {
   const [cartItems, setCartItems] = useState([]);
   const [pickupTime, setPickupTime] = useState('');
   const [orderNotes, setOrderNotes] = useState('');
+  const [offeringAmount, setOfferingAmount] = useState(0); // New: Offering amount
 
   useEffect(() => {
     const fetchCafe = async () => {
@@ -94,6 +95,7 @@ export default function PortalCafe() {
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const orderTotal = cartTotal + offeringAmount; // Total including offering
 
   const addToCart = (item) => {
     setCartItems((prev) => {
@@ -293,13 +295,62 @@ export default function PortalCafe() {
               data-testid="cafe-notes-input"
             />
           </div>
+
+          {/* Offering Section */}
+          <div className="portal-cafe-offering">
+            <div className="offering-header">
+              <span className="offering-label">Add an Offering</span>
+              <span className="offering-subtitle">Support our church ministry</span>
+            </div>
+            <div className="offering-amounts">
+              {[5, 10, 25].map((amount) => (
+                <button
+                  key={amount}
+                  className={`offering-btn ${offeringAmount === amount ? 'active' : ''}`}
+                  onClick={() => setOfferingAmount(offeringAmount === amount ? 0 : amount)}
+                  data-testid={`cafe-offering-${amount}`}
+                >
+                  ${amount}
+                </button>
+              ))}
+              <button
+                className={`offering-btn custom ${offeringAmount > 0 && ![5, 10, 25].includes(offeringAmount) ? 'active' : ''}`}
+                onClick={() => {
+                  const custom = prompt('Enter custom offering amount:');
+                  if (custom && !isNaN(parseFloat(custom))) {
+                    setOfferingAmount(parseFloat(custom));
+                  }
+                }}
+                data-testid="cafe-offering-custom"
+              >
+                Other
+              </button>
+            </div>
+            {offeringAmount > 0 && (
+              <div className="offering-selected">
+                <span>Offering: {formatCurrency(offeringAmount)}</span>
+                <button onClick={() => setOfferingAmount(0)} className="offering-remove">Remove</button>
+              </div>
+            )}
+          </div>
+
           <div className="portal-cafe-cart-footer">
-            <div>
+            <div className="cart-subtotal">
+              <span>Order Subtotal</span>
+              <span>{formatCurrency(cartTotal)}</span>
+            </div>
+            {offeringAmount > 0 && (
+              <div className="cart-offering">
+                <span>Offering</span>
+                <span>{formatCurrency(offeringAmount)}</span>
+              </div>
+            )}
+            <div className="cart-total">
               <span>Total</span>
-              <strong data-testid="cafe-cart-total">{formatCurrency(cartTotal)}</strong>
+              <strong data-testid="cafe-cart-total">{formatCurrency(orderTotal)}</strong>
             </div>
             <button className="portal-cafe-checkout" onClick={placeOrder} data-testid="cafe-checkout-btn">
-              Place Order
+              {offeringAmount > 0 ? 'Place Order & Give' : 'Place Order'}
             </button>
           </div>
         </div>

@@ -7756,20 +7756,137 @@
 
 .portal-cafe-cart-footer {
   border-top: 1px solid #e2e8f0;
-  padding-top: 12px;
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.portal-cafe-cart-footer .cart-subtotal,
+.portal-cafe-cart-footer .cart-offering,
+.portal-cafe-cart-footer .cart-total {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+}
+
+.portal-cafe-cart-footer .cart-subtotal,
+.portal-cafe-cart-footer .cart-offering {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.portal-cafe-cart-footer .cart-total {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  padding-top: 8px;
+  border-top: 1px solid #e2e8f0;
 }
 
 .portal-cafe-checkout {
   border: none;
-  background: #2563eb;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: white;
-  padding: 8px 14px;
+  padding: 14px 20px;
   border-radius: 10px;
   cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.portal-cafe-checkout:hover {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CAFE OFFERING SECTION - Add offering with coffee order
+   ═══════════════════════════════════════════════════════════════ */
+
+.portal-cafe-offering {
+  margin-top: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 12px;
+  border: 1px solid #fbbf24;
+}
+
+.offering-header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.offering-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #92400e;
+}
+
+.offering-subtitle {
+  font-size: 12px;
+  color: #a16207;
+  margin-top: 2px;
+}
+
+.offering-amounts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.offering-btn {
+  flex: 1;
+  min-width: 60px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 2px solid #fbbf24;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #92400e;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.offering-btn:hover {
+  background: #fef3c7;
+}
+
+.offering-btn.active {
+  background: #f59e0b;
+  border-color: #d97706;
+  color: #ffffff;
+}
+
+.offering-btn.custom {
+  font-size: 13px;
+}
+
+.offering-selected {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #92400e;
+}
+
+.offering-remove {
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 .portal-cafe-empty {
@@ -9052,19 +9169,93 @@
   gap: 24px;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CAROUSEL ROW - Horizontal Scrolling Video Row
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.atv-carousel {
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.atv-carousel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  margin-bottom: 20px;
+}
+
+.atv-carousel-header h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.atv-carousel-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.atv-nav-btn {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.atv-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.atv-carousel-track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 0 48px 16px;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.atv-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
 /* Video Card */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MASTERCLASS-STYLE VIDEO CARDS - Clean, Professional Tiles
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 .atv-card {
   position: relative;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
-  background: #1a1a1a;
-  transition: transform 0.3s, box-shadow 0.3s;
+  background: #141414;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
 }
 
+.atv-card.carousel {
+  flex-shrink: 0;
+  width: 320px;
+}
+
+.atv-card.grid {
+  width: 100%;
+}
+
 .atv-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  z-index: 10;
 }
 
 .atv-card-thumb {
@@ -9077,65 +9268,174 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s;
+  transition: transform 0.4s ease;
 }
 
 .atv-card:hover .atv-card-thumb img {
-  transform: scale(1.05);
+  transform: scale(1.08);
+}
+
+.atv-card-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 5px 12px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+}
+
+.atv-card-badge.new {
+  background: #16a34a;
+}
+
+.atv-card-badge.popular {
+  background: #d97706;
 }
 
 .atv-card-duration {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
+  bottom: 10px;
+  right: 10px;
   padding: 4px 8px;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.85);
   border-radius: 4px;
   font-size: 12px;
+  font-weight: 500;
+  color: #ffffff;
 }
 
-.atv-card-play {
+/* Hover Overlay with Play Button */
+.atv-card-overlay {
   position: absolute;
   inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.4);
-  opacity: 0;
-  transition: opacity 0.3s;
+  gap: 12px;
 }
 
-.atv-card:hover .atv-card-play {
-  opacity: 1;
-}
-
-.atv-card-play-icon {
+.atv-play-btn {
   width: 60px;
   height: 60px;
-  background: rgba(220,38,38,0.9);
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #0a0a0a;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
+.atv-play-btn:hover {
+  transform: scale(1.1);
+  background: #ffffff;
+}
+
+.atv-add-btn,
+.atv-share-btn {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.atv-add-btn {
+  top: 12px;
+  right: 12px;
+}
+
+.atv-share-btn {
+  bottom: 12px;
+  right: 12px;
+}
+
+.atv-add-btn:hover,
+.atv-share-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+/* Card Info Section */
 .atv-card-info {
   padding: 16px;
+  background: #141414;
 }
 
-.atv-card-category {
-  font-size: 12px;
-  color: #dc2626;
-  text-transform: uppercase;
-  font-weight: 600;
+.atv-card-info-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 8px;
+}
+
+.atv-card-meta {
+  font-size: 12px;
+  color: #737373;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.atv-card-share-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: #737373;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.atv-card-share-icon:hover {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
 }
 
 .atv-card-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  margin-bottom: 8px;
-  line-height: 1.3;
+  color: #ffffff;
+  margin-bottom: 6px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.atv-card-instructor {
+  font-size: 13px;
+  color: #a3a3a3;
+  font-weight: 400;
+}
+
+.atv-card-desc {
+  font-size: 13px;
+  color: #737373;
+  margin-top: 8px;
+  line-height: 1.5;
 }
 
 .atv-card-speaker {
@@ -9186,6 +9486,52 @@
   width: 100%;
   height: 100%;
   border: none;
+}
+
+/* Video Player Modal Actions - Give & Share Buttons */
+.atv-modal-actions {
+  display: flex;
+  gap: 16px;
+  padding: 20px 24px;
+  background: #0a0a0a;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.atv-modal-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex: 1;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.atv-modal-btn.give {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: #ffffff;
+}
+
+.atv-modal-btn.give:hover {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+}
+
+.atv-modal-btn.share {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.atv-modal-btn.share:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 /* Hero Search - Masterclass Style */
