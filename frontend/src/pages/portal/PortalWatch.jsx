@@ -70,7 +70,7 @@ const VideoPlayer = ({ isOpen, onClose, video }) => {
 // HERO SECTION
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const HeroSection = ({ content, onPlay }) => {
+const HeroSection = ({ content, onPlay, searchQuery, onSearch }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const featured = content.filter(c => c.featured).slice(0, 3);
 
@@ -99,6 +99,19 @@ const HeroSection = ({ content, onPlay }) => {
       </AnimatePresence>
       
       <div className="atv-hero-overlay" />
+      
+      {/* MASTERCLASS-STYLE SEARCH - Overlaid on Hero */}
+      <div className="atv-hero-search">
+        <Search className="atv-hero-search-icon" />
+        <input
+          type="text"
+          placeholder="Search sermons, speakers, topics..."
+          value={searchQuery}
+          onChange={(e) => onSearch(e.target.value)}
+          className="atv-hero-search-input"
+          data-testid="watch-search-hero"
+        />
+      </div>
       
       <div className="atv-hero-content">
         <AnimatePresence mode="wait">
@@ -363,16 +376,6 @@ export default function PortalWatch() {
           <span className="atv-logo-text">{churchName} TV</span>
         </div>
 
-        <div className="atv-search">
-          <Search className="w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search sermons, topics, speakers..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-
         <div className="atv-header-actions">
           <div className="atv-view-toggle">
             <button 
@@ -418,7 +421,12 @@ export default function PortalWatch() {
         {viewMode === 'featured' ? (
           <>
             {/* Hero */}
-            <HeroSection content={allContent} onPlay={(v) => setVideoModal({ open: true, video: v })} />
+            <HeroSection 
+              content={allContent} 
+              onPlay={(v) => setVideoModal({ open: true, video: v })}
+              searchQuery={searchQuery}
+              onSearch={setSearchQuery}
+            />
             
             {/* Carousels */}
             {newContent.length > 0 && <CarouselRow title="New This Week" items={newContent} onPlay={(v) => setVideoModal({ open: true, video: v })} />}

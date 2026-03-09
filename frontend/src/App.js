@@ -38,6 +38,7 @@ import PortalGroups from "@/pages/portal/PortalGroups";
 import PortalEvents from "@/pages/portal/PortalEvents";
 import PortalMe from "@/pages/portal/PortalMe";
 import PortalLibrary from "@/pages/portal/PortalLibrary";
+import PortalWatch from "@/pages/portal/PortalWatch";
 import PortalThinkific from "@/pages/portal/PortalThinkific";
 import PortalPathways from "@/pages/portal/PortalPathways";
 import PortalPathwaysCourse from "@/pages/portal/PortalPathwaysCourse";
@@ -99,7 +100,7 @@ function AppRouter() {
       <Route path="/portal" element={<PortalLayout />}>
         <Route index element={<PortalHome />} />
         <Route path="give" element={<PortalGive />} />
-        <Route path="watch" element={<Navigate to="/portal/library" replace />} />
+        <Route path="watch" element={<PortalWatch />} />
         <Route path="library" element={<PortalLibrary />} />
         <Route path="thinkific" element={<PortalThinkific />} />
         <Route path="pathways" element={<PortalPathways />} />
