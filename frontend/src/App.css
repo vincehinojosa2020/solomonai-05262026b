@@ -8761,6 +8761,7 @@
   min-height: 100vh;
   background: #0a0a0a;
   color: #ffffff;
+  overflow-x: hidden;
 }
 
 .atv-red-bar {
@@ -8851,6 +8852,7 @@
   position: relative;
   height: 70vh;
   min-height: 500px;
+  overflow: hidden;
 }
 
 .atv-hero-bg {
@@ -8858,7 +8860,9 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .atv-hero-overlay {

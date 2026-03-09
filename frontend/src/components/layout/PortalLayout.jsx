@@ -14,10 +14,10 @@ export default function PortalLayout() {
   const navigate = useNavigate();
   
   // Check if we're on the Watch or Library page for dark mode
-  const isDarkPage = location.pathname === '/portal/library';
+  const isDarkPage = location.pathname === '/portal/watch' || location.pathname === '/portal/library';
   
-  // Library page has its own full navigation, so hide portal header
-  const isLibraryPage = location.pathname === '/portal/library';
+  // Library/Watch page has its own full navigation, so hide portal header
+  const isLibraryPage = location.pathname === '/portal/watch' || location.pathname === '/portal/library';
 
   useEffect(() => {
     fetchMemberData();
@@ -81,7 +81,7 @@ export default function PortalLayout() {
 
   const navItems = [
     { name: 'Home', path: '/portal', icon: Home, exact: true },
-    { name: 'Watch', path: '/portal/library', icon: Tv },
+    { name: 'Watch', path: '/portal/watch', icon: Tv },
     { name: 'Merch', path: '/portal/merch', icon: ShoppingBag },
     { name: 'Cafe', path: '/portal/cafe', icon: Coffee },
     { name: 'Meet', path: '/portal/meetings', icon: MessageSquare },
