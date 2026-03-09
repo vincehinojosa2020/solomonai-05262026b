@@ -46,23 +46,6 @@ Each church is a tenant with isolated data:
   - Book meetings with topic and notes
   - View upcoming scheduled sessions
 
-### P0: Solomon Discipleship (LMS)
-- **Thinkific (Admin + Member)**
-  - Admin sets Thinkific embed URL; preview available inside admin UI
-  - Members access Thinkific directly inside the portal
-- **Abundant Pathways (Homegrown LMS)** - ✅ 8 COURSES SEEDED
-  - 8 courses with real content:
-    1. Abundant Next Steps (New Members Track)
-    2. Preparing for Baptism (Baptism Track)
-    3. Foundations of Discipleship (Discipleship Track)
-    4. Financial Peace University (Stewardship Track)
-    5. Serving with Purpose (Leadership Track)
-    6. Prayer & Presence (Spiritual Practices)
-    7. Marriage & Family Care (Family Track)
-    8. Mission & Outreach (Outreach Track)
-  - Admin creates courses, lessons, assigns members, tracks progress
-  - Members see assigned courses, watch lessons, and progress updates
-
 ### P0: Merch Store (Admin + Member)
 - Admin dashboard for merch: embed store URL, product catalog, orders summary
 - Admin can add/edit/delete merch products (mugs, shirts, YETI, etc.)

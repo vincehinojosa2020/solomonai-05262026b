@@ -82,8 +82,6 @@ export default function PortalLayout() {
   const navItems = [
     { name: 'Home', path: '/portal', icon: Home, exact: true },
     { name: 'Watch', path: '/portal/library', icon: Tv },
-    { name: 'Thinkific', path: '/portal/thinkific', icon: GraduationCap },
-    { name: 'Abundant Pathways', path: '/portal/pathways', icon: BookOpen },
     { name: 'Merch', path: '/portal/merch', icon: ShoppingBag },
     { name: 'Cafe', path: '/portal/cafe', icon: Coffee },
     { name: 'Meet', path: '/portal/meetings', icon: MessageSquare },

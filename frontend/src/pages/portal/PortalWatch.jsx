@@ -714,7 +714,7 @@ const ShareNoteModal = ({ note, onClose, onShared }) => {
 // HERO SECTION
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const HeroSection = ({ content, onPlay, onShare, searchQuery, onSearch }) => {
+const HeroSection = ({ content, onPlay, onShare }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const featured = content.filter(c => c.featured).slice(0, 3);
 
@@ -743,19 +743,6 @@ const HeroSection = ({ content, onPlay, onShare, searchQuery, onSearch }) => {
       </AnimatePresence>
       
       <div className="atv-hero-overlay" />
-      
-      {/* MASTERCLASS-STYLE SEARCH - Overlaid on Hero */}
-      <div className="atv-hero-search">
-        <Search className="atv-hero-search-icon" />
-        <input
-          type="text"
-          placeholder="Search sermons, speakers, topics..."
-          value={searchQuery}
-          onChange={(e) => onSearch(e.target.value)}
-          className="atv-hero-search-input"
-          data-testid="watch-search-hero"
-        />
-      </div>
       
       <div className="atv-hero-content">
         <AnimatePresence mode="wait">
@@ -1058,6 +1045,27 @@ export default function PortalWatch() {
           <span className="atv-logo-text">{churchName} TV</span>
         </div>
 
+        {/* MASTERCLASS-STYLE SEARCH - In header center */}
+        <div className="atv-header-search">
+          <Search className="atv-header-search-icon" />
+          <input
+            type="text"
+            placeholder="Search Instructors, Classes, Topics and more"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="atv-header-search-input"
+            data-testid="watch-search-header"
+          />
+          {searchQuery && (
+            <button 
+              className="atv-header-search-clear"
+              onClick={() => setSearchQuery('')}
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+
         <div className="atv-header-actions">
           <button 
             className="atv-notes-btn"
@@ -1115,8 +1123,6 @@ export default function PortalWatch() {
               content={allContent} 
               onPlay={(v) => setVideoModal({ open: true, video: v })}
               onShare={handleShare}
-              searchQuery={searchQuery}
-              onSearch={setSearchQuery}
             />
             
             {/* Carousels */}

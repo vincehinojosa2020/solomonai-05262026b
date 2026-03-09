@@ -40,8 +40,6 @@ const navItems = [
   { section: 'CONNECT', items: [
     { name: 'Communications', path: '/communications', icon: Mail },
     { name: 'Media Library', path: '/media', icon: Video },
-    { name: 'Thinkific', path: '/thinkific', icon: GraduationCap },
-    { name: 'Abundant Pathways', path: '/abundant-pathways', icon: BookOpen },
     { name: 'Merch', path: '/merch', icon: ShoppingBag },
     { name: 'Cafe', path: '/cafe', icon: Coffee },
   ]},
