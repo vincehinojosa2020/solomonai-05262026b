@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, RefreshCw, UserCheck, UserX, Clock, 
   AlertCircle, CheckCircle2, Phone, User, Users,
-  QrCode, Sparkles, Shield, Cross, Plus, Mail
+  QrCode, Sparkles, Shield, Cross, Plus, Mail, PartyPopper
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
