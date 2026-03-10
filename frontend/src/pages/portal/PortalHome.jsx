@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
-import { DollarSign, Users, Calendar, Sparkles, ChevronRight, MessageSquare, Heart, Flame, Play } from 'lucide-react';
+import { DollarSign, Users, Calendar, ChevronRight, Flame } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
-import { ServiceModeBanner, AttendanceStreakCard, PrayerWallCard } from '@/components/ServiceMode';
+import { ServiceModeBanner, AttendanceStreakCard } from '@/components/ServiceMode';
 
 const NOTE_CATEGORIES = ['Prayer Request', 'Question', 'Praise', 'Other'];
 
@@ -19,14 +19,12 @@ export default function PortalHome() {
   // Service Mode State
   const [serviceMode, setServiceMode] = useState(null);
   const [streakData, setStreakData] = useState(null);
-  const [prayerWall, setPrayerWall] = useState([]);
 
   useEffect(() => {
     fetchUpcomingEvents();
     generateSolomonInsight();
     fetchServiceMode();
     fetchStreakData();
-    fetchPrayerWall();
   }, [memberData, tenant]);
 
   const fetchUpcomingEvents = async () => {
@@ -62,18 +60,6 @@ export default function PortalHome() {
       }
     } catch (error) {
       console.error('Failed to fetch streak data:', error);
-    }
-  };
-
-  const fetchPrayerWall = async () => {
-    try {
-      const res = await fetch(`${API_URL}/portal/prayer/wall`, { credentials: 'include' });
-      if (res.ok) {
-        const data = await res.json();
-        setPrayerWall(data.requests || []);
-      }
-    } catch (error) {
-      console.error('Failed to fetch prayer wall:', error);
     }
   };
 
@@ -235,31 +221,6 @@ export default function PortalHome() {
       </div>
 
       <div className="portal-home-grid">
-        {/* Ask Solomon */}
-        <div className="portal-solomon-widget" data-testid="portal-solomon-widget">
-          <div className="portal-solomon-header">
-            <Sparkles className="w-5 h-5 text-blue-500" />
-            <span>Ask Solomon</span>
-          </div>
-          <p className="portal-solomon-message">{solomonMessage}</p>
-          <div className="portal-solomon-input">
-            <input 
-              type="text" 
-              placeholder="Ask about giving, groups, Pathways, Thinkific..."
-              className="portal-solomon-input-field"
-              onFocus={openSolomon}
-              data-testid="ask-solomon-input"
-            />
-            <button
-              className="portal-solomon-button"
-              onClick={openSolomon}
-              data-testid="ask-solomon-open-btn"
-            >
-              Open
-            </button>
-          </div>
-        </div>
-
         {/* Attendance Streak Card */}
         {streakData && (
           <AttendanceStreakCard
@@ -269,12 +230,6 @@ export default function PortalHome() {
             badges={streakData.streak_badges}
           />
         )}
-
-        {/* Prayer Wall Preview */}
-        <PrayerWallCard
-          requests={prayerWall}
-          onViewAll={() => window.location.href = '/portal/prayer'}
-        />
       </div>
 
       {/* Upcoming Events */}

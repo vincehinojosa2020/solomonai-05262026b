@@ -28,10 +28,80 @@ const CATEGORIES = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// VIDEO PLAYER MODAL
+// VIDEO PLAYER MODAL - Masterclass-style with side-by-side notes
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const VideoPlayer = ({ isOpen, onClose, video, onShare }) => {
+const VideoPlayer = ({ isOpen, onClose, video, onShare, user }) => {
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState('');
+  const [savingNote, setSavingNote] = useState(false);
+  const [showNotes, setShowNotes] = useState(true);
+
+  useEffect(() => {
+    if (isOpen && video?.id) {
+      fetchVideoNotes();
+    }
+  }, [isOpen, video?.id]);
+
+  const fetchVideoNotes = async () => {
+    if (!video?.id) return;
+    try {
+      const res = await fetch(`${API_URL}/portal/video-notes/video/${video.id}`, { 
+        credentials: 'include' 
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setNotes(data.notes || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch notes:', error);
+    }
+  };
+
+  const saveNote = async () => {
+    if (!newNote.trim() || !video?.id) return;
+    setSavingNote(true);
+    try {
+      const res = await fetch(`${API_URL}/portal/video-notes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          video_id: video.id,
+          content: newNote.trim(),
+          timestamp: null, // Could add video timestamp here
+          is_public: false
+        })
+      });
+      if (res.ok) {
+        toast.success('Note saved!');
+        setNewNote('');
+        fetchVideoNotes();
+      } else {
+        toast.error('Failed to save note');
+      }
+    } catch (error) {
+      toast.error('Error saving note');
+    } finally {
+      setSavingNote(false);
+    }
+  };
+
+  const deleteNote = async (noteId) => {
+    try {
+      const res = await fetch(`${API_URL}/portal/video-notes/${noteId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (res.ok) {
+        toast.success('Note deleted');
+        fetchVideoNotes();
+      }
+    } catch (error) {
+      toast.error('Failed to delete note');
+    }
+  };
+
   if (!isOpen || !video) return null;
 
   const handleGive = () => {
@@ -40,45 +110,124 @@ const VideoPlayer = ({ isOpen, onClose, video, onShare }) => {
 
   return (
     <motion.div
-      className="atv-modal"
+      className="atv-modal atv-modal-fullscreen"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      onClick={onClose}
     >
-      <motion.div
-        className="atv-modal-content"
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button className="atv-modal-close" onClick={onClose}>
-          <X className="w-6 h-6" />
-        </button>
-        <div className="atv-modal-header">
-          <h2>{video.title}</h2>
-          <p>With {video.instructor}</p>
-        </div>
-        <div className="atv-modal-video">
-          <iframe
-            src={`https://www.youtube.com/embed/${video.youtubeId}?autoplay=1&rel=0&modestbranding=1`}
-            title={video.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
-        <div className="atv-modal-actions">
-          <button className="atv-modal-btn give" onClick={handleGive} data-testid="video-give-btn">
-            <Heart className="w-5 h-5" />
-            Give
+      <div className="atv-modal-masterclass">
+        {/* Header */}
+        <div className="atv-masterclass-header">
+          <button className="atv-modal-back" onClick={onClose}>
+            <ChevronLeft className="w-5 h-5" />
+            <span>Back to Library</span>
           </button>
-          <button className="atv-modal-btn share" onClick={() => onShare && onShare(video)} data-testid="video-share-btn">
-            <Share2 className="w-5 h-5" />
-            Share
-          </button>
+          <div className="atv-masterclass-title">
+            <h2>{video.title}</h2>
+            <span>with {video.instructor}</span>
+          </div>
+          <div className="atv-masterclass-actions">
+            <button className="atv-mc-btn" onClick={handleGive} data-testid="video-give-btn">
+              <Heart className="w-4 h-4" />
+              Give
+            </button>
+            <button className="atv-mc-btn" onClick={() => onShare && onShare(video)} data-testid="video-share-btn">
+              <Share2 className="w-4 h-4" />
+              Share
+            </button>
+            <button 
+              className={`atv-mc-btn ${showNotes ? 'active' : ''}`} 
+              onClick={() => setShowNotes(!showNotes)}
+              data-testid="toggle-notes-btn"
+            >
+              <FileText className="w-4 h-4" />
+              Notes
+            </button>
+          </div>
         </div>
-      </motion.div>
+
+        {/* Main Content - Video + Notes side by side */}
+        <div className={`atv-masterclass-content ${showNotes ? 'with-notes' : ''}`}>
+          {/* Video Section */}
+          <div className="atv-masterclass-video">
+            <iframe
+              src={`https://www.youtube.com/embed/${video.youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+              title={video.title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+
+          {/* Notes Panel - Masterclass style */}
+          {showNotes && (
+            <div className="atv-masterclass-notes" data-testid="video-notes-panel">
+              <div className="atv-notes-header">
+                <FileText className="w-5 h-5" />
+                <h3>My Notes</h3>
+                <span className="atv-notes-count">{notes.length}</span>
+              </div>
+
+              {/* Note Input */}
+              <div className="atv-notes-input">
+                <textarea
+                  placeholder="Take notes while watching..."
+                  value={newNote}
+                  onChange={(e) => setNewNote(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                      saveNote();
+                    }
+                  }}
+                  data-testid="note-input"
+                />
+                <button 
+                  className="atv-notes-save" 
+                  onClick={saveNote}
+                  disabled={savingNote || !newNote.trim()}
+                  data-testid="save-note-btn"
+                >
+                  {savingNote ? 'Saving...' : 'Save Note'}
+                </button>
+                <span className="atv-notes-hint">⌘/Ctrl + Enter to save</span>
+              </div>
+
+              {/* Notes List */}
+              <div className="atv-notes-list">
+                {notes.length === 0 ? (
+                  <div className="atv-notes-empty">
+                    <FileText className="w-8 h-8" />
+                    <p>No notes yet</p>
+                    <span>Start taking notes while you watch!</span>
+                  </div>
+                ) : (
+                  notes.map((note) => (
+                    <div key={note.id} className="atv-note-item" data-testid={`note-${note.id}`}>
+                      <p className="atv-note-content">{note.content}</p>
+                      <div className="atv-note-meta">
+                        <span className="atv-note-date">
+                          {new Date(note.created_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                        <button 
+                          className="atv-note-delete"
+                          onClick={() => deleteNote(note.id)}
+                          title="Delete note"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </motion.div>
   );
 };
@@ -1176,6 +1325,7 @@ export default function PortalWatch() {
             video={videoModal.video}
             onClose={() => setVideoModal({ open: false, video: null })}
             onShare={handleShare}
+            user={user}
           />
         )}
       </AnimatePresence>

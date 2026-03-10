@@ -86,7 +86,6 @@ export default function PortalLayout() {
     { name: 'Home', path: '/portal', icon: Home, exact: true },
     { name: 'Kids Check-in', path: '/portal/kids', icon: Users },
     { name: 'Watch', path: '/portal/watch', icon: Tv },
-    { name: 'Prayer', path: '/portal/prayer', icon: Heart },
     { name: 'Merch', path: '/portal/merch', icon: ShoppingBag },
     { name: 'Cafe', path: '/portal/cafe', icon: Coffee },
     { name: 'Give', path: '/portal/give', icon: DollarSign },
@@ -220,9 +219,6 @@ export default function PortalLayout() {
           <Outlet context={{ user, memberData, tenant, refreshData: fetchMemberData }} />
         </div>
       </main>
-
-      {/* Solomon AI Chat */}
-      <SolomonChat />
     </div>
   );
 }
