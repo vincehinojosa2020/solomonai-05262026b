@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, RefreshCw, UserCheck, UserX, Clock, 
   AlertCircle, CheckCircle2, Phone, User, Users,
-  QrCode, Sparkles, Shield, Cross
+  QrCode, Sparkles, Shield, Cross, Plus, Mail
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -55,6 +55,20 @@ export default function KidsCheckinAdmin() {
   const [verifyResult, setVerifyResult] = useState(null);
   const [showCheckoutModal, setShowCheckoutModal] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [showRegisterFamily, setShowRegisterFamily] = useState(false);
+  const [lastCheckinCount, setLastCheckinCount] = useState(0);
+  const [newCheckinAlert, setNewCheckinAlert] = useState(false);
+  
+  // New family registration form
+  const [newFamily, setNewFamily] = useState({
+    parentName: '',
+    parentEmail: '',
+    parentPhone: '',
+    childName: '',
+    childBirthdate: '',
+    childAllergies: '',
+    childNotes: ''
+  });
 
   const fetchData = useCallback(async () => {
     try {
@@ -65,7 +79,31 @@ export default function KidsCheckinAdmin() {
       
       if (checkinsRes.ok) {
         const data = await checkinsRes.json();
-        setCheckins(data.checkins || []);
+        const newCheckins = data.checkins || [];
+        
+        // Alert if new check-in detected
+        if (newCheckins.length > lastCheckinCount && lastCheckinCount > 0) {
+          const newKid = newCheckins.find(c => !checkins.find(old => old.id === c.id));
+          if (newKid) {
+            setNewCheckinAlert(true);
+            toast.success(
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🎉</span>
+                <span><strong>{newKid.child_name}</strong> just checked in!</span>
+              </div>,
+              { duration: 5000 }
+            );
+            // Play notification sound (optional)
+            try {
+              const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleUUxPlOv1sqmcE0yQnzX2bCJYjg1Wazm4rqWe1s8Pnam4uSxiGctCVKm3eGofkMfOIOy2sqdeEUeO3rL3re0');
+              audio.volume = 0.3;
+              audio.play().catch(() => {});
+            } catch (e) {}
+            setTimeout(() => setNewCheckinAlert(false), 3000);
+          }
+        }
+        setLastCheckinCount(newCheckins.length);
+        setCheckins(newCheckins);
       }
       
       if (kidsRes.ok) {
@@ -77,14 +115,58 @@ export default function KidsCheckinAdmin() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [lastCheckinCount, checkins]);
 
   useEffect(() => {
     fetchData();
-    // Auto-refresh every 5 seconds for real-time updates
-    const interval = setInterval(fetchData, 5000);
+    // Auto-refresh every 2 seconds for production-ready real-time updates
+    const interval = setInterval(fetchData, 2000);
     return () => clearInterval(interval);
-  }, [fetchData]);
+  }, []);
+  
+  // Register new family
+  const handleRegisterFamily = async () => {
+    if (!newFamily.parentName || !newFamily.parentEmail || !newFamily.childName) {
+      toast.error('Please fill in parent name, email, and child name');
+      return;
+    }
+    
+    try {
+      const res = await fetch(`${API_URL}/admin/kids/register-family`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(newFamily)
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(
+          <div className="flex flex-col">
+            <span className="font-bold">Family Registered! ✝️</span>
+            <span className="text-sm">Welcome {newFamily.parentName} & {newFamily.childName}</span>
+          </div>,
+          { duration: 5000 }
+        );
+        setShowRegisterFamily(false);
+        setNewFamily({
+          parentName: '',
+          parentEmail: '',
+          parentPhone: '',
+          childName: '',
+          childBirthdate: '',
+          childAllergies: '',
+          childNotes: ''
+        });
+        fetchData();
+      } else {
+        const error = await res.json();
+        toast.error(error.detail || 'Registration failed');
+      }
+    } catch (error) {
+      toast.error('Error registering family');
+    }
+  };
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -194,7 +276,14 @@ export default function KidsCheckinAdmin() {
   }
 
   return (
-    <div className="kca-page" data-testid="kids-checkin-admin">
+    <div className={`kca-page ${newCheckinAlert ? 'kca-new-alert' : ''}`} data-testid="kids-checkin-admin">
+      {/* New Check-in Alert */}
+      {newCheckinAlert && (
+        <div className="kca-alert-banner">
+          <span>🎉 New Check-in!</span>
+        </div>
+      )}
+      
       {/* Header */}
       <div className="kca-header">
         <div className="kca-header-left">
@@ -204,10 +293,21 @@ export default function KidsCheckinAdmin() {
           </div>
           <div>
             <h1>Kids Check-in Station</h1>
-            <p>Front Desk • Live Updates</p>
+            <div className="kca-live-indicator">
+              <span className="kca-live-dot"></span>
+              <span>LIVE • Updates every 2s</span>
+            </div>
           </div>
         </div>
         <div className="kca-header-right">
+          <button 
+            className="kca-register-btn"
+            onClick={() => setShowRegisterFamily(true)}
+            data-testid="register-family-btn"
+          >
+            <Plus className="w-5 h-5" />
+            Register New Family
+          </button>
           <div className="kca-stat-box">
             <span className="kca-stat-number">{checkins.length}</span>
             <span className="kca-stat-label">Checked In</span>
@@ -564,6 +664,110 @@ export default function KidsCheckinAdmin() {
                 >
                   <CheckCircle2 className="w-5 h-5" />
                   Confirm Checkout
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+        
+        {/* Register New Family Modal */}
+        {showRegisterFamily && (
+          <motion.div
+            className="kca-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowRegisterFamily(false)}
+          >
+            <motion.div
+              className="kca-modal kca-register-modal"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              data-testid="register-family-modal"
+            >
+              <div className="kca-modal-icon kca-modal-icon-green">
+                <Users className="w-10 h-10" />
+              </div>
+              <h2>Register New Family ✝️</h2>
+              <p className="kca-modal-subtitle">Welcome a new family to Sunday School!</p>
+              
+              <div className="kca-register-form">
+                <div className="kca-form-section">
+                  <h3><User className="w-4 h-4" /> Parent Information</h3>
+                  <div className="kca-form-row">
+                    <input
+                      type="text"
+                      placeholder="Parent Name *"
+                      value={newFamily.parentName}
+                      onChange={(e) => setNewFamily(prev => ({ ...prev, parentName: e.target.value }))}
+                      data-testid="parent-name-input"
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email *"
+                      value={newFamily.parentEmail}
+                      onChange={(e) => setNewFamily(prev => ({ ...prev, parentEmail: e.target.value }))}
+                      data-testid="parent-email-input"
+                    />
+                  </div>
+                  <input
+                    type="tel"
+                    placeholder="Phone Number"
+                    value={newFamily.parentPhone}
+                    onChange={(e) => setNewFamily(prev => ({ ...prev, parentPhone: e.target.value }))}
+                    data-testid="parent-phone-input"
+                  />
+                </div>
+                
+                <div className="kca-form-section">
+                  <h3><Sparkles className="w-4 h-4" /> Child Information</h3>
+                  <div className="kca-form-row">
+                    <input
+                      type="text"
+                      placeholder="Child Name *"
+                      value={newFamily.childName}
+                      onChange={(e) => setNewFamily(prev => ({ ...prev, childName: e.target.value }))}
+                      data-testid="child-name-input"
+                    />
+                    <input
+                      type="date"
+                      placeholder="Birthdate"
+                      value={newFamily.childBirthdate}
+                      onChange={(e) => setNewFamily(prev => ({ ...prev, childBirthdate: e.target.value }))}
+                      data-testid="child-birthdate-input"
+                    />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Allergies (if any)"
+                    value={newFamily.childAllergies}
+                    onChange={(e) => setNewFamily(prev => ({ ...prev, childAllergies: e.target.value }))}
+                  />
+                  <textarea
+                    placeholder="Special notes (e.g., special needs, preferences)"
+                    value={newFamily.childNotes}
+                    onChange={(e) => setNewFamily(prev => ({ ...prev, childNotes: e.target.value }))}
+                    rows={2}
+                  />
+                </div>
+              </div>
+              
+              <div className="kca-modal-actions">
+                <button 
+                  className="kca-modal-cancel"
+                  onClick={() => setShowRegisterFamily(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="kca-modal-confirm kca-modal-confirm-green"
+                  onClick={handleRegisterFamily}
+                  data-testid="submit-register-btn"
+                >
+                  <CheckCircle2 className="w-5 h-5" />
+                  Register Family
                 </button>
               </div>
             </motion.div>

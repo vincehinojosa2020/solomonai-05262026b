@@ -3362,6 +3362,77 @@ async def verify_pickup_code(request: Request, payload: dict):
         }
     }
 
+class RegisterFamilyPayload(BaseModel):
+    parentName: str
+    parentEmail: str
+    parentPhone: str = ""
+    childName: str
+    childBirthdate: str = ""
+    childAllergies: str = ""
+    childNotes: str = ""
+
+@api_router.post("/admin/kids/register-family")
+async def register_new_family(request: Request, payload: RegisterFamilyPayload):
+    """Admin: Register a new family (walk-in) directly from front desk"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    # Check if parent already exists
+    existing_user = await db.users.find_one({"email": payload.parentEmail.lower()})
+    
+    if existing_user:
+        parent_user_id = existing_user.get("user_id")
+        # Check if child already exists for this parent
+        existing_child = await db.children.find_one({
+            "parent_user_id": parent_user_id,
+            "name": payload.childName
+        })
+        if existing_child:
+            raise HTTPException(status_code=400, detail=f"{payload.childName} is already registered for this parent")
+    else:
+        # Create new parent user
+        parent_user_id = f"member_{str(uuid.uuid4())[:8]}"
+        temp_password = secrets.token_urlsafe(12)
+        password_hash = hashlib.sha256(temp_password.encode()).hexdigest()
+        new_user = {
+            "user_id": parent_user_id,
+            "email": payload.parentEmail.lower(),
+            "name": payload.parentName,
+            "phone": payload.parentPhone,
+            "role": "member",
+            "tenant_id": tenant_id,
+            "password_hash": password_hash,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "registered_by_admin": True
+        }
+        await db.users.insert_one(new_user)
+        
+        # Log temporary password for staff to share
+        print(f"[NEW FAMILY] Created parent: {payload.parentEmail} | Temp Password: {temp_password}")
+    
+    # Create child
+    child_id = str(uuid.uuid4())
+    child = {
+        "id": child_id,
+        "tenant_id": tenant_id,
+        "parent_user_id": parent_user_id,
+        "parent_name": payload.parentName,
+        "parent_phone": payload.parentPhone,
+        "name": payload.childName,
+        "birthdate": payload.childBirthdate if payload.childBirthdate else None,
+        "allergies": payload.childAllergies,
+        "special_needs": payload.childNotes,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.children.insert_one(child)
+    
+    return {
+        "message": f"Family registered successfully! Welcome {payload.parentName} & {payload.childName}",
+        "parent_email": payload.parentEmail,
+        "child_id": child_id,
+        "new_user": not existing_user
+    }
+
 # ============== CAFE ROUTES ==============
 
 @api_router.get("/admin/cafe/settings")
