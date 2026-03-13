@@ -5765,95 +5765,7 @@ async def log_member_outreach(request: Request, group_id: str):
     
     return {"message": "Outreach logged", "id": outreach_log["id"]}
 
-# ============== GROUP MESSAGING (Module 6) ==============
-
-@api_router.get("/groups/{group_id}/messages")
-async def get_group_messages(request: Request, group_id: str, before: str = None, limit: int = 50):
-    """Get messages for a group (accessible by members and admins)."""
-    user = await get_current_user(request)
-    if not user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    tenant_id = user.get("tenant_id", "")
-    
-    query = {"group_id": group_id, "tenant_id": tenant_id}
-    if before:
-        query["created_at"] = {"$lt": before}
-    
-    messages = await db.group_messages.find(
-        query, {"_id": 0}
-    ).sort("created_at", -1).limit(limit).to_list(limit)
-    
-    messages.reverse()
-    return {"messages": messages}
-
-@api_router.post("/groups/{group_id}/messages")
-async def send_group_message(request: Request, group_id: str):
-    """Send a message to a group chat."""
-    user = await get_current_user(request)
-    if not user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    tenant_id = user.get("tenant_id", "")
-    body = await request.json()
-    text = (body.get("text") or "").strip()
-    
-    if not text:
-        raise HTTPException(status_code=400, detail="Message text is required")
-    
-    message = {
-        "id": str(uuid.uuid4()),
-        "group_id": group_id,
-        "tenant_id": tenant_id,
-        "sender_id": user.get("user_id") or user.get("id", ""),
-        "sender_name": user.get("name", "Unknown"),
-        "sender_email": user.get("email", ""),
-        "sender_role": user.get("role", "member"),
-        "text": text,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-    }
-    
-    await db.group_messages.insert_one(message)
-    
-    # Send push notifications to other group members
-    try:
-        group_members = await db.group_members.find(
-            {"group_id": group_id, "tenant_id": tenant_id},
-            {"_id": 0, "person_id": 1, "user_id": 1}
-        ).to_list(100)
-        sender_id = user.get("user_id") or user.get("id", "")
-        for m in group_members:
-            member_uid = m.get("user_id") or m.get("person_id", "")
-            if member_uid and member_uid != sender_id:
-                await send_push_notification(
-                    member_uid, tenant_id,
-                    f"New message in {group_id[:8]}",
-                    f"{message['sender_name']}: {text[:80]}",
-                    "/portal/groups"
-                )
-    except Exception:
-        pass
-    
-    return {k: v for k, v in message.items() if k != "_id"}
-
-@api_router.delete("/groups/{group_id}/messages/{message_id}")
-async def delete_group_message(request: Request, group_id: str, message_id: str):
-    """Delete a message (sender or admin only)."""
-    user = await get_current_user(request)
-    if not user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    tenant_id = user.get("tenant_id", "")
-    msg = await db.group_messages.find_one({"id": message_id, "group_id": group_id, "tenant_id": tenant_id}, {"_id": 0})
-    if not msg:
-        raise HTTPException(status_code=404, detail="Message not found")
-    
-    user_id = user.get("user_id") or user.get("id", "")
-    if msg["sender_id"] != user_id and user.get("role") not in ("church_admin", "platform_admin"):
-        raise HTTPException(status_code=403, detail="Cannot delete this message")
-    
-    await db.group_messages.delete_one({"id": message_id})
-    return {"message": "Deleted"}
+# Group messaging routes extracted to routes/messaging.py
 
 # ============== ADMIN EVENT REGISTRATION MANAGEMENT ==============
 
@@ -10855,83 +10767,12 @@ async def update_prayer_request(
 # Include router
 app.include_router(api_router)
 
-# ============== PUSH NOTIFICATIONS (Module 0 PWA) ==============
+# ============== PUSH NOTIFICATIONS & MESSAGING (Extracted to routes/) ==============
+from routes.push import router as push_router, send_push_notification
+from routes.messaging import router as messaging_router
 
-from pywebpush import webpush, WebPushException
-import json as json_module
-
-VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY", "")
-VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY", "")
-VAPID_CLAIMS_EMAIL = os.environ.get("VAPID_CLAIMS_EMAIL", "mailto:admin@solomon.ai")
-
-@app.get("/api/push/vapid-public-key")
-async def get_vapid_public_key():
-    return {"public_key": VAPID_PUBLIC_KEY}
-
-@app.post("/api/push/subscribe")
-async def push_subscribe(request: Request):
-    """Store a push subscription for the authenticated user."""
-    user = await get_current_user(request)
-    if not user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    body = await request.json()
-    subscription = body.get("subscription")
-    if not subscription or not subscription.get("endpoint"):
-        raise HTTPException(status_code=400, detail="Invalid subscription")
-    
-    tenant_id = user.get("tenant_id", "")
-    user_id = user.get("id", "")
-    
-    # Upsert subscription keyed by endpoint
-    await db.push_subscriptions.update_one(
-        {"endpoint": subscription["endpoint"]},
-        {"$set": {
-            "subscription": subscription,
-            "user_id": user_id,
-            "tenant_id": tenant_id,
-            "updated_at": datetime.now(timezone.utc).isoformat()
-        }},
-        upsert=True
-    )
-    return {"status": "subscribed"}
-
-@app.delete("/api/push/subscribe")
-async def push_unsubscribe(request: Request):
-    """Remove a push subscription."""
-    user = await get_current_user(request)
-    if not user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    body = await request.json()
-    endpoint = body.get("endpoint", "")
-    if endpoint:
-        await db.push_subscriptions.delete_one({"endpoint": endpoint})
-    return {"status": "unsubscribed"}
-
-async def send_push_notification(user_id: str, tenant_id: str, title: str, body: str, url: str = "/portal"):
-    """Send push notification to all subscriptions for a user."""
-    if not VAPID_PRIVATE_KEY:
-        return
-    
-    subs = await db.push_subscriptions.find(
-        {"user_id": user_id, "tenant_id": tenant_id},
-        {"_id": 0}
-    ).to_list(50)
-    
-    payload = json_module.dumps({"title": title, "body": body, "url": url})
-    
-    for sub in subs:
-        try:
-            webpush(
-                subscription_info=sub["subscription"],
-                data=payload,
-                vapid_private_key=VAPID_PRIVATE_KEY,
-                vapid_claims={"sub": VAPID_CLAIMS_EMAIL}
-            )
-        except WebPushException:
-            # Subscription expired or invalid — remove it
-            await db.push_subscriptions.delete_one({"endpoint": sub["subscription"]["endpoint"]})
-        except Exception:
-            pass
+app.include_router(push_router, prefix="/api")
+app.include_router(messaging_router, prefix="/api")
 
 # CORS middleware
 app.add_middleware(

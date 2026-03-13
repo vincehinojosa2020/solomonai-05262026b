@@ -398,6 +398,13 @@ All 10 modules implemented with 100% test pass rate.
 - ✅ **Bidirectional Group Messaging (Module 6)** — Full chat system with backend endpoints (GET/POST/DELETE /api/groups/{groupId}/messages), GroupChat component with 5s polling, date separators, sender badges, embedded in both portal groups and admin leader dashboard
 - ✅ **Solomon Merch Recommender (Module 4)** — Floating chatbot widget on merch page with pattern-matching product recommendations, quick suggestion buttons, greeting message
 - ✅ **Events Waitlist & Ticket Tiers (Module 5)** — Auto-waitlist when capacity full, ticket tier display, capacity progress bars, event detail modal with full registration flow, enhanced category filters
+- ✅ **Backend Refactor (Phase 1)** — Extracted shared infrastructure into modular files:
+  - `database.py` — MongoDB connection, serialize_doc, shared config
+  - `auth.py` — Authentication helpers (get_current_user, get_current_admin_user)
+  - `routes/push.py` — Push notification endpoints + send_push_notification helper
+  - `routes/messaging.py` — Group chat endpoints (GET/POST/DELETE messages)
+  - `routes/__init__.py` — Package init
+  - Pattern established for incremental extraction of remaining routes
 - ✅ **Push Notification Triggers** — Auto-push on group message (to other members), event registration (confirmation), kids checkout (parent alert)
 - ✅ **PortalHome Cleanup** — Fixed date formatting for events (handles null/undefined), removed unused note form state
 - ✅ **Bug Fix: Kids Checkout** — Fixed `checkin_doc` → `checkin` variable name in push notification trigger
