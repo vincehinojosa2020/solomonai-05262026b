@@ -1,93 +1,94 @@
 <analysis>**original_problem_statement:**
-The user's goal is to build Solomon AI, an enterprise-grade SaaS Church Management System. The project has pivoted to focus on a large set of new features outlined in a detailed document titled SOLOMON AI — SUMMIT ENHANCEMENTS PROMPT.
+The user's primary goal is to build Solomon AI, an enterprise-grade SaaS Church Management System. The project is driven by a comprehensive document, SOLOMON AI — MASTER ENHANCEMENT PROMPT v3.0, which details numerous additive enhancements across 10 modules. The latest and highest-priority request is to convert the application into a Progressive Web App (PWA) as detailed in Module 0 of the prompt.
 
-This prompt details a significant expansion of the platform, with a **strict requirement to only add new features and preserve all existing functionality**. The user wants to use content from  to populate the application for an MVP.
-
-PRODUCT REQUIREMENTS (from the new prompt):
-The user has provided a comprehensive list of enhancements across ten categories, structured into four implementation phases. Key additions include:
--   **Watch Section Upgrades**: Search bar, share button, AI transcripts/summaries, My Notes, and livestream support.
--   **Service Mode**: A dynamic homepage that activates on service days, showing a special layout based on user check-in status (in-person vs. online). Includes attendance streak tracking.
--   **Kids Check-In Enhancements**: Post-service parent SMS notifications with lesson summaries.
--   **Prayer Request Upgrades**: Adding categories, a public Prayer Wall, and an admin dashboard for tracking and follow-up.
--   **Café Upgrades**: Pickup time selection, round-up donations, and a new member welcome coupon.
--   **Giving Upgrades**: Household-linked giving history and automated prompts for lapsed/recurring givers.
--   **Admin Communications Hub**: A central place for admins to send mass messages (SMS, Email, Push) to filtered groups of members.
--   **AI Upgrades**: AI-powered sermon transcription/summarization, and an Admin Insights dashboard.
--   **Gamification**: Profile badges and a Pathways progress bar for new members.
+PRODUCT REQUIREMENTS:
+The v3.0 prompt outlines a massive scope of work with a strict additive only rule, preserving all existing functionality. Key requirements include:
+-   **Module 0: PWA Conversion (HIGHEST PRIORITY)**: Make the app installable on mobile devices with a manifest, service worker for offline support, custom install prompts, and a foundation for push notifications.
+-   **Module 1: Watch Section**: Redesign with better thumbnails, improved category navigation, and series-based content organization.
+-   **Module 2: Kids Check-In**: Upgrade to a QR code system and redesign the UI with a Duolingo / Veggie Tales aesthetic.
+-   **Module 3 & 4: Café & Merch**: Upgrade visuals and add a giving nudge component at checkout.
+-   **Module 5: Events Management**: Enhance with a registration flow, ticket tiers, and Eventbrite-style features.
+-   **Module 6: Small Groups**: Implement a leader dashboard with attendance tracking and an at-risk member outreach system.
+-   **Module 7: Admin Dashboards**: Upgrade metrics and seed the Abundant Church account with realistic mock data for a 50,000-member organization.
+-   **Module 8 & 9**: A global UI/Design System pass and light security hardening.
+-   **Module 10**: A global, reusable Giving Nudge component system.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack React/FastAPI/MongoDB platform. It features a member portal and an admin dashboard. The main completed feature is a comprehensive Kids Check-in system, which includes:
--   A visually themed member-facing UI for parents to add children (of any age) and check them in.
--   An admin-facing Check-in Station for church staff to view currently checked-in children, perform walk-in check-ins, and manage check-outs by verifying a unique pickup code.
--   Real-time synchronization (via 5-second polling) between the parent check-in action and the admin dashboard view.
--   The UI for this feature has been iteratively redesigned from a rainbow theme to an Israel theme, and finally to a colorful, non-rainbow Christian theme with cross icons, per user feedback.
+The application is a full-stack React/FastAPI/MongoDB platform. The agent has just completed a major implementation pass based on the user's v3.0 prompt, addressing parts of Modules 1-10.
+
+Key completed features include a robust Kids Check-in system (with 2-second real-time sync, admin registration, and 3-digit pickup codes), a Watch section, Giving, a native Cafe & Merch store, Events, Groups, and Admin Dashboards.
+
+The most recent work involved:
+-   Polishing the Watch section UI.
+-   Replacing the broken merch store iframe with a native component.
+-   Implementing giving nudges for the Cafe and Merch stores.
+-   Updating the Admin Dashboard to show mock data reflecting a 50,000-member church.
+-   Performing a global typography/UI pass.
+-   Removing the Prayer feature from member views and wiping check-in data per user request.
 
 **Last working item**:
--   **Last item agent was working**: The user provided a massive new product requirements document and requested that the agent populate the app with content scraped from  for the MVP. The agent acknowledged this and was preparing to crawl the website.
+-   **Last item agent was working**: The user provided a new highest-priority task, Module 0 - PWA Conversion, to make the application installable on mobile devices. The agent acknowledged the task and was about to begin implementation.
 -   **Status**: NOT STARTED
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: NA (This is a data gathering task. Subsequent implementation will require testing).
+-   **Which testing method agent to use?**: Frontend testing agent to verify the manifest, service worker, and install prompt functionality. Manual testing with browser developer tools (Lighthouse) will also be crucial.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Process and Plan SUMMIT ENHANCEMENTS PROMPT (P0)**: The user has provided a large, detailed set of requirements. The next step is to analyze this document, reconcile it with the existing application, and create a concrete implementation plan. The user has specified a build order in the document, which should be the primary guide.
+-   **Issue 1: Implement PWA Conversion (Module 0) (P0)**: This is the immediate, highest-priority task.
 
 **Issues Detail**:
--   **Issue 1: Process and Plan SUMMIT ENHANCEMENTS PROMPT**
-    -   **Attempted fixes**: The agent has acknowledged the prompt but has not yet started planning or implementation.
+-   **Issue 1: Implement PWA Conversion (Module 0)**
+    -   **Attempted fixes**: None. This is a new task.
     -   **Next debug checklist**:
-        1.  Carefully read the entire SOLOMON AI — SUMMIT ENHANCEMENTS PROMPT.
-        2.  Identify which features are entirely new vs. enhancements to existing modules.
-        3.  Note the database schema changes (provided in SQL) and map them to the current MongoDB structure. This signals a potential future migration to PostgreSQL.
-        4.  Prioritize tasks according to the BUILD ORDER section in the prompt.
-        5.  Present a clear, phased plan to the user for approval before starting implementation.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is the new roadmap for the entire project. Planning is critical to ensure the enhancements are built correctly and in the user's preferred order.
+        1.  Create/update  with the specified app details.
+        2.  Generate and add app icons to .
+        3.  Create a service worker at  to handle caching strategies and provide an offline fallback page.
+        4.  Create the offline fallback page at .
+        5.  Update  to link the manifest, add PWA meta tags, and register the service worker.
+        6.  Implement the custom install prompt logic in  or a new component, listening for the  event.
+        7.  Implement the logic for the mobile-only bottom navigation bar when the app is in standalone PWA mode.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical demo feature that will allow the user to showcase Solomon AI as a native-feeling app that can be installed directly from the browser.
     -   **Status**: NOT STARTED
     -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: both
+    -   **Should Test frontend/backend/both after fix?**: frontend
     -   **Blocked on other issue**: None.
 
 **In progress Task List**:
--   **Task 1: Scrape  for MVP Content (P0)**
-    -   **Where to resume**: Use the  with the  action on .
-    -   **What will be achieved with this?**: Gather real-world content (service times, sermon topics, event info) to populate the application, making the MVP demo more realistic.
-    -   **Status**: NOT STARTED
-    -   **Should Test frontend/backend/both after fix?**: frontend (to verify content is displayed).
-    -   **Blocked on something**: None.
+- None.
 
 **Upcoming and Future Tasks**
-The user has provided a clear build order.
+-   **Upcoming Tasks (P1):**
+    -   **Complete Kids Check-in UI Redesign (Module 2)**: The backend is ready, but the frontend needs the full Duolingo / Veggie Tales UI overhaul, including the 3-step wizard, new font, and DiceBear avatars.
+    -   **Build Small Groups Leader Dashboard UI (Module 6)**: The backend endpoints for attendance and at-risk members exist. The frontend UI with the Chart.js graph and outreach actions needs to be built.
+    -   **Build Bidirectional Messaging System (Module 6)**: The schema is defined in the prompt, but the full backend logic and frontend chat interface need to be implemented.
+    -   **Enhance Events Management (Module 5)**: Verify and complete Eventbrite-style features like public shareable URLs, waitlists, and attendee counts.
 
--   **Upcoming Tasks (Phase 1 - Demo-Ready):**
-    -   **P0**: Add Search bar to Watch section.
-    -   **P0**: Add Share button to video player with pre-populated message.
-    -   **P0**: Add Give button on video pages.
--   **Future Tasks:**
-    -   **Phase 2 (Core Summit Features):** Implement Service Mode, enhance Kids Check-In (SMS notifications), and build the Admin Prayer dashboard.
-    -   **Phase 3 (Engagement):** Implement My Notes/Transcript on videos, attendance streaks, and Café enhancements.
-    -   **Phase 4 (Admin Power):** Build the Communications hub, AI Insights dashboard, and household linking for giving.
-    -   **Technical Debt**: Refactor the monolithic  and the bloated .
-    -   **Technical Debt**: Plan for the potential database migration from MongoDB to PostgreSQL, as indicated by the user's SQL schema definitions.
+-   **Future Tasks (P2):**
+    -   **Implement Solomon Merch Recommender (Module 4)**: Build the UI-only version of the personalized recommendation chatbot.
+    -   **Implement Push Notifications**: Build the server-side logic to send push notifications for key events (new messages, reminders, etc.), building on the PWA foundation.
+    -   **Refactor **: The monolithic backend file is a significant piece of technical debt and should be broken into a proper routes/models structure.
+    -   **Upgrade Real-time Sync to WebSockets**: Replace the polling mechanism in the Kids Check-in feature for better performance and scalability.
 
 **Completed work in this session**
--   **Kids Check-in UI/UX Overhaul**:
-    -   Redesigned the entire Kids Check-in feature (member and admin) to a colorful, non-rainbow Christian theme, replacing Star of David icons with cross icons.
--   **Admin Kids Check-in Station (Completed)**:
-    -   Built the full admin dashboard for Kids Check-in.
-    -   Implemented tabs for Currently Checked In, Check In, and Check Out.
-    -   Created the check-out flow with pickup code verification.
--   **Feature Enhancements**:
-    -   Removed age restrictions for adding a child.
-    -   Implemented real-time updates on the admin dashboard (polling every 10 seconds) to reflect parent check-ins instantly.
--   **Testing and Bug Fixes**:
-    -   Successfully used the  twice, achieving 100% pass rates on both backend and frontend tests for the new admin features.
-    -   The testing agent identified and fixed a bug in the admin direct check-in endpoint.
+-   **Master Enhancement Prompt v3.0 (Partial Implementation)**:
+    -   Module 1 (Watch): Enhanced UI with improved thumbnails and category navigation.
+    -   Module 3 & 4 (Café & Merch): Deployed a reusable  component and replaced the broken merch iframe.
+    -   Module 7 (Admin Dashboard): Updated the backend to serve mock data for a 50,000-member church.
+    -   Module 8 (Global UI): Applied a global typography and color system pass.
+-   **User-Requested Fixes & Changes**:
+    -   Fixed the Watch page Notes tab to be a side-panel.
+    -   Removed all Prayer-related features from member views.
+    -   Changed Kids Check-in pickup codes to 3-digit numbers.
+    -   Fixed a  runtime error on the admin checkout page.
+    -   Cleared all kids' check-in data for a fresh user test.
+-   **Testing**: Ran multiple comprehensive test suites using , achieving 100% pass rates and ensuring the stability of all new features.
 
 **Earlier issues found/mentioned but not fixed**
--   **Minor Frontend Loading Timing Issue**: An old, uninvestigated test report mentioned a minor loading timing issue on the frontend.
--   **Member Portal UI Asymmetry**: The initial handoff mentioned asymmetry on . This was not addressed as priorities shifted.
+-   **Watch Page Notes View**: The Masterclass-style side-by-side view for the video and notes panel needs verification. The agent identified a potential issue but did not confirm the fix.
+-   **Minor Frontend Loading Timing Issue**: An old, uninvestigated issue from a previous test report.
+-   **Member Portal UI Asymmetry**: An old, unaddressed UI issue on .
 
 **Known issue recurrence from previous fork**
 -   None.
@@ -96,81 +97,87 @@ The user has provided a clear build order.
 
 
 **Key Technical Concepts**
--   **UI Theming/Re-skinning**: Rapidly changed the color palette, icons, and branding of a feature based on user feedback.
--   **Real-time UI Updates (Polling)**: The admin dashboard uses  to poll the backend every 10 seconds, providing a near real-time view of check-ins.
--   **Feature Mocking**: SMS notifications remain mocked (logged to console).
+-   **Full-stack Feature Implementation**: Rapidly added multiple backend endpoints (FastAPI) and frontend components (React) based on a detailed spec.
+-   **Mock Data Generation**: Modified a backend endpoint to return realistic, scaled-up mock data for a specific tenant ().
+-   **UI/UX Polish**: Applied design principles (spacing, typography, layout) from the prompt across several modules.
+-   **Real-time Sync (Polling)**: Reduced the polling interval on the Kids Check-in admin page to 2 seconds to improve perceived performance.
 
 **key DB schema**
--   **kids**: 
--   **check_ins**: 
--   **Note**: The user provided new, detailed SQL schemas for a significant database extension/migration, which are not yet implemented.
+-   **check_ins, children**: Collections were wiped for testing. The schema remains.
+-   **service_check_ins, attendance_streaks, prayer_requests, prayer_categories, small_group_attendance**: New MongoDB collections added to support recent features.
+-   **Note**: The user's prompt provides all new schemas in **SQL format**, strongly suggesting a future migration from MongoDB to PostgreSQL is desired.
 
 **changes in tech stack**
--   None implemented. However, the user's new prompt provides all database extensions in **SQL format**, strongly suggesting a future migration from MongoDB to PostgreSQL is desired.
+-   None. The stack remains React, FastAPI, and MongoDB. The v3.0 prompt requires integrating several free/open-source libraries and APIs (, , , , etc.).
 
 **All files of reference**
--   : New file for the admin-facing check-in station.
--   : Heavily modified for theming and age restriction removal.
--   : Modified to add admin-specific endpoints for listing all kids and direct check-in/check-out.
--   : Heavily modified with new CSS for both member and admin check-in pages.
--   : Modified to add the new route for the admin page.
--   : Modified to add the Kids Check-in link to the admin sidebar.
+-   
+-    (target for modification)
+-   
+-   
+-   
+-   
+-   
+-   
 
 **Areas that need refactoring**:
--   ****: Remains a large monolith and is a top candidate for being broken into a proper route/model structure.
--   ****: Continues to grow and should be broken into CSS Modules or component-specific stylesheets.
--   The real-time update on the admin page is done via polling (). This should be upgraded to WebSockets for better efficiency and scalability.
+-   ****: This remains a top priority for refactoring. The file is a large monolith and difficult to maintain.
+-   ****: This file is bloated and should be broken into component-specific stylesheets or CSS Modules.
+-   **Polling for Real-time Updates**: The  polling mechanism should be upgraded to WebSockets for true real-time functionality and better efficiency.
 
 **key api endpoints**
--   :  for the admin dashboard summary.
--   :  to list currently checked-in children.
--   :  for the admin check-in tab.
--   :  for admins to check in a child directly.
--   :  to verify a pickup code.
--   :  to finalize a checkout.
+-    (now returns mock data for Abundant Church)
+-   
+-   
+-   
+-   
 
 **Critical Info for New Agent**
--   **New Source of Truth**: The SOLOMON AI — SUMMIT ENHANCEMENTS PROMPT is now the primary requirements document. The user has explicitly stated **DO NOT modify, replace, or rebuild any existing features.** All work should be additive.
--   **Build Order is Key**: The user provided a phased build order in the new prompt. Follow it closely, starting with Phase 1.
--   **Immediate Task**: The first action is to scrape  to gather content for the MVP, as per the user's latest instruction.
--   **Database Shift**: The user provided all new schemas in SQL, not as Mongo collections. This is a strong signal that a migration to a PostgreSQL database is expected. While new collections can be created in Mongo for now, keep the eventual migration in mind.
--   **Real-time is Polling**: The real-time admin dashboard update is a simple polling mechanism. This is a temporary solution that should eventually be replaced with WebSockets.
+-   **Highest Priority**: **Module 0: PWA Conversion** is the immediate next task. You must start here. The user wants this done before anything else.
+-   **Source of Truth**: SOLOMON AI — MASTER ENHANCEMENT PROMPT v3.0 is the definitive guide. All changes must be **additive**.
+-   **Incomplete Frontend Work**: Review the prompt carefully. Modules like Kids Check-in (Module 2 UI) and Small Groups (Module 6 UI) have backend support but require significant frontend implementation to match the spec.
+-   **Demo Data**: The  account is configured to show mock data for a 50,000-member church. This is a critical demo requirement. Do not change this logic.
 
 **documents and test reports created in this job**
 -   
 -   
+-   
+-   
+-   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
-10. **User**: Requests to populate the app with content from  for the MVP. (PENDING)
-9. **User**: Provides the massive SOLOMON AI — SUMMIT ENHANCEMENTS PROMPT document. (PENDING IMPLEMENTATION)
-8. **User**: Requests to remove the Star of David, add a kid-friendly Christian cross, make the theme colorful without rainbows, remove age restrictions, and ensure bidirectional communication between parent check-in and the admin view. (COMPLETED)
-7.  **User**: Asks to remove the rainbow coloring and use a theme based on Israel colors, the Star of David, and Bible characters. (COMPLETED)
-6.  **User**: Requests an admin interface for the Kids Check-in system for church staff to use at a front desk, including check-in/out flows. (COMPLETED)
-5.  **User**: Confirms the new rainbow-themed Kids Check-in UI looks great. (COMPLETED)
-4.  **User**: Approves the plan to redesign the Kids Check-in UI. (COMPLETED)
-3.  **User**: Asks to redesign the Kids Check-in page to be more colorful, flavorful and less basic. (COMPLETED)
-2.  **User**: Praises the previous work and gives initial requirements for the Kids Check-in feature. (COMPLETED)
-1.  **User**: Requests to remove the Meet feature. (COMPLETED)
+10. **User**: Provides MASTER ENHANCEMENT PROMPT v3.0 with an added, highest-priority Module 0: PWA Conversion. (PENDING)
+9.  **User**: Asks agent to continue if not done. (ACKNOWLEDGED)
+8.  **User**: Provides MASTER ENHANCEMENT PROMPT v3.0 (without Module 0). (IN PROGRESS)
+7.  **User**: Confirms the plan to implement all phases of v3.0 in one session and mock up data for 50k members. (IN PROGRESS)
+6.  **User**: Changes kid check-in pickup codes to 3 digits only. (COMPLETED)
+5.  **User**: Asks if coffee orders are reflected in real-time on the admin account. (COMPLETED & VERIFIED)
+4.  **User**: Asks how to upgrade the plan and deploy the app live. (ANSWERED)
+3.  **User**: Reports a  runtime error when clicking checkout on the admin kids' check-in page. (COMPLETED)
+2.  **User**: Removes Prayer features, clears kid check-in data, and reports that the notes tab in the watch area isn't working as envisioned. (COMPLETED)
+1.  **User**: Asks for a full UAT/QA test to ensure all features are bidirectional and analytics are tracked. (COMPLETED & VERIFIED)
 
 **Project Health Check:**
--   **Broken**: Resend email integration is still in test mode.
+-   **Broken**: None. Features that were not working (merch iframe, prayer wall) have been removed or replaced.
 -   **Mocked**:
-    -   **Kids Check-in SMS**: SMS notifications are mocked and logged to the backend console.
-    -   Abundant Cafe (UI/backend models exist, no live payment processing).
+    -   SMS notifications via Twilio are not fully integrated.
+    -   Admin dashboard stats for the  tenant are hardcoded mock data.
+    -   MRR on the Solomon Platinum dashboard is mocked.
 
 **3rd Party Integrations**
 -   **Stripe (Payments)**: Live integration for donations.
 -   **Resend (Email)**: Integrated but in test mode.
 -   **Emergent-managed Google Auth**: Available for social login.
--   **Anthropic Claude**: Powers the Ask Solomon AI chat. (Uses Emergent LLM Key)
--   **OpenAI Whisper**: Previously used for meeting transcription. (Uses Emergent LLM Key)
--   **Twilio (SMS)**: Required for the Kids Check-in feature but not yet integrated.
+-   **Anthropic Claude**: Powers the Ask Solomon AI chat (currently removed from member view).
+-   **OpenAI Whisper**: Used for meeting transcription.
+-   **Required for v3.0 Prompt**: ,  (npm), , Google Fonts (, ), , , .
 
 **Testing status**
--   **Testing agent used after significant changes**: YES. The agent was used twice to validate the new admin-side Kids Check-in functionality, passing with 100% on both occasions and fixing one backend bug.
+-   **Testing agent used after significant changes**: YES. The agent ran comprehensive tests multiple times after implementing the v3.0 prompt changes, reporting 100% success.
 -   **Troubleshoot agent used after agent stuck in loop**: NO
--   **Test files created**: Yes,  and  were created.
--   **Known regressions**: None.
+-   **Test files created**: Yes, multiple reports from  to .
+-   **Known regressions**: None identified.
 
 **Credentials to test flow:**
 | Role | Email | Password |
@@ -180,4 +187,6 @@ The user has provided a clear build order.
 | Member (Abundant) |  |  |
 
 **What agent forgot to execute**
--   The agent was about to start on the user's latest and most significant request (the SUMMIT ENHANCEMENTS PROMPT and the  scraping). No prior tasks were forgotten; this is the start of a new, major phase of development.</analysis>
+-   The PWA conversion (Module 0) was assigned as the highest priority but has not been started.
+-   The full frontend UI overhaul for the Kids Check-in page (Module 2) and the Small Groups Leader Dashboard (Module 6) was not completed. The agent primarily implemented the backend logic for these features.
+-   The Masterclass view for the Watch page notes feature requires re-verification to ensure it is working exactly as the user specified.</analysis>

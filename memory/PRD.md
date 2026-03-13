@@ -4,7 +4,7 @@
 ### Overview
 **Product Name:** Solomon AI  
 **Target Scale:** 50,000+ members per tenant, 1M+ concurrent users platform-wide  
-**Demo URL:** https://solomon-demo-1.preview.emergentagent.com  
+**Demo URL:** https://installable-church.preview.emergentagent.com  
 **Architecture:** Multi-tenant SaaS with subdomain routing
 
 ---
