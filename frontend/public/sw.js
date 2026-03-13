@@ -77,3 +77,43 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
+// Push notification handler
+self.addEventListener('push', (event) => {
+  let data = { title: 'Solomon AI', body: 'You have a new notification', url: '/portal' };
+  try {
+    data = event.data.json();
+  } catch (e) {
+    // use defaults
+  }
+
+  const options = {
+    body: data.body,
+    icon: '/icons/icon-192.png',
+    badge: '/icons/icon-72.png',
+    vibrate: [100, 50, 100],
+    data: { url: data.url || '/portal' },
+    actions: [
+      { action: 'open', title: 'Open' },
+      { action: 'dismiss', title: 'Dismiss' }
+    ]
+  };
+
+  event.waitUntil(self.registration.showNotification(data.title, options));
+});
+
+// Notification click handler
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  if (event.action === 'dismiss') return;
+
+  const url = event.notification.data?.url || '/portal';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      for (const client of windowClients) {
+        if (client.url.includes(url) && 'focus' in client) return client.focus();
+      }
+      return clients.openWindow(url);
+    })
+  );
+});

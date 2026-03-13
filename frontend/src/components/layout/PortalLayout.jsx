@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Home, DollarSign, Users, Calendar, User, Bell, LogOut, Menu, X, Tv, GraduationCap, BookOpen, ShoppingBag, Coffee, MessageSquare, Heart } from 'lucide-react';
+import { Home, DollarSign, Users, Calendar, User, Bell, BellRing, LogOut, Menu, X, Tv, GraduationCap, BookOpen, ShoppingBag, Coffee, MessageSquare, Heart } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { API_URL } from '@/lib/utils';
 import SolomonChat from '@/components/SolomonChat';
 import PWABottomNav from '@/components/PWABottomNav';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 
 export default function PortalLayout() {
   const [user, setUser] = useState(null);
@@ -12,6 +13,7 @@ export default function PortalLayout() {
   const [tenant, setTenant] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isPWA, setIsPWA] = useState(false);
+  const { isSubscribed, isSupported, subscribe } = usePushNotifications();
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -163,8 +165,13 @@ export default function PortalLayout() {
 
           {/* Right Actions */}
           <div className="portal-header-actions">
-            <button className="portal-notification-btn" data-testid="portal-notifications">
-              <Bell className="w-5 h-5" />
+            <button 
+              className="portal-notification-btn" 
+              data-testid="portal-notifications"
+              onClick={() => { if (isSupported && !isSubscribed) subscribe(); }}
+              title={isSubscribed ? 'Notifications enabled' : 'Enable notifications'}
+            >
+              {isSubscribed ? <BellRing className="w-5 h-5 text-blue-400" /> : <Bell className="w-5 h-5" />}
             </button>
             <Avatar className="w-8 h-8 cursor-pointer" onClick={() => navigate('/portal/me')} data-testid="portal-avatar">
               <AvatarImage src={user?.picture} />
