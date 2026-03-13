@@ -2,19 +2,12 @@ import { useState, useEffect } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
 import { DollarSign, Users, Calendar, ChevronRight, Flame } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
-import { toast } from 'sonner';
 import { ServiceModeBanner, AttendanceStreakCard } from '@/components/ServiceMode';
-
-const NOTE_CATEGORIES = ['Prayer Request', 'Question', 'Praise', 'Other'];
 
 export default function PortalHome() {
   const { user, memberData, tenant } = useOutletContext();
   const [events, setEvents] = useState([]);
   const [solomonMessage, setSolomonMessage] = useState('');
-  const [noteSubject, setNoteSubject] = useState('');
-  const [noteMessage, setNoteMessage] = useState('');
-  const [noteCategory, setNoteCategory] = useState('');
-  const [noteSubmitting, setNoteSubmitting] = useState(false);
   
   // Service Mode State
   const [serviceMode, setServiceMode] = useState(null);
@@ -110,7 +103,9 @@ export default function PortalHome() {
   };
 
   const formatDate = (dateStr) => {
+    if (!dateStr) return { month: 'TBD', day: '-' };
     const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return { month: 'TBD', day: '-' };
     return {
       month: date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
       day: date.getDate()
@@ -125,44 +120,6 @@ export default function PortalHome() {
 
   const openSolomon = () => {
     window.dispatchEvent(new Event('solomon:open'));
-  };
-
-  const handleSubmitNote = async (event) => {
-    event.preventDefault();
-    if (!noteSubject.trim()) {
-      toast.error('Subject is required');
-      return;
-    }
-    if (!noteMessage.trim()) {
-      toast.error('Message is required');
-      return;
-    }
-
-    setNoteSubmitting(true);
-    try {
-      const res = await fetch(`${API_URL}/portal/notes`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          subject: noteSubject.trim(),
-          message: noteMessage.trim(),
-          category: noteCategory || null
-        })
-      });
-      if (res.ok) {
-        toast.success('Your note was sent');
-        setNoteSubject('');
-        setNoteMessage('');
-        setNoteCategory('');
-      } else {
-        toast.error('Unable to send note');
-      }
-    } catch (error) {
-      toast.error('Unable to send note');
-    } finally {
-      setNoteSubmitting(false);
-    }
   };
 
   return (
@@ -244,7 +201,7 @@ export default function PortalHome() {
             <p className="text-slate-500 text-sm py-4">No upcoming events</p>
           ) : (
             events.map((event) => {
-              const { month, day } = formatDate(event.start_datetime);
+              const { month, day } = formatDate(event.start_datetime || event.event_date);
               return (
                 <div key={event.id} className="portal-event-item" data-testid="portal-event-item">
                   <div className="portal-event-date">
@@ -254,10 +211,10 @@ export default function PortalHome() {
                   <div className="portal-event-info">
                     <h3 className="portal-event-name">{event.name}</h3>
                     <p className="portal-event-meta">
-                      {event.location} • {new Date(event.start_datetime).toLocaleTimeString('en-US', { 
+                      {event.location || 'TBD'} {(event.start_datetime || event.start_time) ? '• ' + (event.start_time || new Date(event.start_datetime).toLocaleTimeString('en-US', { 
                         hour: 'numeric', 
                         minute: '2-digit' 
-                      })}
+                      })) : ''}
                     </p>
                   </div>
                 </div>

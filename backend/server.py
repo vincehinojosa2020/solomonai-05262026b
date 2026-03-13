@@ -1959,7 +1959,6 @@ async def email_password_login(request: EmailLoginRequest, response: Response):
 # ============== USER REGISTRATION ==============
 
 import re
-import hashlib
 
 def validate_password_strength(password: str) -> tuple[bool, str]:
     """
@@ -3279,6 +3278,20 @@ async def checkout_child(request: Request, checkin_id: str):
     )
     
     updated = await db.checkins.find_one({"id": checkin_id}, {"_id": 0})
+    
+    # Notify parent via push
+    try:
+        child = await db.children.find_one({"id": checkin.get("child_id")}, {"_id": 0})
+        if child and child.get("parent_id"):
+            await send_push_notification(
+                child["parent_id"], user.get("tenant_id", ""),
+                "Pickup Time!",
+                f"{child.get('name', 'Your child')} is ready for pickup.",
+                "/portal/kids"
+            )
+    except Exception:
+        pass
+    
     return {"message": "Child checked out", "checkin": serialize_doc(updated)}
 
 @api_router.get("/admin/kids/checkins/history")
@@ -5802,6 +5815,25 @@ async def send_group_message(request: Request, group_id: str):
     
     await db.group_messages.insert_one(message)
     
+    # Send push notifications to other group members
+    try:
+        group_members = await db.group_members.find(
+            {"group_id": group_id, "tenant_id": tenant_id},
+            {"_id": 0, "person_id": 1, "user_id": 1}
+        ).to_list(100)
+        sender_id = user.get("user_id") or user.get("id", "")
+        for m in group_members:
+            member_uid = m.get("user_id") or m.get("person_id", "")
+            if member_uid and member_uid != sender_id:
+                await send_push_notification(
+                    member_uid, tenant_id,
+                    f"New message in {group_id[:8]}",
+                    f"{message['sender_name']}: {text[:80]}",
+                    "/portal/groups"
+                )
+    except Exception:
+        pass
+    
     return {k: v for k, v in message.items() if k != "_id"}
 
 @api_router.delete("/groups/{group_id}/messages/{message_id}")
@@ -6234,6 +6266,17 @@ async def register_for_event(request: Request, event_id: str):
     await db.events.update_one({"id": event_id}, {"$inc": {"registration_count": 1}})
     
     logger.info(f"User {user['email']} registered for event {event['name']}")
+    
+    # Push notification confirmation
+    try:
+        await send_push_notification(
+            user["user_id"], tenant_id,
+            "Registration Confirmed!",
+            f"You're registered for {event['name']}. See you there!",
+            "/portal/events"
+        )
+    except Exception:
+        pass
     
     return {"message": f"You are registered for {event['name']}!"}
 
