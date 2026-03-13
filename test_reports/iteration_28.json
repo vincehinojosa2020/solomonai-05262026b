@@ -1,0 +1,190 @@
+{
+  "summary": "Iteration 28: Mobile + Web Backend Compatibility Audit - ALL 29 TESTS PASSED. Complete backend audit verified Bearer-token auth flow for mobile clients, portal/admin routes with session_token support.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+
+  "features_tested": {
+    "auth_flow": {
+      "POST /api/auth/login": {
+        "status": "PASSED",
+        "details": "Returns session_token (sess_xxx format), user_id, email, role. Works for both member and admin accounts."
+      },
+      "GET /api/auth/me with Bearer token": {
+        "status": "PASSED",
+        "details": "Accepts Authorization: Bearer {session_token}, returns user info including role."
+      },
+      "401 without token": {
+        "status": "PASSED",
+        "details": "All protected endpoints correctly return 401 when no Bearer token provided."
+      }
+    },
+    "portal_profile_endpoints": {
+      "GET /api/portal/profile": {
+        "status": "PASSED",
+        "details": "Returns {user, person, groups, giving, member_since}"
+      },
+      "PUT /api/portal/profile": {
+        "status": "PASSED",
+        "details": "Updates profile fields (name, phone, etc.)"
+      }
+    },
+    "portal_attendance_endpoints": {
+      "GET /api/portal/attendance/streak": {
+        "status": "PASSED",
+        "details": "Returns streak data with current_streak, badges"
+      },
+      "POST /api/portal/attendance/checkin": {
+        "status": "PASSED",
+        "details": "Records attendance check-in. Returns 400 if already checked in today."
+      },
+      "GET /api/portal/attendance/history": {
+        "status": "PASSED",
+        "details": "Returns {history: [], total: n}"
+      }
+    },
+    "portal_cafe_endpoints": {
+      "GET /api/portal/cafe/menu": {
+        "status": "PASSED",
+        "details": "Returns {items: []} with cafe menu items"
+      },
+      "POST /api/portal/cafe/order": {
+        "status": "PASSED",
+        "details": "Creates cafe order (MOCKED payment flow). Returns {order: {...}}"
+      }
+    },
+    "portal_media_endpoints": {
+      "GET /api/portal/media/sermons": {
+        "status": "PASSED",
+        "details": "Returns {videos: [], categories: [], total: n}"
+      }
+    },
+    "portal_kids_endpoints": {
+      "GET /api/portal/kids/children": {
+        "status": "PASSED",
+        "details": "Returns {children: []} for authenticated parent"
+      },
+      "POST /api/portal/kids/children": {
+        "status": "PASSED",
+        "details": "Creates child profile"
+      },
+      "POST /api/portal/kids/checkin": {
+        "status": "PASSED",
+        "details": "Checks in child. Returns 400 if already checked in."
+      }
+    },
+    "portal_events_groups_endpoints": {
+      "GET /api/portal/events/registered": {
+        "status": "PASSED",
+        "details": "Returns {events: []} - member's registered events"
+      },
+      "GET /api/portal/groups/mine": {
+        "status": "PASSED",
+        "details": "Returns {groups: []} - member's joined groups"
+      }
+    },
+    "portal_giving_endpoints": {
+      "GET /api/portal/giving/ytd": {
+        "status": "PASSED",
+        "details": "Returns {ytd_total, currency, donation_count}"
+      },
+      "GET /api/portal/giving/history": {
+        "status": "PASSED",
+        "details": "Returns {donations: [], total: n}"
+      }
+    },
+    "admin_endpoints": {
+      "GET /api/admin/attendance/today": {
+        "status": "PASSED",
+        "details": "Returns {date, tenant_id, member_checkins_total, kids_checkins_total, ...}"
+      },
+      "GET /api/admin/qr/generate": {
+        "status": "PASSED",
+        "details": "Returns {qr: {image_url, payload, format}} with quickchart.io QR image"
+      }
+    },
+    "regression_public_endpoints": {
+      "GET /api/": {
+        "status": "PASSED",
+        "details": "API root returns info"
+      },
+      "GET /api/events": {
+        "status": "PASSED",
+        "details": "Public events list"
+      },
+      "GET /api/groups": {
+        "status": "PASSED",
+        "details": "Public groups list {data: [], page, per_page, total}"
+      }
+    },
+    "regression_auth_endpoints": {
+      "GET /api/portal/merch/products": {
+        "status": "PASSED",
+        "details": "Returns merch products (MOCKED checkout)"
+      }
+    },
+    "auth_enforcement": {
+      "portal/profile": "401 without token",
+      "portal/attendance/streak": "401 without token",
+      "admin/attendance/today": "401 without token",
+      "admin/qr/generate": "401 without token"
+    }
+  },
+
+  "test_report_links": [
+    "/app/backend/tests/test_mobile_web_audit_iter28.py",
+    "/app/test_reports/pytest/pytest_results_iter28.xml"
+  ],
+
+  "action_items": [],
+
+  "critical_code_review_comments": [
+    "Bearer token auth fully working - get_session_token_from_request() correctly parses Authorization header",
+    "All portal routes use get_current_member_user() which validates Bearer token",
+    "All admin routes use get_current_admin_user() which validates Bearer token and role",
+    "session_token returned in login response for mobile clients to store",
+    "Multi-tenant role hierarchy: church_admin (50) for admin@abundant.church, member (10) for member@abundant.church"
+  ],
+
+  "updated_files": [
+    "/app/backend/tests/test_mobile_web_audit_iter28.py - Created 29 tests for mobile/web backend audit"
+  ],
+
+  "success_rate": {
+    "backend": "100% (29/29 tests passed)",
+    "frontend": "N/A (backend-only testing requested)"
+  },
+
+  "test_credentials": {
+    "member": "member@abundant.church / Demo2026!",
+    "admin": "admin@abundant.church / Demo2026!"
+  },
+
+  "seed_data_creation": "TEST_Child and TEST_iter28_order created during testing",
+
+  "retest_needed": false,
+
+  "should_main_agent_self_test": false,
+
+  "context_for_next_testing_agent": "Backend audit complete. All 19 endpoints tested with Bearer token auth. Key findings: (1) POST /api/auth/login returns session_token which mobile apps can store. (2) Bearer token auth works on all portal/* and admin/* routes. (3) Cafe order and merch checkout are MOCKED by design. (4) Admin role is 'church_admin' in multi-tenant hierarchy. (5) Kids checkin returns 400 if child already checked in today.",
+
+  "mocked_apis": {
+    "cafe_payment": "POST /api/portal/cafe/order - MOCKED (order placed, no payment)",
+    "merch_checkout": "Merch products viewable, checkout MOCKED"
+  },
+
+  "bearer_token_flow": {
+    "step_1": "POST /api/auth/login with {email, password}",
+    "step_2": "Response includes session_token field",
+    "step_3": "Use Authorization: Bearer {session_token} for all subsequent requests",
+    "step_4": "Token expires in 7 days"
+  }
+}

@@ -15,6 +15,8 @@ from datetime import datetime, timezone, date, timedelta
 from bson import ObjectId
 import random
 import resend
+import json
+from urllib.parse import quote
 
 # Stripe integration
 from emergentintegrations.payments.stripe.checkout import (
@@ -588,6 +590,29 @@ class UserRegistrationRequest(BaseModel):
 
 class UserRole(BaseModel):
     role: str = "member"  # "admin" or "member"
+
+
+class PortalProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone: Optional[str] = None
+    mobile_phone: Optional[str] = None
+
+
+class AttendanceCheckinRequest(BaseModel):
+    check_in_type: str = "in_person"
+
+
+class KidsCheckinRequest(BaseModel):
+    child_id: str
+    classroom: Optional[str] = "Sunday School"
+
+
+class QrGenerateRequest(BaseModel):
+    action: str = "attendance_checkin"
+    expires_in_minutes: int = 60
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 # ============== SOLOMON AI MODELS ==============
 
@@ -1749,6 +1774,94 @@ async def notify_meeting_event(event: str, meeting: dict) -> dict:
 # Default tenant ID for demo
 DEFAULT_TENANT_ID = "abundant-church-001"
 
+
+async def ensure_mobile_demo_accounts():
+    """Ensure required demo users exist for mobile QA and onboarding."""
+    import hashlib
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    demo_password_hash = hashlib.sha256("Demo2026!".encode()).hexdigest()
+
+    tenant_defaults = [
+        {
+            "id": "abundant-church-001",
+            "name": "Abundant Church",
+            "subdomain": "abundant",
+            "subscription_status": "active",
+            "created_at": now_iso
+        },
+        {
+            "id": "cristoviene-church-001",
+            "name": "Cristo Viene",
+            "subdomain": "cristoviene",
+            "subscription_status": "active",
+            "created_at": now_iso
+        }
+    ]
+
+    for tenant in tenant_defaults:
+        await db.tenants.update_one(
+            {"id": tenant["id"]},
+            {"$setOnInsert": tenant},
+            upsert=True
+        )
+
+    required_accounts = [
+        {
+            "email": "member@abundant.church",
+            "user_id": "member_abundant",
+            "name": "Maria Garcia",
+            "first_name": "Maria",
+            "last_name": "Garcia",
+            "role": "member",
+            "tenant_id": "abundant-church-001"
+        },
+        {
+            "email": "member@cristoviene.church",
+            "user_id": "member_cristoviene",
+            "name": "Carlos",
+            "first_name": "Carlos",
+            "last_name": "",
+            "role": "member",
+            "tenant_id": "cristoviene-church-001"
+        },
+        {
+            "email": "admin@abundant.church",
+            "user_id": "admin_abundant",
+            "name": "Abundant Church Admin",
+            "first_name": "Abundant",
+            "last_name": "Admin",
+            "role": "church_admin",
+            "tenant_id": "abundant-church-001"
+        },
+        {
+            "email": "admin@solomon.ai",
+            "user_id": "platform_admin_001",
+            "name": "Solomon Platform Admin",
+            "first_name": "Solomon",
+            "last_name": "Admin",
+            "role": "platform_admin",
+            "tenant_id": None
+        }
+    ]
+
+    for account in required_accounts:
+        await db.users.update_one(
+            {"email": account["email"]},
+            {
+                "$set": {
+                    **account,
+                    "password_hash": demo_password_hash,
+                    "is_active": True,
+                    "updated_at": now_iso
+                },
+                "$setOnInsert": {
+                    "created_at": now_iso
+                }
+            },
+            upsert=True
+        )
+
 # ============== API ROUTES ==============
 
 # ============== AUTH ROUTES ==============
@@ -1832,17 +1945,24 @@ async def exchange_session(request: SessionRequest, response: Response):
         logger.error(f"Auth request failed: {e}")
         raise HTTPException(status_code=500, detail="Auth service unavailable")
 
+
+def get_session_token_from_request(request: Request) -> Optional[str]:
+    """Resolve auth token from cookie (web) or Authorization Bearer header (mobile)."""
+    session_token = request.cookies.get("session_token")
+    if session_token:
+        return session_token
+
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:].strip()
+        return token or None
+
+    return None
+
 @api_router.get("/auth/me")
 async def get_current_user(request: Request):
     """Get current user from session cookie or Authorization header"""
-    # Try cookie first
-    session_token = request.cookies.get("session_token")
-    
-    # Fallback to Authorization header
-    if not session_token:
-        auth_header = request.headers.get("Authorization")
-        if auth_header and auth_header.startswith("Bearer "):
-            session_token = auth_header[7:]
+    session_token = get_session_token_from_request(request)
     
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -1900,6 +2020,8 @@ async def logout(request: Request, response: Response):
 async def email_password_login(request: EmailLoginRequest, response: Response):
     """Login with email and password (for demo accounts)"""
     import hashlib
+
+    await ensure_mobile_demo_accounts()
     
     # Find user by email
     user_doc = await db.users.find_one({"email": request.email}, {"_id": 0})
@@ -2095,17 +2217,7 @@ async def check_email_availability(data: dict):
 @api_router.get("/portal/me")
 async def get_member_profile(request: Request):
     """Get current member's profile for portal"""
-    session_token = request.cookies.get("session_token")
-    if not session_token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
-    if not session:
-        raise HTTPException(status_code=401, detail="Invalid session")
-    
-    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+    user = await get_current_member_user(request)
     
     # Find linked person record
     person = await db.people.find_one({"email": user["email"]}, {"_id": 0})
@@ -2171,18 +2283,59 @@ async def get_member_profile(request: Request):
         "member_since": user.get("member_since") or (person.get("membership_date") if person else None)
     }
 
+
+@api_router.get("/portal/profile")
+async def get_portal_profile(request: Request):
+    """Mobile-friendly alias for member profile."""
+    return await get_member_profile(request)
+
+
+@api_router.put("/portal/profile")
+async def update_portal_profile(request: Request, payload: PortalProfileUpdate):
+    """Update current member profile for both web and mobile clients."""
+    user = await get_current_member_user(request)
+
+    update_fields = {k: v for k, v in payload.model_dump().items() if v is not None}
+    if not update_fields:
+        return {"message": "No changes submitted", "user": serialize_doc(user)}
+
+    update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
+
+    if "name" not in update_fields:
+        first_name = update_fields.get("first_name") or user.get("first_name")
+        last_name = update_fields.get("last_name") or user.get("last_name")
+        if first_name and last_name:
+            update_fields["name"] = f"{first_name} {last_name}".strip()
+
+    await db.users.update_one(
+        {"user_id": user["user_id"]},
+        {"$set": update_fields}
+    )
+
+    refreshed_user = await db.users.find_one({"user_id": user["user_id"]}, {"_id": 0})
+
+    person_update = {}
+    if update_fields.get("first_name"):
+        person_update["first_name"] = update_fields["first_name"]
+    if update_fields.get("last_name"):
+        person_update["last_name"] = update_fields["last_name"]
+    if update_fields.get("mobile_phone"):
+        person_update["mobile_phone"] = update_fields["mobile_phone"]
+    elif update_fields.get("phone"):
+        person_update["mobile_phone"] = update_fields["phone"]
+    if person_update:
+        person_update["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.people.update_one(
+            {"email": refreshed_user.get("email"), "tenant_id": refreshed_user.get("tenant_id")},
+            {"$set": person_update}
+        )
+
+    return {"message": "Profile updated", "user": serialize_doc(refreshed_user)}
+
 @api_router.get("/portal/giving/history")
 async def get_member_giving_history(request: Request, limit: int = 50):
     """Get member's giving history for portal"""
-    session_token = request.cookies.get("session_token")
-    if not session_token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
-    if not session:
-        raise HTTPException(status_code=401, detail="Invalid session")
-    
-    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    user = await get_current_member_user(request)
     person = await db.people.find_one({"email": user["email"]}, {"_id": 0})
     
     if not person:
@@ -2213,21 +2366,37 @@ async def get_member_giving_history(request: Request, limit: int = 50):
         "total": len(donations)
     }
 
+
+@api_router.get("/portal/giving/ytd")
+async def get_member_giving_ytd(request: Request):
+    """Return YTD giving totals for the authenticated member."""
+    user = await get_current_member_user(request)
+    person = await db.people.find_one({"email": user["email"], "tenant_id": user.get("tenant_id")}, {"_id": 0})
+
+    if not person:
+        return {"ytd_total": 0, "currency": "USD", "donation_count": 0}
+
+    ytd_start = datetime.now(timezone.utc).replace(month=1, day=1).strftime("%Y-%m-%d")
+    donations = await db.donations.find(
+        {
+            "tenant_id": user.get("tenant_id"),
+            "person_id": person["id"],
+            "donation_date": {"$gte": ytd_start}
+        },
+        {"_id": 0, "amount": 1}
+    ).to_list(1000)
+
+    ytd_total = round(sum(float(d.get("amount", 0) or 0) for d in donations), 2)
+    return {
+        "ytd_total": ytd_total,
+        "currency": "USD",
+        "donation_count": len(donations)
+    }
+
 @api_router.get("/portal/events")
 async def get_member_events(request: Request):
     """Get upcoming events for member portal"""
-    # Get tenant from logged-in user
-    session_token = request.cookies.get("session_token")
-    if not session_token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
-    if not session:
-        raise HTTPException(status_code=401, detail="Invalid session")
-    
-    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+    user = await get_current_member_user(request)
     
     tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -2258,18 +2427,7 @@ async def get_member_events(request: Request):
 @api_router.get("/portal/groups")
 async def get_available_groups(request: Request):
     """Get groups available to join for member portal"""
-    # Get tenant from logged-in user
-    session_token = request.cookies.get("session_token")
-    if not session_token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
-    if not session:
-        raise HTTPException(status_code=401, detail="Invalid session")
-    
-    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+    user = await get_current_member_user(request)
     
     tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
     
@@ -3137,6 +3295,12 @@ async def get_my_kids(request: Request):
     
     return {"children": [serialize_doc(c) for c in children]}
 
+
+@api_router.get("/portal/kids/children")
+async def get_mobile_children(request: Request):
+    """Mobile alias for children list."""
+    return await get_my_kids(request)
+
 @api_router.post("/portal/kids")
 async def add_child(request: Request, payload: ChildCreate):
     """Add a new child"""
@@ -3158,6 +3322,12 @@ async def add_child(request: Request, payload: ChildCreate):
     
     await db.children.insert_one(child)
     return {"message": "Child added", "child": serialize_doc(child)}
+
+
+@api_router.post("/portal/kids/children")
+async def add_mobile_child(request: Request, payload: ChildCreate):
+    """Mobile alias for adding child profile."""
+    return await add_child(request, payload)
 
 @api_router.delete("/portal/kids/{child_id}")
 async def delete_child(request: Request, child_id: str):
@@ -3227,6 +3397,13 @@ async def checkin_child(request: Request, child_id: str, payload: dict = None):
         "sms_sent": True,
         "sms_message": sms_message
     }
+
+
+@api_router.post("/portal/kids/checkin")
+async def checkin_child_mobile(request: Request, payload: KidsCheckinRequest):
+    """Mobile-friendly check-in endpoint using child_id in request body."""
+    checkin_payload = {"classroom": payload.classroom or "Sunday School"}
+    return await checkin_child(request, payload.child_id, checkin_payload)
 
 @api_router.get("/portal/kids/checkins/active")
 async def get_active_checkins(request: Request):
@@ -3671,6 +3848,16 @@ async def get_portal_cafe_items(
     items = await db.cafe_items.find(query, {"_id": 0}).sort("is_featured", -1).to_list(200)
     return {"items": [serialize_doc(item) for item in items]}
 
+
+@api_router.get("/portal/cafe/menu")
+async def get_portal_cafe_menu(
+    request: Request,
+    search: Optional[str] = None,
+    category: Optional[str] = None
+):
+    """Mobile alias for cafe items list."""
+    return await get_portal_cafe_items(request, search=search, category=category)
+
 @api_router.post("/portal/cafe/orders")
 async def create_portal_cafe_order(request: Request, payload: CafeOrderCreate):
     user = await get_current_member_user(request)
@@ -3702,6 +3889,12 @@ async def create_portal_cafe_order(request: Request, payload: CafeOrderCreate):
 
     await db.cafe_orders.insert_one(order)
     return {"order": serialize_doc(order)}
+
+
+@api_router.post("/portal/cafe/order")
+async def create_mobile_cafe_order(request: Request, payload: CafeOrderCreate):
+    """Mobile alias for placing cafe order."""
+    return await create_portal_cafe_order(request, payload)
 
 # ============== PASTOR MEETINGS ROUTES ==============
 
@@ -4987,7 +5180,7 @@ def extract_youtube_id(url: str) -> Optional[str]:
 
 async def get_current_admin_user(request: Request):
     """Helper to get current admin user with tenant validation"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -5007,7 +5200,7 @@ async def get_current_admin_user(request: Request):
 
 async def get_current_member_user(request: Request):
     """Helper to get current member user"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -5226,17 +5419,7 @@ async def toggle_video_featured(request: Request, video_id: str):
 @api_router.get("/portal/media/videos")
 async def get_portal_videos(request: Request, category: Optional[str] = None, limit: int = 50):
     """Get published videos for member portal"""
-    session_token = request.cookies.get("session_token")
-    if not session_token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
-    if not session:
-        raise HTTPException(status_code=401, detail="Invalid session")
-    
-    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+    user = await get_current_member_user(request)
     
     tenant_id = user.get("tenant_id")
     
@@ -5259,6 +5442,12 @@ async def get_portal_videos(request: Request, category: Optional[str] = None, li
         "categories": categories,
         "total": len(videos)
     }
+
+
+@api_router.get("/portal/media/sermons")
+async def get_portal_sermons(request: Request, limit: int = 50):
+    """Mobile alias for sermons feed."""
+    return await get_portal_videos(request, category=None, limit=limit)
 
 @api_router.get("/portal/media/featured")
 async def get_featured_video(request: Request):
@@ -5875,17 +6064,7 @@ async def admin_cancel_registration(request: Request, event_id: str, registratio
 @api_router.get("/portal/my-groups")
 async def get_my_groups(request: Request):
     """Get groups the current member belongs to"""
-    session_token = request.cookies.get("session_token")
-    if not session_token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
-    if not session:
-        raise HTTPException(status_code=401, detail="Invalid session")
-    
-    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+    user = await get_current_member_user(request)
     
     tenant_id = user.get("tenant_id")
     
@@ -5913,20 +6092,16 @@ async def get_my_groups(request: Request):
     
     return {"groups": groups}
 
+
+@api_router.get("/portal/groups/mine")
+async def get_mobile_my_groups(request: Request):
+    """Mobile alias for member groups."""
+    return await get_my_groups(request)
+
 @api_router.get("/portal/my-events")
 async def get_my_registered_events(request: Request):
     """Get events the current member is registered for"""
-    session_token = request.cookies.get("session_token")
-    if not session_token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
-    if not session:
-        raise HTTPException(status_code=401, detail="Invalid session")
-    
-    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+    user = await get_current_member_user(request)
     
     # Get registrations
     registrations = await db.event_registrations.find(
@@ -5946,6 +6121,12 @@ async def get_my_registered_events(request: Request):
             })
     
     return {"events": events}
+
+
+@api_router.get("/portal/events/registered")
+async def get_mobile_registered_events(request: Request):
+    """Mobile alias for registered events."""
+    return await get_my_registered_events(request)
 
 @api_router.delete("/portal/groups/{group_id}/leave")
 async def leave_group(request: Request, group_id: str):
@@ -6661,6 +6842,71 @@ async def get_upcoming_events(limit: int = 5):
     ).sort("start_datetime", 1).limit(limit).to_list(limit)
     
     return [serialize_doc(e) for e in events]
+
+
+@api_router.get("/admin/attendance/today")
+async def get_admin_attendance_today(request: Request, tenant_id: Optional[str] = None):
+    """Admin summary of today's attendance across member and kids check-ins."""
+    user = await get_current_admin_user(request)
+    effective_tenant_id = tenant_id or user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    today = datetime.now(timezone.utc).date().isoformat()
+    day_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+
+    member_checkins = await db.member_checkins.find(
+        {"tenant_id": effective_tenant_id, "service_date": today},
+        {"_id": 0}
+    ).to_list(5000)
+
+    kids_checkins = await db.checkins.find(
+        {
+            "tenant_id": effective_tenant_id,
+            "checked_in_at": {"$gte": day_start.isoformat()}
+        },
+        {"_id": 0}
+    ).to_list(5000)
+
+    return {
+        "date": today,
+        "tenant_id": effective_tenant_id,
+        "member_checkins_total": len(member_checkins),
+        "member_checkins_online": len([c for c in member_checkins if c.get("check_in_type") == "online"]),
+        "member_checkins_in_person": len([c for c in member_checkins if c.get("check_in_type") != "online"]),
+        "kids_checkins_total": len(kids_checkins),
+        "kids_checked_in_now": len([c for c in kids_checkins if c.get("status") == "checked_in"])
+    }
+
+
+@api_router.get("/admin/qr/generate")
+async def generate_admin_qr(
+    request: Request,
+    action: str = "attendance_checkin",
+    expires_in_minutes: int = 60
+):
+    """Generate a QR payload and image URL for mobile scanning flows."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    expires_in_minutes = max(1, min(expires_in_minutes, 1440))
+    now = datetime.now(timezone.utc)
+    payload = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "action": action,
+        "created_at": now.isoformat(),
+        "expires_at": (now + timedelta(minutes=expires_in_minutes)).isoformat()
+    }
+
+    qr_data = quote(json.dumps(payload))
+    qr_url = f"https://quickchart.io/qr?size=300&text={qr_data}"
+
+    return {
+        "qr": {
+            "image_url": qr_url,
+            "payload": payload,
+            "format": "quickchart"
+        }
+    }
 
 # --- PEOPLE ROUTES ---
 @api_router.get("/people")
@@ -10557,6 +10803,36 @@ async def get_attendance_streak(request: Request):
     streak_data = await calculate_attendance_streak(tenant_id, user_id)
     return streak_data
 
+
+@api_router.get("/portal/attendance/streak")
+async def get_mobile_attendance_streak(request: Request):
+    """Mobile alias for attendance streak endpoint."""
+    return await get_attendance_streak(request)
+
+
+@api_router.post("/portal/attendance/checkin")
+async def checkin_mobile_attendance(request: Request, payload: AttendanceCheckinRequest):
+    """Mobile alias for service attendance check-in."""
+    return await check_in_to_service(request, check_in_type=payload.check_in_type)
+
+
+@api_router.get("/portal/attendance/history")
+async def get_mobile_attendance_history(request: Request, limit: int = 90):
+    """Return member attendance check-in history for mobile timeline views."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+
+    checkins = await db.member_checkins.find(
+        {"tenant_id": tenant_id, "user_id": user_id},
+        {"_id": 0}
+    ).sort("service_date", -1).limit(limit).to_list(limit)
+
+    return {
+        "history": [serialize_doc(c) for c in checkins],
+        "total": len(checkins)
+    }
+
 # ============== PRAYER REQUEST ENDPOINTS ==============
 
 PRAYER_CATEGORIES = [
@@ -10780,10 +11056,19 @@ app.include_router(messaging_router, prefix="/api")
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+async def startup_ensure_mobile_seed_data():
+    try:
+        await ensure_mobile_demo_accounts()
+        logger.info("Mobile demo accounts ensured")
+    except Exception as exc:
+        logger.error(f"Failed to ensure mobile demo accounts: {exc}")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
