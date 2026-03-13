@@ -411,6 +411,24 @@ All 10 modules implemented with 100% test pass rate.
 - ✅ **Bug Fix: Kids Checkout** — Fixed `checkin_doc` → `checkin` variable name in push notification trigger
 - Testing: 100% pass rates across iterations 23-27 (90+ tests)
 
+### Mar 13, 2026 (Mobile Backend Compatibility Audit)
+- ✅ Added mobile alias endpoints under `/api` with Bearer-token compatibility:
+  - `/api/portal/profile` (GET/PUT)
+  - `/api/portal/attendance/streak`, `/api/portal/attendance/checkin`, `/api/portal/attendance/history`
+  - `/api/portal/cafe/menu`, `/api/portal/cafe/order`
+  - `/api/portal/media/sermons`
+  - `/api/portal/kids/children` (GET/POST), `/api/portal/kids/checkin`
+  - `/api/portal/events/registered`, `/api/portal/groups/mine`, `/api/portal/giving/ytd`
+  - `/api/admin/attendance/today`, `/api/admin/qr/generate`
+- ✅ Auth hardening for mobile/web parity: introduced shared token resolver for cookie OR `Authorization: Bearer <session_token>` and wired portal/admin helpers to it.
+- ✅ CORS confirmed for broad mobile access (`allow_origins=["*"]`, `allow_methods=["*"]`, `allow_headers=["*"]`).
+- ✅ Added startup/login safety seeding for required demo users:
+  - `member@abundant.church` (Maria Garcia)
+  - `member@cristoviene.church` (Carlos)
+  - `admin@abundant.church`
+  - `admin@solomon.ai`
+- ✅ Testing: iteration 28 backend audit passed 29/29 tests (`/app/test_reports/iteration_28.json`).
+
 ### Feb 27, 2026
 - ✅ Pastor's CRM / Meeting Scheduler complete (Admin + Member)
 - ✅ Abundant Pathways populated with 8 courses
