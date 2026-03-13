@@ -1,33 +1,26 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { ShoppingBag, Search, Plus, Minus, X, ArrowRight } from 'lucide-react';
+import { ShoppingBag, Search, Plus, Minus, X, ArrowRight, Heart } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export default function PortalMerch() {
   const { tenant } = useOutletContext();
   const [products, setProducts] = useState([]);
-  const [merchUrl, setMerchUrl] = useState('');
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [offeringAmount, setOfferingAmount] = useState(0);
 
   useEffect(() => {
     const fetchMerch = async () => {
       try {
-        const [productsRes, settingsRes] = await Promise.all([
-          fetch(`${API_URL}/portal/merch/products`, { credentials: 'include' }),
-          fetch(`${API_URL}/portal/merch/settings`, { credentials: 'include' })
-        ]);
+        const productsRes = await fetch(`${API_URL}/portal/merch/products`, { credentials: 'include' });
         if (productsRes.ok) {
           const data = await productsRes.json();
           setProducts(data.products || []);
-        }
-        if (settingsRes.ok) {
-          const data = await settingsRes.json();
-          setMerchUrl(data.merch_embed_url || '');
         }
       } catch (error) {
         console.error('Failed to load merch', error);
@@ -77,6 +70,7 @@ export default function PortalMerch() {
   };
 
   const cartTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const orderTotal = cartTotal + offeringAmount;
 
   const checkout = async () => {
     if (cartItems.length === 0) {
@@ -95,12 +89,14 @@ export default function PortalMerch() {
             price: item.price,
             quantity: item.quantity,
             image_url: item.image_url
-          }))
+          })),
+          offering_amount: offeringAmount
         })
       });
       if (res.ok) {
-        toast.success('Order placed!');
+        toast.success(offeringAmount > 0 ? 'Order placed with offering! God bless!' : 'Order placed!');
         setCartItems([]);
+        setOfferingAmount(0);
         setCartOpen(false);
       } else {
         toast.error('Unable to place order');
@@ -114,11 +110,11 @@ export default function PortalMerch() {
     <div className="portal-merch" data-testid="portal-merch-page">
       <div className="portal-merch-header">
         <div>
-          <span className="portal-tag">Merch</span>
-          <h1>Church Merch Store</h1>
-          <p>Shop curated merch, music, and accessories without leaving the member portal.</p>
+          <span className="portal-tag">Shop</span>
+          <h1>{tenant?.name || 'Abundant'} Store</h1>
+          <p>Rep your church with exclusive merch, apparel, and accessories.</p>
           <div className="portal-merch-delivery" data-testid="merch-delivery-note">
-            Free delivery available in {tenant?.city || 'your city'}.
+            Free pickup available at {tenant?.city || 'church'} campus.
           </div>
         </div>
         <button
@@ -128,19 +124,6 @@ export default function PortalMerch() {
         >
           <ShoppingBag className="w-4 h-4" /> Cart ({cartCount})
         </button>
-      </div>
-
-      <div className="portal-merch-embed" data-testid="merch-embed">
-        {merchUrl ? (
-          <iframe
-            title="Merch Store"
-            src={merchUrl}
-            className="portal-merch-iframe"
-            data-testid="merch-iframe"
-          />
-        ) : (
-          <div className="portal-merch-empty" data-testid="merch-iframe-empty">Store embed unavailable.</div>
-        )}
       </div>
 
       <div className="portal-merch-controls">
@@ -233,17 +216,67 @@ export default function PortalMerch() {
               ))}
             </div>
           )}
+
+          {/* Giving Nudge Section */}
+          <div className="portal-merch-offering" data-testid="merch-offering-section">
+            <div className="offering-header">
+              <Heart className="w-4 h-4" />
+              <span className="offering-label">Add an Offering?</span>
+            </div>
+            <p className="offering-subtitle">Your generosity helps {tenant?.name || 'our church'} do more.</p>
+            <div className="offering-amounts">
+              {[5, 10, 20].map((amount) => (
+                <button
+                  key={amount}
+                  className={`offering-btn ${offeringAmount === amount ? 'active' : ''}`}
+                  onClick={() => setOfferingAmount(offeringAmount === amount ? 0 : amount)}
+                  data-testid={`merch-offering-${amount}`}
+                >
+                  ${amount}
+                </button>
+              ))}
+              <button
+                className={`offering-btn custom ${offeringAmount > 0 && ![5, 10, 20].includes(offeringAmount) ? 'active' : ''}`}
+                onClick={() => {
+                  const custom = prompt('Enter custom offering amount:');
+                  if (custom && !isNaN(parseFloat(custom))) {
+                    setOfferingAmount(parseFloat(custom));
+                  }
+                }}
+                data-testid="merch-offering-custom"
+              >
+                Custom
+              </button>
+            </div>
+            {offeringAmount > 0 && (
+              <div className="offering-selected">
+                <span>Offering: {formatCurrency(offeringAmount)}</span>
+                <button onClick={() => setOfferingAmount(0)} className="offering-remove">No thanks</button>
+              </div>
+            )}
+          </div>
+
           <div className="portal-merch-cart-footer">
-            <div>
+            <div className="cart-line">
+              <span>Subtotal</span>
+              <span>{formatCurrency(cartTotal)}</span>
+            </div>
+            {offeringAmount > 0 && (
+              <div className="cart-line offering">
+                <span>Offering</span>
+                <span>{formatCurrency(offeringAmount)}</span>
+              </div>
+            )}
+            <div className="cart-line total">
               <span>Total</span>
-              <strong data-testid="merch-cart-total">{formatCurrency(cartTotal)}</strong>
+              <strong data-testid="merch-cart-total">{formatCurrency(orderTotal)}</strong>
             </div>
             <button
               className="portal-merch-checkout"
               onClick={checkout}
               data-testid="merch-checkout-btn"
             >
-              Place Order
+              {offeringAmount > 0 ? 'Place Order & Give' : 'Place Order'}
             </button>
           </div>
         </div>

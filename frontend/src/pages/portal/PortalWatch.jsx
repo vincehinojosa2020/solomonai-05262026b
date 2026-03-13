@@ -1205,7 +1205,8 @@ export default function PortalWatch() {
       <header className="atv-header">
         <div className="atv-logo">
           <span className="atv-logo-mark">{logoLetter}</span>
-          <span className="atv-logo-text">{churchName} TV</span>
+          <span className="atv-logo-text">Watch</span>
+          <span className="atv-logo-tagline">Live. On Demand. Always in the Word.</span>
         </div>
 
         {/* MASTERCLASS-STYLE SEARCH - In header center */}

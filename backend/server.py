@@ -6364,57 +6364,64 @@ async def get_tenant(request: Request):
 # --- DASHBOARD ROUTES ---
 @api_router.get("/dashboard/stats")
 async def get_dashboard_stats():
-    """Return dashboard stats - using demo values for Abundant Church (500 members, El Paso TX)"""
-    # Return static demo values for fast loading
+    """Return dashboard stats - demo values for Abundant Church (50,000 members, El Paso TX)"""
+    # Return demo values scaled for a megachurch of 50,000 members
     return {
-        "total_members": 487,
-        "active_members": 414,
-        "visitors": 15,
-        "active_groups": 12,
-        "open_groups": 4,
-        "mtd_giving": 24750,
-        "ytd_giving": 87303,
-        "mtd_goal": 95000,
-        "last_attendance": 312,
-        "last_attendance_change": 24,
-        "new_this_week": 8,
-        "recurring_givers": 47
+        "total_members": 50247,
+        "active_members": 12489,
+        "visitors": 247,
+        "active_groups": 284,
+        "open_groups": 43,
+        "mtd_giving": 182500,
+        "ytd_giving": 2847303,
+        "mtd_goal": 250000,
+        "last_attendance": 8312,
+        "last_attendance_change": 524,
+        "new_this_week": 87,
+        "recurring_givers": 4247,
+        "cafe_orders_week": 342,
+        "cafe_giving_added": 1847,
+        "merch_orders_week": 89,
+        "merch_giving_added": 623,
+        "event_registrations_month": 1247,
+        "at_risk_members": 156,
+        "kids_checked_in_today": 0
     }
 
 @api_router.get("/dashboard/giving-trend")
 async def get_giving_trend():
-    """Return demo giving trend data - 12 months for Abundant Church"""
+    """Return demo giving trend data - 12 months for Abundant Church (50K member megachurch)"""
     return [
-        {"month": "Mar", "General Fund": 18500, "Building Fund": 4200, "Missions": 1800, "Crypto": 0},
-        {"month": "Apr", "General Fund": 19200, "Building Fund": 4500, "Missions": 1900, "Crypto": 200},
-        {"month": "May", "General Fund": 21000, "Building Fund": 4800, "Missions": 2100, "Crypto": 0},
-        {"month": "Jun", "General Fund": 18900, "Building Fund": 4100, "Missions": 1750, "Crypto": 0},
-        {"month": "Jul", "General Fund": 17500, "Building Fund": 3900, "Missions": 1600, "Crypto": 150},
-        {"month": "Aug", "General Fund": 19800, "Building Fund": 4300, "Missions": 1850, "Crypto": 0},
-        {"month": "Sep", "General Fund": 22500, "Building Fund": 5100, "Missions": 2200, "Crypto": 0},
-        {"month": "Oct", "General Fund": 21200, "Building Fund": 4700, "Missions": 2050, "Crypto": 300},
-        {"month": "Nov", "General Fund": 24800, "Building Fund": 5500, "Missions": 2400, "Crypto": 0},
-        {"month": "Dec", "General Fund": 32500, "Building Fund": 7200, "Missions": 3100, "Crypto": 500},
-        {"month": "Jan", "General Fund": 20100, "Building Fund": 4400, "Missions": 1950, "Crypto": 0},
-        {"month": "Feb", "General Fund": 24750, "Building Fund": 5200, "Missions": 2350, "Crypto": 0}
+        {"month": "Mar", "General Fund": 145000, "Building Fund": 42000, "Missions": 18000, "Crypto": 2500},
+        {"month": "Apr", "General Fund": 152000, "Building Fund": 45000, "Missions": 19000, "Crypto": 3200},
+        {"month": "May", "General Fund": 168000, "Building Fund": 48000, "Missions": 21000, "Crypto": 1500},
+        {"month": "Jun", "General Fund": 142000, "Building Fund": 41000, "Missions": 17500, "Crypto": 2800},
+        {"month": "Jul", "General Fund": 138000, "Building Fund": 39000, "Missions": 16000, "Crypto": 1500},
+        {"month": "Aug", "General Fund": 156000, "Building Fund": 43000, "Missions": 18500, "Crypto": 3100},
+        {"month": "Sep", "General Fund": 175000, "Building Fund": 51000, "Missions": 22000, "Crypto": 2200},
+        {"month": "Oct", "General Fund": 169000, "Building Fund": 47000, "Missions": 20500, "Crypto": 4300},
+        {"month": "Nov", "General Fund": 198000, "Building Fund": 55000, "Missions": 24000, "Crypto": 3800},
+        {"month": "Dec", "General Fund": 285000, "Building Fund": 72000, "Missions": 31000, "Crypto": 8500},
+        {"month": "Jan", "General Fund": 161000, "Building Fund": 44000, "Missions": 19500, "Crypto": 2100},
+        {"month": "Feb", "General Fund": 182500, "Building Fund": 52000, "Missions": 23500, "Crypto": 2800}
     ]
 
 @api_router.get("/dashboard/attendance-trend")
 async def get_attendance_trend():
-    """Return demo attendance trend data - 12 weeks for Abundant Church"""
+    """Return demo attendance trend data - 12 weeks for Abundant Church (50K megachurch)"""
     return [
-        {"week": "Week 1", "attendance": 285, "date": "Dec 1"},
-        {"week": "Week 2", "attendance": 298, "date": "Dec 8"},
-        {"week": "Week 3", "attendance": 312, "date": "Dec 15"},
-        {"week": "Week 4", "attendance": 445, "date": "Dec 22"},
-        {"week": "Week 5", "attendance": 478, "date": "Dec 29"},
-        {"week": "Week 6", "attendance": 302, "date": "Jan 5"},
-        {"week": "Week 7", "attendance": 295, "date": "Jan 12"},
-        {"week": "Week 8", "attendance": 308, "date": "Jan 19"},
-        {"week": "Week 9", "attendance": 318, "date": "Jan 26"},
-        {"week": "Week 10", "attendance": 305, "date": "Feb 2"},
-        {"week": "Week 11", "attendance": 288, "date": "Feb 9"},
-        {"week": "Week 12", "attendance": 312, "date": "Feb 16"}
+        {"week": "Week 1", "attendance": 7285, "date": "Dec 1"},
+        {"week": "Week 2", "attendance": 7598, "date": "Dec 8"},
+        {"week": "Week 3", "attendance": 8012, "date": "Dec 15"},
+        {"week": "Week 4", "attendance": 12445, "date": "Dec 22"},
+        {"week": "Week 5", "attendance": 9478, "date": "Dec 29"},
+        {"week": "Week 6", "attendance": 7802, "date": "Jan 5"},
+        {"week": "Week 7", "attendance": 7595, "date": "Jan 12"},
+        {"week": "Week 8", "attendance": 8108, "date": "Jan 19"},
+        {"week": "Week 9", "attendance": 8318, "date": "Jan 26"},
+        {"week": "Week 10", "attendance": 8005, "date": "Feb 2"},
+        {"week": "Week 11", "attendance": 7688, "date": "Feb 9"},
+        {"week": "Week 12", "attendance": 8312, "date": "Feb 16"}
     ]
 
 @api_router.get("/dashboard/activity")

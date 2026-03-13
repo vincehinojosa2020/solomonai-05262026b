@@ -222,9 +222,9 @@ export default function Dashboard() {
           icon={Users}
         />
         <StatCard
-          title="ACTIVE GROUPS"
-          value={stats?.active_groups || 0}
-          change={`${stats?.open_groups || 0} open`}
+          title="ACTIVE MEMBERS"
+          value={formatNumber(stats?.active_members || 0)}
+          change="Last 30 days"
           changeType="positive"
           icon={UsersRound}
         />
@@ -251,10 +251,42 @@ export default function Dashboard() {
         />
         <StatCard
           title="RECURRING"
-          value={stats?.recurring_givers || 0}
+          value={formatNumber(stats?.recurring_givers || 0)}
           change="Active schedules"
           changeType="positive"
           icon={RefreshCw}
+        />
+      </div>
+
+      {/* Secondary Stats Row - Café, Merch, Events */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <StatCard
+          title="CAFÉ THIS WEEK"
+          value={stats?.cafe_orders_week || 0}
+          change={`+$${stats?.cafe_giving_added || 0} offerings`}
+          changeType="positive"
+          icon={Calendar}
+        />
+        <StatCard
+          title="MERCH THIS WEEK"
+          value={stats?.merch_orders_week || 0}
+          change={`+$${stats?.merch_giving_added || 0} offerings`}
+          changeType="positive"
+          icon={Calendar}
+        />
+        <StatCard
+          title="EVENT SIGNUPS"
+          value={formatNumber(stats?.event_registrations_month || 0)}
+          change="This month"
+          changeType="positive"
+          icon={Calendar}
+        />
+        <StatCard
+          title="SMALL GROUPS"
+          value={stats?.active_groups || 0}
+          change={`${stats?.at_risk_members || 0} at-risk members`}
+          changeType="neutral"
+          icon={UsersRound}
         />
       </div>
 

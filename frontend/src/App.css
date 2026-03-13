@@ -7042,22 +7042,123 @@
 
 .portal-merch-cart-footer {
   border-top: 1px solid #e2e8f0;
-  padding-top: 12px;
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cart-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.cart-line.offering {
+  color: #f59e0b;
+}
+
+.cart-line.total {
+  font-size: 16px;
+  color: #1f2937;
+  padding-top: 8px;
+  border-top: 1px solid #e2e8f0;
 }
 
 .portal-merch-checkout {
   border: none;
-  background: #2563eb;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: white;
-  padding: 8px 14px;
-  border-radius: 10px;
+  padding: 14px 20px;
+  border-radius: 12px;
   cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
+.portal-merch-checkout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+}
+
+/* Merch Offering Section */
+.portal-merch-offering {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid #fcd34d;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.portal-merch-offering .offering-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #92400e;
+  margin-bottom: 4px;
+}
+
+.portal-merch-offering .offering-label {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.portal-merch-offering .offering-subtitle {
+  font-size: 13px;
+  color: #a16207;
+  margin: 0 0 12px 0;
+}
+
+.portal-merch-offering .offering-amounts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.portal-merch-offering .offering-btn {
+  padding: 10px 20px;
+  border: 2px solid #fbbf24;
+  background: white;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #92400e;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.portal-merch-offering .offering-btn:hover {
+  background: #fef3c7;
+}
+
+.portal-merch-offering .offering-btn.active {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-color: #d97706;
+  color: white;
+}
+
+.portal-merch-offering .offering-selected {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #fcd34d;
+  font-size: 14px;
+  color: #92400e;
+}
+
+.portal-merch-offering .offering-remove {
+  background: none;
+  border: none;
+  color: #a16207;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 13px;
+}
 
 .portal-merch-empty {
   padding: 24px;
@@ -8911,6 +9012,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .atv-logo-mark {
@@ -8926,8 +9028,23 @@
 }
 
 .atv-logo-text {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.atv-logo-tagline {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 400;
+  margin-left: -8px;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .atv-logo-tagline {
+    display: block;
+  }
 }
 
 .atv-header-actions {
@@ -9137,32 +9254,71 @@
 .atv-categories {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 12px;
   padding: 20px 48px;
   background: #0a0a0a;
   overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
+.atv-categories::-webkit-scrollbar {
+  display: none;
+}
+
+.atv-cat-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 50px;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  min-width: fit-content;
+}
+
+.atv-cat-pill:hover {
+  border-color: rgba(255,255,255,0.4);
+  color: #e2e8f0;
+}
+
+.atv-cat-pill.active {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  border-color: #dc2626;
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+}
+
+/* Legacy class support */
 .atv-category-pill {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.1);
+  padding: 12px 20px;
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,0.2);
   border-radius: 50px;
   color: #94a3b8;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .atv-category-pill.active,
 .atv-category-pill:hover {
-  background: #dc2626;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   border-color: #dc2626;
   color: #ffffff;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
 }
 
 /* Content Grid */
@@ -9275,13 +9431,33 @@
   position: relative;
   aspect-ratio: 16/9;
   overflow: hidden;
+  min-height: 180px;
+}
+
+@media (min-width: 768px) {
+  .atv-card-thumb {
+    min-height: 220px;
+  }
 }
 
 .atv-card-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center top;
   transition: transform 0.4s ease;
+}
+
+/* Gradient overlay for text legibility */
+.atv-card-thumb::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .atv-card:hover .atv-card-thumb img {
