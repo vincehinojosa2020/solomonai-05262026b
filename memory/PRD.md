@@ -395,7 +395,11 @@ All 10 modules implemented with 100% test pass rate.
 - ✅ **Kids Check-in UI Redesign (Module 2)** — Full Duolingo/Veggie Tales aesthetic with DiceBear avatars, Nunito font, 3-step wizard (Select → Confirm → QR/Pickup code success), vibrant color palette
 - ✅ **Group Leader Dashboard (Module 6)** — Chart.js attendance trend graph, stat cards, at-risk member panel with outreach actions (call, email, coffee invite, SMS), accessible via dashboard icon on group cards
 - ✅ **Events Eventbrite-style Enhancements (Module 5)** — Capacity bars, waitlist support (auto-join when full), ticket tiers display, event detail modal, enhanced share functionality
-- Testing: 100% pass rates across iterations 23-25 (52+ tests)
+- ✅ **Bidirectional Group Messaging (Module 6)** — Full chat system with backend endpoints (GET/POST/DELETE /api/groups/{groupId}/messages), GroupChat component with 5s polling, date separators, sender badges, embedded in both portal groups and admin leader dashboard
+- ✅ **Solomon Merch Recommender (Module 4)** — Floating chatbot widget on merch page with pattern-matching product recommendations, quick suggestion buttons, greeting message
+- ✅ **Events Waitlist & Ticket Tiers (Module 5)** — Auto-waitlist when capacity full, ticket tier display, capacity progress bars, event detail modal with full registration flow, enhanced category filters
+- ✅ **Fix: Created person record for member@abundant.church** to enable group join from portal
+- Testing: 100% pass rates across iterations 23-26 (70+ tests)
 
 ### Feb 27, 2026
 - ✅ Pastor's CRM / Meeting Scheduler complete (Admin + Member)
