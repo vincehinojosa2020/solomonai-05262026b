@@ -1,15 +1,29 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { MapPin, Clock, Users, CheckCircle, Calendar as CalendarIcon, X } from 'lucide-react';
+import { MapPin, Clock, Users, CheckCircle, Calendar as CalendarIcon, X, Share2, Heart } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
+const EVENT_CATEGORIES = [
+  { id: 'all', label: 'All Events' },
+  { id: 'worship', label: 'Worship' },
+  { id: 'women', label: 'Women' },
+  { id: 'men', label: 'Men' },
+  { id: 'youth', label: 'Youth' },
+  { id: 'community', label: 'Community' },
+  { id: 'conferences', label: 'Conferences' },
+];
+
 export default function PortalEvents() {
-  const { user, memberData } = useOutletContext();
+  const { user, memberData, tenant } = useOutletContext();
   const [events, setEvents] = useState([]);
   const [myEvents, setMyEvents] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [showRegistrationModal, setShowRegistrationModal] = useState(null);
+  const [offeringAmount, setOfferingAmount] = useState(0);
 
   useEffect(() => {
     fetchEvents();
@@ -107,9 +121,28 @@ export default function PortalEvents() {
     if (filter === 'registered') {
       return registeredEventIds.includes(event.id);
     }
-    // For now, show all events for other filters
+    if (categoryFilter !== 'all') {
+      return event.category?.toLowerCase() === categoryFilter.toLowerCase();
+    }
     return true;
   });
+
+  // Get next major event for hero
+  const nextMajorEvent = events.find(e => e.is_featured) || events[0];
+
+  const handleShare = (event) => {
+    const shareText = `I'm attending ${event.name} at ${tenant?.name || 'our church'}! Join me: `;
+    if (navigator.share) {
+      navigator.share({
+        title: event.name,
+        text: shareText,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(shareText + window.location.href);
+      toast.success('Link copied to clipboard!');
+    }
+  };
 
   const EventCard = ({ event }) => {
     const isRegistered = registeredEventIds.includes(event.id);
@@ -184,8 +217,60 @@ export default function PortalEvents() {
 
   return (
     <div className="portal-events" data-testid="portal-events">
+      {/* Hero Banner - Next Major Event */}
+      {nextMajorEvent && (
+        <div className="events-hero" data-testid="events-hero">
+          <div className="events-hero-overlay" />
+          <div className="events-hero-content">
+            <span className="events-hero-tag">Coming Up</span>
+            <h1>{nextMajorEvent.name}</h1>
+            <p className="events-hero-date">
+              {nextMajorEvent.start_datetime ? formatDate(nextMajorEvent.start_datetime).full : 'TBD'} 
+              {nextMajorEvent.location ? ` • ${nextMajorEvent.location}` : ''}
+            </p>
+            {nextMajorEvent.registration_count > 0 && (
+              <p className="events-hero-count">{nextMajorEvent.registration_count} people registered</p>
+            )}
+            <div className="events-hero-actions">
+              {!registeredEventIds.includes(nextMajorEvent.id) ? (
+                <button 
+                  className="events-hero-btn primary"
+                  onClick={() => handleRegister(nextMajorEvent.id)}
+                  data-testid="hero-register-btn"
+                >
+                  Register Now
+                </button>
+              ) : (
+                <span className="events-hero-registered">
+                  <CheckCircle className="w-5 h-5" /> You're Registered!
+                </span>
+              )}
+              <button 
+                className="events-hero-btn secondary"
+                onClick={() => handleShare(nextMajorEvent)}
+              >
+                <Share2 className="w-4 h-4" /> Share
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="portal-page-header">
-        <h1 className="portal-page-title">Events at Abundant Church</h1>
+        <h2 className="portal-page-title">Upcoming Events</h2>
+      </div>
+
+      {/* Category Filter Tabs */}
+      <div className="events-category-tabs">
+        {EVENT_CATEGORIES.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setCategoryFilter(cat.id)}
+            className={`events-cat-tab ${categoryFilter === cat.id ? 'active' : ''}`}
+          >
+            {cat.label}
+          </button>
+        ))}
       </div>
 
       {/* Filter Tabs */}

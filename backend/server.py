@@ -5581,6 +5581,129 @@ async def get_available_members_for_group(request: Request, group_id: str, searc
     
     return {"people": people}
 
+# ============== SMALL GROUP ATTENDANCE & AT-RISK TRACKING ==============
+
+class GroupAttendanceRecord(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    group_id: str
+    session_date: str
+    topic: Optional[str] = None
+    notes: Optional[str] = None
+    attendees: List[str] = []  # List of person_ids who attended
+    created_by: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+@api_router.post("/admin/groups/{group_id}/attendance")
+async def record_group_attendance(request: Request, group_id: str):
+    """Record attendance for a group session"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    body = await request.json()
+    
+    record = GroupAttendanceRecord(
+        tenant_id=tenant_id,
+        group_id=group_id,
+        session_date=body.get("session_date", datetime.now(timezone.utc).date().isoformat()),
+        topic=body.get("topic"),
+        notes=body.get("notes"),
+        attendees=body.get("attendees", []),
+        created_by=user.get("user_id")
+    )
+    
+    await db.group_attendance.insert_one(record.model_dump())
+    
+    # Update last_attended for each attendee
+    for person_id in record.attendees:
+        await db.group_members.update_one(
+            {"group_id": group_id, "person_id": person_id},
+            {"$set": {"last_attended": record.session_date}}
+        )
+    
+    return {"message": "Attendance recorded", "id": record.id}
+
+@api_router.get("/admin/groups/{group_id}/attendance")
+async def get_group_attendance_history(request: Request, group_id: str, limit: int = 8):
+    """Get attendance history for a group (last 8 sessions)"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    records = await db.group_attendance.find(
+        {"group_id": group_id, "tenant_id": tenant_id},
+        {"_id": 0}
+    ).sort("session_date", -1).limit(limit).to_list(limit)
+    
+    return {"sessions": records}
+
+@api_router.get("/admin/groups/{group_id}/at-risk")
+async def get_at_risk_group_members(request: Request, group_id: str):
+    """Get members who have missed 3+ consecutive sessions"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    # Get group members
+    members = await db.group_members.find(
+        {"group_id": group_id, "is_active": True},
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Get last 6 attendance records
+    recent_sessions = await db.group_attendance.find(
+        {"group_id": group_id, "tenant_id": tenant_id},
+        {"_id": 0, "attendees": 1, "session_date": 1}
+    ).sort("session_date", -1).limit(6).to_list(6)
+    
+    at_risk = []
+    for member in members:
+        person_id = member.get("person_id")
+        consecutive_missed = 0
+        
+        for session in recent_sessions:
+            if person_id not in session.get("attendees", []):
+                consecutive_missed += 1
+            else:
+                break
+        
+        if consecutive_missed >= 3:
+            # Get person details
+            person = await db.people.find_one({"id": person_id}, {"_id": 0})
+            if person:
+                at_risk.append({
+                    "person_id": person_id,
+                    "name": f"{person.get('first_name', '')} {person.get('last_name', '')}".strip(),
+                    "email": person.get("email"),
+                    "phone": person.get("phone"),
+                    "sessions_missed": consecutive_missed,
+                    "last_attended": member.get("last_attended")
+                })
+    
+    return {"at_risk_members": at_risk, "threshold": 3}
+
+@api_router.post("/admin/groups/{group_id}/outreach")
+async def log_member_outreach(request: Request, group_id: str):
+    """Log an outreach attempt to an at-risk member"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    
+    body = await request.json()
+    
+    outreach_log = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "group_id": group_id,
+        "person_id": body.get("person_id"),
+        "outreach_type": body.get("type", "call"),  # call, email, sms, coffee_code
+        "notes": body.get("notes", ""),
+        "created_by": user.get("user_id"),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.group_outreach_logs.insert_one(outreach_log)
+    
+    return {"message": "Outreach logged", "id": outreach_log["id"]}
+
 # ============== ADMIN EVENT REGISTRATION MANAGEMENT ==============
 
 @api_router.get("/admin/events/{event_id}/registrations")

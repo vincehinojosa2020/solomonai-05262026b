@@ -5,6 +5,7 @@ import {
   Plus, Check, X, Clock, AlertCircle,
   Phone, Heart, Sparkles, Star, Cross
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -358,7 +359,7 @@ export default function PortalKidsCheckin() {
         </motion.div>
       )}
 
-      {/* Success Celebration Modal */}
+      {/* Success Celebration Modal with QR Code */}
       <AnimatePresence>
         {showSuccess && (
           <motion.div
@@ -381,21 +382,41 @@ export default function PortalKidsCheckin() {
               <div className="kc-success-icon">
                 <Check className="w-12 h-12" />
               </div>
-              <h2>{showSuccess.child.name} is Checked In!</h2>
-              <p>Have a blessed time in Sunday School! 📖</p>
-              <div className="kc-success-code">
-                <span className="kc-success-code-label">Your Pickup Code</span>
-                <span className="kc-success-code-value">{showSuccess.pickup_code}</span>
+              <h2>You're All Set! 🎉</h2>
+              <p className="kc-success-name">{showSuccess.child.name} is checked in!</p>
+              <p className="kc-success-subtitle">Ready for the best hour of their week!</p>
+              
+              {/* QR Code Display */}
+              <div className="kc-success-qr" data-testid="checkin-qr-code">
+                <QRCodeSVG 
+                  value={`SOLOMON_PICKUP_${showSuccess.child.id}_${showSuccess.pickup_code}_${new Date().toISOString().split('T')[0]}`}
+                  size={140}
+                  level="M"
+                  bgColor="#ffffff"
+                  fgColor="#1f2937"
+                />
               </div>
+              
+              <div className="kc-success-code">
+                <span className="kc-success-code-label">Pickup Code</span>
+                <span className="kc-success-code-value" data-testid="pickup-code-display">{showSuccess.pickup_code}</span>
+              </div>
+              
+              <div className="kc-success-instructions">
+                <p>Show this QR code or give the 3-digit code at pickup</p>
+              </div>
+              
               <div className="kc-success-sms">
                 <Phone className="w-4 h-4" />
-                <span>SMS notification sent to your phone</span>
+                <span>We'll text you if your child needs you</span>
               </div>
+              
               <button 
                 className="kc-success-btn"
                 onClick={() => setShowSuccess(null)}
+                data-testid="checkin-done-btn"
               >
-                God Bless! ✝️
+                See you in there, superstar! ⭐
               </button>
             </motion.div>
           </motion.div>
