@@ -12,6 +12,7 @@ import {
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import GroupChat from '@/components/GroupChat';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -256,6 +257,17 @@ export default function GroupLeaderDashboard() {
               ))
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Group Chat */}
+      <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', overflow: 'hidden', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '16px 20px', borderBottom: '1px solid #f1f5f9' }}>
+          <MessageSquare className="w-4 h-4" style={{ color: '#3b82f6' }} />
+          <h3 style={{ fontSize: '14px', fontWeight: '600', margin: 0, color: '#0f172a' }}>Group Chat</h3>
+        </div>
+        <div style={{ height: '400px' }}>
+          <GroupChat groupId={groupId} groupName={group?.name} currentUser={{ user_id: 'admin', role: 'church_admin', name: 'Admin' }} />
         </div>
       </div>
 

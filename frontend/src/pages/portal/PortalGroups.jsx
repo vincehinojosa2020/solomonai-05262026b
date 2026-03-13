@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
-import { Users, MapPin, Clock, ChevronRight, Search, Bell, LogOut } from 'lucide-react';
+import { Users, MapPin, Clock, ChevronRight, Search, Bell, LogOut, MessageCircle, ArrowLeft } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
+import GroupChat from '@/components/GroupChat';
 
 export default function PortalGroups() {
   const { user, memberData } = useOutletContext();
@@ -11,6 +12,7 @@ export default function PortalGroups() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [loadingGroups, setLoadingGroups] = useState(true);
+  const [chatGroup, setChatGroup] = useState(null);
 
   useEffect(() => {
     fetchGroups();
@@ -106,31 +108,44 @@ export default function PortalGroups() {
     <div className="portal-group-card" data-testid={`group-card-${group.id}`}>
       <div className="portal-group-card-header">
         <h3 className="portal-group-name">{group.name}</h3>
-        {isMine ? (
-          <button 
-            onClick={() => handleLeaveGroup(group.id)}
-            className="portal-group-action-btn secondary"
-            style={{ color: '#dc2626' }}
-          >
-            <LogOut className="w-3 h-3" />
-            Leave Group
-          </button>
-        ) : group.is_open ? (
-          <button 
-            onClick={() => handleJoinRequest(group.id)}
-            className="portal-group-action-btn primary"
-          >
-            Request to Join
-          </button>
-        ) : (
-          <button 
-            onClick={() => handleNotify(group.id)}
-            className="portal-group-action-btn secondary"
-          >
-            <Bell className="w-3 h-3" />
-            Get Notified
-          </button>
-        )}
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+          {isMine && (
+            <button
+              onClick={() => setChatGroup(group)}
+              className="portal-group-action-btn primary"
+              data-testid={`group-chat-btn-${group.id}`}
+              style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              Chat
+            </button>
+          )}
+          {isMine ? (
+            <button 
+              onClick={() => handleLeaveGroup(group.id)}
+              className="portal-group-action-btn secondary"
+              style={{ color: '#dc2626' }}
+            >
+              <LogOut className="w-3 h-3" />
+              Leave
+            </button>
+          ) : group.is_open ? (
+            <button 
+              onClick={() => handleJoinRequest(group.id)}
+              className="portal-group-action-btn primary"
+            >
+              Request to Join
+            </button>
+          ) : (
+            <button 
+              onClick={() => handleNotify(group.id)}
+              className="portal-group-action-btn secondary"
+            >
+              <Bell className="w-3 h-3" />
+              Get Notified
+            </button>
+          )}
+        </div>
       </div>
       
       <div className="portal-group-meta">
@@ -177,10 +192,22 @@ export default function PortalGroups() {
 
   return (
     <div className="portal-groups" data-testid="portal-groups">
-      <div className="portal-page-header">
-        <h1 className="portal-page-title">Discover Groups</h1>
-        <p className="portal-page-subtitle">Connect with others at Abundant Church</p>
-      </div>
+      {/* Group Chat View */}
+      {chatGroup ? (
+        <div data-testid="portal-group-chat-view" style={{ maxWidth: '700px', margin: '0 auto' }}>
+          <GroupChat
+            groupId={chatGroup.id}
+            groupName={chatGroup.name}
+            currentUser={user}
+            onBack={() => setChatGroup(null)}
+          />
+        </div>
+      ) : (
+        <>
+          <div className="portal-page-header">
+            <h1 className="portal-page-title">Discover Groups</h1>
+            <p className="portal-page-subtitle">Connect with others at Abundant Church</p>
+          </div>
 
       {/* My Groups */}
       {myGroups.length > 0 && (
@@ -236,6 +263,8 @@ export default function PortalGroups() {
           )}
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }

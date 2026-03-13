@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { ShoppingBag, Search, Plus, Minus, X, ArrowRight, Heart } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
+import MerchRecommender from '@/components/MerchRecommender';
 
 export default function PortalMerch() {
   const { tenant } = useOutletContext();
@@ -281,6 +282,9 @@ export default function PortalMerch() {
           </div>
         </div>
       )}
+
+      {/* Merch Recommender Chatbot */}
+      <MerchRecommender />
     </div>
   );
 }

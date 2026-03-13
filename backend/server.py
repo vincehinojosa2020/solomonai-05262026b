@@ -5752,6 +5752,77 @@ async def log_member_outreach(request: Request, group_id: str):
     
     return {"message": "Outreach logged", "id": outreach_log["id"]}
 
+# ============== GROUP MESSAGING (Module 6) ==============
+
+@api_router.get("/groups/{group_id}/messages")
+async def get_group_messages(request: Request, group_id: str, before: str = None, limit: int = 50):
+    """Get messages for a group (accessible by members and admins)."""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    tenant_id = user.get("tenant_id", "")
+    
+    query = {"group_id": group_id, "tenant_id": tenant_id}
+    if before:
+        query["created_at"] = {"$lt": before}
+    
+    messages = await db.group_messages.find(
+        query, {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    messages.reverse()
+    return {"messages": messages}
+
+@api_router.post("/groups/{group_id}/messages")
+async def send_group_message(request: Request, group_id: str):
+    """Send a message to a group chat."""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    tenant_id = user.get("tenant_id", "")
+    body = await request.json()
+    text = (body.get("text") or "").strip()
+    
+    if not text:
+        raise HTTPException(status_code=400, detail="Message text is required")
+    
+    message = {
+        "id": str(uuid.uuid4()),
+        "group_id": group_id,
+        "tenant_id": tenant_id,
+        "sender_id": user.get("user_id") or user.get("id", ""),
+        "sender_name": user.get("name", "Unknown"),
+        "sender_email": user.get("email", ""),
+        "sender_role": user.get("role", "member"),
+        "text": text,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    
+    await db.group_messages.insert_one(message)
+    
+    return {k: v for k, v in message.items() if k != "_id"}
+
+@api_router.delete("/groups/{group_id}/messages/{message_id}")
+async def delete_group_message(request: Request, group_id: str, message_id: str):
+    """Delete a message (sender or admin only)."""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    tenant_id = user.get("tenant_id", "")
+    msg = await db.group_messages.find_one({"id": message_id, "group_id": group_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not msg:
+        raise HTTPException(status_code=404, detail="Message not found")
+    
+    user_id = user.get("user_id") or user.get("id", "")
+    if msg["sender_id"] != user_id and user.get("role") not in ("church_admin", "platform_admin"):
+        raise HTTPException(status_code=403, detail="Cannot delete this message")
+    
+    await db.group_messages.delete_one({"id": message_id})
+    return {"message": "Deleted"}
+
 # ============== ADMIN EVENT REGISTRATION MANAGEMENT ==============
 
 @api_router.get("/admin/events/{event_id}/registrations")
