@@ -14978,3 +14978,481 @@ textarea:focus-visible {
 }
 
 }
+
+/* ============================================
+   KIDS CHECK-IN (Original)
+   ============================================ */
+.kids-checkin-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.kids-checkin-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  color: #64748b;
+}
+
+.kids-checkin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.kids-header-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.kids-header-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.kids-header-content h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.kids-header-content p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 4px 0 0 0;
+}
+
+.kids-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kids-add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(236, 72, 153, 0.3);
+}
+
+/* Quick Check-in Banner */
+.kids-quick-checkin {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  border: 1px solid #22c55e;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.quick-checkin-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.quick-checkin-info svg {
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
+.quick-checkin-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #166534;
+  margin: 0;
+}
+
+.quick-checkin-info p {
+  font-size: 14px;
+  color: #15803d;
+  margin: 4px 0 0 0;
+}
+
+/* Children List */
+.kids-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kids-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 24px;
+  background: #f8fafc;
+  border-radius: 20px;
+  border: 2px dashed #e2e8f0;
+  text-align: center;
+}
+
+.kids-empty svg {
+  color: #cbd5e1;
+  margin-bottom: 16px;
+}
+
+.kids-empty h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #475569;
+  margin: 0 0 8px 0;
+}
+
+.kids-empty p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 24px 0;
+}
+
+.kids-empty-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Child Card */
+.kids-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+
+.kids-card:hover {
+  border-color: #ec4899;
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.1);
+}
+
+.kids-card.checked-in {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-color: #22c55e;
+}
+
+.kids-card-avatar {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.kids-card.checked-in .kids-card-avatar {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+}
+
+.kids-card-info {
+  flex: 1;
+}
+
+.kids-card-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.kids-card-info p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.kids-allergy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 4px 10px;
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 20px;
+}
+
+.kids-checkin-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kids-checkin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+}
+
+/* Checked-in Status */
+.kids-card-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.kids-checked-in-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #22c55e;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 20px;
+}
+
+.kids-pickup-code {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: monospace;
+  border-radius: 8px;
+}
+
+.kids-checkin-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #16a34a;
+}
+
+/* Active Summary */
+.kids-active-summary {
+  margin-top: 32px;
+  padding: 20px;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid #3b82f6;
+  border-radius: 16px;
+}
+
+.kids-active-summary h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1d4ed8;
+  margin: 0 0 8px 0;
+}
+
+.kids-active-summary p {
+  font-size: 14px;
+  color: #2563eb;
+  margin: 0 0 12px 0;
+}
+
+.kids-active-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1e40af;
+}
+
+/* Add Child Modal */
+.kids-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.kids-modal {
+  background: #ffffff;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.kids-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.kids-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 24px 0 24px;
+}
+
+.kids-modal-header svg {
+  color: #ec4899;
+}
+
+.kids-modal-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.kids-modal-form {
+  padding: 24px;
+}
+
+.kids-form-group {
+  margin-bottom: 16px;
+}
+
+.kids-form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.kids-form-group input,
+.kids-form-group textarea {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.kids-form-group input:focus,
+.kids-form-group textarea:focus {
+  outline: none;
+  border-color: #ec4899;
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+}
+
+.kids-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.kids-modal-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.kids-modal-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(236, 72, 153, 0.3);
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .kids-checkin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .kids-add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .kids-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .kids-card-status {
+    align-items: center;
+  }
+  
+  .kids-form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .share-video-preview img {
+    width: 160px;
+    height: 90px;
+  }
+}
