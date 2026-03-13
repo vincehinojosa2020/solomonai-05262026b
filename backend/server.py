@@ -1953,7 +1953,8 @@ async def email_password_login(request: EmailLoginRequest, response: Response):
         "picture": user_doc.get("picture"),
         "role": user_doc.get("role", "member"),
         "tenant_id": tenant_id,
-        "tenant_name": tenant_name
+        "tenant_name": tenant_name,
+        "session_token": session_token
     }
 
 # ============== USER REGISTRATION ==============
@@ -2075,7 +2076,8 @@ async def register_user(request: UserRegistrationRequest, response: Response):
         "user_id": user_id,
         "email": new_user["email"],
         "name": new_user["name"],
-        "role": "member"
+        "role": "member",
+        "session_token": session_token
     }
 
 @api_router.post("/auth/check-email")

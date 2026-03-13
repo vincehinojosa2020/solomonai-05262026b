@@ -398,6 +398,7 @@ All 10 modules implemented with 100% test pass rate.
 - ✅ **Bidirectional Group Messaging (Module 6)** — Full chat system with backend endpoints (GET/POST/DELETE /api/groups/{groupId}/messages), GroupChat component with 5s polling, date separators, sender badges, embedded in both portal groups and admin leader dashboard
 - ✅ **Solomon Merch Recommender (Module 4)** — Floating chatbot widget on merch page with pattern-matching product recommendations, quick suggestion buttons, greeting message
 - ✅ **Events Waitlist & Ticket Tiers (Module 5)** — Auto-waitlist when capacity full, ticket tier display, capacity progress bars, event detail modal with full registration flow, enhanced category filters
+- ✅ **Mobile App Preparation** — Added session_token to login/register responses for mobile Bearer auth, verified CORS allows all origins, created comprehensive `/app/MOBILE_APP_SPEC.md` with all 10 screens, 50+ API endpoints mapped, color system, fonts, test accounts, and implementation notes for Expo React Native
 - ✅ **Backend Refactor (Phase 1)** — Extracted shared infrastructure into modular files:
   - `database.py` — MongoDB connection, serialize_doc, shared config
   - `auth.py` — Authentication helpers (get_current_user, get_current_admin_user)
