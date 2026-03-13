@@ -4,12 +4,14 @@ import { Home, DollarSign, Users, Calendar, User, Bell, LogOut, Menu, X, Tv, Gra
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { API_URL } from '@/lib/utils';
 import SolomonChat from '@/components/SolomonChat';
+import PWABottomNav from '@/components/PWABottomNav';
 
 export default function PortalLayout() {
   const [user, setUser] = useState(null);
   const [memberData, setMemberData] = useState(null);
   const [tenant, setTenant] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isPWA, setIsPWA] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -25,6 +27,11 @@ export default function PortalLayout() {
   useEffect(() => {
     fetchMemberData();
     fetchTenant();
+    // Detect standalone PWA mode
+    setIsPWA(
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true
+    );
   }, []);
 
   const fetchTenant = async () => {
@@ -214,11 +221,14 @@ export default function PortalLayout() {
       )}
 
       {/* Main Content */}
-      <main className={`portal-main ${isDarkPage ? 'portal-main-dark' : ''} ${isKidsPage ? 'portal-main-kids' : ''}`}>
+      <main className={`portal-main ${isDarkPage ? 'portal-main-dark' : ''} ${isKidsPage ? 'portal-main-kids' : ''} ${isPWA ? 'portal-main-pwa' : ''}`}>
         <div className={isDarkPage ? 'portal-content-full' : isKidsPage ? 'portal-content-kids' : 'portal-content'}>
           <Outlet context={{ user, memberData, tenant, refreshData: fetchMemberData }} />
         </div>
       </main>
+
+      {/* PWA Bottom Navigation — only in standalone mode */}
+      {isPWA && <PWABottomNav />}
     </div>
   );
 }

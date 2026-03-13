@@ -48,6 +48,7 @@ import PortalCafe from "@/pages/portal/PortalCafe";
 import PortalMeetings from "@/pages/portal/PortalMeetings";
 import PortalKidsCheckin from "@/pages/portal/PortalKidsCheckin";
 import PortalPrayer from "@/pages/portal/PortalPrayer";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 
 // Router wrapper to detect session_id in URL
 function AppRouter() {
@@ -130,6 +131,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <AppRouter />
+        <PWAInstallPrompt />
       </BrowserRouter>
       <Toaster position="bottom-right" richColors />
     </div>

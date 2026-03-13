@@ -14624,3 +14624,53 @@ textarea:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ============================================
+   PWA BOTTOM NAVIGATION
+   ============================================ */
+.pwa-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9990;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 0.25rem 0;
+  padding-bottom: calc(0.25rem + env(safe-area-inset-bottom, 0px));
+}
+
+.pwa-bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex: 1;
+  padding: 0.4rem 0;
+  color: #64748b;
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pwa-bottom-nav-item.active {
+  color: #3b82f6;
+}
+
+.pwa-bottom-nav-item:hover {
+  color: #93c5fd;
+}
+
+/* Add padding to main content when PWA bottom nav is visible */
+.portal-main-pwa {
+  padding-bottom: 70px !important;
+}

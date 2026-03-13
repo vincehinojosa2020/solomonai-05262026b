@@ -3,8 +3,17 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#0f172a" />
+        <meta name="theme-color" content="#1B3A5C" />
         <meta name="description" content="Solomon AI - Intelligent church management platform." />
+        
+        <!-- PWA -->
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Solomon AI" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         
         <!-- OG Meta Tags for gorgeous link previews -->
         <meta property="og:type" content="website" />
@@ -41,5 +50,15 @@
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
+        <script>
+          if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+              navigator.serviceWorker.register('/sw.js').then(
+                (reg) => console.log('SW registered:', reg.scope),
+                (err) => console.log('SW registration failed:', err)
+              );
+            });
+          }
+        </script>
     </body>
 </html>
