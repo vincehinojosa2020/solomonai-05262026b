@@ -2243,9 +2243,16 @@ async def get_member_events(request: Request):
         {"_id": 0}
     ).sort("event_date", 1).limit(50).to_list(50)
     
-    return [serialize_doc(e) for e in events]
+    # Enrich with waitlist count
+    enriched = []
+    for e in events:
+        event_data = serialize_doc(e)
+        if e.get("capacity"):
+            wl_count = await db.event_registrations.count_documents({"event_id": e["id"], "status": "waitlisted"})
+            event_data["waitlist_count"] = wl_count
+        enriched.append(event_data)
     
-    return [serialize_doc(e) for e in events]
+    return enriched
 
 @api_router.get("/portal/groups")
 async def get_available_groups(request: Request):
@@ -6055,7 +6062,8 @@ async def update_event(request: Request, event_id: str, updates: dict):
     
     allowed_fields = [
         "name", "description", "event_date", "start_time", "end_time",
-        "location", "capacity", "is_public", "requires_registration"
+        "location", "capacity", "is_public", "requires_registration",
+        "category", "is_featured", "ticket_tiers"
     ]
     
     update_data = {k: v for k, v in updates.items() if k in allowed_fields}
@@ -6113,7 +6121,22 @@ async def register_for_event(request: Request, event_id: str):
     if event.get("capacity"):
         current_count = await db.event_registrations.count_documents({"event_id": event_id})
         if current_count >= event["capacity"]:
-            raise HTTPException(status_code=400, detail="This event is full")
+            # Add to waitlist instead of rejecting
+            existing_wait = await db.event_registrations.find_one({"event_id": event_id, "user_id": user["user_id"]})
+            if existing_wait:
+                raise HTTPException(status_code=400, detail="You are already registered or waitlisted")
+            waitlist_entry = {
+                "id": str(uuid.uuid4()),
+                "tenant_id": tenant_id,
+                "event_id": event_id,
+                "user_id": user["user_id"],
+                "user_name": user.get("name", ""),
+                "user_email": user.get("email", ""),
+                "status": "waitlisted",
+                "registered_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.event_registrations.insert_one(waitlist_entry)
+            return {"message": f"Event is full — you've been added to the waitlist for {event['name']}!", "status": "waitlisted"}
     
     # Check if already registered
     existing = await db.event_registrations.find_one({

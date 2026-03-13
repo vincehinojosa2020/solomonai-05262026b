@@ -31,6 +31,7 @@ import CafeAdminPage from "@/pages/CafeAdminPage";
 import MeetingsAdminPage from "@/pages/MeetingsAdminPage";
 import LeadershipNotesPage from "@/pages/LeadershipNotesPage";
 import DeveloperAPIPage from "@/pages/admin/DeveloperAPIPage";
+import GroupLeaderDashboard from "@/pages/admin/GroupLeaderDashboard";
 import KidsCheckinAdmin from "@/pages/KidsCheckinAdmin";
 // Portal Pages
 import PortalHome from "@/pages/portal/PortalHome";
@@ -98,6 +99,7 @@ function AppRouter() {
         <Route path="/developer" element={<DeveloperAPIPage />} />
         <Route path="/kids-checkin" element={<KidsCheckinAdmin />} />
         <Route path="/admin/groups" element={<GroupsManagerPage />} />
+        <Route path="/admin/groups/:groupId/dashboard" element={<GroupLeaderDashboard />} />
         <Route path="/admin/events" element={<EventsManagerPage />} />
       </Route>
       

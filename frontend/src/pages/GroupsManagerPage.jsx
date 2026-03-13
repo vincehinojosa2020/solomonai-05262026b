@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, Plus, Search, Edit, Trash2, UserPlus, MapPin, Clock,
   Calendar, ChevronRight, MoreVertical, CheckCircle, XCircle,
-  Loader2, X
+  Loader2, X, BarChart3
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -244,6 +245,7 @@ export default function GroupsManagerPage() {
 }
 
 function GroupCard({ group, onEdit, onDelete, onToggleOpen, onViewMembers }) {
+  const navigate = useNavigate();
   const typeInfo = GROUP_TYPES.find(t => t.name === group.group_type) || GROUP_TYPES[0];
   
   return (
@@ -281,6 +283,9 @@ function GroupCard({ group, onEdit, onDelete, onToggleOpen, onViewMembers }) {
       </div>
 
       <div className="group-card-actions">
+        <button onClick={() => navigate(`/admin/groups/${group.id}/dashboard`)} className="action-btn" title="Leader Dashboard" data-testid={`group-dashboard-${group.id}`}>
+          <BarChart3 className="w-4 h-4" />
+        </button>
         <button onClick={onViewMembers} className="action-btn" title="View Members">
           <Users className="w-4 h-4" />
         </button>
