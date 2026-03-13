@@ -3070,12 +3070,9 @@ async def create_merch_order(request: Request, payload: MerchOrderCreate):
 # ============== KIDS CHECK-IN ROUTES ==============
 
 def generate_pickup_code():
-    """Generate a unique pickup code like 'ABC-1234'"""
+    """Generate a simple 3-digit pickup code like '247'"""
     import random
-    import string
-    letters = ''.join(random.choices(string.ascii_uppercase, k=3))
-    numbers = ''.join(random.choices(string.digits, k=4))
-    return f"{letters}-{numbers}"
+    return str(random.randint(100, 999))
 
 @api_router.get("/portal/kids")
 async def get_my_kids(request: Request):
