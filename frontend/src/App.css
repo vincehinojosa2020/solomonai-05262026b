@@ -14418,6 +14418,176 @@ textarea:focus-visible {
   .checkin-btn {
     width: 100%;
   }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   GIVING NUDGE COMPONENT (Module 10 - v3.0)
+   Reusable warm, non-pushy offering prompt
+   ═══════════════════════════════════════════════════════════════ */
+
+.giving-nudge {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid #fcd34d;
+  border-left: 4px solid #F59E0B;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.giving-nudge-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.giving-nudge-icon {
+  width: 20px;
+  height: 20px;
+  color: #D97706;
+}
+
+.giving-nudge-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #92400E;
+  flex: 1;
+}
+
+.giving-nudge-dismiss {
+  background: transparent;
+  border: none;
+  color: #A16207;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  min-height: auto;
+  min-width: auto;
+}
+
+.giving-nudge-dismiss:hover {
+  background: rgba(161, 98, 7, 0.1);
+}
+
+.giving-nudge-subtitle {
+  font-size: 14px;
+  color: #A16207;
+  margin: 0 0 16px 0;
+}
+
+.giving-nudge-amounts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.giving-nudge-btn {
+  padding: 12px 24px;
+  background: white;
+  border: 2px solid #FCD34D;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #92400E;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.giving-nudge-btn:hover {
+  background: #FEF3C7;
+  border-color: #F59E0B;
+}
+
+.giving-nudge-btn.active {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  border-color: #D97706;
+  color: white;
+}
+
+.giving-nudge-custom-input {
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.giving-nudge-custom-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.giving-nudge-custom-row span {
+  font-size: 18px;
+  font-weight: 600;
+  color: #92400E;
+}
+
+.giving-nudge-custom-row input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 2px solid #FCD34D;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #92400E;
+  background: white;
+}
+
+.giving-nudge-custom-row input:focus {
+  outline: none;
+  border-color: #F59E0B;
+}
+
+.giving-nudge-custom-submit {
+  padding: 10px 20px;
+  background: #F59E0B;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  min-height: auto;
+}
+
+.giving-nudge-selected {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(217, 119, 6, 0.1);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.giving-nudge-selected span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #92400E;
+}
+
+.giving-nudge-clear {
+  background: none;
+  border: none;
+  color: #A16207;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px;
+  min-height: auto;
+  min-width: auto;
+}
+
+.giving-nudge-clear:hover {
+  color: #92400E;
+}
+
+.giving-nudge-footer {
+  font-size: 12px;
+  color: #A16207;
+  margin: 0;
+  text-align: center;
+}
   
   .service-mode-watch-btn {
     position: relative;

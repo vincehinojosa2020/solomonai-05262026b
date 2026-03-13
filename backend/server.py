@@ -60,6 +60,47 @@ db = client[os.environ['DB_NAME']]
 # Create the main app
 app = FastAPI(title="Solomon AI Church Management API")
 
+# ============== SECURITY MIDDLEWARE (Module 9 - v3.0) ==============
+
+@app.middleware("http")
+async def security_headers_middleware(request: Request, call_next):
+    """Add security headers to all responses (OWASP best practices)"""
+    response = await call_next(request)
+    
+    # Prevent XSS attacks
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    
+    # Referrer policy
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    
+    # Content Security Policy (relaxed for development)
+    # response.headers["Content-Security-Policy"] = "default-src 'self'"
+    
+    return response
+
+# Rate limiting for auth endpoints (basic in-memory, use Redis in production)
+AUTH_RATE_LIMIT = {}
+AUTH_RATE_LIMIT_MAX = 10  # Max 10 attempts per minute per IP
+AUTH_RATE_LIMIT_WINDOW = 60  # 1 minute window
+
+def check_rate_limit(ip: str) -> bool:
+    """Check if IP has exceeded rate limit for auth endpoints"""
+    import time
+    current_time = time.time()
+    
+    if ip not in AUTH_RATE_LIMIT:
+        AUTH_RATE_LIMIT[ip] = {"count": 0, "window_start": current_time}
+    
+    # Reset window if expired
+    if current_time - AUTH_RATE_LIMIT[ip]["window_start"] > AUTH_RATE_LIMIT_WINDOW:
+        AUTH_RATE_LIMIT[ip] = {"count": 0, "window_start": current_time}
+    
+    AUTH_RATE_LIMIT[ip]["count"] += 1
+    
+    return AUTH_RATE_LIMIT[ip]["count"] <= AUTH_RATE_LIMIT_MAX
+
 # Create router with /api prefix
 api_router = APIRouter(prefix="/api")
 
