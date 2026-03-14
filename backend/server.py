@@ -2334,14 +2334,18 @@ async def exchange_session(request: SessionRequest, response: Response):
 
 def get_session_token_from_request(request: Request) -> Optional[str]:
     """Resolve auth token from cookie (web) or Authorization Bearer header (mobile)."""
+    # Prefer explicit Authorization header so API clients can override stale browser cookies.
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header:
+        parts = auth_header.strip().split(" ", 1)
+        if len(parts) == 2 and parts[0].lower() == "bearer":
+            token = parts[1].strip()
+            if token:
+                return token
+
     session_token = request.cookies.get("session_token")
     if session_token:
         return session_token
-
-    auth_header = request.headers.get("Authorization", "")
-    if auth_header.startswith("Bearer "):
-        token = auth_header[7:].strip()
-        return token or None
 
     return None
 
@@ -3933,7 +3937,7 @@ async def get_portal_merch_products(
     category: Optional[str] = None
 ):
     user = await get_current_member_user(request)
-    tenant_id = user.get("tenant_id")
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
 
     await ensure_demo_merch_data(tenant_id)
 
@@ -4558,7 +4562,7 @@ async def get_portal_cafe_items(
     category: Optional[str] = None
 ):
     user = await get_current_member_user(request)
-    tenant_id = user.get("tenant_id")
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
 
     await ensure_demo_cafe_data(tenant_id)
 
@@ -6164,7 +6168,7 @@ async def get_portal_videos(request: Request, category: Optional[str] = None, li
 async def get_portal_sermons(request: Request, limit: int = 50):
     """Sermon-focused feed for mobile/web clients."""
     user = await get_current_member_user(request)
-    tenant_id = user.get("tenant_id")
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
 
     sermons = await db.media_videos.find(
         {
