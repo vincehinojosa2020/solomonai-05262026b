@@ -1,432 +1,383 @@
-import requests
+#!/usr/bin/env python3
+"""
+Backend Go-Live Verification Tests for Solomon Church Management System
+Testing production environment: https://solomon-church.preview.emergentagent.com/api
+"""
+import asyncio
+import aiohttp
 import json
+from typing import Dict, List, Optional, Any
 import sys
-from datetime import datetime
 
-class SamsonAPITester:
-    def __init__(self, base_url="https://solomon-church.preview.emergentagent.com"):
-        self.base_url = base_url
-        self.tests_run = 0
-        self.tests_passed = 0
+# Production base URL
+BASE_URL = "https://solomon-church.preview.emergentagent.com/api"
+
+# Test credentials provided in review request
+TEST_ACCOUNTS = [
+    {"email": "member@abundant.church", "password": "Demo2026!", "role": "member"},
+    {"email": "member@cristoviene.church", "password": "Demo2026!", "role": "member"},
+    {"email": "admin@abundant.church", "password": "Demo2026!", "role": "admin"},
+    {"email": "admin@cristoviene.church", "password": "Demo2026!", "role": "admin"},
+    {"email": "admin@pottershouse.church", "password": "Demo2026!", "role": "admin"},
+    {"email": "admin@solomon.ai", "password": "Demo2026!", "role": "platform_admin"},
+]
+
+# Expected data counts for member@abundant.church
+EXPECTED_DATA_COUNTS = {
+    "events": 50,
+    "groups": 100,
+    "ytd_total": 500,
+    "merch_products": 5,
+    "cafe_items": 5,
+    "children": 1,
+    "current_streak": 1,  # minimum
+    "videos": 3,
+    "courses": 2,  # minimum
+    "requests": 2,  # minimum
+    "opportunities": 5,  # minimum
+    "announcements": 3,  # minimum
+}
+
+# Admin dashboard required fields
+REQUIRED_DASHBOARD_FIELDS = [
+    "total_members", "active_members", "new_this_week", "last_sunday_attendance",
+    "mtd_giving", "ytd_giving", "recurring_donors", "cafe_orders_this_week",
+    "merch_sales_this_week", "event_signups_this_month", "small_groups_count",
+    "at_risk_members"
+]
+
+class ProductionTester:
+    def __init__(self):
+        self.session = None
         self.test_results = []
-
-    def run_test(self, name, method, endpoint, expected_status=200, data=None, headers=None):
-        """Run a single API test"""
-        url = f"{self.base_url}/api/{endpoint}" if not endpoint.startswith('/api/') else f"{self.base_url}{endpoint}"
+        self.failed_tests = []
+        self.successful_tests = []
         
-        default_headers = {'Content-Type': 'application/json'}
-        if headers:
-            default_headers.update(headers)
-
-        self.tests_run += 1
-        print(f"\n🔍 Testing {name}...")
-        print(f"   {method} {url}")
+    async def setup(self):
+        """Setup aiohttp session with proper headers"""
+        timeout = aiohttp.ClientTimeout(total=30)
+        connector = aiohttp.TCPConnector(ssl=False)
+        self.session = aiohttp.ClientSession(
+            timeout=timeout,
+            connector=connector,
+            headers={
+                "User-Agent": "Solomon-Church-Test-Client/1.0",
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+        )
         
-        try:
-            if method == 'GET':
-                response = requests.get(url, headers=default_headers, timeout=30)
-            elif method == 'POST':
-                response = requests.post(url, json=data, headers=default_headers, timeout=30)
-            elif method == 'PUT':
-                response = requests.put(url, json=data, headers=default_headers, timeout=30)
-            elif method == 'DELETE':
-                response = requests.delete(url, headers=default_headers, timeout=30)
-
-            success = response.status_code == expected_status
+    async def cleanup(self):
+        """Cleanup session"""
+        if self.session:
+            await self.session.close()
             
-            if success:
-                self.tests_passed += 1
-                print(f"✅ PASSED - Status: {response.status_code}")
-                try:
-                    response_data = response.json()
-                    self.test_results.append({
-                        "name": name,
-                        "status": "PASSED",
-                        "status_code": response.status_code,
-                        "response_size": len(str(response_data)) if response_data else 0
-                    })
-                    return True, response_data
-                except:
-                    return True, {}
-            else:
-                print(f"❌ FAILED - Expected {expected_status}, got {response.status_code}")
-                print(f"   Response: {response.text[:200]}...")
-                self.test_results.append({
-                    "name": name,
-                    "status": "FAILED", 
-                    "expected": expected_status,
-                    "actual": response.status_code,
-                    "error": response.text[:200]
-                })
-                return False, {}
-
-        except requests.exceptions.RequestException as e:
-            print(f"❌ FAILED - Request Error: {str(e)}")
-            self.test_results.append({
-                "name": name,
-                "status": "ERROR",
-                "error": str(e)
-            })
-            return False, {}
-
-    def test_api_root(self):
-        """Test API root endpoint"""
-        return self.run_test("API Root", "GET", "")
-
-    def test_dashboard_endpoints(self):
-        """Test all dashboard endpoints"""
-        print("\n📊 TESTING DASHBOARD ENDPOINTS")
-        
-        success_count = 0
-        
-        # Dashboard stats
-        success, stats = self.run_test("Dashboard Stats", "GET", "dashboard/stats")
-        if success and isinstance(stats, dict):
-            required_keys = ['total_members', 'active_groups', 'mtd_giving', 'ytd_giving']
-            if all(key in stats for key in required_keys):
-                print("   ✓ Contains required stats keys")
-                success_count += 1
-            else:
-                print("   ⚠ Missing required stats keys")
-
-        # Giving trend
-        success, trend = self.run_test("Giving Trend", "GET", "dashboard/giving-trend")
-        if success and isinstance(trend, list):
-            success_count += 1
-
-        # Attendance trend  
-        success, attendance = self.run_test("Attendance Trend", "GET", "dashboard/attendance-trend")
-        if success and isinstance(attendance, list):
-            success_count += 1
-
-        # Recent activity
-        success, activity = self.run_test("Recent Activity", "GET", "dashboard/activity")
-        if success:
-            success_count += 1
-
-        # Upcoming events
-        success, events = self.run_test("Upcoming Events", "GET", "dashboard/upcoming-events")
-        if success:
-            success_count += 1
-
-        return success_count == 5
-
-    def test_people_endpoints(self):
-        """Test people/members endpoints"""
-        print("\n👥 TESTING PEOPLE ENDPOINTS")
-        
-        success_count = 0
-
-        # Get people list
-        success, people_data = self.run_test("Get People List", "GET", "people")
-        if success and 'data' in people_data and isinstance(people_data['data'], list):
-            print(f"   ✓ Retrieved {len(people_data['data'])} people")
-            success_count += 1
-            
-            # Test with pagination
-            success, _ = self.run_test("Get People Page 2", "GET", "people?page=2&per_page=10")
-            if success:
-                success_count += 1
-            
-            # Test with search
-            success, _ = self.run_test("Search People", "GET", "people?search=John")
-            if success:
-                success_count += 1
-            
-            # Test with status filter
-            success, _ = self.run_test("Filter People by Status", "GET", "people?status=member")
-            if success:
-                success_count += 1
-
-            # Get individual person if people exist
-            if people_data['data']:
-                person_id = people_data['data'][0]['id']
-                success, person = self.run_test("Get Person Details", "GET", f"people/{person_id}")
-                if success:
-                    success_count += 1
-                
-                # Test person's giving
-                success, _ = self.run_test("Get Person Giving", "GET", f"people/{person_id}/giving")
-                if success:
-                    success_count += 1
-                
-                # Test person's attendance
-                success, _ = self.run_test("Get Person Attendance", "GET", f"people/{person_id}/attendance")
-                if success:
-                    success_count += 1
-                
-                # Test person's groups
-                success, _ = self.run_test("Get Person Groups", "GET", f"people/{person_id}/groups")
-                if success:
-                    success_count += 1
-
-        # Test creating a new person
-        new_person_data = {
-            "first_name": "Test",
-            "last_name": "Person",
-            "email": f"test.person.{datetime.now().strftime('%H%M%S')}@example.com",
-            "membership_status": "visitor"
+    def log_test(self, test_name: str, passed: bool, details: str):
+        """Log test result"""
+        status = "✅ PASS" if passed else "❌ FAIL"
+        result = {
+            "test": test_name,
+            "status": status,
+            "details": details,
+            "passed": passed
         }
-        success, created_person = self.run_test("Create Person", "POST", "people", 200, new_person_data)
-        if success and 'id' in created_person:
-            print("   ✓ Successfully created new person")
-            success_count += 1
-            
-            # Test updating the person
-            updated_data = {"first_name": "Updated", "last_name": "Person"}
-            success, _ = self.run_test("Update Person", "PUT", f"people/{created_person['id']}", 200, updated_data)
-            if success:
-                success_count += 1
-
-        return success_count >= 6
-
-    def test_groups_endpoints(self):
-        """Test groups endpoints"""
-        print("\n👥 TESTING GROUPS ENDPOINTS")
+        self.test_results.append(result)
+        if passed:
+            self.successful_tests.append(result)
+        else:
+            self.failed_tests.append(result)
+        print(f"{status}: {test_name} - {details}")
         
-        success_count = 0
-
-        # Get groups list
-        success, groups_data = self.run_test("Get Groups List", "GET", "groups")
-        if success and 'data' in groups_data:
-            print(f"   ✓ Retrieved {len(groups_data['data'])} groups")
-            success_count += 1
-            
-            # Get group types
-            success, _ = self.run_test("Get Group Types", "GET", "group-types")
-            if success:
-                success_count += 1
-
-            # Get individual group if groups exist
-            if groups_data['data']:
-                group_id = groups_data['data'][0]['id']
-                success, group = self.run_test("Get Group Details", "GET", f"groups/{group_id}")
-                if success:
-                    success_count += 1
+    async def login_user(self, email: str, password: str) -> Optional[Dict]:
+        """Test login for a user account"""
+        try:
+            login_data = {"email": email, "password": password}
+            async with self.session.post(f"{BASE_URL}/auth/login", json=login_data) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    self.log_test(f"Login {email}", False, f"Status {response.status}: {error_text}")
+                    return None
+                    
+                data = await response.json()
                 
-                # Get group members
-                success, _ = self.run_test("Get Group Members", "GET", f"groups/{group_id}/members")
-                if success:
-                    success_count += 1
-
-        return success_count >= 2
-
-    def test_giving_endpoints(self):
-        """Test giving/donations endpoints"""
-        print("\n💰 TESTING GIVING ENDPOINTS")
-        
-        success_count = 0
-
-        # Get giving stats
-        success, stats = self.run_test("Get Giving Stats", "GET", "giving/stats")
-        if success and isinstance(stats, dict):
-            success_count += 1
-
-        # Get funds
-        success, funds = self.run_test("Get Funds", "GET", "funds")
-        if success and isinstance(funds, list):
-            print(f"   ✓ Retrieved {len(funds)} funds")
-            success_count += 1
+                # Check for required fields
+                required_fields = ["session_token", "token", "access_token"]
+                missing_fields = [field for field in required_fields if field not in data]
+                if missing_fields:
+                    self.log_test(f"Login {email}", False, f"Missing fields: {missing_fields}")
+                    return None
+                    
+                # Verify all three tokens have same value
+                token_values = [data.get(field) for field in required_fields]
+                if not all(token == token_values[0] for token in token_values):
+                    self.log_test(f"Login {email}", False, "Token values are not identical")
+                    return None
+                    
+                self.log_test(f"Login {email}", True, "Login successful with matching tokens")
+                return data
+                
+        except Exception as e:
+            self.log_test(f"Login {email}", False, f"Exception: {str(e)}")
+            return None
             
-            # Create a test donation if funds exist
-            if funds:
-                donation_data = {
-                    "fund_id": funds[0]['id'],
-                    "amount": 100.00,
-                    "donation_date": datetime.now().strftime('%Y-%m-%d'),
-                    "payment_method": "cash",
-                    "notes": "API Test Donation"
+    async def test_endpoint_with_auth(self, endpoint: str, token: str, expected_data: Any = None, 
+                                      check_count: bool = False, min_count: int = 0) -> Dict:
+        """Test authenticated endpoint"""
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            async with self.session.get(f"{BASE_URL}{endpoint}", headers=headers) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    return {"success": False, "error": f"Status {response.status}: {error_text}"}
+                    
+                data = await response.json()
+                result = {"success": True, "data": data}
+                
+                # Check specific data expectations
+                if expected_data is not None:
+                    if isinstance(expected_data, dict):
+                        for key, expected_value in expected_data.items():
+                            if key not in data:
+                                result["success"] = False
+                                result["error"] = f"Missing field: {key}"
+                                break
+                            if data[key] != expected_value:
+                                result["success"] = False
+                                result["error"] = f"{key}: expected {expected_value}, got {data[key]}"
+                                break
+                                
+                if check_count and isinstance(data, list):
+                    count = len(data)
+                    if count < min_count:
+                        result["success"] = False
+                        result["error"] = f"Expected minimum {min_count} items, got {count}"
+                    else:
+                        result["count"] = count
+                        
+                return result
+                
+        except Exception as e:
+            return {"success": False, "error": f"Exception: {str(e)}"}
+            
+    async def test_cors_preflight(self, endpoint: str) -> bool:
+        """Test CORS preflight request"""
+        try:
+            headers = {
+                "Origin": "https://test-domain.com",
+                "Access-Control-Request-Method": "GET",
+                "Access-Control-Request-Headers": "authorization,content-type"
+            }
+            
+            async with self.session.options(f"{BASE_URL}{endpoint}", headers=headers) as response:
+                cors_headers = {
+                    "access-control-allow-origin": response.headers.get("access-control-allow-origin"),
+                    "access-control-allow-methods": response.headers.get("access-control-allow-methods"),
+                    "access-control-allow-headers": response.headers.get("access-control-allow-headers")
                 }
-                success, donation = self.run_test("Create Donation", "POST", "donations", 200, donation_data)
-                if success:
-                    success_count += 1
-
-        # Get donations list
-        success, donations = self.run_test("Get Donations List", "GET", "donations")
-        if success and 'data' in donations:
-            print(f"   ✓ Retrieved {len(donations['data'])} donations")
-            success_count += 1
-
-        # Get batches
-        success, _ = self.run_test("Get Batches", "GET", "batches")
-        if success:
-            success_count += 1
-
-        return success_count >= 3
-
-    def test_attendance_endpoints(self):
-        """Test attendance/services endpoints"""
-        print("\n📅 TESTING ATTENDANCE ENDPOINTS")
-        
-        success_count = 0
-
-        # Get services
-        success, services = self.run_test("Get Services", "GET", "services")
-        if success and isinstance(services, list):
-            success_count += 1
+                
+                # Check CORS headers
+                checks = []
+                checks.append(("allow-origin", "*" in str(cors_headers.get("access-control-allow-origin", ""))))
+                checks.append(("allow-methods", all(method in str(cors_headers.get("access-control-allow-methods", "")).upper() 
+                              for method in ["GET", "POST", "PUT", "DELETE", "OPTIONS"])))
+                checks.append(("allow-headers", "*" in str(cors_headers.get("access-control-allow-headers", ""))))
+                
+                all_passed = all(check[1] for check in checks)
+                failed_checks = [check[0] for check in checks if not check[1]]
+                
+                details = f"CORS headers: {cors_headers}"
+                if failed_checks:
+                    details += f" | Failed: {failed_checks}"
+                    
+                self.log_test("CORS Preflight", all_passed, details)
+                return all_passed
+                
+        except Exception as e:
+            self.log_test("CORS Preflight", False, f"Exception: {str(e)}")
+            return False
             
-            # Get service types
-            success, _ = self.run_test("Get Service Types", "GET", "service-types")
-            if success:
-                success_count += 1
-
-        return success_count >= 1
-
-    def test_events_endpoints(self):
-        """Test events endpoints"""
-        print("\n🎉 TESTING EVENTS ENDPOINTS")
+    async def run_all_tests(self):
+        """Run complete test suite"""
+        print("🚀 Starting Go-Live Verification Tests...")
+        print(f"Testing: {BASE_URL}")
+        print("=" * 80)
         
-        success_count = 0
-
-        # Get events
-        success, events = self.run_test("Get Events", "GET", "events")
-        if success and isinstance(events, list):
-            print(f"   ✓ Retrieved {len(events)} events")
-            success_count += 1
+        # Step 1: Test login for all accounts
+        print("\n📋 STEP 1: Testing Login for All Accounts")
+        login_tokens = {}
+        
+        for account in TEST_ACCOUNTS:
+            login_result = await self.login_user(account["email"], account["password"])
+            if login_result:
+                login_tokens[account["email"]] = {
+                    "token": login_result["session_token"],
+                    "role": account["role"]
+                }
+                
+        if not login_tokens:
+            print("❌ All logins failed - cannot proceed with endpoint tests")
+            return
             
-            # Get individual event if events exist
-            if events:
-                event_id = events[0]['id']
-                success, _ = self.run_test("Get Event Details", "GET", f"events/{event_id}")
-                if success:
-                    success_count += 1
-
-        return success_count >= 1
-
-    def test_communications_endpoints(self):
-        """Test communications endpoints"""
-        print("\n📧 TESTING COMMUNICATIONS ENDPOINTS")
+        # Step 2: Test member@abundant.church specific endpoints
+        print("\n📋 STEP 2: Testing member@abundant.church Portal Endpoints")
+        member_email = "member@abundant.church"
         
-        success_count = 0
-
-        # Get communications
-        success, _ = self.run_test("Get Communications", "GET", "communications")
-        if success:
-            success_count += 1
-
-        return success_count >= 1
-
-    def test_reports_endpoints(self):
-        """Test reports endpoints"""
-        print("\n📊 TESTING REPORTS ENDPOINTS")
+        if member_email in login_tokens:
+            member_token = login_tokens[member_email]["token"]
+            
+            # Test each portal endpoint with expected data
+            endpoint_tests = [
+                ("/portal/events", "events", 50),
+                ("/portal/groups", "groups", 100), 
+                ("/portal/merch/products", "merch_products", 5),
+                ("/portal/cafe/menu", "cafe_items", 5),
+                ("/portal/kids/children", "children", 1),
+                ("/portal/media/sermons", "videos", 3),
+                ("/portal/courses", "courses", 2),
+                ("/portal/prayer-requests", "requests", 2),
+                ("/portal/volunteer/opportunities", "opportunities", 5),
+                ("/portal/announcements", "announcements", 3),
+            ]
+            
+            for endpoint, data_type, min_count in endpoint_tests:
+                result = await self.test_endpoint_with_auth(endpoint, member_token, check_count=True, min_count=min_count)
+                test_name = f"Member Portal: {endpoint}"
+                if result["success"]:
+                    actual_count = result.get("count", 0)
+                    self.log_test(test_name, True, f"Got {actual_count} {data_type} (expected min {min_count})")
+                else:
+                    self.log_test(test_name, False, result["error"])
+                    
+            # Test specific data structure endpoints
+            ytd_result = await self.test_endpoint_with_auth("/portal/giving/ytd", member_token)
+            if ytd_result["success"] and "ytd_total" in ytd_result["data"]:
+                ytd_value = ytd_result["data"]["ytd_total"]
+                expected_ytd = EXPECTED_DATA_COUNTS["ytd_total"]
+                self.log_test("Member Portal: /portal/giving/ytd", ytd_value >= expected_ytd, 
+                             f"YTD total: {ytd_value} (expected min {expected_ytd})")
+            else:
+                self.log_test("Member Portal: /portal/giving/ytd", False, 
+                             ytd_result.get("error", "Missing ytd_total field"))
+                             
+            streak_result = await self.test_endpoint_with_auth("/portal/attendance/streak", member_token)
+            if streak_result["success"] and "current_streak" in streak_result["data"]:
+                streak_value = streak_result["data"]["current_streak"]
+                expected_streak = EXPECTED_DATA_COUNTS["current_streak"]
+                self.log_test("Member Portal: /portal/attendance/streak", streak_value >= expected_streak,
+                             f"Current streak: {streak_value} (expected min {expected_streak})")
+            else:
+                self.log_test("Member Portal: /portal/attendance/streak", False,
+                             streak_result.get("error", "Missing current_streak field"))
+                             
+            next_steps_result = await self.test_endpoint_with_auth("/portal/next-steps", member_token)
+            if next_steps_result["success"]:
+                data = next_steps_result["data"]
+                has_steps = "steps" in data or "next_steps" in data
+                has_percentage = "percentage_complete" in data
+                self.log_test("Member Portal: /portal/next-steps", has_steps and has_percentage,
+                             f"Has steps: {has_steps}, Has percentage: {has_percentage}")
+            else:
+                self.log_test("Member Portal: /portal/next-steps", False, next_steps_result["error"])
+        else:
+            print(f"⚠️ Cannot test member endpoints - {member_email} login failed")
+            
+        # Step 3: Test admin access
+        print("\n📋 STEP 3: Testing Admin Access")
+        admin_email = "admin@abundant.church"
         
-        success_count = 0
-        current_date = datetime.now().strftime('%Y-%m-%d')
-        start_date = "2024-01-01"
-
-        # Test giving reports
-        success, _ = self.run_test("Giving by Fund Report", "GET", f"reports/giving-by-fund?start_date={start_date}&end_date={current_date}")
-        if success:
-            success_count += 1
-
-        success, _ = self.run_test("Giving by Method Report", "GET", f"reports/giving-by-method?start_date={start_date}&end_date={current_date}")
-        if success:
-            success_count += 1
-
-        success, _ = self.run_test("Top Donors Report", "GET", f"reports/top-donors?start_date={start_date}&end_date={current_date}")
-        if success:
-            success_count += 1
-
-        success, _ = self.run_test("Membership Report", "GET", "reports/membership")
-        if success:
-            success_count += 1
-
-        return success_count >= 2
-
-    def test_search_endpoint(self):
-        """Test global search"""
-        print("\n🔍 TESTING SEARCH ENDPOINT")
+        if admin_email in login_tokens:
+            admin_token = login_tokens[admin_email]["token"]
+            
+            admin_endpoints = [
+                "/portal/merch/products",
+                "/portal/cafe/menu", 
+                "/portal/kids/children",
+                "/portal/media/sermons"
+            ]
+            
+            for endpoint in admin_endpoints:
+                result = await self.test_endpoint_with_auth(endpoint, admin_token)
+                self.log_test(f"Admin Access: {endpoint}", result["success"], 
+                             result.get("error", "200 OK"))
+        else:
+            print(f"⚠️ Cannot test admin endpoints - {admin_email} login failed")
+            
+        # Step 4: Test admin dashboard
+        print("\n📋 STEP 4: Testing Admin Dashboard")
+        if admin_email in login_tokens:
+            admin_token = login_tokens[admin_email]["token"]
+            
+            dashboard_result = await self.test_endpoint_with_auth("/admin/dashboard", admin_token)
+            if dashboard_result["success"]:
+                data = dashboard_result["data"]
+                missing_fields = [field for field in REQUIRED_DASHBOARD_FIELDS if field not in data]
+                if missing_fields:
+                    self.log_test("Admin Dashboard", False, f"Missing fields: {missing_fields}")
+                else:
+                    self.log_test("Admin Dashboard", True, "All required fields present")
+            else:
+                self.log_test("Admin Dashboard", False, dashboard_result["error"])
+        else:
+            print(f"⚠️ Cannot test admin dashboard - {admin_email} login failed")
+            
+        # Step 5: Test CORS preflight
+        print("\n📋 STEP 5: Testing CORS Configuration")
+        await self.test_cors_preflight("/portal/merch/products")
         
-        success, results = self.run_test("Global Search", "GET", "search?q=John")
-        if success and isinstance(results, list):
-            return True
-        return False
-
-    def test_tenant_endpoint(self):
-        """Test tenant endpoint"""
-        print("\n🏢 TESTING TENANT ENDPOINT")
+        # Print summary
+        self.print_summary()
         
-        success, tenant = self.run_test("Get Tenant", "GET", "tenant")
-        if success and isinstance(tenant, dict):
-            required_keys = ['id', 'name', 'subdomain']
-            if all(key in tenant for key in required_keys):
-                print("   ✓ Contains required tenant keys")
-                return True
-        return False
+    def print_summary(self):
+        """Print test summary"""
+        print("\n" + "=" * 80)
+        print("🎯 TEST SUMMARY")
+        print("=" * 80)
+        
+        total_tests = len(self.test_results)
+        passed_tests = len(self.successful_tests)
+        failed_tests = len(self.failed_tests)
+        
+        print(f"Total Tests: {total_tests}")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"Success Rate: {(passed_tests/total_tests*100):.1f}%" if total_tests > 0 else "N/A")
+        
+        if self.failed_tests:
+            print("\n❌ FAILED TESTS:")
+            for test in self.failed_tests:
+                print(f"  • {test['test']}: {test['details']}")
+                
+        if self.successful_tests:
+            print(f"\n✅ SUCCESSFUL TESTS ({len(self.successful_tests)}):")
+            for test in self.successful_tests:
+                print(f"  • {test['test']}")
+                
+        print("\n" + "=" * 80)
+        
+        # Return exit code
+        return 0 if failed_tests == 0 else 1
 
-def main():
-    """Run comprehensive API tests for Samson ChMS"""
-    print("🚀 Starting Samson Church Management System API Tests")
-    print("=" * 60)
+async def main():
+    """Main test runner"""
+    tester = ProductionTester()
     
-    tester = SamsonAPITester()
-    
-    # Track which test categories passed
-    category_results = {}
-    
-    # Test API Root
-    category_results['api_root'] = tester.test_api_root()
-    
-    # Test Tenant
-    category_results['tenant'] = tester.test_tenant_endpoint()
-    
-    # Test Dashboard
-    category_results['dashboard'] = tester.test_dashboard_endpoints()
-    
-    # Test People
-    category_results['people'] = tester.test_people_endpoints()
-    
-    # Test Groups  
-    category_results['groups'] = tester.test_groups_endpoints()
-    
-    # Test Giving
-    category_results['giving'] = tester.test_giving_endpoints()
-    
-    # Test Attendance
-    category_results['attendance'] = tester.test_attendance_endpoints()
-    
-    # Test Events
-    category_results['events'] = tester.test_events_endpoints()
-    
-    # Test Communications
-    category_results['communications'] = tester.test_communications_endpoints()
-    
-    # Test Reports
-    category_results['reports'] = tester.test_reports_endpoints()
-    
-    # Test Search
-    category_results['search'] = tester.test_search_endpoint()
-    
-    # Print final results
-    print("\n" + "=" * 60)
-    print("🏁 FINAL TEST RESULTS")
-    print("=" * 60)
-    
-    passed_categories = sum(1 for passed in category_results.values() if passed)
-    total_categories = len(category_results)
-    
-    print(f"📊 Tests passed: {tester.tests_passed}/{tester.tests_run}")
-    print(f"📋 Categories passed: {passed_categories}/{total_categories}")
-    
-    print("\n📈 Category Results:")
-    for category, passed in category_results.items():
-        status = "✅ PASSED" if passed else "❌ FAILED"
-        print(f"   {category.title()}: {status}")
-    
-    # Success criteria: 80% of tests pass and critical endpoints work
-    success_rate = (tester.tests_passed / tester.tests_run) * 100
-    critical_categories = ['api_root', 'dashboard', 'people', 'giving']
-    critical_passed = all(category_results.get(cat, False) for cat in critical_categories)
-    
-    print(f"\n🎯 Overall Success Rate: {success_rate:.1f}%")
-    print(f"🔑 Critical Categories: {'✅ PASSED' if critical_passed else '❌ FAILED'}")
-    
-    if success_rate >= 80 and critical_passed:
-        print("\n🎉 BACKEND API TESTING: SUCCESS")
-        return 0
-    else:
-        print("\n⚠️  BACKEND API TESTING: NEEDS ATTENTION")
+    try:
+        await tester.setup()
+        exit_code = await tester.run_all_tests()
+        return exit_code
+    except Exception as e:
+        print(f"❌ Test runner failed: {str(e)}")
         return 1
+    finally:
+        await tester.cleanup()
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        exit_code = asyncio.run(main())
+        sys.exit(exit_code)
+    except KeyboardInterrupt:
+        print("\n⚠️ Tests interrupted by user")
+        sys.exit(1)
+    except Exception as e:
+        print(f"❌ Fatal error: {str(e)}")
+        sys.exit(1)
