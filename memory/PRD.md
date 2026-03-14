@@ -449,6 +449,11 @@ All 10 modules implemented with 100% test pass rate.
 - ✅ Login response token alias contract preserved: `session_token`, `token`, and `access_token` all returned.
 - ✅ Testing: iteration 30 backend verification passed **22/22** tests (`/app/test_reports/iteration_30.json`).
 
+### Mar 14, 2026 (Mobile Startup Optimization)
+- ✅ Added new tiny aggregation endpoint: `GET /api/portal/bootstrap`.
+- ✅ Endpoint returns one payload for mobile startup: `user`, `merch_products`, `cafe_menu`, `kids_children`, `sermons`, `generated_at`.
+- ✅ Verified with Bearer tokens for member, church_admin, and platform_admin.
+
 ### Feb 27, 2026
 - ✅ Pastor's CRM / Meeting Scheduler complete (Admin + Member)
 - ✅ Abundant Pathways populated with 8 courses

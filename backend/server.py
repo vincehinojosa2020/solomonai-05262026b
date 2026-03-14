@@ -6184,6 +6184,31 @@ async def get_portal_sermons(request: Request, limit: int = 50):
         "total": len(sermons)
     }
 
+
+@api_router.get("/portal/bootstrap")
+async def get_portal_bootstrap(request: Request):
+    """Tiny mobile bootstrap endpoint to reduce initial round-trips."""
+    user = await get_current_member_user(request)
+
+    merch = await get_portal_merch_products(request)
+    cafe = await get_portal_cafe_menu(request)
+    children = await get_mobile_children(request)
+    sermons = await get_portal_sermons(request, limit=10)
+
+    return {
+        "user": {
+            "user_id": user.get("user_id"),
+            "name": user.get("name"),
+            "role": user.get("role"),
+            "tenant_id": user.get("tenant_id") or DEFAULT_TENANT_ID
+        },
+        "merch_products": merch.get("products", []),
+        "cafe_menu": cafe.get("items", []),
+        "kids_children": children.get("children", []),
+        "sermons": sermons.get("videos", []),
+        "generated_at": datetime.now(timezone.utc).isoformat()
+    }
+
 @api_router.get("/portal/media/featured")
 async def get_featured_video(request: Request):
     """Get the featured/hero video for the portal"""
