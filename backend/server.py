@@ -13278,6 +13278,116 @@ async def admin_log_volunteer_hours(request: Request, payload: LogVolunteerHours
     return {"message": f"Logged {payload.hours}h for {target_user.get('name', payload.user_id)}", "entry": serialize_doc(log_entry)}
 
 
+# ============== VOLUNTEER HOURS TRACKER (Self-Log + Breakdown) ==============
+
+class SelfLogHoursRequest(BaseModel):
+    hours: float
+    opportunity_id: Optional[str] = None
+    date: Optional[str] = None
+    notes: Optional[str] = ""
+
+@api_router.post("/portal/volunteer/log-hours")
+async def self_log_volunteer_hours(request: Request, payload: SelfLogHoursRequest):
+    """Member self-logs volunteer hours."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    if payload.hours <= 0 or payload.hours > 24:
+        raise HTTPException(status_code=400, detail="Hours must be between 0 and 24")
+
+    log_date = payload.date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    ministry_area = ""
+    if payload.opportunity_id:
+        opp = await db.volunteer_opportunities.find_one(
+            {"tenant_id": tenant_id, "id": payload.opportunity_id}, {"_id": 0, "ministry_area": 1, "title": 1}
+        )
+        ministry_area = (opp or {}).get("ministry_area", "")
+
+    entry = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "user_id": user["user_id"],
+        "user_name": user.get("name", ""),
+        "opportunity_id": payload.opportunity_id,
+        "ministry_area": ministry_area,
+        "hours": payload.hours,
+        "date": log_date,
+        "notes": payload.notes,
+        "status": "self_logged",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.volunteer_signups.insert_one(entry)
+    return {"message": f"Logged {payload.hours}h", "entry": serialize_doc(entry)}
+
+
+@api_router.get("/portal/volunteer/hours-summary")
+async def get_volunteer_hours_summary(request: Request, period: str = "monthly"):
+    """Weekly or monthly breakdown of the user's volunteer hours."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    user_id = user["user_id"]
+
+    all_entries = await db.volunteer_signups.find(
+        {"tenant_id": tenant_id, "user_id": user_id}, {"_id": 0}
+    ).sort("created_at", -1).to_list(1000)
+
+    now = datetime.now(timezone.utc)
+    buckets = {}
+
+    for entry in all_entries:
+        ts = entry.get("date") or entry.get("created_at", "")
+        try:
+            dt = datetime.fromisoformat(ts)
+        except (ValueError, TypeError):
+            continue
+
+        if period == "weekly":
+            key = f"{dt.isocalendar()[0]}-W{dt.isocalendar()[1]:02d}"
+        else:
+            key = dt.strftime("%Y-%m")
+
+        if key not in buckets:
+            buckets[key] = {"period": key, "hours": 0.0, "count": 0}
+        buckets[key]["hours"] = round(buckets[key]["hours"] + entry.get("hours", 0), 1)
+        buckets[key]["count"] += 1
+
+    sorted_buckets = sorted(buckets.values(), key=lambda b: b["period"], reverse=True)
+
+    # Current period totals
+    if period == "weekly":
+        current_key = f"{now.isocalendar()[0]}-W{now.isocalendar()[1]:02d}"
+    else:
+        current_key = now.strftime("%Y-%m")
+    current = buckets.get(current_key, {"period": current_key, "hours": 0.0, "count": 0})
+
+    total_hours = round(sum(e.get("hours", 0) for e in all_entries), 1)
+    total_sessions = len(all_entries)
+
+    return {
+        "user_id": user_id,
+        "period_type": period,
+        "current_period": current,
+        "breakdown": sorted_buckets[:12],
+        "total_hours": total_hours,
+        "total_sessions": total_sessions,
+    }
+
+
+@api_router.get("/portal/volunteer/hours-log")
+async def get_volunteer_hours_log(request: Request, limit: int = 50):
+    """Paginated log of the user's individual volunteer hour entries."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    entries = await db.volunteer_signups.find(
+        {"tenant_id": tenant_id, "user_id": user["user_id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(limit)
+
+    return {"entries": [serialize_doc(e) for e in entries], "total": len(entries)}
+
+
 # ============== SEED VOLUNTEER LEADERBOARD DEMO DATA ==============
 
 async def seed_volunteer_leaderboard_data():
