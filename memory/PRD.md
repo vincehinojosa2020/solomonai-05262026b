@@ -429,6 +429,16 @@ All 10 modules implemented with 100% test pass rate.
   - `admin@solomon.ai`
 - ✅ Testing: iteration 28 backend audit passed 29/29 tests (`/app/test_reports/iteration_28.json`).
 
+### Mar 14, 2026 (Critical Backend Cross-Account Fixes)
+- ✅ Fixed portal authorization to allow `member`, `church_admin`, and `platform_admin` (plus legacy `admin`) on portal APIs so admin accounts can consume portal data without 403s.
+- ✅ Auth response compatibility improved: `/api/auth/login` and `/api/auth/register` now return `session_token`, `token`, and `access_token` aliases.
+- ✅ Added missing admin APIs: `/api/admin/dashboard` and `/api/admin/giving/summary` (tenant-scoped metrics).
+- ✅ Added missing kids history API: `/api/portal/kids/checkin/history`.
+- ✅ Hardened demo seed data for `member@abundant.church` with deterministic mobile/web test data:
+  - 5 merch products, 5 cafe menu items, 3 sermons, 4 giving records, Emma Johnson kid profile, and attendance streak seed dates.
+- ✅ Added Bearer-token support to `/api/admin/members` and aligned CORS methods to `GET/POST/PUT/DELETE/OPTIONS` with wildcard origin + headers.
+- ✅ Testing: iteration 29 backend validation passed 27/27 tests (`/app/test_reports/iteration_29.json`).
+
 ### Feb 27, 2026
 - ✅ Pastor's CRM / Meeting Scheduler complete (Admin + Member)
 - ✅ Abundant Pathways populated with 8 courses
