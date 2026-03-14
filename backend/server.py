@@ -614,6 +614,16 @@ class QrGenerateRequest(BaseModel):
     expires_in_minutes: int = 60
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
+
+class PrayerRequestAliasCreate(BaseModel):
+    title: str
+    description: str
+    is_public: bool = False
+
+
+class VolunteerSignupRequest(BaseModel):
+    opportunity_id: str
+
 # ============== SOLOMON AI MODELS ==============
 
 class SolomonMessage(BaseModel):
@@ -1810,6 +1820,13 @@ async def ensure_mobile_demo_accounts():
             "subdomain": "cristoviene",
             "subscription_status": "active",
             "created_at": now_iso
+        },
+        {
+            "id": "pottershouse-church-001",
+            "name": "The Potter's House",
+            "subdomain": "pottershouse",
+            "subscription_status": "active",
+            "created_at": now_iso
         }
     ]
 
@@ -1856,6 +1873,24 @@ async def ensure_mobile_demo_accounts():
             "last_name": "Admin",
             "role": "platform_admin",
             "tenant_id": None
+        },
+        {
+            "email": "admin@cristoviene.church",
+            "user_id": "admin_cristoviene",
+            "name": "Cristo Viene Admin",
+            "first_name": "Cristo",
+            "last_name": "Viene Admin",
+            "role": "church_admin",
+            "tenant_id": "cristoviene-church-001"
+        },
+        {
+            "email": "admin@pottershouse.church",
+            "user_id": "admin_pottershouse",
+            "name": "Potter's House Admin",
+            "first_name": "Potter's House",
+            "last_name": "Admin",
+            "role": "church_admin",
+            "tenant_id": "pottershouse-church-001"
         }
     ]
 
@@ -1877,6 +1912,7 @@ async def ensure_mobile_demo_accounts():
         )
 
     await ensure_abundant_mobile_demo_content(now_iso)
+    await ensure_abundant_go_live_portal_content(now_iso)
 
 
 async def ensure_abundant_mobile_demo_content(now_iso: Optional[str] = None):
@@ -2244,6 +2280,237 @@ async def ensure_abundant_mobile_demo_content(now_iso: Optional[str] = None):
                     "updated_at": now_iso
                 },
                 "$setOnInsert": {"created_at": now_iso}
+            },
+            upsert=True
+        )
+
+
+async def ensure_abundant_go_live_portal_content(now_iso: Optional[str] = None):
+    """Seed go-live API data expected by web + mobile clients for Abundant demo account."""
+    tenant_id = DEFAULT_TENANT_ID
+    now_iso = now_iso or datetime.now(timezone.utc).isoformat()
+
+    member_user = await db.users.find_one(
+        {"email": "member@abundant.church"},
+        {"_id": 0, "user_id": 1, "name": 1, "tenant_id": 1}
+    )
+    if not member_user:
+        return
+
+    # Ensure 50 upcoming events
+    events_count = await db.events.count_documents({"tenant_id": tenant_id})
+    if events_count < 50:
+        today = datetime.now(timezone.utc).date()
+        for idx in range(1, 51):
+            event_date = (today + timedelta(days=idx)).isoformat()
+            event_doc = {
+                "id": f"event_abundant_{idx:03d}",
+                "tenant_id": tenant_id,
+                "name": f"Abundant Event {idx}",
+                "description": "Church gathering and discipleship opportunity.",
+                "location": "Abundant Main Campus",
+                "event_date": event_date,
+                "start_datetime": f"{event_date}T18:00:00",
+                "is_public": True,
+                "capacity": 350,
+                "registration_required": idx % 2 == 0,
+                "registration_count": min(idx * 2, 120),
+                "created_at": now_iso
+            }
+            await db.events.update_one(
+                {"id": event_doc["id"], "tenant_id": tenant_id},
+                {"$set": event_doc},
+                upsert=True
+            )
+
+    # Ensure 100 active groups
+    active_groups_count = await db.groups.count_documents({"tenant_id": tenant_id, "is_active": True})
+    if active_groups_count < 100:
+        for idx in range(1, 101):
+            group_doc = {
+                "id": f"group_abundant_{idx:03d}",
+                "tenant_id": tenant_id,
+                "name": f"Life Group {idx}",
+                "description": "Weekly small group for growth and community.",
+                "category": "Small Groups",
+                "meeting_day": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"][idx % 5],
+                "meeting_time": "7:00 PM",
+                "location": "Campus + Homes",
+                "is_active": True,
+                "max_members": 25,
+                "created_at": now_iso
+            }
+            await db.groups.update_one(
+                {"id": group_doc["id"], "tenant_id": tenant_id},
+                {"$set": group_doc},
+                upsert=True
+            )
+
+    # Force streak to at least 1 week by ensuring most recent check-in within last 7 days
+    today = datetime.now(timezone.utc).date()
+    recent_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
+    recent_checkin = {
+        "id": "chk_mobile_recent",
+        "tenant_id": tenant_id,
+        "user_id": member_user["user_id"],
+        "service_id": None,
+        "check_in_type": "in_person",
+        "service_date": recent_sunday.isoformat(),
+        "check_in_time": f"{recent_sunday.isoformat()}T09:00:00+00:00"
+    }
+    await db.member_checkins.update_one(
+        {"id": recent_checkin["id"], "tenant_id": tenant_id},
+        {"$set": recent_checkin},
+        upsert=True
+    )
+
+    # Next Steps journey API data
+    next_steps_doc = {
+        "id": f"next_steps_{member_user['user_id']}",
+        "tenant_id": tenant_id,
+        "user_id": member_user["user_id"],
+        "current_step": "Baptism",
+        "steps": [
+            {"id": 1, "title": "Salvation", "completed": True},
+            {"id": 2, "title": "Baptism", "completed": True},
+            {"id": 3, "title": "Membership Class", "completed": True},
+            {"id": 4, "title": "Small Group", "completed": False},
+            {"id": 5, "title": "Serve", "completed": False}
+        ],
+        "percentage_complete": 60,
+        "status": "in_progress",
+        "thinkific_url": "https://abundant.thinkific.com/courses",
+        "updated_at": now_iso
+    }
+    await db.next_steps_journeys.update_one(
+        {"tenant_id": tenant_id, "user_id": member_user["user_id"]},
+        {"$set": next_steps_doc},
+        upsert=True
+    )
+
+    # Mobile courses API data
+    course_docs = [
+        {
+            "id": "course_mobile_001",
+            "tenant_id": tenant_id,
+            "user_id": member_user["user_id"],
+            "title": "Abundant Foundations",
+            "description": "Core beliefs and foundations of faith",
+            "progress": 100,
+            "completed": True,
+            "thinkific_url": "https://abundant.thinkific.com/courses/foundations",
+            "thumbnail": "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80",
+            "updated_at": now_iso
+        },
+        {
+            "id": "course_mobile_002",
+            "tenant_id": tenant_id,
+            "user_id": member_user["user_id"],
+            "title": "Discovering Your Purpose",
+            "description": "Find your calling and ministry gifting",
+            "progress": 45,
+            "completed": False,
+            "thinkific_url": "https://abundant.thinkific.com/courses/discovering-your-purpose",
+            "thumbnail": "https://images.unsplash.com/photo-1516534775068-ba3e7458af70?auto=format&fit=crop&w=900&q=80",
+            "updated_at": now_iso
+        }
+    ]
+    for course in course_docs:
+        await db.member_courses.update_one(
+            {"id": course["id"], "tenant_id": tenant_id, "user_id": member_user["user_id"]},
+            {"$set": course, "$setOnInsert": {"created_at": now_iso}},
+            upsert=True
+        )
+    await db.member_courses.delete_many(
+        {
+            "tenant_id": tenant_id,
+            "user_id": member_user["user_id"],
+            "id": {"$nin": ["course_mobile_001", "course_mobile_002"]}
+        }
+    )
+
+    # Prayer requests data (one private, one public)
+    prayer_seed = [
+        {
+            "id": "prayer_mobile_001",
+            "tenant_id": tenant_id,
+            "user_id": member_user["user_id"],
+            "user_name": member_user.get("name", "Maria Garcia"),
+            "category": "healing",
+            "title": "Healing for my mother",
+            "content": "Please pray for full healing and strength for my mother this month.",
+            "is_public": False,
+            "is_anonymous": False,
+            "prayer_count": 0,
+            "status": "active",
+            "created_at": datetime.now(timezone.utc) - timedelta(days=6)
+        },
+        {
+            "id": "prayer_mobile_002",
+            "tenant_id": tenant_id,
+            "user_id": member_user["user_id"],
+            "user_name": member_user.get("name", "Maria Garcia"),
+            "category": "guidance",
+            "title": "New job opportunity",
+            "content": "Praying for wisdom, favor, and peace in this interview process.",
+            "is_public": True,
+            "is_anonymous": False,
+            "prayer_count": 3,
+            "status": "active",
+            "created_at": datetime.now(timezone.utc) - timedelta(days=2)
+        }
+    ]
+    prayer_ids = [item["id"] for item in prayer_seed]
+    for item in prayer_seed:
+        await db.prayer_requests.update_one(
+            {"id": item["id"], "tenant_id": tenant_id},
+            {"$set": item, "$setOnInsert": {"updated_at": now_iso}},
+            upsert=True
+        )
+    await db.prayer_requests.delete_many(
+        {"tenant_id": tenant_id, "user_id": member_user["user_id"], "id": {"$nin": prayer_ids}}
+    )
+
+    # Volunteer opportunities
+    opportunities = [
+        {"id": "vol_001", "title": "Worship Team", "description": "Serve through music and worship.", "schedule": "Sundays 8:00 AM", "location": "Main Sanctuary", "spots_available": 4, "ministry_area": "Worship"},
+        {"id": "vol_002", "title": "Hospitality", "description": "Welcome guests and help with connections.", "schedule": "Sundays 8:30 AM", "location": "Main Lobby", "spots_available": 6, "ministry_area": "Guest Experience"},
+        {"id": "vol_003", "title": "Kids Ministry", "description": "Support Sunday classes and safe check-in.", "schedule": "Sundays 10:30 AM", "location": "Kids Wing", "spots_available": 5, "ministry_area": "Kids"},
+        {"id": "vol_004", "title": "Parking Team", "description": "Guide traffic and assist families arriving on campus.", "schedule": "Sundays 8:15 AM", "location": "Parking Lot", "spots_available": 8, "ministry_area": "Operations"},
+        {"id": "vol_005", "title": "Tech Team", "description": "Help with audio, video, and live stream.", "schedule": "Sundays 8:00 AM", "location": "Production Booth", "spots_available": 3, "ministry_area": "Production"},
+        {"id": "vol_006", "title": "Food Pantry", "description": "Serve local families through weekend pantry outreach.", "schedule": "Saturday 9:00 AM", "location": "Community Center", "spots_available": 10, "ministry_area": "Outreach"}
+    ]
+    for op in opportunities:
+        await db.volunteer_opportunities.update_one(
+            {"id": op["id"], "tenant_id": tenant_id},
+            {
+                "$set": {
+                    **op,
+                    "tenant_id": tenant_id,
+                    "is_active": True,
+                    "updated_at": now_iso
+                },
+                "$setOnInsert": {"created_at": now_iso}
+            },
+            upsert=True
+        )
+
+    # Announcements
+    announcements = [
+        {"id": "ann_001", "title": "Easter Sunday — April 20th — All 3 services!", "body": "Celebrate Easter with us at 8:30AM, 10:30AM, and 12:30PM.", "priority": "high", "expires_at": "2026-04-21T00:00:00+00:00"},
+        {"id": "ann_002", "title": "Marriage Retreat registration now open", "body": "Reserve your spot for the spring marriage retreat.", "priority": "medium", "expires_at": "2026-05-30T00:00:00+00:00"},
+        {"id": "ann_003", "title": "Food Pantry needs volunteers this Saturday", "body": "Join the outreach team and help serve local families.", "priority": "high", "expires_at": "2026-03-31T00:00:00+00:00"}
+    ]
+    for ann in announcements:
+        await db.announcements.update_one(
+            {"id": ann["id"], "tenant_id": tenant_id},
+            {
+                "$set": {
+                    **ann,
+                    "tenant_id": tenant_id,
+                    "created_at": now_iso,
+                    "updated_at": now_iso
+                }
             },
             upsert=True
         )
@@ -3173,6 +3440,75 @@ async def get_portal_next_steps_status(request: Request):
         "certificate_available": journey.get("approval_status") == "approved",
         "certificate_url": "/api/portal/next-steps/certificate"
     }
+
+
+@api_router.get("/portal/next-steps")
+async def get_portal_next_steps(request: Request):
+    """Legacy/mobile-friendly Next Steps endpoint."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    await ensure_abundant_go_live_portal_content()
+
+    journey = await db.next_steps_journeys.find_one(
+        {"tenant_id": tenant_id, "user_id": user.get("user_id")},
+        {"_id": 0}
+    )
+    if journey:
+        return {
+            "current_step": journey.get("current_step", "Salvation"),
+            "steps": journey.get("steps", []),
+            "percentage_complete": journey.get("percentage_complete", 0),
+            "status": journey.get("status", "in_progress"),
+            "thinkific_url": journey.get("thinkific_url", "https://abundant.thinkific.com/courses")
+        }
+
+    status_data = await get_portal_next_steps_status(request)
+    required = status_data.get("required_courses", [])
+    completed_count = len([course for course in required if course.get("completed")])
+    total_count = len(required)
+    pct = round((completed_count / total_count) * 100) if total_count else 0
+    return {
+        "current_step": required[completed_count]["title"] if completed_count < total_count else "Completed",
+        "steps": [
+            {"id": idx + 1, "title": course.get("title", f"Step {idx+1}"), "completed": course.get("completed", False)}
+            for idx, course in enumerate(required)
+        ],
+        "percentage_complete": pct,
+        "status": "completed" if status_data.get("approval_status") == "approved" else "in_progress",
+        "thinkific_url": status_data.get("thinkific_url", "https://abundant.thinkific.com/courses")
+    }
+
+
+@api_router.get("/portal/courses")
+async def get_portal_courses(request: Request):
+    """Get member courses for mobile clients."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    await ensure_abundant_go_live_portal_content()
+
+    courses = await db.member_courses.find(
+        {"tenant_id": tenant_id, "user_id": user.get("user_id")},
+        {"_id": 0}
+    ).sort("created_at", 1).to_list(100)
+
+    if courses:
+        return {"courses": [serialize_doc(course) for course in courses]}
+
+    pathways = await get_member_pathways_courses(request)
+    mapped = []
+    for item in pathways.get("courses", [])[:5]:
+        mapped.append({
+            "id": item.get("course_id"),
+            "title": item.get("title"),
+            "description": item.get("description"),
+            "progress": int(item.get("progress_percent", 0)),
+            "completed": item.get("status") == "completed",
+            "thinkific_url": "https://abundant.thinkific.com/courses",
+            "thumbnail": item.get("cover_image_url")
+        })
+    return {"courses": mapped}
 
 
 @api_router.get("/portal/next-steps/certificate")
@@ -7733,9 +8069,23 @@ async def get_admin_dashboard(request: Request):
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
 
+    await ensure_abundant_go_live_portal_content()
+
     giving = await get_tenant_giving_metrics(tenant_id)
     total_members = await db.users.count_documents({"tenant_id": tenant_id, "role": "member"})
     active_groups = await db.groups.count_documents({"tenant_id": tenant_id, "is_active": True})
+    active_members = await db.users.count_documents({"tenant_id": tenant_id, "role": "member", "is_active": True})
+
+    week_start = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
+    month_start = datetime.now(timezone.utc).replace(day=1).isoformat()
+
+    new_this_week = await db.users.count_documents(
+        {
+            "tenant_id": tenant_id,
+            "role": "member",
+            "created_at": {"$gte": week_start}
+        }
+    )
 
     today = datetime.now(timezone.utc).date()
     days_since_sunday = (today.weekday() - 6) % 7
@@ -7760,12 +8110,37 @@ async def get_admin_dashboard(request: Request):
         {"_id": 0}
     ).sort("created_at", -1).limit(10).to_list(10)
 
+    recurring_donors = giving["recurring_count"]
+    cafe_orders_this_week = await db.cafe_orders.count_documents(
+        {"tenant_id": tenant_id, "created_at": {"$gte": week_start}}
+    )
+    merch_sales_docs = await db.merch_orders.find(
+        {"tenant_id": tenant_id, "created_at": {"$gte": week_start}},
+        {"_id": 0, "total": 1}
+    ).to_list(5000)
+    merch_sales_this_week = round(sum(float(item.get("total", 0) or 0) for item in merch_sales_docs), 2)
+    event_signups_this_month = await db.event_registrations.count_documents(
+        {"tenant_id": tenant_id, "registered_at": {"$gte": month_start}}
+    )
+    small_groups_count = active_groups
+    at_risk_members = await db.people.count_documents(
+        {"tenant_id": tenant_id, "engagement_level": "at_risk"}
+    )
+
     return {
+        "active_members": active_members,
+        "new_this_week": new_this_week,
         "total_members": total_members,
         "active_groups": active_groups,
         "mtd_giving": giving["mtd_total"],
         "ytd_giving": giving["ytd_total"],
         "recurring_count": giving["recurring_count"],
+        "recurring_donors": recurring_donors,
+        "cafe_orders_this_week": cafe_orders_this_week,
+        "merch_sales_this_week": merch_sales_this_week,
+        "event_signups_this_month": event_signups_this_month,
+        "small_groups_count": small_groups_count,
+        "at_risk_members": at_risk_members,
         "last_sunday_attendance": last_sunday_attendance,
         "upcoming_events_count": upcoming_events_count,
         "recent_activity": [serialize_doc(item) for item in recent_activity_docs]
@@ -11706,6 +12081,93 @@ async def get_mobile_attendance_history(request: Request, limit: int = 90):
 
 # ============== PRAYER REQUEST ENDPOINTS ==============
 
+@api_router.get("/portal/prayer-requests")
+async def get_portal_prayer_requests_alias(request: Request):
+    """Mobile alias for a member's prayer requests."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    user_id = user.get("user_id")
+
+    await ensure_abundant_go_live_portal_content()
+
+    requests = await db.prayer_requests.find(
+        {"tenant_id": tenant_id, "user_id": user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+
+    return {
+        "requests": [
+            {
+                "id": row.get("id"),
+                "title": row.get("title"),
+                "description": row.get("content"),
+                "created_at": row.get("created_at"),
+                "status": row.get("status", "active"),
+                "is_public": bool(row.get("is_public", False))
+            }
+            for row in requests
+        ]
+    }
+
+
+@api_router.post("/portal/prayer-requests")
+async def create_portal_prayer_request_alias(payload: PrayerRequestAliasCreate, request: Request):
+    """Mobile alias to create prayer request with description field."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    prayer_request = PrayerRequest(
+        tenant_id=tenant_id,
+        user_id=user.get("user_id"),
+        user_name=user.get("name", "Anonymous"),
+        category="general",
+        title=payload.title,
+        content=payload.description,
+        is_public=payload.is_public,
+        is_anonymous=False
+    ).model_dump()
+
+    prayer_request["created_at"] = datetime.now(timezone.utc)
+    await db.prayer_requests.insert_one(prayer_request)
+
+    return {
+        "message": "Prayer request submitted",
+        "request": {
+            "id": prayer_request.get("id"),
+            "title": prayer_request.get("title"),
+            "description": prayer_request.get("content"),
+            "created_at": prayer_request.get("created_at"),
+            "status": prayer_request.get("status", "active"),
+            "is_public": prayer_request.get("is_public", False)
+        }
+    }
+
+
+@api_router.get("/portal/prayer-requests/community")
+async def get_portal_prayer_requests_community(request: Request):
+    """Mobile alias for public prayer wall."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    requests = await db.prayer_requests.find(
+        {"tenant_id": tenant_id, "is_public": True, "status": "active"},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+
+    return {
+        "requests": [
+            {
+                "id": row.get("id"),
+                "title": row.get("title"),
+                "description": row.get("content"),
+                "created_at": row.get("created_at"),
+                "status": row.get("status", "active"),
+                "is_public": True
+            }
+            for row in requests
+        ]
+    }
+
 PRAYER_CATEGORIES = [
     {"id": "general", "name": "General", "icon": "🙏"},
     {"id": "healing", "name": "Healing", "icon": "💚"},
@@ -11912,6 +12374,89 @@ async def update_prayer_request(
         raise HTTPException(status_code=404, detail="Prayer request not found")
     
     return {"message": "Prayer request updated"}
+
+
+@api_router.get("/portal/volunteer/opportunities")
+async def get_portal_volunteer_opportunities(request: Request):
+    """List available volunteer opportunities for the authenticated user."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    await ensure_abundant_go_live_portal_content()
+
+    opportunities = await db.volunteer_opportunities.find(
+        {"tenant_id": tenant_id, "is_active": True},
+        {"_id": 0}
+    ).sort("title", 1).to_list(200)
+
+    return {"opportunities": [serialize_doc(item) for item in opportunities]}
+
+
+@api_router.post("/portal/volunteer/signup")
+async def signup_portal_volunteer(request: Request, payload: VolunteerSignupRequest):
+    """Create a volunteer signup for an opportunity."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    opportunity = await db.volunteer_opportunities.find_one(
+        {"tenant_id": tenant_id, "id": payload.opportunity_id, "is_active": True},
+        {"_id": 0}
+    )
+    if not opportunity:
+        raise HTTPException(status_code=404, detail="Opportunity not found")
+
+    existing = await db.volunteer_signups.find_one(
+        {
+            "tenant_id": tenant_id,
+            "opportunity_id": payload.opportunity_id,
+            "user_id": user.get("user_id")
+        },
+        {"_id": 0}
+    )
+    if existing:
+        return {"message": "Already signed up", "signup": serialize_doc(existing)}
+
+    signup = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "opportunity_id": payload.opportunity_id,
+        "user_id": user.get("user_id"),
+        "user_name": user.get("name"),
+        "status": "signed_up",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.volunteer_signups.insert_one(signup)
+
+    await db.volunteer_opportunities.update_one(
+        {"tenant_id": tenant_id, "id": payload.opportunity_id},
+        {"$inc": {"spots_available": -1}}
+    )
+
+    return {"message": "Signed up successfully", "signup": serialize_doc(signup)}
+
+
+@api_router.get("/portal/announcements")
+async def get_portal_announcements(request: Request):
+    """Get active church announcements for the member portal."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    await ensure_abundant_go_live_portal_content()
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    announcements = await db.announcements.find(
+        {
+            "tenant_id": tenant_id,
+            "$or": [
+                {"expires_at": {"$gte": now_iso}},
+                {"expires_at": {"$exists": False}},
+                {"expires_at": None}
+            ]
+        },
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+
+    return {"announcements": [serialize_doc(item) for item in announcements]}
 
 # Include router
 app.include_router(api_router)
