@@ -13124,6 +13124,225 @@ async def set_portal_default_payment_method(request: Request, method_id: str):
     return {"message": "Default payment method updated"}
 
 
+# ============== VOLUNTEER LEADERBOARD & GAMIFICATION ==============
+
+VOLUNTEER_BADGE_TIERS = [
+    {"name": "Helping Hand", "icon": "hands-helping", "threshold": 5, "color": "#60A5FA"},
+    {"name": "Faithful Servant", "icon": "heart", "threshold": 15, "color": "#A78BFA"},
+    {"name": "Ministry Champion", "icon": "trophy", "threshold": 30, "color": "#FBBF24"},
+    {"name": "Church Pillar", "icon": "landmark", "threshold": 50, "color": "#F97316"},
+    {"name": "Kingdom Builder", "icon": "crown", "threshold": 100, "color": "#EF4444"},
+]
+
+def compute_volunteer_badge(signup_count: int) -> Dict[str, Any]:
+    """Compute the current badge and progress to the next tier."""
+    current_badge = None
+    next_badge = VOLUNTEER_BADGE_TIERS[0]
+
+    for tier in VOLUNTEER_BADGE_TIERS:
+        if signup_count >= tier["threshold"]:
+            current_badge = tier
+        else:
+            next_badge = tier
+            break
+    else:
+        next_badge = None
+
+    progress = 0.0
+    if next_badge:
+        floor = current_badge["threshold"] if current_badge else 0
+        progress = round((signup_count - floor) / (next_badge["threshold"] - floor) * 100, 1)
+
+    return {
+        "current_badge": current_badge,
+        "next_badge": next_badge,
+        "progress_to_next": min(progress, 100.0),
+        "signups_to_next": (next_badge["threshold"] - signup_count) if next_badge else 0,
+    }
+
+
+class LogVolunteerHoursRequest(BaseModel):
+    user_id: str
+    opportunity_id: Optional[str] = None
+    hours: float
+    date: Optional[str] = None
+    notes: Optional[str] = ""
+
+
+@api_router.get("/portal/volunteer/leaderboard")
+async def get_volunteer_leaderboard(request: Request, limit: int = 20):
+    """Top volunteers ranked by total signups, with badge tiers."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    pipeline = [
+        {"$match": {"tenant_id": tenant_id}},
+        {"$group": {
+            "_id": "$user_id",
+            "user_name": {"$first": "$user_name"},
+            "signup_count": {"$sum": 1},
+            "total_hours": {"$sum": {"$ifNull": ["$hours", 0]}},
+            "ministry_areas": {"$addToSet": "$ministry_area"},
+            "last_signup": {"$max": "$created_at"},
+        }},
+        {"$sort": {"signup_count": -1, "total_hours": -1}},
+        {"$limit": limit},
+    ]
+    results = await db.volunteer_signups.aggregate(pipeline).to_list(limit)
+
+    leaderboard = []
+    for rank, entry in enumerate(results, 1):
+        badge_info = compute_volunteer_badge(entry["signup_count"])
+        leaderboard.append({
+            "rank": rank,
+            "user_id": entry["_id"],
+            "user_name": entry.get("user_name") or "Volunteer",
+            "signup_count": entry["signup_count"],
+            "total_hours": round(entry.get("total_hours", 0), 1),
+            "ministry_areas": [m for m in (entry.get("ministry_areas") or []) if m],
+            "last_signup": entry.get("last_signup"),
+            "badge": badge_info["current_badge"],
+        })
+
+    return {"leaderboard": leaderboard, "badge_tiers": VOLUNTEER_BADGE_TIERS}
+
+
+@api_router.get("/portal/volunteer/my-stats")
+async def get_my_volunteer_stats(request: Request):
+    """Current user's volunteer stats, streak, and badge progress."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    user_id = user["user_id"]
+
+    signups = await db.volunteer_signups.find(
+        {"tenant_id": tenant_id, "user_id": user_id}, {"_id": 0}
+    ).sort("created_at", -1).to_list(500)
+
+    signup_count = len(signups)
+    total_hours = sum(s.get("hours", 0) for s in signups)
+    ministry_areas = list({s.get("ministry_area") for s in signups if s.get("ministry_area")})
+    badge_info = compute_volunteer_badge(signup_count)
+
+    # Compute rank
+    higher_count = await db.volunteer_signups.aggregate([
+        {"$match": {"tenant_id": tenant_id}},
+        {"$group": {"_id": "$user_id", "cnt": {"$sum": 1}}},
+        {"$match": {"cnt": {"$gt": signup_count}}},
+        {"$count": "total"},
+    ]).to_list(1)
+    rank = (higher_count[0]["total"] if higher_count else 0) + 1
+
+    return {
+        "user_id": user_id,
+        "user_name": user.get("name", ""),
+        "signup_count": signup_count,
+        "total_hours": round(total_hours, 1),
+        "ministry_areas": ministry_areas,
+        "rank": rank,
+        "last_signup": signups[0]["created_at"] if signups else None,
+        "badge": badge_info["current_badge"],
+        "next_badge": badge_info["next_badge"],
+        "progress_to_next": badge_info["progress_to_next"],
+        "signups_to_next": badge_info["signups_to_next"],
+        "badge_tiers": VOLUNTEER_BADGE_TIERS,
+    }
+
+
+@api_router.post("/admin/volunteer/log-hours")
+async def admin_log_volunteer_hours(request: Request, payload: LogVolunteerHoursRequest):
+    """Admin logs volunteer hours for a specific user."""
+    admin = await get_current_admin_user(request)
+    tenant_id = admin.get("tenant_id")
+    if not tenant_id:
+        tenant_id = DEFAULT_TENANT_ID
+
+    target_user = await db.users.find_one({"user_id": payload.user_id}, {"_id": 0, "name": 1, "user_id": 1})
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    log_entry = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "user_id": payload.user_id,
+        "user_name": target_user.get("name", ""),
+        "opportunity_id": payload.opportunity_id,
+        "hours": payload.hours,
+        "date": payload.date or datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "notes": payload.notes,
+        "logged_by": admin.get("user_id"),
+        "status": "logged",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+    await db.volunteer_signups.insert_one(log_entry)
+    return {"message": f"Logged {payload.hours}h for {target_user.get('name', payload.user_id)}", "entry": serialize_doc(log_entry)}
+
+
+# ============== SEED VOLUNTEER LEADERBOARD DEMO DATA ==============
+
+async def seed_volunteer_leaderboard_data():
+    """Seed realistic volunteer history for Abundant Church demo."""
+    tenant_id = DEFAULT_TENANT_ID
+    member = await db.users.find_one({"email": "member@abundant.church"}, {"_id": 0})
+    if not member:
+        return
+
+    user_id = member["user_id"]
+    user_name = member.get("name", "Maria Garcia")
+
+    existing = await db.volunteer_signups.count_documents({"tenant_id": tenant_id, "user_id": user_id})
+    if existing >= 8:
+        return
+
+    opportunities = await db.volunteer_opportunities.find({"tenant_id": tenant_id, "is_active": True}, {"_id": 0}).to_list(10)
+    ministry_map = {o["id"]: o.get("ministry_area", "General") for o in opportunities}
+
+    now = datetime.now(timezone.utc)
+    seed_signups = []
+    for i in range(8):
+        opp = opportunities[i % len(opportunities)] if opportunities else None
+        seed_signups.append({
+            "id": f"vol_seed_{user_id}_{i}",
+            "tenant_id": tenant_id,
+            "user_id": user_id,
+            "user_name": user_name,
+            "opportunity_id": opp["id"] if opp else f"opp_seed_{i}",
+            "ministry_area": ministry_map.get(opp["id"], "General") if opp else "General",
+            "hours": round(random.uniform(1.5, 4.0), 1),
+            "status": "signed_up",
+            "created_at": (now - timedelta(days=random.randint(1, 90))).isoformat(),
+        })
+
+    # Also add a few other "fake" volunteers for a populated leaderboard
+    fake_volunteers = [
+        ("vol_demo_sarah", "Sarah Johnson", 22),
+        ("vol_demo_james", "James Williams", 17),
+        ("vol_demo_emily", "Emily Davis", 12),
+        ("vol_demo_michael", "Michael Brown", 35),
+        ("vol_demo_rachel", "Rachel Martinez", 9),
+    ]
+    for fake_id, fake_name, count in fake_volunteers:
+        existing_fake = await db.volunteer_signups.count_documents({"tenant_id": tenant_id, "user_id": fake_id})
+        if existing_fake >= count:
+            continue
+        for j in range(count - existing_fake):
+            opp = opportunities[j % len(opportunities)] if opportunities else None
+            seed_signups.append({
+                "id": f"vol_seed_{fake_id}_{j}",
+                "tenant_id": tenant_id,
+                "user_id": fake_id,
+                "user_name": fake_name,
+                "opportunity_id": opp["id"] if opp else f"opp_seed_{j}",
+                "ministry_area": ministry_map.get(opp["id"], "General") if opp else "General",
+                "hours": round(random.uniform(1.0, 3.5), 1),
+                "status": "signed_up",
+                "created_at": (now - timedelta(days=random.randint(1, 120))).isoformat(),
+            })
+
+    for s in seed_signups:
+        await db.volunteer_signups.update_one({"id": s["id"]}, {"$set": s}, upsert=True)
+
+
 # Include router
 app.include_router(api_router)
 
@@ -13148,9 +13367,10 @@ app.add_middleware(
 async def startup_ensure_mobile_seed_data():
     try:
         await ensure_mobile_demo_accounts()
-        logger.info("Mobile demo accounts ensured")
+        await seed_volunteer_leaderboard_data()
+        logger.info("Mobile demo accounts and volunteer leaderboard ensured")
     except Exception as exc:
-        logger.error(f"Failed to ensure mobile demo accounts: {exc}")
+        logger.error(f"Failed to ensure startup seed data: {exc}")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
