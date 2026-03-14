@@ -439,6 +439,16 @@ All 10 modules implemented with 100% test pass rate.
 - ✅ Added Bearer-token support to `/api/admin/members` and aligned CORS methods to `GET/POST/PUT/DELETE/OPTIONS` with wildcard origin + headers.
 - ✅ Testing: iteration 29 backend validation passed 27/27 tests (`/app/test_reports/iteration_29.json`).
 
+### Mar 14, 2026 (Pre-Go-Live Bearer Route Stability Fix)
+- ✅ Fixed direct API Bearer auth reliability by updating `get_session_token_from_request()` to **prefer `Authorization: Bearer` token over cookies** (prevents stale cookie conflicts during direct/mobile API calls).
+- ✅ Added resilient tenant fallback (`DEFAULT_TENANT_ID`) for portal list APIs used by platform admins:
+  - `/api/portal/merch/products`
+  - `/api/portal/cafe/menu`
+  - `/api/portal/media/sermons`
+- ✅ Confirmed `/api/portal/kids/children` works with Bearer token for member/admin/platform-admin and always returns JSON array payload.
+- ✅ Login response token alias contract preserved: `session_token`, `token`, and `access_token` all returned.
+- ✅ Testing: iteration 30 backend verification passed **22/22** tests (`/app/test_reports/iteration_30.json`).
+
 ### Feb 27, 2026
 - ✅ Pastor's CRM / Meeting Scheduler complete (Admin + Member)
 - ✅ Abundant Pathways populated with 8 courses
