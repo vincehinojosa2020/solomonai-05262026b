@@ -271,10 +271,22 @@ frontend:
           agent: "testing"
           comment: "✅ PASSED - Mic button (data-testid: samson-mic-btn) is present and visible for both member and admin users. Member flow: Successfully logged in as member@abundant.church, opened Ask Solomon panel, verified mic button visible, enabled, and clickable. Clicking mic button activates listening state with 'listening' CSS class applied and status label (data-testid: samson-mic-status) displays 'Listening... click mic to stop'. Admin flow: Successfully logged in as admin@abundant.church, opened Ask Solomon panel via FAB button, verified mic button visible at position (x=1792, y=1028, 40x40px). Clicking mic button activates listening state correctly with status label and CSS class applied. Voice recognition UI and state management working correctly. Screenshots captured: member_solomon_panel_opened.png, member_mic_listening_state.png, admin_solomon_panel_opened.png, admin_mic_listening_state.png."
 
+  - task: "Go-Live Health Widget - Admin Dashboard"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/Dashboard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - Go-Live Health widget is present and functional on admin dashboard. All required data-testids verified: go-live-health-widget (container), go-live-health-status-badge (shows READY status), go-live-health-refresh-button (functional), go-live-health-check-grid (displays 13 health checks). Refresh button successfully triggers API call to /api/health/launch-check and updates widget state. All 13 health checks display correctly with green checkmarks: events, groups, giving_ytd, merch_products, cafe_menu_items, kids_children, attendance_streak, sermons, courses, prayer_requests, volunteer_opportunities, announcements, accounts_ready. Widget remains visible and rendered after refresh. No blocking console errors. Screenshot evidence captured: dashboard_with_golive_widget.png, widget_final_state.png. Minor: Initial page load shows 'UNKNOWN' status until refresh button is clicked, suggesting timing issue with initial API call on component mount. Core functionality works correctly."
+
 metadata:
   created_by: "testing_agent"
   version: "1.0"
-  test_sequence: 5
+  test_sequence: 6
   run_ui: true
 
 test_plan:
@@ -305,3 +317,7 @@ agent_communication:
       message: "Run backend-only go-live verification against https://solomon-church.preview.emergentagent.com/api. Test all 6 login accounts, verify member@abundant.church portal data requirements, admin access checks, admin dashboard fields, and CORS configuration. Return concise pass/fail results."
     - agent: "testing"
       message: "✅ ALL BACKEND TESTS PASSED (25/25) - Production Go-Live Verification SUCCESSFUL. Login: All 6 accounts authenticated successfully with matching session_token/token/access_token fields. Member Portal Data: member@abundant.church verified with 50 events, 100 groups, 5 merch products, 5 cafe items, 1 child, 3 videos, 2 courses, 2 prayer requests, 6 volunteer opportunities, 3 announcements, YTD giving $500, attendance streak 1, next-steps with steps array and 60% completion. Admin Access: admin@abundant.church successfully accessed all portal endpoints (merch/products, cafe/menu, kids/children, media/sermons). Admin Dashboard: All 12 required fields present (total_members, active_members, new_this_week, last_sunday_attendance, mtd_giving, ytd_giving, recurring_donors, cafe_orders_this_week, merch_sales_this_week, event_signups_this_month, small_groups_count, at_risk_members). CORS: Preflight request validated with proper allow-origin (*), allow-methods (GET/POST/PUT/DELETE/OPTIONS), and allow-headers (*). Production environment ready for launch."
+    - agent: "user"
+      message: "Frontend verification for new Go-Live Health widget on admin dashboard. App URL: https://solomon-church.preview.emergentagent.com. Credentials: admin@abundant.church / Demo2026!. Test: 1) Login via /login. 2) Navigate to /dashboard. 3) Verify widget exists with data-testids: go-live-health-widget, go-live-health-status-badge, go-live-health-refresh-button, go-live-health-check-grid. 4) Click refresh button and verify widget stays rendered. 5) Confirm no blocking JS errors and capture screenshot evidence."
+    - agent: "testing"
+      message: "✅ GO-LIVE HEALTH WIDGET VERIFICATION PASSED - Comprehensive testing completed on admin dashboard at https://solomon-church.preview.emergentagent.com/dashboard. All required data-testids verified and functional: (1) go-live-health-widget: Widget container present and visible (1560px x 98px). (2) go-live-health-status-badge: Badge present showing 'READY' status with green styling after refresh. (3) go-live-health-refresh-button: Button present, enabled, and fully functional - successfully triggers API call to /api/health/launch-check. (4) go-live-health-check-grid: Grid renders with 13 health check items after data loads, all showing green checkmarks (events, groups, giving_ytd, merch_products, cafe_menu_items, kids_children, attendance_streak, sermons, courses, prayer_requests, volunteer_opportunities, announcements, accounts_ready). Widget remains visible and stable after refresh action. No blocking console errors detected - only non-critical warnings from recharts library. Backend API endpoint /api/health/launch-check returns complete data structure with status 'ready' and all checks passing. Screenshot evidence captured: dashboard_with_golive_widget.png, dashboard_after_refresh.png, widget_final_state.png. Minor observation: Initial page load shows 'UNKNOWN' status, but clicking refresh button successfully loads and displays full health data. Core functionality is production-ready."

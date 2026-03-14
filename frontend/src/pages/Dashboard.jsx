@@ -3,7 +3,7 @@ import { useOutletContext, Link, useNavigate } from 'react-router-dom';
 import { 
   Users, UsersRound, Calendar, DollarSign, TrendingUp, 
   ArrowUpRight, ArrowDownRight, RefreshCw, Video, ExternalLink, 
-  CalendarCheck, AlertCircle
+  CalendarCheck, AlertCircle, ShieldCheck, CircleAlert, CircleCheckBig
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, 
@@ -99,6 +99,8 @@ export default function Dashboard() {
   const [attendanceTrend, setAttendanceTrend] = useState([]);
   const [activities, setActivities] = useState([]);
   const [events, setEvents] = useState([]);
+  const [launchHealth, setLaunchHealth] = useState(null);
+  const [launchHealthLoading, setLaunchHealthLoading] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Redirect platform admins to their dashboard
@@ -140,7 +142,23 @@ export default function Dashboard() {
     };
 
     fetchDashboardData();
+    fetchLaunchHealth();
   }, []);
+
+  const fetchLaunchHealth = async () => {
+    setLaunchHealthLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/health/launch-check`);
+      if (res.ok) {
+        const data = await res.json();
+        setLaunchHealth(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch launch health:', error);
+    } finally {
+      setLaunchHealthLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -210,6 +228,58 @@ export default function Dashboard() {
             Schedule Visit
           </a>
         </div>
+      </div>
+
+      {/* Go-Live Health Widget */}
+      <div className="bg-white border border-slate-200 p-4" data-testid="go-live-health-widget">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500" data-testid="go-live-health-label">Go-Live Health</p>
+            <h3 className="text-base font-semibold text-slate-900 mt-1 flex items-center gap-2" data-testid="go-live-health-title">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              Launch Readiness Snapshot
+            </h3>
+            <p className="text-xs text-slate-500 mt-1" data-testid="go-live-health-tenant">Tenant: {launchHealth?.tenant_id || 'abundant-church-001'}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${launchHealth?.status === 'ready' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}
+              data-testid="go-live-health-status-badge"
+            >
+              {launchHealth?.status === 'ready' ? <CircleCheckBig className="w-3.5 h-3.5" /> : <CircleAlert className="w-3.5 h-3.5" />}
+              {(launchHealth?.status || 'unknown').toUpperCase()}
+            </span>
+            <button
+              onClick={fetchLaunchHealth}
+              className="inline-flex items-center gap-1 border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+              data-testid="go-live-health-refresh-button"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${launchHealthLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        {launchHealth?.checks && (
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2" data-testid="go-live-health-check-grid">
+            {Object.entries(launchHealth.checks).map(([key, passed]) => (
+              <div
+                key={key}
+                className={`flex items-center justify-between border px-2.5 py-2 text-xs ${passed ? 'border-emerald-100 bg-emerald-50/40 text-emerald-700' : 'border-amber-100 bg-amber-50/40 text-amber-700'}`}
+                data-testid={`go-live-check-${key.replace(/_/g, '-')}`}
+              >
+                <span className="font-medium">{key.replace(/_/g, ' ')}</span>
+                {passed ? <CircleCheckBig className="w-3.5 h-3.5" /> : <CircleAlert className="w-3.5 h-3.5" />}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {launchHealth?.generated_at && (
+          <p className="text-xs text-slate-400 mt-3" data-testid="go-live-health-timestamp">
+            Last updated: {new Date(launchHealth.generated_at).toLocaleString()}
+          </p>
+        )}
       </div>
 
       {/* Stats Grid */}
