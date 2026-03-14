@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
-import { DollarSign, Users, Calendar, ChevronRight, Flame } from 'lucide-react';
+import { DollarSign, Users, Calendar, ChevronRight, Flame, GraduationCap, ExternalLink } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { ServiceModeBanner, AttendanceStreakCard } from '@/components/ServiceMode';
 
@@ -12,12 +12,14 @@ export default function PortalHome() {
   // Service Mode State
   const [serviceMode, setServiceMode] = useState(null);
   const [streakData, setStreakData] = useState(null);
+  const [nextSteps, setNextSteps] = useState(null);
 
   useEffect(() => {
     fetchUpcomingEvents();
     generateSolomonInsight();
     fetchServiceMode();
     fetchStreakData();
+    fetchNextSteps();
   }, [memberData, tenant]);
 
   const fetchUpcomingEvents = async () => {
@@ -53,6 +55,18 @@ export default function PortalHome() {
       }
     } catch (error) {
       console.error('Failed to fetch streak data:', error);
+    }
+  };
+
+  const fetchNextSteps = async () => {
+    try {
+      const res = await fetch(`${API_URL}/portal/next-steps/status`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setNextSteps(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch next steps:', error);
     }
   };
 
@@ -186,6 +200,45 @@ export default function PortalHome() {
             totalAttended={streakData.total_attended}
             badges={streakData.streak_badges}
           />
+        )}
+
+        {/* Next Steps Membership Journey */}
+        {nextSteps && (
+          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" data-testid="home-next-steps-card">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide" data-testid="home-next-steps-label">Membership Journey</p>
+                <h3 className="text-lg font-semibold text-slate-900 mt-1" data-testid="home-next-steps-title">Abundant Next Steps</h3>
+                <p className="text-sm text-slate-600 mt-1" data-testid="home-next-steps-status">
+                  {nextSteps.completion_percent || 0}% complete • {nextSteps.approval_status?.replaceAll('_', ' ') || 'in progress'}
+                </p>
+              </div>
+              <GraduationCap className="w-5 h-5 text-blue-600" />
+            </div>
+            <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden mt-4" data-testid="home-next-steps-progress-bar">
+              <div className="h-full bg-blue-600 transition-[width] duration-500" style={{ width: `${nextSteps.completion_percent || 0}%` }} />
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link
+                to="/portal/pathways"
+                className="inline-flex items-center gap-2 rounded-full bg-slate-900 text-white px-4 py-2 text-sm font-semibold"
+                data-testid="home-next-steps-open-pathways"
+              >
+                Continue Track
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+              <a
+                href={nextSteps.thinkific_url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+                data-testid="home-next-steps-open-thinkific"
+              >
+                Thinkific Course
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
         )}
       </div>
 

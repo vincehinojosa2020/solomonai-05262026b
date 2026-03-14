@@ -765,6 +765,11 @@ class PathwaysProgressUpdate(BaseModel):
 class ThinkificUpdate(BaseModel):
     thinkific_url: str
 
+
+class NextStepsApprovalRequest(BaseModel):
+    action: str = "approve"  # approve | reject
+    notes: Optional[str] = None
+
 # ============== MERCH MODELS ==============
 
 class MerchProduct(BaseModel):
@@ -1688,7 +1693,6 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
     for lesson in pathways_lessons:
         await db.pathways_lessons.update_one({"id": lesson["id"]}, {"$set": lesson}, upsert=True)
 
-    await db.pathways_enrollments.delete_many({"tenant_id": tenant_id, "user_id": "member_abundant"})
     for idx, course_id in enumerate(course_ids, start=1):
         enrollment = {
             "id": f"pathway_enroll_{idx:03d}",
@@ -1700,7 +1704,16 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
             "assigned_at": datetime.now(timezone.utc).isoformat(),
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
-        await db.pathways_enrollments.update_one({"id": enrollment["id"]}, {"$set": enrollment}, upsert=True)
+        await db.pathways_enrollments.update_one(
+            {"id": enrollment["id"]},
+            {
+                "$setOnInsert": {
+                    **enrollment,
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+            },
+            upsert=True
+        )
 
 async def transcribe_audio_with_whisper(file_path: Path) -> str:
     """Transcribe audio file using OpenAI Whisper via emergentintegrations"""
@@ -1773,6 +1786,7 @@ async def notify_meeting_event(event: str, meeting: dict) -> dict:
 
 # Default tenant ID for demo
 DEFAULT_TENANT_ID = "abundant-church-001"
+DEFAULT_NEXT_STEPS_URL = "https://abundantchurch.thinkific.com/courses/abundant-next-steps"
 
 
 async def ensure_mobile_demo_accounts():
@@ -1869,6 +1883,16 @@ async def ensure_abundant_mobile_demo_content(now_iso: Optional[str] = None):
     """Seed deterministic demo content expected by mobile + web QA checks."""
     tenant_id = DEFAULT_TENANT_ID
     now_iso = now_iso or datetime.now(timezone.utc).isoformat()
+
+    await db.tenants.update_one(
+        {"id": tenant_id},
+        {
+            "$set": {
+                "next_steps_url": DEFAULT_NEXT_STEPS_URL,
+                "updated_at": now_iso
+            }
+        }
+    )
 
     # Ensure member person profile exists for giving/kids linkage
     member_user = await db.users.find_one(
@@ -2197,6 +2221,32 @@ async def ensure_abundant_mobile_demo_content(now_iso: Optional[str] = None):
             "id": {"$nin": checkin_ids}
         }
     )
+
+    # Next Steps completion seed (eligible for admin approval workflow)
+    next_steps_course_ids = ["pathway_course_001", "pathway_course_002", "pathway_course_003"]
+    await db.tenants.update_one(
+        {"id": tenant_id},
+        {"$set": {"next_steps_course_ids": next_steps_course_ids, "updated_at": now_iso}}
+    )
+
+    for course_id in next_steps_course_ids:
+        await db.pathways_enrollments.update_one(
+            {"tenant_id": tenant_id, "user_id": member_user["user_id"], "course_id": course_id},
+            {
+                "$set": {
+                    "id": f"path_enroll_{member_user['user_id']}_{course_id}",
+                    "tenant_id": tenant_id,
+                    "user_id": member_user["user_id"],
+                    "course_id": course_id,
+                    "assigned_by": "admin_abundant",
+                    "assigned_at": now_iso,
+                    "status": "completed",
+                    "updated_at": now_iso
+                },
+                "$setOnInsert": {"created_at": now_iso}
+            },
+            upsert=True
+        )
 
 # ============== API ROUTES ==============
 
@@ -2940,6 +2990,295 @@ async def get_portal_thinkific(request: Request):
         )
     return {"thinkific_url": thinkific_url}
 
+
+async def get_next_steps_required_course_ids(tenant_id: str) -> List[str]:
+    """Resolve membership-track courses. Defaults to first 3 published pathways courses."""
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "next_steps_course_ids": 1})
+    configured = (tenant or {}).get("next_steps_course_ids") or []
+    if configured:
+        return configured
+
+    courses = await db.pathways_courses.find(
+        {"tenant_id": tenant_id, "is_published": True},
+        {"_id": 0, "id": 1}
+    ).sort("created_at", 1).limit(3).to_list(3)
+    ids = [course["id"] for course in courses]
+
+    if ids:
+        await db.tenants.update_one(
+            {"id": tenant_id},
+            {"$set": {"next_steps_course_ids": ids, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+    return ids
+
+
+async def evaluate_member_next_steps_membership(tenant_id: str, user_id: str) -> Dict[str, Any]:
+    """Calculate and persist member's Next Steps eligibility + approval state."""
+    required_course_ids = await get_next_steps_required_course_ids(tenant_id)
+
+    if not required_course_ids:
+        return {
+            "required_course_ids": [],
+            "completed_course_ids": [],
+            "completion_percent": 0,
+            "eligible": False,
+            "approval_status": "not_configured"
+        }
+
+    enrollments = await db.pathways_enrollments.find(
+        {
+            "tenant_id": tenant_id,
+            "user_id": user_id,
+            "course_id": {"$in": required_course_ids},
+            "status": {"$ne": "dropped"}
+        },
+        {"_id": 0, "course_id": 1, "status": 1}
+    ).to_list(100)
+
+    completed_course_ids = [
+        enrollment["course_id"]
+        for enrollment in enrollments
+        if enrollment.get("status") == "completed"
+    ]
+
+    completion_percent = round((len(completed_course_ids) / len(required_course_ids)) * 100, 1)
+    eligible = len(completed_course_ids) >= len(required_course_ids)
+
+    existing = await db.next_steps_memberships.find_one(
+        {"tenant_id": tenant_id, "user_id": user_id, "track": "abundant-next-steps"},
+        {"_id": 0}
+    )
+
+    current_status = (existing or {}).get("approval_status")
+    if current_status == "approved":
+        approval_status = "approved"
+    elif eligible:
+        approval_status = "eligible_pending_approval"
+    else:
+        approval_status = "in_progress"
+
+    record = {
+        "id": (existing or {}).get("id", str(uuid.uuid4())),
+        "tenant_id": tenant_id,
+        "user_id": user_id,
+        "track": "abundant-next-steps",
+        "required_course_ids": required_course_ids,
+        "completed_course_ids": completed_course_ids,
+        "completion_percent": completion_percent,
+        "eligible": eligible,
+        "approval_status": approval_status,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+
+    if not existing:
+        record["created_at"] = datetime.now(timezone.utc).isoformat()
+
+    await db.next_steps_memberships.update_one(
+        {"tenant_id": tenant_id, "user_id": user_id, "track": "abundant-next-steps"},
+        {"$set": record},
+        upsert=True
+    )
+
+    return {
+        **record,
+        "required_count": len(required_course_ids),
+        "completed_count": len(completed_course_ids)
+    }
+
+
+def generate_next_steps_certificate_pdf(name: str, church_name: str, completed_on: str) -> bytes:
+    """Create a simple completion certificate PDF."""
+    from io import BytesIO
+    from reportlab.lib.pagesizes import landscape, letter
+    from reportlab.lib import colors
+    from reportlab.pdfgen import canvas
+
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=landscape(letter))
+    width, height = landscape(letter)
+
+    pdf.setFillColor(colors.HexColor("#F8FAFC"))
+    pdf.rect(0, 0, width, height, stroke=0, fill=1)
+
+    pdf.setStrokeColor(colors.HexColor("#1D4ED8"))
+    pdf.setLineWidth(4)
+    pdf.rect(32, 32, width - 64, height - 64, stroke=1, fill=0)
+
+    pdf.setFillColor(colors.HexColor("#0F172A"))
+    pdf.setFont("Helvetica-Bold", 34)
+    pdf.drawCentredString(width / 2, height - 120, "Certificate of Completion")
+
+    pdf.setFont("Helvetica", 18)
+    pdf.drawCentredString(width / 2, height - 170, f"{church_name} recognizes")
+
+    pdf.setFont("Helvetica-Bold", 30)
+    pdf.drawCentredString(width / 2, height - 235, name)
+
+    pdf.setFont("Helvetica", 16)
+    pdf.drawCentredString(width / 2, height - 285, "for successfully completing")
+
+    pdf.setFont("Helvetica-Bold", 22)
+    pdf.drawCentredString(width / 2, height - 325, "Abundant Next Steps")
+
+    pdf.setFont("Helvetica", 14)
+    pdf.drawCentredString(width / 2, 120, f"Completed on {completed_on}")
+    pdf.drawCentredString(width / 2, 95, "You are now recognized as an active Abundant Church member.")
+
+    pdf.showPage()
+    pdf.save()
+    buffer.seek(0)
+    return buffer.getvalue()
+
+
+@api_router.get("/portal/next-steps/status")
+async def get_portal_next_steps_status(request: Request):
+    """Member-facing status for Abundant Next Steps journey."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+
+    await ensure_abundant_pathways_data(tenant_id)
+    journey = await evaluate_member_next_steps_membership(tenant_id, user.get("user_id"))
+
+    tenant = await db.tenants.find_one(
+        {"id": tenant_id},
+        {"_id": 0, "name": 1, "thinkific_url": 1, "next_steps_url": 1}
+    )
+    thinkific_url = (tenant or {}).get("next_steps_url") or DEFAULT_NEXT_STEPS_URL
+
+    course_docs = await db.pathways_courses.find(
+        {"tenant_id": tenant_id, "id": {"$in": journey.get("required_course_ids", [])}},
+        {"_id": 0, "id": 1, "title": 1}
+    ).to_list(50)
+    course_map = {course["id"]: course.get("title", "Course") for course in course_docs}
+
+    return {
+        "track_name": "Abundant Next Steps",
+        "church_name": (tenant or {}).get("name", "Abundant Church"),
+        "thinkific_url": thinkific_url,
+        "required_courses": [
+            {
+                "course_id": course_id,
+                "title": course_map.get(course_id, "Course"),
+                "completed": course_id in journey.get("completed_course_ids", [])
+            }
+            for course_id in journey.get("required_course_ids", [])
+        ],
+        "completion_percent": journey.get("completion_percent", 0),
+        "eligible": journey.get("eligible", False),
+        "approval_status": journey.get("approval_status"),
+        "certificate_available": journey.get("approval_status") == "approved",
+        "certificate_url": "/api/portal/next-steps/certificate"
+    }
+
+
+@api_router.get("/portal/next-steps/certificate")
+async def download_next_steps_certificate(request: Request):
+    """Generate and download completion certificate after admin approval."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+
+    journey = await evaluate_member_next_steps_membership(tenant_id, user.get("user_id"))
+    if journey.get("approval_status") != "approved":
+        raise HTTPException(status_code=403, detail="Certificate available after admin approval")
+
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "name": 1})
+    completed_on = datetime.now(timezone.utc).strftime("%B %d, %Y")
+    pdf_bytes = generate_next_steps_certificate_pdf(
+        user.get("name", "Member"),
+        (tenant or {}).get("name", "Abundant Church"),
+        completed_on
+    )
+
+    safe_name = (user.get("name", "member").replace(" ", "_")).lower()
+    filename = f"abundant-next-steps-certificate-{safe_name}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+    )
+
+
+@api_router.get("/admin/next-steps/approvals")
+async def get_next_steps_approvals(request: Request, status: Optional[str] = None):
+    """Admin queue for reviewing Next Steps completions."""
+    admin = await get_current_admin_user(request)
+    tenant_id = admin.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+
+    query: Dict[str, Any] = {"tenant_id": tenant_id, "track": "abundant-next-steps"}
+    if status:
+        query["approval_status"] = status
+
+    approvals = await db.next_steps_memberships.find(query, {"_id": 0}).sort("updated_at", -1).to_list(500)
+    user_ids = [row.get("user_id") for row in approvals if row.get("user_id")]
+    users = await db.users.find(
+        {"user_id": {"$in": user_ids}},
+        {"_id": 0, "user_id": 1, "name": 1, "email": 1}
+    ).to_list(500)
+    user_map = {user["user_id"]: user for user in users}
+
+    return {
+        "approvals": [
+            {
+                **serialize_doc(row),
+                "member": user_map.get(row.get("user_id"), {"user_id": row.get("user_id"), "name": "Unknown", "email": ""})
+            }
+            for row in approvals
+        ]
+    }
+
+
+@api_router.post("/admin/next-steps/approvals/{user_id}")
+async def decide_next_steps_approval(request: Request, user_id: str, payload: NextStepsApprovalRequest):
+    """Approve or reject member's Next Steps completion (manual approval flow)."""
+    admin = await get_current_admin_user(request)
+    tenant_id = admin.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+
+    membership = await evaluate_member_next_steps_membership(tenant_id, user_id)
+
+    action = payload.action.lower().strip()
+    if action not in ["approve", "reject"]:
+        raise HTTPException(status_code=400, detail="action must be approve or reject")
+
+    if action == "approve" and not membership.get("eligible"):
+        raise HTTPException(status_code=400, detail="Member has not completed all required courses")
+
+    next_status = "approved" if action == "approve" else "rejected"
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    update_fields = {
+        "approval_status": next_status,
+        "decision_notes": payload.notes,
+        "decided_by": admin.get("user_id"),
+        "decided_by_name": admin.get("name"),
+        "decided_at": now_iso,
+        "updated_at": now_iso
+    }
+
+    await db.next_steps_memberships.update_one(
+        {"tenant_id": tenant_id, "user_id": user_id, "track": "abundant-next-steps"},
+        {"$set": update_fields},
+        upsert=True
+    )
+
+    await db.users.update_one(
+        {"user_id": user_id, "tenant_id": tenant_id},
+        {"$set": {
+            "next_steps_member": next_status == "approved",
+            "next_steps_membership_status": next_status,
+            "next_steps_updated_at": now_iso
+        }}
+    )
+
+    return {
+        "message": f"Next Steps membership {next_status}",
+        "user_id": user_id,
+        "approval_status": next_status
+    }
+
 # ============== ABUNDANT PATHWAYS (LMS) ROUTES ==============
 
 @api_router.get("/admin/pathways/courses")
@@ -3266,9 +3605,18 @@ async def get_member_pathways_courses(request: Request):
         {"_id": 0}
     ).to_list(200)
 
+    next_steps = await evaluate_member_next_steps_membership(tenant_id, user.get("user_id"))
+
     course_ids = [e["course_id"] for e in enrollments]
     if not course_ids:
-        return {"courses": []}
+        return {
+            "courses": [],
+            "next_steps": {
+                "completion_percent": next_steps.get("completion_percent", 0),
+                "eligible": next_steps.get("eligible", False),
+                "approval_status": next_steps.get("approval_status")
+            }
+        }
 
     courses = await db.pathways_courses.find(
         {"id": {"$in": course_ids}, "tenant_id": tenant_id},
@@ -3313,7 +3661,14 @@ async def get_member_pathways_courses(request: Request):
             "last_activity": last_activity.get(course["id"])
         })
 
-    return {"courses": response}
+    return {
+        "courses": response,
+        "next_steps": {
+            "completion_percent": next_steps.get("completion_percent", 0),
+            "eligible": next_steps.get("eligible", False),
+            "approval_status": next_steps.get("approval_status")
+        }
+    }
 
 @api_router.get("/portal/pathways/courses/{course_id}/lessons")
 async def get_member_pathways_lessons(request: Request, course_id: str):
@@ -3402,11 +3757,18 @@ async def update_pathways_progress(request: Request, payload: PathwaysProgressUp
         {"$set": {"status": status, "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
 
+    next_steps = await evaluate_member_next_steps_membership(tenant_id, user.get("user_id"))
+
     return {
         "status": "saved",
         "progress_percent": progress_data["progress_percent"],
         "completed": completed,
-        "course_status": status
+        "course_status": status,
+        "next_steps": {
+            "completion_percent": next_steps.get("completion_percent", 0),
+            "eligible": next_steps.get("eligible", False),
+            "approval_status": next_steps.get("approval_status")
+        }
     }
 
 # ============== MERCH ROUTES ==============

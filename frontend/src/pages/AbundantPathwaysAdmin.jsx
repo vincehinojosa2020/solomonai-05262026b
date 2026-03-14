@@ -9,7 +9,10 @@ import {
   GraduationCap,
   UserPlus,
   X,
-  Clock
+  Clock,
+  CheckCircle2,
+  ShieldCheck,
+  Ban
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -57,6 +60,8 @@ export default function AbundantPathwaysAdmin() {
   const [lessons, setLessons] = useState([]);
   const [assignments, setAssignments] = useState([]);
   const [availableMembers, setAvailableMembers] = useState([]);
+  const [nextStepsApprovals, setNextStepsApprovals] = useState([]);
+  const [approvalsLoading, setApprovalsLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const fetchCourses = async () => {
@@ -77,7 +82,23 @@ export default function AbundantPathwaysAdmin() {
 
   useEffect(() => {
     fetchCourses();
+    fetchNextStepsApprovals();
   }, []);
+
+  const fetchNextStepsApprovals = async () => {
+    setApprovalsLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/admin/next-steps/approvals`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setNextStepsApprovals(data.approvals || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch next steps approvals:', error);
+    } finally {
+      setApprovalsLoading(false);
+    }
+  };
 
   const resetCourseForm = () => {
     setCourseForm(defaultCourseForm);
@@ -291,6 +312,26 @@ export default function AbundantPathwaysAdmin() {
     }
   };
 
+  const decideApproval = async (userId, action) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/next-steps/approvals/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ action })
+      });
+      if (res.ok) {
+        toast.success(`Membership ${action === 'approve' ? 'approved' : 'rejected'}`);
+        fetchNextStepsApprovals();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        toast.error(data.detail || 'Unable to update status');
+      }
+    } catch (error) {
+      toast.error('Failed to update membership status');
+    }
+  };
+
   return (
     <div className="pathways-admin" data-testid="pathways-admin-page">
       <div className="page-header">
@@ -309,6 +350,69 @@ export default function AbundantPathwaysAdmin() {
           Create Course
         </Button>
       </div>
+
+      <section className="rounded-3xl border border-slate-200 bg-white p-5 mb-8" data-testid="next-steps-approval-queue">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <p className="text-xs uppercase tracking-wide font-semibold text-blue-700">Membership Approvals</p>
+            <h2 className="text-xl font-semibold text-slate-900 mt-1">Abundant Next Steps Queue</h2>
+            <p className="text-sm text-slate-600 mt-1">Manual approval ensures completed members are formally recognized.</p>
+          </div>
+          <Button variant="outline" onClick={fetchNextStepsApprovals} data-testid="refresh-next-steps-approvals-btn">
+            Refresh Queue
+          </Button>
+        </div>
+
+        {approvalsLoading ? (
+          <div className="text-sm text-slate-500" data-testid="next-steps-approvals-loading">Loading approval queue...</div>
+        ) : nextStepsApprovals.length === 0 ? (
+          <div className="text-sm text-slate-500" data-testid="next-steps-approvals-empty">No memberships in queue right now.</div>
+        ) : (
+          <div className="space-y-3" data-testid="next-steps-approvals-list">
+            {nextStepsApprovals.map((item) => (
+              <div
+                key={item.id}
+                className="rounded-2xl border border-slate-200 p-4 flex flex-wrap items-center justify-between gap-3"
+                data-testid={`next-steps-approval-${item.user_id}`}
+              >
+                <div>
+                  <p className="font-semibold text-slate-900" data-testid={`next-steps-approval-name-${item.user_id}`}>{item.member?.name || 'Unknown Member'}</p>
+                  <p className="text-xs text-slate-500" data-testid={`next-steps-approval-email-${item.user_id}`}>{item.member?.email || ''}</p>
+                  <p className="text-sm text-slate-600 mt-1" data-testid={`next-steps-approval-progress-${item.user_id}`}>
+                    {item.completion_percent || 0}% complete • {item.approval_status?.replaceAll('_', ' ') || 'in progress'}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    className="border-green-200 text-green-700"
+                    onClick={() => decideApproval(item.user_id, 'approve')}
+                    disabled={!item.eligible || item.approval_status === 'approved'}
+                    data-testid={`approve-next-steps-${item.user_id}`}
+                  >
+                    <CheckCircle2 className="w-4 h-4" /> Approve
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-rose-200 text-rose-700"
+                    onClick={() => decideApproval(item.user_id, 'reject')}
+                    disabled={item.approval_status === 'rejected'}
+                    data-testid={`reject-next-steps-${item.user_id}`}
+                  >
+                    <Ban className="w-4 h-4" /> Reject
+                  </Button>
+                  {item.approval_status === 'approved' && (
+                    <span className="inline-flex items-center gap-1 text-xs rounded-full bg-emerald-50 text-emerald-700 px-3 py-1" data-testid={`next-steps-approved-badge-${item.user_id}`}>
+                      <ShieldCheck className="w-3.5 h-3.5" /> Approved
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
       {loading ? (
         <div className="pathways-loading" data-testid="pathways-loading">Loading courses...</div>
