@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://solomon-church.preview.emergentagent.com/api
+https://admin-sync-8.preview.emergentagent.com/api
 ```
 
 ### Authentication

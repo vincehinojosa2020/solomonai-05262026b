@@ -35,7 +35,7 @@
     },
     "sw_registration": {
       "status": "PASSED",
-      "details": "Console logs confirm: 'SW registered: https://solomon-church.preview.emergentagent.com/'"
+      "details": "Console logs confirm: 'SW registered: https://admin-sync-8.preview.emergentagent.com/'"
     },
     "pwa_install_prompt_component": {
       "status": "PASSED (component exists)",
