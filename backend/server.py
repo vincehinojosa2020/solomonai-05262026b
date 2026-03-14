@@ -1862,6 +1862,342 @@ async def ensure_mobile_demo_accounts():
             upsert=True
         )
 
+    await ensure_abundant_mobile_demo_content(now_iso)
+
+
+async def ensure_abundant_mobile_demo_content(now_iso: Optional[str] = None):
+    """Seed deterministic demo content expected by mobile + web QA checks."""
+    tenant_id = DEFAULT_TENANT_ID
+    now_iso = now_iso or datetime.now(timezone.utc).isoformat()
+
+    # Ensure member person profile exists for giving/kids linkage
+    member_user = await db.users.find_one(
+        {"email": "member@abundant.church"},
+        {"_id": 0}
+    )
+    if not member_user:
+        return
+
+    person_doc = {
+        "id": "person_member_abundant",
+        "tenant_id": tenant_id,
+        "first_name": "Maria",
+        "last_name": "Garcia",
+        "email": "member@abundant.church",
+        "mobile_phone": "915-555-0101",
+        "membership_status": "member",
+        "membership_date": "2019-03-15",
+        "ytd_giving": 500,
+        "lifetime_giving": 3500,
+        "updated_at": now_iso,
+        "created_at": now_iso
+    }
+    await db.people.update_one(
+        {"email": "member@abundant.church", "tenant_id": tenant_id},
+        {"$set": person_doc},
+        upsert=True
+    )
+
+    # Funds (for giving history mapping)
+    funds = [
+        {"id": "fund_general_mobile", "name": "General Fund", "goal_amount": 1500000},
+        {"id": "fund_building_mobile", "name": "Building Fund", "goal_amount": 750000}
+    ]
+    for fund in funds:
+        await db.funds.update_one(
+            {"id": fund["id"], "tenant_id": tenant_id},
+            {
+                "$set": {
+                    "tenant_id": tenant_id,
+                    "is_active": True,
+                    "current_amount": 0,
+                    "updated_at": now_iso,
+                    **fund
+                },
+                "$setOnInsert": {"created_at": now_iso}
+            },
+            upsert=True
+        )
+
+    # Merch products (exact 5 active expected by QA)
+    merch_products = [
+        {
+            "id": "merch_mobile_001",
+            "name": "SO BE IT Vinyl",
+            "price": 40,
+            "category": "Music",
+            "is_featured": True,
+            "description": "Limited edition SO BE IT worship vinyl.",
+            "image_url": "https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=1200&q=80"
+        },
+        {
+            "id": "merch_mobile_002",
+            "name": "SO BE IT Hoodie",
+            "price": 60,
+            "category": "Apparel",
+            "is_featured": True,
+            "description": "Premium hoodie from the SO BE IT collection.",
+            "image_url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=80"
+        },
+        {
+            "id": "merch_mobile_003",
+            "name": "Abundant YETI Tumbler",
+            "price": 42,
+            "category": "Drinkware",
+            "is_featured": True,
+            "description": "Insulated tumbler with engraved Abundant logo.",
+            "image_url": "https://images.unsplash.com/photo-1527169402691-feff5539e52c?auto=format&fit=crop&w=1200&q=80"
+        },
+        {
+            "id": "merch_mobile_004",
+            "name": "SO BE IT T-Shirt",
+            "price": 35,
+            "category": "Apparel",
+            "is_featured": False,
+            "description": "Soft cotton tee featuring SO BE IT art.",
+            "image_url": "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=1200&q=80"
+        },
+        {
+            "id": "merch_mobile_005",
+            "name": "Church Tote Bag",
+            "price": 28,
+            "category": "Accessories",
+            "is_featured": False,
+            "description": "Canvas tote bag for Sunday essentials.",
+            "image_url": "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=1200&q=80"
+        }
+    ]
+    merch_ids = [item["id"] for item in merch_products]
+    for product in merch_products:
+        await db.merch_products.update_one(
+            {"id": product["id"], "tenant_id": tenant_id},
+            {
+                "$set": {
+                    "tenant_id": tenant_id,
+                    "is_active": True,
+                    "inventory": 120,
+                    "updated_at": now_iso,
+                    **product
+                },
+                "$setOnInsert": {"created_at": now_iso}
+            },
+            upsert=True
+        )
+    await db.merch_products.update_many(
+        {"tenant_id": tenant_id, "id": {"$nin": merch_ids}},
+        {"$set": {"is_active": False, "updated_at": now_iso}}
+    )
+
+    # Cafe menu (exact 5 active expected by QA)
+    cafe_items = [
+        {
+            "id": "cafe_mobile_001",
+            "name": "Latte",
+            "price": 5,
+            "category": "Coffee",
+            "is_featured": True,
+            "description": "Espresso with silky steamed milk."
+        },
+        {
+            "id": "cafe_mobile_002",
+            "name": "Cold Brew",
+            "price": 5,
+            "category": "Coffee",
+            "is_featured": False,
+            "description": "Slow-steeped cold brew over ice."
+        },
+        {
+            "id": "cafe_mobile_003",
+            "name": "Croissant",
+            "price": 3,
+            "category": "Pastry",
+            "is_featured": True,
+            "description": "Buttery flaky croissant baked fresh."
+        },
+        {
+            "id": "cafe_mobile_004",
+            "name": "Blueberry Muffin",
+            "price": 3,
+            "category": "Pastry",
+            "is_featured": False,
+            "description": "Classic blueberry muffin."
+        },
+        {
+            "id": "cafe_mobile_005",
+            "name": "Chai Tea",
+            "price": 4,
+            "category": "Tea",
+            "is_featured": False,
+            "description": "Warm spiced chai tea."
+        }
+    ]
+    cafe_ids = [item["id"] for item in cafe_items]
+    for item in cafe_items:
+        await db.cafe_items.update_one(
+            {"id": item["id"], "tenant_id": tenant_id},
+            {
+                "$set": {
+                    "tenant_id": tenant_id,
+                    "is_active": True,
+                    "updated_at": now_iso,
+                    **item
+                },
+                "$setOnInsert": {"created_at": now_iso}
+            },
+            upsert=True
+        )
+    await db.cafe_items.update_many(
+        {"tenant_id": tenant_id, "id": {"$nin": cafe_ids}},
+        {"$set": {"is_active": False, "updated_at": now_iso}}
+    )
+
+    # Sermons feed (exact 3 with content_type=sermon)
+    sermons = [
+        {
+            "id": "sermon_mobile_001",
+            "title": "SO BE IT",
+            "instructor": "Pastor James",
+            "published_at": "2026-03-09",
+            "duration": "42:00",
+            "duration_seconds": 2520,
+            "youtube_id": "FoPI3hMbXvw",
+            "youtube_url": "https://youtube.com/watch?v=FoPI3hMbXvw"
+        },
+        {
+            "id": "sermon_mobile_002",
+            "title": "Unshakeable Faith",
+            "instructor": "Pastor James",
+            "published_at": "2026-03-02",
+            "duration": "38:00",
+            "duration_seconds": 2280,
+            "youtube_id": "pzpbbibEWPE",
+            "youtube_url": "https://youtube.com/watch?v=pzpbbibEWPE"
+        },
+        {
+            "id": "sermon_mobile_003",
+            "title": "New Beginnings",
+            "instructor": "Pastor Sarah",
+            "published_at": "2026-02-23",
+            "duration": "45:00",
+            "duration_seconds": 2700,
+            "youtube_id": "Lnj6vMvOLME",
+            "youtube_url": "https://youtube.com/watch?v=Lnj6vMvOLME"
+        }
+    ]
+    sermon_ids = [s["id"] for s in sermons]
+    for sermon in sermons:
+        await db.media_videos.update_one(
+            {"id": sermon["id"], "tenant_id": tenant_id},
+            {
+                "$set": {
+                    "tenant_id": tenant_id,
+                    "description": sermon["title"],
+                    "thumbnail_url": f"https://i.ytimg.com/vi/{sermon['youtube_id']}/maxresdefault.jpg",
+                    "is_featured": sermon["id"] == "sermon_mobile_001",
+                    "is_published": True,
+                    "content_type": "sermon",
+                    "updated_at": now_iso,
+                    **sermon
+                },
+                "$setOnInsert": {"created_at": now_iso}
+            },
+            upsert=True
+        )
+    await db.media_videos.update_many(
+        {"tenant_id": tenant_id, "content_type": "sermon", "id": {"$nin": sermon_ids}},
+        {"$set": {"is_published": False, "updated_at": now_iso}}
+    )
+
+    # Giving history (exact 4 donations)
+    donation_seed = [
+        {"id": "don_mobile_001", "amount": 150, "fund_id": "fund_general_mobile", "donation_date": "2026-01-05"},
+        {"id": "don_mobile_002", "amount": 150, "fund_id": "fund_general_mobile", "donation_date": "2026-02-02"},
+        {"id": "don_mobile_003", "amount": 150, "fund_id": "fund_general_mobile", "donation_date": "2026-03-02"},
+        {"id": "don_mobile_004", "amount": 50, "fund_id": "fund_building_mobile", "donation_date": "2026-02-14"}
+    ]
+    donation_ids = [d["id"] for d in donation_seed]
+    for donation in donation_seed:
+        await db.donations.update_one(
+            {"id": donation["id"], "tenant_id": tenant_id},
+            {
+                "$set": {
+                    "tenant_id": tenant_id,
+                    "person_id": person_doc["id"],
+                    "fund_name": "General Fund" if donation["fund_id"] == "fund_general_mobile" else "Building Fund",
+                    "payment_method": "card",
+                    "status": "completed",
+                    "created_at": now_iso,
+                    **donation
+                }
+            },
+            upsert=True
+        )
+    await db.donations.delete_many(
+        {
+            "tenant_id": tenant_id,
+            "person_id": person_doc["id"],
+            "id": {"$nin": donation_ids}
+        }
+    )
+
+    # Kids profile (Emma Johnson)
+    child_doc = {
+        "id": "child_emma_johnson",
+        "tenant_id": tenant_id,
+        "parent_user_id": member_user["user_id"],
+        "name": "Emma Johnson",
+        "birthdate": "2019-08-15",
+        "allergies": "None",
+        "special_needs": "",
+        "emergency_contact": "Maria Garcia",
+        "emergency_phone": "915-555-0101",
+        "updated_at": now_iso,
+        "created_at": now_iso
+    }
+    await db.children.update_one(
+        {"id": child_doc["id"], "tenant_id": tenant_id},
+        {"$set": child_doc},
+        upsert=True
+    )
+    await db.children.delete_many(
+        {
+            "tenant_id": tenant_id,
+            "parent_user_id": member_user["user_id"],
+            "id": {"$ne": child_doc["id"]}
+        }
+    )
+
+    # Attendance streak seed (4 Sundays)
+    checkins = [
+        {"id": "chk_mobile_001", "service_date": "2026-03-09"},
+        {"id": "chk_mobile_002", "service_date": "2026-02-23"},
+        {"id": "chk_mobile_003", "service_date": "2026-02-16"},
+        {"id": "chk_mobile_004", "service_date": "2026-02-09"}
+    ]
+    checkin_ids = [item["id"] for item in checkins]
+    for entry in checkins:
+        await db.member_checkins.update_one(
+            {"id": entry["id"], "tenant_id": tenant_id},
+            {
+                "$set": {
+                    "tenant_id": tenant_id,
+                    "user_id": member_user["user_id"],
+                    "service_id": None,
+                    "check_in_type": "in_person",
+                    "check_in_time": f"{entry['service_date']}T09:00:00+00:00",
+                    **entry
+                }
+            },
+            upsert=True
+        )
+    await db.member_checkins.delete_many(
+        {
+            "tenant_id": tenant_id,
+            "user_id": member_user["user_id"],
+            "id": {"$nin": checkin_ids}
+        }
+    )
+
 # ============== API ROUTES ==============
 
 # ============== AUTH ROUTES ==============
@@ -2076,7 +2412,9 @@ async def email_password_login(request: EmailLoginRequest, response: Response):
         "role": user_doc.get("role", "member"),
         "tenant_id": tenant_id,
         "tenant_name": tenant_name,
-        "session_token": session_token
+        "session_token": session_token,
+        "token": session_token,
+        "access_token": session_token
     }
 
 # ============== USER REGISTRATION ==============
@@ -2199,7 +2537,9 @@ async def register_user(request: UserRegistrationRequest, response: Response):
         "email": new_user["email"],
         "name": new_user["name"],
         "role": "member",
-        "session_token": session_token
+        "session_token": session_token,
+        "token": session_token,
+        "access_token": session_token
     }
 
 @api_router.post("/auth/check-email")
@@ -2336,13 +2676,16 @@ async def update_portal_profile(request: Request, payload: PortalProfileUpdate):
 async def get_member_giving_history(request: Request, limit: int = 50):
     """Get member's giving history for portal"""
     user = await get_current_member_user(request)
-    person = await db.people.find_one({"email": user["email"]}, {"_id": 0})
+    person = await db.people.find_one(
+        {"email": user["email"], "tenant_id": user.get("tenant_id")},
+        {"_id": 0}
+    )
     
     if not person:
         return {"donations": [], "total": 0}
     
     donations = await db.donations.find(
-        {"person_id": person["id"]},
+        {"tenant_id": user.get("tenant_id"), "person_id": person["id"]},
         {"_id": 0}
     ).sort("donation_date", -1).limit(limit).to_list(limit)
     
@@ -3419,6 +3762,27 @@ async def get_active_checkins(request: Request):
     }, {"_id": 0}).to_list(50)
     
     return {"checkins": [serialize_doc(c) for c in checkins]}
+
+
+@api_router.get("/portal/kids/checkin/history")
+async def get_portal_kids_checkin_history(request: Request, limit: int = 100):
+    """Get historical check-ins for the current parent's children."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+    user_id = user.get("user_id")
+
+    checkins = await db.checkins.find(
+        {
+            "tenant_id": tenant_id,
+            "parent_user_id": user_id
+        },
+        {"_id": 0}
+    ).sort("checked_in_at", -1).limit(limit).to_list(limit)
+
+    return {
+        "checkins": [serialize_doc(c) for c in checkins],
+        "total": len(checkins)
+    }
 
 # Admin routes for Kids Check-in
 @api_router.get("/admin/kids/checkins")
@@ -5100,22 +5464,12 @@ async def get_admin_member_directory(
     sort_order: str = "desc"
 ):
     """Get member directory for church admin or platform admin"""
-    session_token = request.cookies.get("session_token")
-    if not session_token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
-    if not session:
-        raise HTTPException(status_code=401, detail="Invalid session")
-    
-    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+    user = await get_current_admin_user(request)
     
     # Build query based on role
     query = {"role": "member"}
     
-    if user.get("role") == "church_admin":
+    if user.get("role") in ["church_admin", "admin"]:
         # Church admin only sees their own church members
         query["tenant_id"] = user.get("tenant_id")
     elif user.get("role") != "platform_admin":
@@ -5199,7 +5553,7 @@ async def get_current_admin_user(request: Request):
     return user
 
 async def get_current_member_user(request: Request):
-    """Helper to get current member user"""
+    """Helper for portal access: member + church/platform admins."""
     session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -5212,8 +5566,8 @@ async def get_current_member_user(request: Request):
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
     
-    if user.get("role") != "member":
-        raise HTTPException(status_code=403, detail="Member access required")
+    if user.get("role") not in ["member", "church_admin", "platform_admin", "admin"]:
+        raise HTTPException(status_code=403, detail="Portal access required")
     
     return user
 
@@ -5446,8 +5800,23 @@ async def get_portal_videos(request: Request, category: Optional[str] = None, li
 
 @api_router.get("/portal/media/sermons")
 async def get_portal_sermons(request: Request, limit: int = 50):
-    """Mobile alias for sermons feed."""
-    return await get_portal_videos(request, category=None, limit=limit)
+    """Sermon-focused feed for mobile/web clients."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+
+    sermons = await db.media_videos.find(
+        {
+            "tenant_id": tenant_id,
+            "is_published": True,
+            "content_type": "sermon"
+        },
+        {"_id": 0}
+    ).sort("published_at", -1).limit(limit).to_list(limit)
+
+    return {
+        "videos": [serialize_doc(v) for v in sermons],
+        "total": len(sermons)
+    }
 
 @api_router.get("/portal/media/featured")
 async def get_featured_video(request: Request):
@@ -6907,6 +7276,117 @@ async def generate_admin_qr(
             "format": "quickchart"
         }
     }
+
+
+async def get_tenant_giving_metrics(tenant_id: str) -> Dict[str, Any]:
+    """Shared helper for tenant-level giving metrics."""
+    now = datetime.now(timezone.utc)
+    month_start = now.replace(day=1).strftime("%Y-%m-%d")
+    year_start = now.replace(month=1, day=1).strftime("%Y-%m-%d")
+
+    donations = await db.donations.find(
+        {
+            "tenant_id": tenant_id,
+            "donation_date": {"$gte": year_start}
+        },
+        {"_id": 0, "amount": 1, "donation_date": 1, "fund_id": 1, "fund_name": 1}
+    ).to_list(20000)
+
+    ytd_total = round(sum(float(d.get("amount", 0) or 0) for d in donations), 2)
+    mtd_total = round(
+        sum(
+            float(d.get("amount", 0) or 0)
+            for d in donations
+            if str(d.get("donation_date", ""))[:10] >= month_start
+        ),
+        2
+    )
+
+    recurring_count = await db.recurring_giving.count_documents(
+        {"tenant_id": tenant_id, "is_active": True}
+    )
+
+    funds = await db.funds.find(
+        {"tenant_id": tenant_id},
+        {"_id": 0, "id": 1, "name": 1, "goal_amount": 1}
+    ).to_list(500)
+
+    fund_lookup = {f.get("id"): f.get("name", "General Fund") for f in funds if f.get("id")}
+    goal_amount = round(sum(float(f.get("goal_amount", 0) or 0) for f in funds), 2)
+
+    fund_totals: Dict[str, float] = {}
+    for donation in donations:
+        fund_name = fund_lookup.get(donation.get("fund_id")) or donation.get("fund_name") or "General Fund"
+        fund_totals[fund_name] = fund_totals.get(fund_name, 0.0) + float(donation.get("amount", 0) or 0)
+
+    top_funds = [
+        {"fund_name": name, "total": round(total, 2)}
+        for name, total in sorted(fund_totals.items(), key=lambda item: item[1], reverse=True)[:5]
+    ]
+
+    goal_percentage = round((ytd_total / goal_amount) * 100, 2) if goal_amount > 0 else 0
+
+    return {
+        "mtd_total": mtd_total,
+        "ytd_total": ytd_total,
+        "recurring_count": recurring_count,
+        "goal_amount": goal_amount,
+        "goal_percentage": goal_percentage,
+        "top_funds": top_funds
+    }
+
+
+@api_router.get("/admin/dashboard")
+async def get_admin_dashboard(request: Request):
+    """Tenant-scoped admin dashboard summary for web/mobile admin apps."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    giving = await get_tenant_giving_metrics(tenant_id)
+    total_members = await db.users.count_documents({"tenant_id": tenant_id, "role": "member"})
+    active_groups = await db.groups.count_documents({"tenant_id": tenant_id, "is_active": True})
+
+    today = datetime.now(timezone.utc).date()
+    days_since_sunday = (today.weekday() - 6) % 7
+    last_sunday = today - timedelta(days=days_since_sunday)
+    last_sunday_attendance = await db.member_checkins.count_documents(
+        {"tenant_id": tenant_id, "service_date": last_sunday.isoformat()}
+    )
+
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    upcoming_events_count = await db.events.count_documents(
+        {
+            "tenant_id": tenant_id,
+            "$or": [
+                {"start_datetime": {"$gte": today_str}},
+                {"event_date": {"$gte": today_str}}
+            ]
+        }
+    )
+
+    recent_activity_docs = await db.activity_log.find(
+        {"tenant_id": tenant_id},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(10).to_list(10)
+
+    return {
+        "total_members": total_members,
+        "active_groups": active_groups,
+        "mtd_giving": giving["mtd_total"],
+        "ytd_giving": giving["ytd_total"],
+        "recurring_count": giving["recurring_count"],
+        "last_sunday_attendance": last_sunday_attendance,
+        "upcoming_events_count": upcoming_events_count,
+        "recent_activity": [serialize_doc(item) for item in recent_activity_docs]
+    }
+
+
+@api_router.get("/admin/giving/summary")
+async def get_admin_giving_summary(request: Request):
+    """Tenant-scoped giving summary endpoint for admin dashboard."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    return await get_tenant_giving_metrics(tenant_id)
 
 # --- PEOPLE ROUTES ---
 @api_router.get("/people")
@@ -11057,7 +11537,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=["*"],
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 

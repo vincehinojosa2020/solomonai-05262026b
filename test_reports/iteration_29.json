@@ -1,0 +1,119 @@
+{
+  "summary": "Iteration 29: Backend Bug Fixes Validation - ALL 27 TESTS PASSED. Verified all critical bugs fixed: BUG1 (admin portal access), BUG2 (login token aliases), BUG3 (admin dashboard/giving endpoints), BUG4 (kids checkin history), BUG5 (seeded demo data), CORS headers, and regression endpoints.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+
+  "features_tested": {
+    "BUG1_admin_portal_access": {
+      "status": "FIXED",
+      "endpoints_tested": [
+        "/api/portal/merch/products",
+        "/api/portal/cafe/menu",
+        "/api/portal/kids/children",
+        "/api/portal/media/sermons",
+        "/api/portal/giving/history"
+      ],
+      "details": "admin@abundant.church (role=church_admin) now accesses all portal endpoints without 403. get_current_member_user() correctly allows church_admin role."
+    },
+    "BUG2_login_token_aliases": {
+      "status": "FIXED",
+      "details": "POST /api/auth/login now returns session_token, token, AND access_token fields. All three contain the same sess_xxx value. Mobile apps can use any of these fields."
+    },
+    "BUG3_admin_endpoints": {
+      "status": "FIXED",
+      "endpoints_tested": [
+        "GET /api/admin/dashboard",
+        "GET /api/admin/giving/summary"
+      ],
+      "details": "/api/admin/dashboard returns: total_members, active_groups, mtd_giving, ytd_giving, recurring_count, last_sunday_attendance, upcoming_events_count, recent_activity. /api/admin/giving/summary returns: mtd_total, ytd_total."
+    },
+    "BUG4_kids_checkin_history": {
+      "status": "FIXED",
+      "endpoint": "GET /api/portal/kids/checkin/history",
+      "details": "Endpoint exists and returns {checkins: [], total: n} structure for authenticated parent."
+    },
+    "BUG5_seeded_demo_data": {
+      "status": "FIXED",
+      "checks": {
+        "merch_products": "5+ active products verified",
+        "cafe_items": "5+ active items verified",
+        "sermons": "3+ videos verified",
+        "kids_emma_johnson": "Emma Johnson found in children list",
+        "giving_history": "4+ donations verified",
+        "attendance_streak": ">= 0 verified"
+      }
+    },
+    "CORS_headers": {
+      "status": "WORKING",
+      "details": "CORS middleware correctly configured with allow_origins=['*'], allow_methods=['GET','POST','PUT','DELETE','OPTIONS'], allow_headers=['*']"
+    },
+    "regression_endpoints": {
+      "status": "WORKING",
+      "endpoints": [
+        "GET /api/auth/me - returns user info with Bearer token",
+        "GET /api/events - public events list",
+        "GET /api/groups - public groups list",
+        "GET /api/admin/members - admin members list"
+      ]
+    },
+    "auth_enforcement": {
+      "status": "WORKING",
+      "tests": [
+        "/api/portal/profile returns 401 without token",
+        "/api/admin/dashboard returns 401 without token",
+        "/api/admin/dashboard returns 403 for member role"
+      ]
+    }
+  },
+
+  "test_report_links": [
+    "/app/backend/tests/test_bug_fixes_iter29.py",
+    "/app/test_reports/pytest/pytest_results_iter29.xml"
+  ],
+
+  "action_items": [],
+
+  "critical_code_review_comments": [
+    "All bugs verified fixed - no code changes needed",
+    "get_current_member_user() line 5569 correctly includes 'church_admin' role for portal access",
+    "Login response lines 2415-2417 now include session_token, token, and access_token aliases",
+    "/api/admin/dashboard (line 7339) and /api/admin/giving/summary (line 7384) endpoints exist",
+    "/api/portal/kids/checkin/history (line 3767) endpoint exists and returns checkins list",
+    "ensure_abundant_mobile_demo_content() seeds correct demo data counts",
+    "CORSMiddleware (line 11536) configured with wildcard origins and all methods"
+  ],
+
+  "updated_files": [],
+
+  "success_rate": {
+    "backend": "100% (27/27 tests passed)",
+    "frontend": "N/A (backend-only testing requested)"
+  },
+
+  "test_credentials": {
+    "member": "member@abundant.church / Demo2026!",
+    "admin": "admin@abundant.church / Demo2026!"
+  },
+
+  "seed_data_creation": "None - used existing seeded data",
+
+  "retest_needed": false,
+
+  "should_main_agent_self_test": false,
+
+  "context_for_next_testing_agent": "All backend bugs verified fixed. Key validations: (1) church_admin role can access all portal/* endpoints, (2) login returns session_token/token/access_token, (3) admin/dashboard and admin/giving/summary exist with required fields, (4) portal/kids/checkin/history endpoint works, (5) seeded demo data meets QA requirements. No frontend testing performed per request.",
+
+  "mocked_apis": {
+    "cafe_payment": "POST /api/portal/cafe/order - MOCKED (order placed, no payment)",
+    "merch_checkout": "Merch products viewable, checkout MOCKED by design"
+  }
+}
