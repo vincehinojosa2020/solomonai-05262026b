@@ -486,6 +486,13 @@ All 10 modules implemented with 100% test pass rate.
 - ✅ Returns `status`, boolean `checks`, `metrics`, and `required_accounts` presence in a single payload.
 - ✅ Default tenant (`abundant-church-001`) now reports launch-ready with expected seeded values (e.g., YTD 500, kids 1, courses 2, prayer 2, streak 1).
 
+### Mar 14, 2026 (Admin Go-Live Health Widget)
+- ✅ Added a new dashboard widget in `frontend/src/pages/Dashboard.jsx` that calls `/api/health/launch-check` and renders launch readiness checks with badges.
+- ✅ Includes refresh action + full check grid and data-testids for QA automation:
+  - `go-live-health-widget`, `go-live-health-status-badge`, `go-live-health-refresh-button`, `go-live-health-check-grid`.
+- ✅ UX polish: initial badge state now shows `LOADING` (instead of `UNKNOWN`) until API response arrives, then transitions to `READY`.
+- ✅ Frontend testing agent verified pass after fix.
+
 ### Feb 27, 2026
 - ✅ Pastor's CRM / Meeting Scheduler complete (Admin + Member)
 - ✅ Abundant Pathways populated with 8 courses
