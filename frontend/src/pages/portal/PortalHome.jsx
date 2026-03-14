@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
+import { usePolling } from '@/hooks/usePolling';
 import { DollarSign, Users, Calendar, ChevronRight, Flame, GraduationCap, ExternalLink } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { ServiceModeBanner, AttendanceStreakCard } from '@/components/ServiceMode';
@@ -21,6 +22,12 @@ export default function PortalHome() {
     fetchStreakData();
     fetchNextSteps();
   }, [memberData, tenant]);
+
+  // Real-time polling every 30 seconds
+  const pollHome = useCallback(() => {
+    fetchUpcomingEvents(); fetchServiceMode(); fetchStreakData(); fetchNextSteps();
+  }, [memberData, tenant]);
+  usePolling(pollHome, 30000);
 
   const fetchUpcomingEvents = async () => {
     try {

@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { usePolling } from '@/hooks/usePolling';
 import { 
   Calendar, Plus, Search, Edit, Trash2, MapPin, Clock,
   Users, ChevronRight, Loader2, CheckCircle, X, UserPlus
@@ -28,6 +29,9 @@ export default function EventsManagerPage() {
   useEffect(() => {
     fetchEvents();
   }, [showPast]);
+
+  // Real-time polling every 30 seconds
+  usePolling(useCallback(() => fetchEvents(), [showPast]), 30000);
 
   const fetchEvents = async () => {
     setLoading(true);

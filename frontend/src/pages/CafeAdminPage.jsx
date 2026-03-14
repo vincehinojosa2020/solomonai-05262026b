@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { usePolling } from '@/hooks/usePolling';
 import { Coffee, Plus, Save, ShoppingBag, Users, Clock, Edit, Trash2 } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -76,6 +77,9 @@ export default function CafeAdminPage() {
   useEffect(() => {
     fetchCafeData();
   }, []);
+
+  // Real-time polling every 30 seconds
+  usePolling(useCallback(() => fetchCafeData(), []), 30000);
 
   const openModal = (item) => {
     if (item) {

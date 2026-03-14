@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { usePolling } from '@/hooks/usePolling';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MapPin, Clock, Users, CheckCircle, Calendar as CalendarIcon,
@@ -28,6 +29,10 @@ export default function PortalEvents() {
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   useEffect(() => { fetchEvents(); fetchMyEvents(); }, []);
+
+  // Real-time polling every 30 seconds
+  const pollEvents = useCallback(() => { fetchEvents(); fetchMyEvents(); }, []);
+  usePolling(pollEvents, 30000);
 
   const fetchEvents = async () => {
     try {

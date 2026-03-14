@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { usePolling } from '@/hooks/usePolling';
 import { useNavigate } from 'react-router-dom';
 import { 
   Users, Plus, Search, Edit, Trash2, UserPlus, MapPin, Clock,
@@ -43,6 +44,9 @@ export default function GroupsManagerPage() {
   useEffect(() => {
     fetchGroups();
   }, [searchQuery, filterType]);
+
+  // Real-time polling every 30 seconds
+  usePolling(useCallback(() => fetchGroups(), [searchQuery, filterType]), 30000);
 
   const fetchGroups = async () => {
     setLoading(true);

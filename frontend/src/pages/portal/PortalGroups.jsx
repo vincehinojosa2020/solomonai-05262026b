@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
+import { usePolling } from '@/hooks/usePolling';
 import { Users, MapPin, Clock, ChevronRight, Search, Bell, LogOut, MessageCircle, ArrowLeft } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -18,6 +19,10 @@ export default function PortalGroups() {
     fetchGroups();
     fetchMyGroups();
   }, []);
+
+  // Real-time polling every 30 seconds
+  const pollGroups = useCallback(() => { fetchGroups(); fetchMyGroups(); }, []);
+  usePolling(pollGroups, 30000);
 
   const fetchGroups = async () => {
     try {

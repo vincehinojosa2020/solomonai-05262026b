@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useOutletContext, Link, useNavigate } from 'react-router-dom';
+import { usePolling } from '@/hooks/usePolling';
 import { 
   Users, UsersRound, Calendar, DollarSign, TrendingUp, 
   ArrowUpRight, ArrowDownRight, RefreshCw, Video, ExternalLink, 
@@ -144,6 +145,25 @@ export default function Dashboard() {
     fetchDashboardData();
     fetchLaunchHealth();
   }, []);
+
+  // Real-time polling every 30 seconds
+  const pollDashboard = useCallback(async () => {
+    try {
+      const [statsRes, givingRes, attendanceRes, activityRes, eventsRes] = await Promise.all([
+        fetch(`${API_URL}/dashboard/stats`),
+        fetch(`${API_URL}/dashboard/giving-trend`),
+        fetch(`${API_URL}/dashboard/attendance-trend`),
+        fetch(`${API_URL}/dashboard/activity`),
+        fetch(`${API_URL}/dashboard/upcoming-events`),
+      ]);
+      const [statsData, givingData, attendanceData, activityData, eventsData] = await Promise.all([
+        statsRes.json(), givingRes.json(), attendanceRes.json(), activityRes.json(), eventsRes.json(),
+      ]);
+      setStats(statsData); setGivingTrend(givingData); setAttendanceTrend(attendanceData);
+      setActivities(activityData); setEvents(eventsData);
+    } catch (_) {}
+  }, []);
+  usePolling(pollDashboard, 30000);
 
   const fetchLaunchHealth = async () => {
     setLaunchHealthLoading(true);

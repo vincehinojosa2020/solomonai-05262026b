@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { usePolling } from '@/hooks/usePolling';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Heart, Send, Plus, X, Filter, Check, Clock,
@@ -41,6 +42,9 @@ export default function PortalPrayer() {
   useEffect(() => {
     fetchData();
   }, [activeTab, selectedCategory]);
+
+  // Real-time polling every 30 seconds
+  usePolling(useCallback(() => fetchData(), [activeTab, selectedCategory]), 30000);
 
   const fetchData = async () => {
     setLoading(true);
