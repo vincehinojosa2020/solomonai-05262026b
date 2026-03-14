@@ -190,6 +190,40 @@ Each church is a tenant with isolated data:
 - `POST /api/portal/notes` - Submit member note
 - `GET /api/admin/notes` - Admin review notes
 
+### Geofencing
+- `GET /api/admin/geofence/config` - Get geofence zones
+- `PUT /api/admin/geofence/config` - Update geofence zones
+- `POST /api/portal/attendance/geofence-checkin` - Member geofence check-in
+
+### Giving Nudge
+- `GET /api/portal/giving/nudge?context={cafe|merch|general}` - Contextual giving prompt
+
+### Admin Announcements
+- `GET /api/admin/announcements` - List all announcements
+- `POST /api/admin/announcements` - Create announcement
+- `PUT /api/admin/announcements/{id}` - Update announcement
+- `DELETE /api/admin/announcements/{id}` - Delete announcement
+
+### Admin Volunteer Management
+- `GET /api/admin/volunteer/opportunities` - List opportunities
+- `POST /api/admin/volunteer/opportunities` - Create opportunity
+- `PUT /api/admin/volunteer/opportunities/{id}` - Update opportunity
+- `DELETE /api/admin/volunteer/opportunities/{id}` - Delete opportunity
+- `GET /api/admin/volunteer/signups` - View signups
+- `PUT /api/admin/volunteer/signups/{id}` - Update signup status
+
+### Media File Uploads
+- `POST /api/admin/media/upload` - Upload file (multipart)
+- `GET /api/admin/media/uploads` - List uploads
+- `GET /api/admin/media/uploads/{id}/file` - Serve file
+- `DELETE /api/admin/media/uploads/{id}` - Delete upload
+
+### Portal Payment Methods (Mobile-Compatible)
+- `GET /api/portal/payment-methods` - Get saved methods
+- `POST /api/portal/payment-methods` - Save method
+- `DELETE /api/portal/payment-methods/{id}` - Remove method
+- `PUT /api/portal/payment-methods/{id}/default` - Set default
+
 ---
 
 ## Demo Test Credentials
@@ -217,18 +251,27 @@ Each church is a tenant with isolated data:
 - [x] Service Mode - dynamic homepage on service days ✅
 - [x] Attendance Streaks with badges ✅
 - [x] Prayer Request categories & Prayer Wall ✅
+- [x] Geofencing Check-in (haversine distance, multi-zone) ✅
+- [x] "Give While You're Here" Nudge (cafe, merch, general contexts) ✅
+- [x] Admin Announcements CRUD ✅
+- [x] Admin Volunteer Management CRUD + Signups ✅
+- [x] Media File Uploads (image/audio/video/PDF up to 50MB) ✅
+- [x] Mobile-compatible Payment Methods (Bearer token) ✅
 - [ ] AI Transcripts/Summaries for videos (Phase 3)
 - [ ] Kids Check-in SMS notifications to parents (Phase 2)
 - [ ] Admin Communications Hub (Phase 4)
 
 ### P1 - Next Priority
-- [ ] Saved payment methods for members (frontend wiring)
+- [x] Saved payment methods for members (backend complete) ✅
+- [ ] Real-time polling on frontend (30-second intervals)
+- [ ] Full QA across all user roles
 - [ ] Giving reports with CSV export (frontend wiring)
 - [ ] Year-end tax statements (PDF generation)
 
 ### P2 - Medium Priority
+- [ ] Backend refactor: Break up server.py (12,600+ lines) into modules
+- [ ] Global CSS refactor: Break App.css into component files
 - [ ] Audit logging for critical actions
-- [ ] Backend refactor: Break up server.py into modules
 - [ ] Notification system for group/event updates
 
 ### P3 - Future (API Keys Required)
@@ -236,6 +279,7 @@ Each church is a tenant with isolated data:
 - [ ] AI Sermon Summaries
 - [ ] Engagement Scoring
 - [ ] SMS notifications (Twilio)
+- [ ] Mobile App Conversion (React Native)
 
 ---
 
@@ -492,6 +536,29 @@ All 10 modules implemented with 100% test pass rate.
   - `go-live-health-widget`, `go-live-health-status-badge`, `go-live-health-refresh-button`, `go-live-health-check-grid`.
 - ✅ UX polish: initial badge state now shows `LOADING` (instead of `UNKNOWN`) until API response arrives, then transitions to `READY`.
 - ✅ Frontend testing agent verified pass after fix.
+
+### Mar 14, 2026 (Go-Live Feature Pack — 5 New Feature Sets)
+- ✅ **Geofencing Check-in** — `GET/PUT /api/admin/geofence/config` + `POST /api/portal/attendance/geofence-checkin`
+  - Multi-zone support with haversine distance validation
+  - Default zone: Main Campus at El Paso coordinates (200m radius)
+  - Auto-creates default config on first access
+- ✅ **"Give While You're Here" Nudge** — `GET /api/portal/giving/nudge?context={cafe|merch|general}`
+  - Context-specific messaging and suggested amounts
+  - Includes user's YTD giving total
+- ✅ **Admin Announcements CRUD** — `GET/POST/PUT/DELETE /api/admin/announcements`
+  - Priority levels, expiration dates, created_by tracking
+- ✅ **Admin Volunteer Management CRUD** — `GET/POST/PUT/DELETE /api/admin/volunteer/opportunities` + `GET/PUT /api/admin/volunteer/signups`
+  - Ministry area classification, spots tracking, signup status management
+- ✅ **Media File Uploads** — `POST /api/admin/media/upload` + `GET /api/admin/media/uploads` + `DELETE`
+  - Supports image, audio, video, PDF up to 50MB
+  - Tenant-isolated storage in `/app/backend/uploads/{tenant_id}/`
+  - File serving via `/api/admin/media/uploads/{id}/file`
+- ✅ **Mobile-Compatible Payment Methods** — `GET/POST/DELETE /api/portal/payment-methods` + `PUT /{id}/default`
+  - Bearer token auth (mobile parity with existing cookie-based endpoints)
+  - Soft delete, default management
+- ✅ Testing: iteration 31 — **33/33 tests passed** (`/app/test_reports/iteration_31.json`)
+  - Role-based access verified: members blocked from all admin endpoints (403)
+  - All CRUD operations verified end-to-end
 
 ### Feb 27, 2026
 - ✅ Pastor's CRM / Meeting Scheduler complete (Admin + Member)
