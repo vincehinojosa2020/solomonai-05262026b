@@ -454,6 +454,33 @@ All 10 modules implemented with 100% test pass rate.
 - ✅ Endpoint returns one payload for mobile startup: `user`, `merch_products`, `cafe_menu`, `kids_children`, `sermons`, `generated_at`.
 - ✅ Verified with Bearer tokens for member, church_admin, and platform_admin.
 
+### Mar 14, 2026 (Go-Live Completion Pack)
+- ✅ Added/confirmed go-live criticals:
+  - Login response includes `session_token`, `token`, `access_token`.
+  - CORS open for mobile (`*` origin, `GET/POST/PUT/DELETE/OPTIONS`, `*` headers).
+  - Portal role access supports `member`, `church_admin`, `platform_admin`.
+- ✅ Added missing API endpoints:
+  - `GET /api/portal/next-steps`
+  - `GET /api/portal/courses`
+  - `GET/POST /api/portal/prayer-requests`
+  - `GET /api/portal/prayer-requests/community`
+  - `GET /api/portal/volunteer/opportunities`
+  - `POST /api/portal/volunteer/signup`
+  - `GET /api/portal/announcements`
+- ✅ Expanded `GET /api/admin/dashboard` to include required launch metrics:
+  `total_members`, `active_members`, `new_this_week`, `last_sunday_attendance`, `mtd_giving`, `ytd_giving`, `recurring_donors`, `cafe_orders_this_week`, `merch_sales_this_week`, `event_signups_this_month`, `small_groups_count`, `at_risk_members`.
+- ✅ Seeded realistic Abundant demo content for launch:
+  - Next Steps progress (60%)
+  - 2 courses
+  - 2 prayer requests
+  - 6 volunteer opportunities
+  - 3 announcements
+  - 50 events, 100 groups, giving YTD $500, 5 merch, 5 cafe, 1 child, 3 sermons, attendance streak ≥1
+- ✅ Ensured all six launch credentials exist and login with `Demo2026!`:
+  - `member@abundant.church`, `member@cristoviene.church`
+  - `admin@abundant.church`, `admin@cristoviene.church`, `admin@pottershouse.church`, `admin@solomon.ai`
+- ✅ Final backend verification via deep testing: **25/25 checks passed** (production-ready).
+
 ### Feb 27, 2026
 - ✅ Pastor's CRM / Meeting Scheduler complete (Admin + Member)
 - ✅ Abundant Pathways populated with 8 courses
