@@ -257,6 +257,7 @@ Each church is a tenant with isolated data:
 - [x] Admin Volunteer Management CRUD + Signups ✅
 - [x] Media File Uploads (image/audio/video/PDF up to 50MB) ✅
 - [x] Mobile-compatible Payment Methods (Bearer token) ✅
+- [x] Volunteer Leaderboard with badge tiers & gamification ✅
 - [ ] AI Transcripts/Summaries for videos (Phase 3)
 - [ ] Kids Check-in SMS notifications to parents (Phase 2)
 - [ ] Admin Communications Hub (Phase 4)
@@ -536,6 +537,18 @@ All 10 modules implemented with 100% test pass rate.
   - `go-live-health-widget`, `go-live-health-status-badge`, `go-live-health-refresh-button`, `go-live-health-check-grid`.
 - ✅ UX polish: initial badge state now shows `LOADING` (instead of `UNKNOWN`) until API response arrives, then transitions to `READY`.
 - ✅ Frontend testing agent verified pass after fix.
+
+### Mar 14, 2026 (Volunteer Leaderboard Gamification)
+- ✅ **Volunteer Leaderboard** — `GET /api/portal/volunteer/leaderboard`
+  - Top 20 volunteers ranked by signup count with badge tiers
+  - Shows: rank, name, signups, hours, ministry areas, current badge
+- ✅ **Personal Volunteer Stats** — `GET /api/portal/volunteer/my-stats`
+  - User's rank, signup count, hours, current badge, progress to next badge
+  - Badge tiers: Helping Hand (5+) → Faithful Servant (15+) → Ministry Champion (30+) → Church Pillar (50+) → Kingdom Builder (100+)
+- ✅ **Admin Hour Logging** — `POST /api/admin/volunteer/log-hours`
+  - Admin can manually log volunteer hours for any user
+- ✅ **Seed data**: 6 demo volunteers with realistic history (Michael Brown #1 at 35 signups)
+- ✅ Testing: iteration 32 — **17/17 tests passed**
 
 ### Mar 14, 2026 (Go-Live Feature Pack — 5 New Feature Sets)
 - ✅ **Geofencing Check-in** — `GET/PUT /api/admin/geofence/config` + `POST /api/portal/attendance/geofence-checkin`
