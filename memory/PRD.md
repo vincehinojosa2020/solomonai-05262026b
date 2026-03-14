@@ -271,7 +271,8 @@ Each church is a tenant with isolated data:
 - [ ] Year-end tax statements (PDF generation)
 
 ### P2 - Medium Priority
-- [ ] Backend refactor: Break up server.py (12,600+ lines) into modules
+- [x] Backend refactor: Extracted 5 route modules from server.py (volunteer, geofence, announcements, media_uploads, giving_nudge) ✅
+- [ ] Backend refactor: Continue extracting (kids, cafe, merch, events, groups, giving/stripe, auth)
 - [ ] Global CSS refactor: Break App.css into component files
 - [ ] Audit logging for critical actions
 - [ ] Notification system for group/event updates
@@ -538,6 +539,18 @@ All 10 modules implemented with 100% test pass rate.
   - `go-live-health-widget`, `go-live-health-status-badge`, `go-live-health-refresh-button`, `go-live-health-check-grid`.
 - ✅ UX polish: initial badge state now shows `LOADING` (instead of `UNKNOWN`) until API response arrives, then transitions to `READY`.
 - ✅ Frontend testing agent verified pass after fix.
+
+### Mar 14, 2026 (Real-Time Polling + Backend Refactor)
+- ✅ **Real-Time Polling** — Created `usePolling` hook with visibility-pause support
+  - Added 30-second polling to 8 pages: PortalEvents, PortalGroups, PortalPrayer, PortalHome, CafeAdminPage, Dashboard, EventsManagerPage, GroupsManagerPage
+- ✅ **Full QA Sweep** — iteration 34: **43/43 tests passed** across all 6 accounts
+  - Verified auth, portal, admin, health, CORS, role security, cross-account access
+- ✅ **Backend Refactor** — Extracted 5 route modules, server.py reduced from 13,487 → 12,698 lines
+  - `routes/volunteer.py` (438 lines) — leaderboard, hours tracker, admin CRUD, seed data
+  - `routes/geofence.py` (97 lines) — config + check-in
+  - `routes/announcements.py` (95 lines) — portal + admin CRUD
+  - `routes/media_uploads.py` (98 lines) — file upload/serve/delete
+  - `routes/giving_nudge.py` (47 lines) — contextual giving prompts
 
 ### Mar 14, 2026 (Volunteer Hours Tracker)
 - ✅ **Self-Log Hours** — `POST /api/portal/volunteer/log-hours`

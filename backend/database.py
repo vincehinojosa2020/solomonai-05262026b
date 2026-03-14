@@ -68,6 +68,8 @@ def duration_to_seconds(duration_label: Optional[str], duration_seconds: Optiona
 # Platform admin accounts
 PLATFORM_ADMIN_EMAILS = ["admin@solomon.ai", "admin@abundant.org"]
 
+DEFAULT_TENANT_ID = "abundant-church-001"
+
 ROLES = {
     "platform_admin": 100,
     "church_admin": 50,
