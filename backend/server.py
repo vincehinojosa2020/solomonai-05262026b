@@ -12587,6 +12587,543 @@ async def get_portal_announcements(request: Request):
 
     return {"announcements": [serialize_doc(item) for item in announcements]}
 
+
+# ============== FEATURE 1: GEOFENCING CHECK-IN ==============
+
+class GeofenceConfig(BaseModel):
+    latitude: float
+    longitude: float
+    radius_meters: float = 200.0
+    is_enabled: bool = True
+    name: str = "Main Campus"
+
+class GeofenceCheckinRequest(BaseModel):
+    latitude: float
+    longitude: float
+
+@api_router.get("/admin/geofence/config")
+async def get_geofence_config(request: Request):
+    """Get geofence configuration for the church."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        tenant_id = DEFAULT_TENANT_ID
+
+    config = await db.geofence_config.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    if not config:
+        config = {
+            "tenant_id": tenant_id,
+            "zones": [{
+                "id": "zone_main",
+                "name": "Main Campus",
+                "latitude": 31.7619,
+                "longitude": -106.4850,
+                "radius_meters": 200.0,
+                "is_enabled": True
+            }],
+            "auto_checkin_enabled": True,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.geofence_config.insert_one({**config})
+    return {"config": serialize_doc(config)}
+
+@api_router.put("/admin/geofence/config")
+async def update_geofence_config(request: Request, payload: dict):
+    """Update geofence configuration."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        tenant_id = DEFAULT_TENANT_ID
+
+    allowed = ["zones", "auto_checkin_enabled"]
+    update_data = {k: v for k, v in payload.items() if k in allowed}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+
+    await db.geofence_config.update_one(
+        {"tenant_id": tenant_id},
+        {"$set": update_data},
+        upsert=True
+    )
+    updated = await db.geofence_config.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    return {"message": "Geofence config updated", "config": serialize_doc(updated)}
+
+@api_router.post("/portal/attendance/geofence-checkin")
+async def geofence_checkin(request: Request, payload: GeofenceCheckinRequest):
+    """Check in via geofence — validates user's location is within a church zone."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    config = await db.geofence_config.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    if not config or not config.get("auto_checkin_enabled"):
+        raise HTTPException(status_code=400, detail="Geofence check-in is not enabled")
+
+    import math
+    def haversine(lat1, lon1, lat2, lon2):
+        R = 6371000
+        p1, p2 = math.radians(lat1), math.radians(lat2)
+        dp = math.radians(lat2 - lat1)
+        dl = math.radians(lon2 - lon1)
+        a = math.sin(dp/2)**2 + math.cos(p1)*math.cos(p2)*math.sin(dl/2)**2
+        return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+
+    matched_zone = None
+    for zone in config.get("zones", []):
+        if not zone.get("is_enabled"):
+            continue
+        dist = haversine(payload.latitude, payload.longitude, zone["latitude"], zone["longitude"])
+        if dist <= zone.get("radius_meters", 200):
+            matched_zone = zone
+            break
+
+    if not matched_zone:
+        return {"checked_in": False, "message": "You are not within any church campus zone"}
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    existing = await db.attendance_checkins.find_one(
+        {"tenant_id": tenant_id, "user_id": user["user_id"], "date": today},
+        {"_id": 0}
+    )
+    if existing:
+        return {"checked_in": True, "message": "Already checked in today", "zone": matched_zone["name"]}
+
+    checkin = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "user_id": user["user_id"],
+        "user_name": user.get("name", ""),
+        "check_in_type": "geofence",
+        "zone_name": matched_zone["name"],
+        "latitude": payload.latitude,
+        "longitude": payload.longitude,
+        "date": today,
+        "checked_in_at": now_iso
+    }
+    await db.attendance_checkins.insert_one(checkin)
+
+    return {"checked_in": True, "message": f"Checked in at {matched_zone['name']}", "zone": matched_zone["name"]}
+
+
+# ============== FEATURE 2: "GIVE WHILE YOU'RE HERE" NUDGE ==============
+
+@api_router.get("/portal/giving/nudge")
+async def get_giving_nudge(request: Request, context: str = "general"):
+    """Return a contextual giving nudge based on checkout context (cafe, merch, general)."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    nudges = {
+        "cafe": {
+            "title": "Give While You Sip",
+            "message": "Enjoying your coffee? Your generosity fuels our mission. Consider a quick gift today!",
+            "suggested_amounts": [5, 10, 25],
+            "cta": "Give Now"
+        },
+        "merch": {
+            "title": "Give While You Shop",
+            "message": "Love the merch? Your giving helps us reach more people in our community.",
+            "suggested_amounts": [10, 25, 50],
+            "cta": "Give Now"
+        },
+        "general": {
+            "title": "Give While You're Here",
+            "message": "Your generosity makes everything we do possible. Every gift, big or small, makes an impact.",
+            "suggested_amounts": [10, 25, 50, 100],
+            "cta": "Give Now"
+        }
+    }
+
+    nudge = nudges.get(context, nudges["general"])
+
+    ytd = await db.donations.find(
+        {"tenant_id": tenant_id, "person_id": user.get("user_id")},
+        {"_id": 0, "amount": 1}
+    ).to_list(500)
+    ytd_total = sum(d.get("amount", 0) for d in ytd)
+
+    nudge["ytd_giving"] = round(ytd_total, 2)
+    nudge["giving_url"] = f"/portal/giving"
+    return {"nudge": nudge}
+
+
+# ============== FEATURE 3: ADMIN ANNOUNCEMENTS CRUD ==============
+
+class AnnouncementCreate(BaseModel):
+    title: str
+    body: str
+    priority: str = "normal"
+    expires_at: Optional[str] = None
+
+class AnnouncementUpdate(BaseModel):
+    title: Optional[str] = None
+    body: Optional[str] = None
+    priority: Optional[str] = None
+    expires_at: Optional[str] = None
+
+@api_router.get("/admin/announcements")
+async def get_admin_announcements(request: Request, limit: int = 100):
+    """List all announcements for admin management."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        tenant_id = DEFAULT_TENANT_ID
+
+    announcements = await db.announcements.find(
+        {"tenant_id": tenant_id}, {"_id": 0}
+    ).sort("created_at", -1).to_list(limit)
+    return {"announcements": [serialize_doc(a) for a in announcements]}
+
+@api_router.post("/admin/announcements")
+async def create_admin_announcement(request: Request, payload: AnnouncementCreate):
+    """Create a new church announcement."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+
+    announcement = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "title": payload.title,
+        "body": payload.body,
+        "priority": payload.priority,
+        "expires_at": payload.expires_at,
+        "created_by": user.get("user_id"),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.announcements.insert_one(announcement)
+    return {"message": "Announcement created", "announcement": serialize_doc(announcement)}
+
+@api_router.put("/admin/announcements/{announcement_id}")
+async def update_admin_announcement(request: Request, announcement_id: str, payload: AnnouncementUpdate):
+    """Update an existing announcement."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        tenant_id = DEFAULT_TENANT_ID
+
+    update_data = {k: v for k, v in payload.model_dump(exclude_none=True).items()}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+
+    result = await db.announcements.update_one(
+        {"id": announcement_id, "tenant_id": tenant_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Announcement not found")
+    return {"message": "Announcement updated"}
+
+@api_router.delete("/admin/announcements/{announcement_id}")
+async def delete_admin_announcement(request: Request, announcement_id: str):
+    """Delete an announcement."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        tenant_id = DEFAULT_TENANT_ID
+
+    result = await db.announcements.delete_one({"id": announcement_id, "tenant_id": tenant_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Announcement not found")
+    return {"message": "Announcement deleted"}
+
+
+# ============== FEATURE 4: ADMIN VOLUNTEER MANAGEMENT ==============
+
+class VolunteerOpportunityCreate(BaseModel):
+    title: str
+    description: str = ""
+    schedule: str = ""
+    location: str = ""
+    spots_available: int = 10
+    ministry_area: str = "General"
+
+class VolunteerOpportunityUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    schedule: Optional[str] = None
+    location: Optional[str] = None
+    spots_available: Optional[int] = None
+    ministry_area: Optional[str] = None
+    is_active: Optional[bool] = None
+
+@api_router.get("/admin/volunteer/opportunities")
+async def get_admin_volunteer_opportunities(request: Request, limit: int = 200):
+    """List all volunteer opportunities for admin management."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        tenant_id = DEFAULT_TENANT_ID
+
+    opportunities = await db.volunteer_opportunities.find(
+        {"tenant_id": tenant_id}, {"_id": 0}
+    ).sort("title", 1).to_list(limit)
+    return {"opportunities": [serialize_doc(o) for o in opportunities]}
+
+@api_router.post("/admin/volunteer/opportunities")
+async def create_admin_volunteer_opportunity(request: Request, payload: VolunteerOpportunityCreate):
+    """Create a new volunteer opportunity."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+
+    opportunity = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "title": payload.title,
+        "description": payload.description,
+        "schedule": payload.schedule,
+        "location": payload.location,
+        "spots_available": payload.spots_available,
+        "ministry_area": payload.ministry_area,
+        "is_active": True,
+        "created_by": user.get("user_id"),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.volunteer_opportunities.insert_one(opportunity)
+    return {"message": "Opportunity created", "opportunity": serialize_doc(opportunity)}
+
+@api_router.put("/admin/volunteer/opportunities/{opportunity_id}")
+async def update_admin_volunteer_opportunity(request: Request, opportunity_id: str, payload: VolunteerOpportunityUpdate):
+    """Update an existing volunteer opportunity."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        tenant_id = DEFAULT_TENANT_ID
+
+    update_data = {k: v for k, v in payload.model_dump(exclude_none=True).items()}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+
+    result = await db.volunteer_opportunities.update_one(
+        {"id": opportunity_id, "tenant_id": tenant_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Opportunity not found")
+    return {"message": "Opportunity updated"}
+
+@api_router.delete("/admin/volunteer/opportunities/{opportunity_id}")
+async def delete_admin_volunteer_opportunity(request: Request, opportunity_id: str):
+    """Delete a volunteer opportunity."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        tenant_id = DEFAULT_TENANT_ID
+
+    result = await db.volunteer_opportunities.delete_one(
+        {"id": opportunity_id, "tenant_id": tenant_id}
+    )
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Opportunity not found")
+    return {"message": "Opportunity deleted"}
+
+@api_router.get("/admin/volunteer/signups")
+async def get_admin_volunteer_signups(request: Request, opportunity_id: Optional[str] = None, limit: int = 200):
+    """View all volunteer signups, optionally filtered by opportunity."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        tenant_id = DEFAULT_TENANT_ID
+
+    query = {"tenant_id": tenant_id}
+    if opportunity_id:
+        query["opportunity_id"] = opportunity_id
+
+    signups = await db.volunteer_signups.find(query, {"_id": 0}).sort("created_at", -1).to_list(limit)
+    return {"signups": [serialize_doc(s) for s in signups]}
+
+@api_router.put("/admin/volunteer/signups/{signup_id}")
+async def update_admin_volunteer_signup(request: Request, signup_id: str, payload: dict):
+    """Update a volunteer signup status (approve, reject, etc.)."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        tenant_id = DEFAULT_TENANT_ID
+
+    allowed = ["status", "admin_notes"]
+    update_data = {k: v for k, v in payload.items() if k in allowed}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+
+    result = await db.volunteer_signups.update_one(
+        {"id": signup_id, "tenant_id": tenant_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Signup not found")
+    return {"message": "Signup updated"}
+
+
+# ============== FEATURE 5: MEDIA FILE UPLOADS ==============
+
+UPLOAD_DIR = Path(__file__).parent / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True)
+
+@api_router.post("/admin/media/upload")
+async def upload_media_file(request: Request, file: UploadFile = File(...)):
+    """Upload a media file (image, audio, video, document)."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+
+    allowed_types = {
+        "image/jpeg", "image/png", "image/webp", "image/gif",
+        "audio/mpeg", "audio/wav", "audio/ogg",
+        "video/mp4", "video/webm",
+        "application/pdf"
+    }
+    if file.content_type and file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail=f"File type {file.content_type} not allowed")
+
+    max_size = 50 * 1024 * 1024  # 50 MB
+    contents = await file.read()
+    if len(contents) > max_size:
+        raise HTTPException(status_code=400, detail="File too large (max 50MB)")
+
+    file_id = str(uuid.uuid4())
+    ext = Path(file.filename or "file").suffix or ".bin"
+    stored_name = f"{file_id}{ext}"
+    tenant_dir = UPLOAD_DIR / tenant_id
+    tenant_dir.mkdir(exist_ok=True)
+    file_path = tenant_dir / stored_name
+
+    with open(file_path, "wb") as f:
+        f.write(contents)
+
+    record = {
+        "id": file_id,
+        "tenant_id": tenant_id,
+        "filename": file.filename,
+        "stored_name": stored_name,
+        "content_type": file.content_type or "application/octet-stream",
+        "size_bytes": len(contents),
+        "uploaded_by": user.get("user_id"),
+        "url": f"/api/admin/media/uploads/{file_id}/file",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.media_uploads.insert_one(record)
+
+    return {"message": "File uploaded", "upload": serialize_doc(record)}
+
+@api_router.get("/admin/media/uploads")
+async def list_media_uploads(request: Request, limit: int = 100):
+    """List all uploaded media files."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        tenant_id = DEFAULT_TENANT_ID
+
+    uploads = await db.media_uploads.find(
+        {"tenant_id": tenant_id}, {"_id": 0}
+    ).sort("created_at", -1).to_list(limit)
+    return {"uploads": [serialize_doc(u) for u in uploads]}
+
+@api_router.get("/admin/media/uploads/{upload_id}/file")
+async def serve_uploaded_file(request: Request, upload_id: str):
+    """Serve an uploaded file."""
+    record = await db.media_uploads.find_one({"id": upload_id}, {"_id": 0})
+    if not record:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    file_path = UPLOAD_DIR / record["tenant_id"] / record["stored_name"]
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="File missing from storage")
+
+    from fastapi.responses import FileResponse
+    return FileResponse(
+        path=str(file_path),
+        media_type=record.get("content_type", "application/octet-stream"),
+        filename=record.get("filename", "download")
+    )
+
+@api_router.delete("/admin/media/uploads/{upload_id}")
+async def delete_media_upload(request: Request, upload_id: str):
+    """Delete an uploaded media file."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        tenant_id = DEFAULT_TENANT_ID
+
+    record = await db.media_uploads.find_one(
+        {"id": upload_id, "tenant_id": tenant_id}, {"_id": 0}
+    )
+    if not record:
+        raise HTTPException(status_code=404, detail="Upload not found")
+
+    file_path = UPLOAD_DIR / tenant_id / record["stored_name"]
+    if file_path.exists():
+        file_path.unlink()
+
+    await db.media_uploads.delete_one({"id": upload_id, "tenant_id": tenant_id})
+    return {"message": "Upload deleted"}
+
+
+# ============== MOBILE-COMPATIBLE PAYMENT METHOD ALIASES ==============
+
+@api_router.get("/portal/payment-methods")
+async def get_portal_payment_methods(request: Request):
+    """Get saved payment methods (Bearer-compatible alias)."""
+    user = await get_current_member_user(request)
+    methods = await db.payment_methods.find(
+        {"user_id": user["user_id"], "is_active": True}, {"_id": 0}
+    ).to_list(10)
+    return {"payment_methods": [serialize_doc(m) for m in methods]}
+
+@api_router.post("/portal/payment-methods")
+async def save_portal_payment_method(request: Request, method_data: SavePaymentMethodRequest):
+    """Save a new payment method (Bearer-compatible alias)."""
+    user = await get_current_member_user(request)
+
+    if method_data.is_default:
+        await db.payment_methods.update_many(
+            {"user_id": user["user_id"]}, {"$set": {"is_default": False}}
+        )
+
+    pm = {
+        "id": str(uuid.uuid4()),
+        "user_id": user["user_id"],
+        "tenant_id": user.get("tenant_id"),
+        "card_last_four": method_data.card_last_four,
+        "card_brand": method_data.card_brand,
+        "card_exp_month": method_data.card_exp_month,
+        "card_exp_year": method_data.card_exp_year,
+        "stripe_payment_method_id": method_data.stripe_payment_method_id,
+        "is_default": method_data.is_default,
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.payment_methods.insert_one(pm)
+    return {"message": "Payment method saved", "payment_method": {k: v for k, v in pm.items() if k != "_id"}}
+
+@api_router.delete("/portal/payment-methods/{method_id}")
+async def delete_portal_payment_method(request: Request, method_id: str):
+    """Delete a payment method (Bearer-compatible alias)."""
+    user = await get_current_member_user(request)
+    result = await db.payment_methods.update_one(
+        {"id": method_id, "user_id": user["user_id"]},
+        {"$set": {"is_active": False}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Payment method not found")
+    return {"message": "Payment method removed"}
+
+@api_router.put("/portal/payment-methods/{method_id}/default")
+async def set_portal_default_payment_method(request: Request, method_id: str):
+    """Set default payment method (Bearer-compatible alias)."""
+    user = await get_current_member_user(request)
+    await db.payment_methods.update_many(
+        {"user_id": user["user_id"]}, {"$set": {"is_default": False}}
+    )
+    result = await db.payment_methods.update_one(
+        {"id": method_id, "user_id": user["user_id"], "is_active": True},
+        {"$set": {"is_default": True}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Payment method not found")
+    return {"message": "Default payment method updated"}
+
+
 # Include router
 app.include_router(api_router)
 
