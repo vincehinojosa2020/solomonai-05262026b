@@ -5921,6 +5921,135 @@ async def get_sms_templates():
 async def root():
     return {"message": "Solomon AI Church Management API", "version": "1.0.0"}
 
+
+@api_router.get("/health/launch-check")
+async def launch_health_check(tenant_id: Optional[str] = None):
+    """Read-only launch readiness snapshot for quick production verification."""
+    effective_tenant_id = tenant_id or DEFAULT_TENANT_ID
+
+    await ensure_mobile_demo_accounts()
+
+    launch_member_email_map = {
+        "abundant-church-001": "member@abundant.church",
+        "cristoviene-church-001": "member@cristoviene.church",
+        "pottershouse-church-001": "member@pottershouse.church"
+    }
+    preferred_member_email = launch_member_email_map.get(effective_tenant_id)
+
+    member_user = None
+    if preferred_member_email:
+        member_user = await db.users.find_one(
+            {"email": preferred_member_email},
+            {"_id": 0, "user_id": 1, "email": 1}
+        )
+
+    if not member_user:
+        member_user = await db.users.find_one(
+            {"tenant_id": effective_tenant_id, "role": "member"},
+            {"_id": 0, "user_id": 1, "email": 1}
+        )
+
+    person_doc = None
+    if member_user:
+        person_doc = await db.people.find_one(
+            {"email": member_user.get("email"), "tenant_id": effective_tenant_id},
+            {"_id": 0, "id": 1}
+        )
+
+    ytd_start = datetime.now(timezone.utc).replace(month=1, day=1).strftime("%Y-%m-%d")
+    ytd_total = 0.0
+    donation_count = 0
+    if person_doc:
+        donations = await db.donations.find(
+            {
+                "tenant_id": effective_tenant_id,
+                "person_id": person_doc.get("id"),
+                "donation_date": {"$gte": ytd_start}
+            },
+            {"_id": 0, "amount": 1}
+        ).to_list(2000)
+        donation_count = len(donations)
+        ytd_total = round(sum(float(item.get("amount", 0) or 0) for item in donations), 2)
+
+    events_count = await db.events.count_documents(
+        {
+            "tenant_id": effective_tenant_id,
+            "$or": [
+                {"start_datetime": {"$exists": True}},
+                {"event_date": {"$exists": True}}
+            ]
+        }
+    )
+    groups_count = await db.groups.count_documents({"tenant_id": effective_tenant_id, "is_active": True})
+    merch_count = await db.merch_products.count_documents({"tenant_id": effective_tenant_id, "is_active": True})
+    cafe_count = await db.cafe_items.count_documents({"tenant_id": effective_tenant_id, "is_active": True})
+    sermons_count = await db.media_videos.count_documents({"tenant_id": effective_tenant_id, "is_published": True, "content_type": "sermon"})
+    announcements_count = await db.announcements.count_documents({"tenant_id": effective_tenant_id})
+    opportunities_count = await db.volunteer_opportunities.count_documents({"tenant_id": effective_tenant_id, "is_active": True})
+
+    kids_count = 0
+    prayer_count = 0
+    courses_count = 0
+    streak = 0
+    if member_user:
+        kids_count = await db.children.count_documents({"tenant_id": effective_tenant_id, "parent_user_id": member_user.get("user_id")})
+        prayer_count = await db.prayer_requests.count_documents({"tenant_id": effective_tenant_id, "user_id": member_user.get("user_id")})
+        courses_count = await db.member_courses.count_documents({"tenant_id": effective_tenant_id, "user_id": member_user.get("user_id")})
+        streak_data = await calculate_attendance_streak(effective_tenant_id, member_user.get("user_id"))
+        streak = streak_data.get("current_streak", 0)
+
+    required_accounts = [
+        "member@abundant.church",
+        "member@cristoviene.church",
+        "admin@abundant.church",
+        "admin@cristoviene.church",
+        "admin@pottershouse.church",
+        "admin@solomon.ai"
+    ]
+    account_presence = {}
+    for email in required_accounts:
+        found = await db.users.find_one({"email": email}, {"_id": 0, "email": 1})
+        account_presence[email] = bool(found)
+
+    checks = {
+        "events": events_count >= 50,
+        "groups": groups_count >= 100,
+        "giving_ytd": ytd_total >= 500,
+        "merch_products": merch_count >= 5,
+        "cafe_menu_items": cafe_count >= 5,
+        "kids_children": kids_count >= 1,
+        "attendance_streak": streak >= 1,
+        "sermons": sermons_count >= 3,
+        "courses": courses_count >= 2,
+        "prayer_requests": prayer_count >= 2,
+        "volunteer_opportunities": opportunities_count >= 5,
+        "announcements": announcements_count >= 3,
+        "accounts_ready": all(account_presence.values())
+    }
+
+    return {
+        "tenant_id": effective_tenant_id,
+        "status": "ready" if all(checks.values()) else "degraded",
+        "checks": checks,
+        "metrics": {
+            "events": events_count,
+            "groups": groups_count,
+            "ytd_total": ytd_total,
+            "donation_count": donation_count,
+            "merch_products": merch_count,
+            "cafe_menu_items": cafe_count,
+            "kids_children": kids_count,
+            "attendance_streak": streak,
+            "sermons": sermons_count,
+            "courses": courses_count,
+            "prayer_requests": prayer_count,
+            "volunteer_opportunities": opportunities_count,
+            "announcements": announcements_count
+        },
+        "required_accounts": account_presence,
+        "generated_at": datetime.now(timezone.utc).isoformat()
+    }
+
 # ============== TENANT/CHURCH MANAGEMENT ROUTES ==============
 
 @api_router.get("/tenants")
