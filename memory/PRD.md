@@ -258,6 +258,7 @@ Each church is a tenant with isolated data:
 - [x] Media File Uploads (image/audio/video/PDF up to 50MB) ✅
 - [x] Mobile-compatible Payment Methods (Bearer token) ✅
 - [x] Volunteer Leaderboard with badge tiers & gamification ✅
+- [x] Volunteer Hours Tracker (self-log, weekly/monthly breakdown) ✅
 - [ ] AI Transcripts/Summaries for videos (Phase 3)
 - [ ] Kids Check-in SMS notifications to parents (Phase 2)
 - [ ] Admin Communications Hub (Phase 4)
@@ -537,6 +538,17 @@ All 10 modules implemented with 100% test pass rate.
   - `go-live-health-widget`, `go-live-health-status-badge`, `go-live-health-refresh-button`, `go-live-health-check-grid`.
 - ✅ UX polish: initial badge state now shows `LOADING` (instead of `UNKNOWN`) until API response arrives, then transitions to `READY`.
 - ✅ Frontend testing agent verified pass after fix.
+
+### Mar 14, 2026 (Volunteer Hours Tracker)
+- ✅ **Self-Log Hours** — `POST /api/portal/volunteer/log-hours`
+  - Members log 0-24h with optional opportunity link, custom date, and notes
+  - Entries marked `status: "self_logged"` vs admin-logged entries
+- ✅ **Hours Summary** — `GET /api/portal/volunteer/hours-summary?period=weekly|monthly`
+  - Weekly (ISO YYYY-WXX) or monthly (YYYY-MM) breakdown, max 12 periods
+  - Current period snapshot + total_hours + total_sessions
+- ✅ **Hours Log** — `GET /api/portal/volunteer/hours-log?limit=N`
+  - Paginated individual entries sorted by date descending
+- ✅ Testing: iteration 33 — **30/30 tests passed** (incl. leaderboard regression)
 
 ### Mar 14, 2026 (Volunteer Leaderboard Gamification)
 - ✅ **Volunteer Leaderboard** — `GET /api/portal/volunteer/leaderboard`
