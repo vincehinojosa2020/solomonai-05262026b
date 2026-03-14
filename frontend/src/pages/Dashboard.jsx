@@ -243,11 +243,11 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-2">
             <span
-              className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${launchHealth?.status === 'ready' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}
+              className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${launchHealthLoading || !launchHealth ? 'bg-slate-100 text-slate-600' : launchHealth?.status === 'ready' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}
               data-testid="go-live-health-status-badge"
             >
-              {launchHealth?.status === 'ready' ? <CircleCheckBig className="w-3.5 h-3.5" /> : <CircleAlert className="w-3.5 h-3.5" />}
-              {(launchHealth?.status || 'unknown').toUpperCase()}
+              {launchHealthLoading || !launchHealth ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : launchHealth?.status === 'ready' ? <CircleCheckBig className="w-3.5 h-3.5" /> : <CircleAlert className="w-3.5 h-3.5" />}
+              {(launchHealthLoading || !launchHealth ? 'LOADING' : launchHealth?.status || 'unknown').toUpperCase()}
             </span>
             <button
               onClick={fetchLaunchHealth}
