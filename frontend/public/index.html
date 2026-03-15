@@ -51,25 +51,18 @@
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
         <script>
-          // Force clear old service worker caches on every page load
-          if ('serviceWorker' in navigator) {
-            // Step 1: Nuke ALL old caches immediately
-            if ('caches' in window) {
-              caches.keys().then(function(keys) {
-                keys.forEach(function(k) { caches.delete(k); });
+          // One-time forced migration: if old SW exists, redirect to server
+          // endpoint that sends Clear-Site-Data header to nuke everything
+          (function() {
+            if ('serviceWorker' in navigator && !sessionStorage.getItem('sw_cleared')) {
+              navigator.serviceWorker.getRegistrations().then(function(regs) {
+                if (regs.length > 0) {
+                  sessionStorage.setItem('sw_cleared', '1');
+                  window.location.href = '/api/clear-site-data';
+                }
               });
             }
-            // Step 2: Unregister old SWs, then register fresh
-            navigator.serviceWorker.getRegistrations().then(function(regs) {
-              var p = regs.map(function(r) { return r.unregister(); });
-              Promise.all(p).then(function() {
-                navigator.serviceWorker.register('/sw.js').then(
-                  function(reg) { console.log('SW registered:', reg.scope); },
-                  function(err) { console.log('SW reg failed:', err); }
-                );
-              });
-            });
-          }
+          })();
         </script>
     </body>
 </html>
