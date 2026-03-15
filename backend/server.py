@@ -2680,7 +2680,7 @@ async def get_current_user(request: Request):
 @api_router.post("/auth/logout")
 async def logout(request: Request, response: Response):
     """Clear session and cookie"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     
     if session_token:
         await db.user_sessions.delete_many({"session_token": session_token})
@@ -3135,7 +3135,7 @@ async def get_available_groups(request: Request):
 async def update_watch_progress(request: Request, progress: WatchProgressUpdate):
     """Save or update video watch progress for a user"""
     # Get user from session
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -3184,7 +3184,7 @@ async def update_watch_progress(request: Request, progress: WatchProgressUpdate)
 @api_router.get("/portal/watch/progress")
 async def get_watch_progress(request: Request):
     """Get all watch progress for current user (for Continue Watching)"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -3215,7 +3215,7 @@ async def get_watch_progress(request: Request):
 @api_router.get("/portal/watch/progress/{video_id}")
 async def get_video_progress(request: Request, video_id: str):
     """Get watch progress for a specific video"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         return {"position_seconds": 0, "progress_percent": 0, "completed": False}
     
@@ -5490,7 +5490,7 @@ async def create_donation_checkout(request: Request, donation: DonationRequest):
             raise HTTPException(status_code=500, detail="Payment processing not configured")
         
         # Get logged in user if available
-        session_token = request.cookies.get("session_token")
+        session_token = get_session_token_from_request(request)
         user_email = None
         user_id = None
         if session_token:
@@ -5703,7 +5703,7 @@ async def stripe_webhook(request: Request):
 @api_router.get("/payments/methods")
 async def get_saved_payment_methods(request: Request):
     """Get saved payment methods for the current user"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -5734,7 +5734,7 @@ class SavePaymentMethodRequest(BaseModel):
 @api_router.post("/payments/methods")
 async def save_payment_method(request: Request, method_data: SavePaymentMethodRequest):
     """Save a new payment method for the current user"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -5774,7 +5774,7 @@ async def save_payment_method(request: Request, method_data: SavePaymentMethodRe
 @api_router.delete("/payments/methods/{method_id}")
 async def delete_payment_method(request: Request, method_id: str):
     """Delete a saved payment method"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -5796,7 +5796,7 @@ async def delete_payment_method(request: Request, method_id: str):
 @api_router.put("/payments/methods/{method_id}/default")
 async def set_default_payment_method(request: Request, method_id: str):
     """Set a payment method as the default"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -6095,7 +6095,7 @@ async def launch_health_check(tenant_id: Optional[str] = None):
 async def list_tenants(request: Request):
     """List all tenants (platform admin only)"""
     # Verify platform admin
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -6144,7 +6144,7 @@ async def get_tenant_by_subdomain_route(subdomain: str):
 @api_router.post("/tenants")
 async def create_tenant(request: Request, tenant_data: TenantBase):
     """Create a new tenant/church (platform admin only)"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -6188,7 +6188,7 @@ async def create_tenant(request: Request, tenant_data: TenantBase):
 @api_router.patch("/tenants/{tenant_id}/subscription")
 async def update_tenant_subscription(request: Request, tenant_id: str, status: str):
     """Update tenant subscription status (platform admin only)"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -6216,7 +6216,7 @@ async def update_tenant_subscription(request: Request, tenant_id: str, status: s
 @api_router.get("/tenants/{tenant_id}/users")
 async def list_tenant_users(request: Request, tenant_id: str, skip: int = 0, limit: int = 50):
     """List users for a specific tenant (platform admin only)"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -6242,7 +6242,7 @@ async def list_tenant_users(request: Request, tenant_id: str, skip: int = 0, lim
 @api_router.get("/platform/stats")
 async def get_platform_stats(request: Request):
     """Get real platform-wide statistics for God Mode dashboard"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -6718,7 +6718,7 @@ async def get_portal_bootstrap(request: Request):
 @api_router.get("/portal/media/featured")
 async def get_featured_video(request: Request):
     """Get the featured/hero video for the portal"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -6916,7 +6916,7 @@ async def get_group_members(request: Request, group_id: str):
 @api_router.post("/portal/groups/{group_id}/join")
 async def request_to_join_group(request: Request, group_id: str):
     """Member requests to join a group"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -7397,7 +7397,7 @@ async def get_mobile_registered_events(request: Request):
 @api_router.delete("/portal/groups/{group_id}/leave")
 async def leave_group(request: Request, group_id: str):
     """Member leaves a group"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -7562,7 +7562,7 @@ async def delete_event(request: Request, event_id: str):
 @api_router.post("/portal/events/{event_id}/register")
 async def register_for_event(request: Request, event_id: str):
     """Member registers for an event"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -7644,7 +7644,7 @@ async def register_for_event(request: Request, event_id: str):
 @api_router.delete("/portal/events/{event_id}/register")
 async def cancel_event_registration(request: Request, event_id: str):
     """Member cancels their event registration"""
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
@@ -7994,7 +7994,7 @@ async def clear_solomon_session(session_id: str):
 async def get_tenant(request: Request):
     """Get tenant info - returns user's tenant if logged in, else default"""
     # Try to get user's tenant from session
-    session_token = request.cookies.get("session_token")
+    session_token = get_session_token_from_request(request)
     if session_token:
         session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
         if session:
