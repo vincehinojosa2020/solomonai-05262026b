@@ -51,17 +51,18 @@
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
         <script>
-          // One-time forced migration: if old SW exists, redirect to server
-          // endpoint that sends Clear-Site-Data header to nuke everything
-          (function() {
-            if ('serviceWorker' in navigator && !sessionStorage.getItem('sw_cleared')) {
-              navigator.serviceWorker.getRegistrations().then(function(regs) {
-                if (regs.length > 0) {
-                  sessionStorage.setItem('sw_cleared', '1');
-                  window.location.href = '/api/clear-site-data';
-                }
-              });
-            }
+          // Force-clear old service workers and caches on EVERY page load
+          (async function() {
+            try {
+              if ('serviceWorker' in navigator) {
+                var regs = await navigator.serviceWorker.getRegistrations();
+                for (var i = 0; i < regs.length; i++) { await regs[i].unregister(); }
+              }
+              if ('caches' in window) {
+                var keys = await caches.keys();
+                for (var j = 0; j < keys.length; j++) { await caches.delete(keys[j]); }
+              }
+            } catch(e) {}
           })();
         </script>
     </body>

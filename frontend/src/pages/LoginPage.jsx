@@ -40,26 +40,24 @@ export default function LoginPage() {
 
     setIsLoading(true);
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 15000);
-
-      const response = await fetch(`${API_URL}/auth/login`, {
+      // Use window.location.origin to guarantee same-origin (no CORS issues)
+      const loginUrl = window.location.origin + '/api/auth/login';
+      
+      const response = await fetch(loginUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-        signal: controller.signal
+        body: JSON.stringify({ email, password })
       });
-      clearTimeout(timeout);
 
       if (!response.ok) {
-        let msg = 'Login failed';
+        let msg = 'Invalid email or password';
         try { const err = await response.json(); msg = err.detail || msg; } catch (_) {}
         throw new Error(msg);
       }
 
       const data = await response.json();
 
-      // Store session for mobile/cross-origin reliability
+      // Store session
       if (data.session_token) {
         localStorage.setItem('session_token', data.session_token);
         localStorage.setItem('user_data', JSON.stringify(data));
@@ -76,11 +74,7 @@ export default function LoginPage() {
       
       toast.success(`Welcome, ${data.name}!`);
     } catch (error) {
-      if (error.name === 'AbortError') {
-        toast.error('Login timed out — please try again');
-      } else {
-        toast.error(error.message || 'Login failed');
-      }
+      toast.error(error.message || 'Login failed — please try again');
     } finally {
       setIsLoading(false);
     }
@@ -167,6 +161,10 @@ export default function LoginPage() {
         {/* Footer */}
         <div className="solomon-footer">
           <Link to="/signup" className="solomon-footer-link">Create account</Link>
+          <span style={{margin: '0 8px', color: '#475569'}}>|</span>
+          <a href="/test-login.html" className="solomon-footer-link" data-testid="direct-login-link" style={{color: '#3b82f6'}}>
+            Direct Login
+          </a>
         </div>
 
       </div>
