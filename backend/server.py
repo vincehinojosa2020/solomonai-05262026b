@@ -2698,8 +2698,6 @@ async def logout(request: Request, response: Response):
 async def email_password_login(request: EmailLoginRequest, response: Response):
     """Login with email and password (for demo accounts)"""
     import hashlib
-
-    await ensure_mobile_demo_accounts()
     
     # Find user by email
     user_doc = await db.users.find_one({"email": request.email}, {"_id": 0})
@@ -5978,8 +5976,6 @@ async def clear_site_data():
 async def launch_health_check(tenant_id: Optional[str] = None):
     """Read-only launch readiness snapshot for quick production verification."""
     effective_tenant_id = tenant_id or DEFAULT_TENANT_ID
-
-    await ensure_mobile_demo_accounts()
 
     launch_member_email_map = {
         "abundant-church-001": "member@abundant.church",
