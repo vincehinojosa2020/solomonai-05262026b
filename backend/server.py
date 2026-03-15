@@ -5961,6 +5961,19 @@ async def root():
     return {"message": "Solomon AI Church Management API", "version": "1.0.0"}
 
 
+
+@api_router.get("/clear-site-data")
+async def clear_site_data():
+    """Force browser to clear all caches, cookies, storage. Visit this URL to fix login issues."""
+    from starlette.responses import HTMLResponse
+    html = """<html><head><meta http-equiv="refresh" content="2;url=/login"></head>
+    <body style="background:#0f172a;color:white;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh">
+    <div style="text-align:center"><h2>Cache cleared!</h2><p>Redirecting to login...</p></div></body></html>"""
+    response = HTMLResponse(content=html)
+    response.headers["Clear-Site-Data"] = '"cache", "storage"'
+    return response
+
+
 @api_router.get("/health/launch-check")
 async def launch_health_check(tenant_id: Optional[str] = None):
     """Read-only launch readiness snapshot for quick production verification."""

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Solomon AI — Clearing Cache</title>
+<style>
+  body { background: #0f172a; color: white; font-family: Inter, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+  .box { text-align: center; }
+  h2 { font-size: 24px; margin-bottom: 12px; }
+  p { color: #94a3b8; font-size: 16px; }
+  .spinner { width: 40px; height: 40px; border: 3px solid #1e293b; border-top-color: #3b82f6; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 20px auto; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>Clearing cached data...</h2>
+  <div class="spinner"></div>
+  <p id="status">Please wait</p>
+</div>
+<script>
+(async function() {
+  var status = document.getElementById('status');
+  try {
+    // 1. Unregister ALL service workers
+    if ('serviceWorker' in navigator) {
+      var regs = await navigator.serviceWorker.getRegistrations();
+      for (var i = 0; i < regs.length; i++) {
+        await regs[i].unregister();
+      }
+      status.textContent = 'Service workers cleared...';
+    }
+    // 2. Delete ALL caches
+    if ('caches' in window) {
+      var keys = await caches.keys();
+      for (var j = 0; j < keys.length; j++) {
+        await caches.delete(keys[j]);
+      }
+      status.textContent = 'Caches cleared...';
+    }
+    // 3. Clear storage
+    localStorage.clear();
+    sessionStorage.clear();
+    status.textContent = 'Redirecting to login...';
+    // 4. Redirect to login after a moment
+    setTimeout(function() {
+      window.location.href = '/login';
+    }, 1000);
+  } catch(e) {
+    status.textContent = 'Error: ' + e.message + '. Try again.';
+  }
+})();
+</script>
+</body>
+</html>
