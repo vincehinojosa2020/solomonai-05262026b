@@ -40,19 +40,30 @@ export default function LoginPage() {
 
     setIsLoading(true);
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+
       const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
+        signal: controller.signal
       });
+      clearTimeout(timeout);
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Login failed');
+        let msg = 'Login failed';
+        try { const err = await response.json(); msg = err.detail || msg; } catch (_) {}
+        throw new Error(msg);
       }
 
       const data = await response.json();
+
+      // Store session for mobile/cross-origin reliability
+      if (data.session_token) {
+        localStorage.setItem('session_token', data.session_token);
+        localStorage.setItem('user_data', JSON.stringify(data));
+      }
       
       // Route based on role
       if (data.role === 'member') {
@@ -65,7 +76,11 @@ export default function LoginPage() {
       
       toast.success(`Welcome, ${data.name}!`);
     } catch (error) {
-      toast.error(error.message);
+      if (error.name === 'AbortError') {
+        toast.error('Login timed out — please try again');
+      } else {
+        toast.error(error.message || 'Login failed');
+      }
     } finally {
       setIsLoading(false);
     }

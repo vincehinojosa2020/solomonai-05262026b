@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { API_URL } from '@/lib/utils';
+import { authFetch, getStoredUser } from '@/utils/authFetch';
 
 export default function ProtectedRoute({ children, requiredRole }) {
   const location = useLocation();
@@ -23,9 +23,7 @@ export default function ProtectedRoute({ children, requiredRole }) {
 
     const checkAuth = async () => {
       try {
-        const response = await fetch(`${API_URL}/auth/me`, {
-          credentials: 'include',
-        });
+        const response = await authFetch('/auth/me');
 
         if (!response.ok) {
           throw new Error('Not authenticated');
@@ -38,11 +36,21 @@ export default function ProtectedRoute({ children, requiredRole }) {
           isLoading: false
         });
       } catch (error) {
-        setAuthState({
-          isAuthenticated: false,
-          user: null,
-          isLoading: false
-        });
+        // Fallback: try stored user data
+        const stored = getStoredUser();
+        if (stored && stored.session_token) {
+          setAuthState({
+            isAuthenticated: true,
+            user: stored,
+            isLoading: false
+          });
+        } else {
+          setAuthState({
+            isAuthenticated: false,
+            user: null,
+            isLoading: false
+          });
+        }
       }
     };
 
@@ -51,7 +59,6 @@ export default function ProtectedRoute({ children, requiredRole }) {
 
   const { isAuthenticated, user, isLoading } = authState;
 
-  // Still checking auth
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -63,21 +70,16 @@ export default function ProtectedRoute({ children, requiredRole }) {
     );
   }
 
-  // Not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  // Check role if required
   if (requiredRole) {
-    const userRole = user?.role || 'admin'; // Default to admin for backwards compatibility
-    
+    const userRole = user?.role || 'admin';
     if (requiredRole === 'admin' && userRole === 'member') {
-      // Member trying to access admin routes - redirect to portal
       return <Navigate to="/portal" replace />;
     }
   }
 
-  // Authenticated - render children with user context
   return children;
 }

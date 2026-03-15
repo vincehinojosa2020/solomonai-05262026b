@@ -87,7 +87,9 @@ export default function AppShell() {
       .catch(err => console.error('Failed to fetch tenant:', err));
     
     // Fetch current user
-    fetch(`${API_URL}/auth/me`, { credentials: 'include' })
+    const token = localStorage.getItem('session_token');
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    fetch(`${API_URL}/auth/me`, { credentials: 'include', headers })
       .then(res => res.ok ? res.json() : null)
       .then(data => setUser(data))
       .catch(err => console.error('Failed to fetch user:', err));
@@ -112,14 +114,19 @@ export default function AppShell() {
 
   const handleLogout = async () => {
     try {
+      const token = localStorage.getItem('session_token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       await fetch(`${API_URL}/auth/logout`, {
         method: 'POST',
         credentials: 'include',
+        headers,
       });
-      navigate('/login');
     } catch (err) {
       console.error('Logout failed:', err);
     }
+    localStorage.removeItem('session_token');
+    localStorage.removeItem('user_data');
+    navigate('/login');
   };
 
   const getGreeting = () => {

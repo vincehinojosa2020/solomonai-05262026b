@@ -12938,8 +12938,8 @@ app.include_router(giving_nudge_router, prefix="/api")
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["*"],
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_origin_regex=r".*",
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
     allow_headers=["*"],
 )
 
