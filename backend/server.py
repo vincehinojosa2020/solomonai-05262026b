@@ -602,11 +602,16 @@ class PortalProfileUpdate(BaseModel):
 
 class AttendanceCheckinRequest(BaseModel):
     check_in_type: str = "in_person"
+    method: Optional[str] = None
+    timestamp: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
 
 class KidsCheckinRequest(BaseModel):
     child_id: str
     classroom: Optional[str] = "Sunday School"
+    method: Optional[str] = "manual"
 
 
 class QrGenerateRequest(BaseModel):
@@ -2219,12 +2224,28 @@ async def ensure_abundant_mobile_demo_content(now_iso: Optional[str] = None):
         {"$set": child_doc},
         upsert=True
     )
-    await db.children.delete_many(
-        {
-            "tenant_id": tenant_id,
-            "parent_user_id": member_user["user_id"],
-            "id": {"$ne": child_doc["id"]}
-        }
+
+    # Also ensure Ethan exists
+    ethan_doc = {
+        "id": "child_ethan_johnson",
+        "tenant_id": tenant_id,
+        "name": "Ethan Johnson",
+        "age": 7,
+        "birthday": "2019-05-10",
+        "classroom": "Elementary",
+        "allergies": "None",
+        "emergency_contact": "Maria Garcia",
+        "emergency_phone": "915-555-0101",
+        "parent_name": "Maria Garcia",
+        "parent_phone": "915-555-0101",
+        "parent_user_id": member_user["user_id"],
+        "updated_at": now_iso,
+        "created_at": now_iso
+    }
+    await db.children.update_one(
+        {"id": ethan_doc["id"], "tenant_id": tenant_id},
+        {"$set": ethan_doc},
+        upsert=True
     )
 
     # Attendance streak seed (4 Sundays)
@@ -4317,7 +4338,15 @@ async def create_merch_order(request: Request, payload: MerchOrderCreate):
     }
 
     await db.merch_orders.insert_one(order)
-    return {"order": serialize_doc(order)}
+    return {
+        "order": serialize_doc(order),
+        "giving_nudge": {
+            "show": True,
+            "message": "Would you like to add a gift?",
+            "subtitle": "Support Abundant Church",
+            "suggested_amounts": [5, 10, 20, 100]
+        }
+    }
 
 # ============== KIDS CHECK-IN ROUTES ==============
 
@@ -4438,6 +4467,8 @@ async def checkin_child(request: Request, child_id: str, payload: dict = None):
     return {
         "message": "Child checked in successfully",
         "pickup_code": pickup_code,
+        "checkin_time": checkin["checked_in_at"],
+        "status": "checked_in",
         "checkin": serialize_doc(checkin),
         "sms_sent": True,
         "sms_message": sms_message
@@ -4954,7 +4985,15 @@ async def create_portal_cafe_order(request: Request, payload: CafeOrderCreate):
     }
 
     await db.cafe_orders.insert_one(order)
-    return {"order": serialize_doc(order)}
+    return {
+        "order": serialize_doc(order),
+        "giving_nudge": {
+            "show": True,
+            "message": "Would you like to add a gift?",
+            "subtitle": "Support Abundant Church",
+            "suggested_amounts": [5, 10, 20, 100]
+        }
+    }
 
 
 @api_router.post("/portal/cafe/order")
@@ -6638,8 +6677,10 @@ async def get_portal_sermons(request: Request, limit: int = 50):
     sermons = await db.media_videos.find(
         {
             "tenant_id": tenant_id,
-            "is_published": True,
-            "content_type": "sermon"
+            "$or": [
+                {"is_published": True},
+                {"published": True}
+            ]
         },
         {"_id": 0}
     ).sort("published_at", -1).limit(limit).to_list(limit)
@@ -12074,12 +12115,30 @@ async def check_in_to_service(
     
     # Calculate new streak
     streak_data = await calculate_attendance_streak(tenant_id, user_id)
-    
+
+    # Build nudge response
+    nudge = {"show_cafe": False, "show_giving": False}
+    try:
+        geo_config = await db.geofence_config.find_one({"tenant_id": tenant_id}, {"_id": 0})
+        if geo_config:
+            if geo_config.get("nudge_cafe"):
+                nudge["show_cafe"] = True
+                nudge["cafe_message"] = "Order your coffee for pickup!"
+            if geo_config.get("nudge_giving"):
+                nudge["show_giving"] = True
+                nudge["giving_message"] = "Would you like to give today?"
+                nudge["give_amounts"] = geo_config.get("nudge_giving_amounts", [25, 50, 100, 250])
+    except Exception:
+        pass
+
     return {
+        "success": True,
         "message": "Checked in successfully!",
         "check_in_type": check_in_type,
+        "new_streak": streak_data["current_streak"],
         "current_streak": streak_data["current_streak"],
-        "badges_earned": streak_data.get("new_badges", [])
+        "badges_earned": streak_data.get("new_badges", []),
+        "nudge": nudge
     }
 
 async def calculate_attendance_streak(tenant_id: str, user_id: str) -> Dict[str, Any]:
@@ -12651,6 +12710,208 @@ async def set_portal_default_payment_method(request: Request, method_id: str):
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Payment method not found")
     return {"message": "Default payment method updated"}
+
+
+# ============== GO-LIVE: MISSING ENDPOINTS ==============
+
+# --- Kids: Portal Checkout ---
+class KidsCheckoutRequest(BaseModel):
+    child_id: str
+    pickup_code: str
+
+@api_router.post("/portal/kids/checkout")
+async def portal_kids_checkout(request: Request, payload: KidsCheckoutRequest):
+    """Member checks out their child using pickup code."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id")
+    checkin = await db.checkins.find_one(
+        {"tenant_id": tenant_id, "child_id": payload.child_id, "status": "checked_in"},
+        {"_id": 0}
+    )
+    if not checkin:
+        raise HTTPException(status_code=404, detail="No active check-in found for this child")
+    if checkin.get("pickup_code") != payload.pickup_code:
+        raise HTTPException(status_code=400, detail="Invalid pickup code")
+    now_iso = datetime.now(timezone.utc).isoformat()
+    await db.checkins.update_one(
+        {"id": checkin["id"]},
+        {"$set": {"status": "checked_out", "checked_out_at": now_iso, "checked_out_by": user.get("name", "Parent")}}
+    )
+    return {"status": "checked_out", "checkout_time": now_iso, "child_name": checkin.get("child_name")}
+
+# --- Kids: Admin /today and checkout ---
+@api_router.get("/admin/kids/checkins/today")
+async def get_admin_kids_checkins_today(request: Request):
+    """Get ALL children checked in today for this tenant."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    checkins = await db.checkins.find(
+        {"tenant_id": tenant_id, "checked_in_at": {"$regex": f"^{today}"}},
+        {"_id": 0}
+    ).sort("checked_in_at", -1).to_list(500)
+    enriched = []
+    for c in checkins:
+        child = await db.children.find_one({"id": c.get("child_id")}, {"_id": 0})
+        enriched.append({
+            "child_id": c.get("child_id"),
+            "child_name": c.get("child_name"),
+            "parent_name": c.get("parent_name"),
+            "parent_phone": c.get("parent_phone", ""),
+            "pickup_code": c.get("pickup_code"),
+            "checkin_time": c.get("checked_in_at"),
+            "checkout_time": c.get("checked_out_at"),
+            "status": c.get("status"),
+            "allergies": (child or {}).get("allergies", ""),
+            "emergency_contact": (child or {}).get("emergency_contact", ""),
+            "checkin_id": c.get("id"),
+        })
+    return {"checkins": enriched, "total": len(enriched)}
+
+@api_router.post("/admin/kids/checkout")
+async def admin_kids_checkout(request: Request, payload: KidsCheckoutRequest):
+    """Admin verifies pickup code and checks out a child."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    checkin = await db.checkins.find_one(
+        {"tenant_id": tenant_id, "child_id": payload.child_id, "status": "checked_in"},
+        {"_id": 0}
+    )
+    if not checkin:
+        raise HTTPException(status_code=404, detail="No active check-in found")
+    if checkin.get("pickup_code") != payload.pickup_code:
+        raise HTTPException(status_code=400, detail="Invalid pickup code")
+    now_iso = datetime.now(timezone.utc).isoformat()
+    await db.checkins.update_one(
+        {"id": checkin["id"]},
+        {"$set": {"status": "checked_out", "checked_out_at": now_iso, "checked_out_by": user.get("name", "Admin")}}
+    )
+    return {"success": True, "child_name": checkin.get("child_name"), "checkout_time": now_iso}
+
+# --- Admin Media Sermons CRUD ---
+class SermonCreate(BaseModel):
+    title: str
+    description: str = ""
+    video_url: str = ""
+    thumbnail_url: str = ""
+    pastor: str = ""
+    series_name: str = ""
+    duration_seconds: int = 0
+    category: str = "sermon"
+    published: bool = True
+
+class SermonUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    video_url: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+    pastor: Optional[str] = None
+    series_name: Optional[str] = None
+    duration_seconds: Optional[int] = None
+    category: Optional[str] = None
+    published: Optional[bool] = None
+
+@api_router.get("/admin/media/sermons")
+async def get_admin_media_sermons(request: Request, limit: int = 200):
+    """List all sermons for admin management."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    sermons = await db.media_videos.find(
+        {"tenant_id": tenant_id}, {"_id": 0}
+    ).sort("published_at", -1).to_list(limit)
+    return {"sermons": [serialize_doc(s) for s in sermons]}
+
+@api_router.post("/admin/media/sermons")
+async def create_admin_media_sermon(request: Request, payload: SermonCreate):
+    """Publish a new sermon — immediately visible to all members."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="Tenant context required")
+    now_iso = datetime.now(timezone.utc).isoformat()
+    sermon = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "title": payload.title,
+        "description": payload.description,
+        "video_url": payload.video_url,
+        "thumbnail_url": payload.thumbnail_url,
+        "pastor": payload.pastor,
+        "series_name": payload.series_name,
+        "duration_seconds": payload.duration_seconds,
+        "content_type": payload.category,
+        "category": payload.category,
+        "is_published": payload.published,
+        "published": payload.published,
+        "published_at": now_iso if payload.published else None,
+        "created_by": user.get("user_id"),
+        "created_at": now_iso,
+    }
+    await db.media_videos.insert_one(sermon)
+    return {"id": sermon["id"], "title": sermon["title"], "status": "published" if payload.published else "draft"}
+
+@api_router.put("/admin/media/sermons/{sermon_id}")
+async def update_admin_media_sermon(request: Request, sermon_id: str, payload: SermonUpdate):
+    """Edit a sermon."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    update_data = {k: v for k, v in payload.model_dump(exclude_none=True).items()}
+    if "published" in update_data and update_data["published"]:
+        update_data["published_at"] = datetime.now(timezone.utc).isoformat()
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.media_videos.update_one(
+        {"id": sermon_id, "tenant_id": tenant_id}, {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Sermon not found")
+    return {"message": "Sermon updated"}
+
+@api_router.delete("/admin/media/sermons/{sermon_id}")
+async def delete_admin_media_sermon(request: Request, sermon_id: str):
+    """Delete a sermon."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    result = await db.media_videos.delete_one({"id": sermon_id, "tenant_id": tenant_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Sermon not found")
+    return {"message": "Sermon deleted"}
+
+# --- Giving Donate Endpoint ---
+class GivingDonateRequest(BaseModel):
+    amount: float
+    fund: str = "general"
+    frequency: str = "one_time"
+    payment_method_id: Optional[str] = None
+    source: str = "direct"
+
+@api_router.post("/portal/giving/donate")
+async def portal_giving_donate(request: Request, payload: GivingDonateRequest):
+    """Process a donation from the member portal."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    if payload.amount <= 0:
+        raise HTTPException(status_code=400, detail="Amount must be positive")
+    donation = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "person_id": user.get("user_id"),
+        "person_name": user.get("name", ""),
+        "amount": round(payload.amount, 2),
+        "fund": payload.fund,
+        "frequency": payload.frequency,
+        "payment_method_id": payload.payment_method_id,
+        "source": payload.source,
+        "status": "completed",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.donations.insert_one(donation)
+    return {
+        "donation_id": donation["id"],
+        "amount": donation["amount"],
+        "fund": donation["fund"],
+        "status": "completed",
+        "message": f"Thank you for your ${donation['amount']:.2f} gift!"
+    }
 
 
 # Include router

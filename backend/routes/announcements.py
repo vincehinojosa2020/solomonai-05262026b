@@ -17,6 +17,7 @@ class AnnouncementCreate(BaseModel):
     body: str
     priority: str = "normal"
     expires_at: Optional[str] = None
+    send_push: bool = False
 
 class AnnouncementUpdate(BaseModel):
     title: Optional[str] = None
@@ -68,6 +69,22 @@ async def create_admin_announcement(request: Request, payload: AnnouncementCreat
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.announcements.insert_one(announcement)
+
+    if payload.send_push:
+        try:
+            from routes.push import send_push_notification
+            subs = await db.push_subscriptions.find({"tenant_id": tenant_id}, {"_id": 0, "user_id": 1}).to_list(1000)
+            for sub in subs:
+                try:
+                    await send_push_notification(
+                        sub["user_id"], tenant_id,
+                        payload.title, payload.body, "/portal/announcements"
+                    )
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
     return {"message": "Announcement created", "announcement": serialize_doc(announcement)}
 
 

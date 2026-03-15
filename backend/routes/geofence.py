@@ -34,8 +34,14 @@ async def get_geofence_config(request: Request):
     if not config:
         config = {
             "tenant_id": tenant_id,
-            "zones": [{"id": "zone_main", "name": "Main Campus", "latitude": 31.7619, "longitude": -106.4850, "radius_meters": 200.0, "is_enabled": True}],
+            "zones": [{"id": "zone_main", "name": "Main Campus", "latitude": 31.7619, "longitude": -106.4850, "radius_meters": 150, "is_enabled": True}],
             "auto_checkin_enabled": True,
+            "active_days": ["Sunday"],
+            "active_start": "07:00",
+            "active_end": "13:00",
+            "nudge_cafe": True,
+            "nudge_giving": True,
+            "nudge_giving_amounts": [25, 50, 100, 250],
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
         await db.geofence_config.insert_one({**config})
@@ -46,7 +52,7 @@ async def get_geofence_config(request: Request):
 async def update_geofence_config(request: Request, payload: dict):
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
-    allowed = ["zones", "auto_checkin_enabled"]
+    allowed = ["zones", "auto_checkin_enabled", "active_days", "active_start", "active_end", "nudge_cafe", "nudge_giving", "nudge_giving_amounts"]
     update_data = {k: v for k, v in payload.items() if k in allowed}
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     await db.geofence_config.update_one({"tenant_id": tenant_id}, {"$set": update_data}, upsert=True)
@@ -94,4 +100,14 @@ async def geofence_checkin(request: Request, payload: GeofenceCheckinRequest):
         "checked_in_at": datetime.now(timezone.utc).isoformat()
     }
     await db.attendance_checkins.insert_one(checkin)
-    return {"checked_in": True, "message": f"Checked in at {matched_zone['name']}", "zone": matched_zone["name"]}
+
+    nudge = {"show_cafe": False, "show_giving": False}
+    if config.get("nudge_cafe"):
+        nudge["show_cafe"] = True
+        nudge["cafe_message"] = "Order your coffee for pickup!"
+    if config.get("nudge_giving"):
+        nudge["show_giving"] = True
+        nudge["giving_message"] = "Would you like to give today?"
+        nudge["give_amounts"] = config.get("nudge_giving_amounts", [25, 50, 100, 250])
+
+    return {"checked_in": True, "message": f"Checked in at {matched_zone['name']}", "zone": matched_zone["name"], "nudge": nudge}

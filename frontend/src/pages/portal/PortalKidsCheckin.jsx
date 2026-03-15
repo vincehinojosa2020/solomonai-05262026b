@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePolling } from '@/hooks/usePolling';
 import { 
   Plus, Check, X, Clock, AlertCircle,
   Phone, Heart, Sparkles, Star, Cross
@@ -72,6 +73,9 @@ export default function PortalKidsCheckin() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Real-time polling every 15 seconds for kids check-in status
+  usePolling(useCallback(() => fetchData(), []), 15000);
 
   const fetchData = async () => {
     setLoading(true);

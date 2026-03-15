@@ -540,6 +540,18 @@ All 10 modules implemented with 100% test pass rate.
 - ✅ UX polish: initial badge state now shows `LOADING` (instead of `UNKNOWN`) until API response arrives, then transitions to `READY`.
 - ✅ Frontend testing agent verified pass after fix.
 
+### Mar 14, 2026 (GO-LIVE PRODUCTION HOUSEKEEPING)
+- ✅ **Section 1 — Critical Fixes**: Verified login returns all 3 token aliases, CORS fully open, all roles access portal routes
+- ✅ **Section 2 — Missing Endpoints**: Added admin kids/checkins/today, admin kids/checkout, portal kids/checkout, admin media sermons CRUD, portal giving/donate
+- ✅ **Section 3 — Kids Check-in Real Time**: Bidirectional check-in/checkout working. Member checks in → admin sees within seconds → admin checks out with pickup code. Portal kids on 15s polling.
+- ✅ **Section 4 — Giving Nudge**: Cafe and merch order responses now include giving_nudge with show, message, suggested_amounts
+- ✅ **Section 5 — Saved Payment Methods**: Full CRUD with Bearer token support
+- ✅ **Section 6 — Media Admin**: Admin sermon CRUD (POST/PUT/DELETE /admin/media/sermons), immediately visible to members
+- ✅ **Section 7 — Geofencing Config**: Enhanced with active_days, active_start/end, nudge_cafe, nudge_giving, nudge_giving_amounts. Attendance checkin returns nudge data.
+- ✅ **Section 8 — Admin Announcements**: Push notification support via send_push field
+- ✅ **Section 9 — Final QA**: **40/40 PASS** across all 6 accounts (login, portal, admin, CORS, health, role security)
+- ✅ **Seed data**: Added child_ethan_johnson, fixed children persistence during startup
+
 ### Mar 14, 2026 (Real-Time Polling + Backend Refactor)
 - ✅ **Real-Time Polling** — Created `usePolling` hook with visibility-pause support
   - Added 30-second polling to 8 pages: PortalEvents, PortalGroups, PortalPrayer, PortalHome, CafeAdminPage, Dashboard, EventsManagerPage, GroupsManagerPage
