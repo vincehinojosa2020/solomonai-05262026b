@@ -18,7 +18,7 @@ export default function PortalMerch() {
   useEffect(() => {
     const fetchMerch = async () => {
       try {
-        const productsRes = await fetch(`${API_URL}/portal/merch/products`, { credentials: 'include' });
+        const productsRes = await fetch(`${API_URL}/portal/merch/products`);
         if (productsRes.ok) {
           const data = await productsRes.json();
           setProducts(data.products || []);
@@ -82,7 +82,7 @@ export default function PortalMerch() {
       const res = await fetch(`${API_URL}/portal/merch/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           items: cartItems.map((item) => ({
             product_id: item.id,

@@ -55,7 +55,7 @@ export default function GroupsManagerPage() {
       if (searchQuery) params.append('search', searchQuery);
       if (filterType && filterType !== 'all') params.append('group_type', filterType);
       
-      const res = await fetch(`${API_URL}/admin/groups?${params}`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/admin/groups?${params}`);
       
       if (res.ok) {
         const data = await res.json();
@@ -83,7 +83,7 @@ export default function GroupsManagerPage() {
     try {
       const res = await fetch(`${API_URL}/admin/groups/${groupId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        
       });
       
       if (res.ok) {
@@ -102,7 +102,7 @@ export default function GroupsManagerPage() {
       const res = await fetch(`${API_URL}/admin/groups/${group.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ is_open: !group.is_open })
       });
       
@@ -330,7 +330,7 @@ function AddGroupModal({ open, onClose, onSuccess }) {
       const res = await fetch(`${API_URL}/admin/groups`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           name,
           description,
@@ -501,7 +501,7 @@ function EditGroupModal({ group, open, onClose, onSuccess }) {
       const res = await fetch(`${API_URL}/admin/groups/${group.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           name,
           description,
@@ -606,7 +606,7 @@ function ViewMembersModal({ group, open, onClose }) {
 
   const fetchMembers = async () => {
     try {
-      const res = await fetch(`${API_URL}/admin/groups/${group.id}/members`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/admin/groups/${group.id}/members`);
       if (res.ok) {
         const data = await res.json();
         setMembers(data.members || []);
@@ -628,7 +628,7 @@ function ViewMembersModal({ group, open, onClose }) {
     try {
       const res = await fetch(
         `${API_URL}/admin/groups/${group.id}/available-members?search=${encodeURIComponent(query)}`,
-        { credentials: 'include' }
+        { }
       );
       if (res.ok) {
         const data = await res.json();
@@ -646,7 +646,7 @@ function ViewMembersModal({ group, open, onClose }) {
       const res = await fetch(`${API_URL}/admin/groups/${group.id}/members`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ person_id: personId })
       });
       
@@ -671,7 +671,7 @@ function ViewMembersModal({ group, open, onClose }) {
     try {
       const res = await fetch(`${API_URL}/admin/groups/${group.id}/members/${personId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        
       });
       
       if (res.ok) {

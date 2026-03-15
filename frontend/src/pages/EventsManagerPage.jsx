@@ -39,7 +39,7 @@ export default function EventsManagerPage() {
       const params = new URLSearchParams();
       params.append('upcoming_only', (!showPast).toString());
       
-      const res = await fetch(`${API_URL}/admin/events?${params}`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/admin/events?${params}`);
       
       if (res.ok) {
         const data = await res.json();
@@ -66,7 +66,7 @@ export default function EventsManagerPage() {
     try {
       const res = await fetch(`${API_URL}/admin/events/${eventId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        
       });
       
       if (res.ok) {
@@ -304,7 +304,7 @@ function AddEventModal({ open, onClose, onSuccess }) {
       const res = await fetch(`${API_URL}/admin/events`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           name,
           description,
@@ -467,7 +467,7 @@ function EditEventModal({ event, open, onClose, onSuccess }) {
       const res = await fetch(`${API_URL}/admin/events/${event.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           name,
           description,
@@ -567,7 +567,7 @@ function ViewRegistrationsModal({ event, open, onClose }) {
   const fetchRegistrations = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/admin/events/${event.id}/registrations`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/admin/events/${event.id}/registrations`);
       if (res.ok) {
         const data = await res.json();
         setRegistrations(data.registrations || []);
@@ -591,7 +591,7 @@ function ViewRegistrationsModal({ event, open, onClose }) {
       const res = await fetch(`${API_URL}/admin/events/${event.id}/registrations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ name: newName, email: newEmail || null })
       });
 
@@ -618,7 +618,7 @@ function ViewRegistrationsModal({ event, open, onClose }) {
     try {
       const res = await fetch(`${API_URL}/admin/events/${event.id}/registrations/${registrationId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        
       });
 
       if (res.ok) {

@@ -26,7 +26,7 @@ export default function PortalGroups() {
 
   const fetchGroups = async () => {
     try {
-      const res = await fetch(`${API_URL}/portal/groups`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/portal/groups`);
       if (res.ok) {
         const data = await res.json();
         setAllGroups(data);
@@ -40,7 +40,7 @@ export default function PortalGroups() {
 
   const fetchMyGroups = async () => {
     try {
-      const res = await fetch(`${API_URL}/portal/my-groups`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/portal/my-groups`);
       if (res.ok) {
         const data = await res.json();
         setMyGroups(data.groups || []);
@@ -65,7 +65,7 @@ export default function PortalGroups() {
     try {
       const res = await fetch(`${API_URL}/portal/groups/${groupId}/join`, {
         method: 'POST',
-        credentials: 'include'
+        
       });
       
       if (res.ok) {
@@ -89,7 +89,7 @@ export default function PortalGroups() {
     try {
       const res = await fetch(`${API_URL}/portal/groups/${groupId}/leave`, {
         method: 'DELETE',
-        credentials: 'include'
+        
       });
       
       if (res.ok) {

@@ -465,7 +465,7 @@ export default function PortalLibrary() {
     const fetchVideos = async () => {
       try {
         const res = await fetch(`${API_URL}/api/portal/media/videos`, {
-          credentials: 'include'
+          
         });
         if (res.ok) {
           const data = await res.json();
@@ -501,7 +501,7 @@ export default function PortalLibrary() {
     const fetchProgress = async () => {
       try {
         const res = await fetch(`${API_URL}/api/portal/watch/progress`, {
-          credentials: 'include'
+          
         });
         if (res.ok) {
           const data = await res.json();
@@ -528,7 +528,7 @@ export default function PortalLibrary() {
       await fetch(`${API_URL}/api/portal/watch/progress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           video_id: String(course.id),
           youtube_id: course.youtubeId,

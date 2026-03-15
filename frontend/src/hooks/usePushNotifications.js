@@ -38,7 +38,7 @@ export function usePushNotifications() {
 
     try {
       // Get VAPID public key
-      const keyRes = await fetch(`${API_URL}/push/vapid-public-key`, { credentials: 'include' });
+      const keyRes = await fetch(`${API_URL}/push/vapid-public-key`);
       const { public_key } = await keyRes.json();
       if (!public_key) return false;
 
@@ -52,7 +52,7 @@ export function usePushNotifications() {
       await fetch(`${API_URL}/push/subscribe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ subscription: subscription.toJSON() }),
       });
 
@@ -72,7 +72,7 @@ export function usePushNotifications() {
         await fetch(`${API_URL}/push/subscribe`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
+          
           body: JSON.stringify({ endpoint: sub.endpoint }),
         });
         await sub.unsubscribe();

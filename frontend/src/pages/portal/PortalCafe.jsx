@@ -43,8 +43,8 @@ export default function PortalCafe() {
     const fetchCafe = async () => {
       try {
         const [itemsRes, settingsRes] = await Promise.all([
-          fetch(`${API_URL}/portal/cafe/items`, { credentials: 'include' }),
-          fetch(`${API_URL}/portal/cafe/settings`, { credentials: 'include' })
+          fetch(`${API_URL}/portal/cafe/items`),
+          fetch(`${API_URL}/portal/cafe/settings`)
         ]);
         if (itemsRes.ok) {
           const data = await itemsRes.json();
@@ -129,7 +129,7 @@ export default function PortalCafe() {
       const res = await fetch(`${API_URL}/portal/cafe/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           pickup_time: pickupTime,
           notes: orderNotes,

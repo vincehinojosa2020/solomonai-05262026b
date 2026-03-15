@@ -24,7 +24,7 @@ export default function LeadershipNotesPage() {
     setLoading(true);
     try {
       const url = tenantFilter ? `${API_URL}/admin/notes?tenant_id=${tenantFilter}` : `${API_URL}/admin/notes`;
-      const res = await fetch(url, { credentials: 'include' });
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         setNotes(data.notes || []);

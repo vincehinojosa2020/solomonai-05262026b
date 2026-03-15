@@ -89,7 +89,7 @@ export default function AppShell() {
     // Fetch current user
     const token = localStorage.getItem('session_token');
     const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-    fetch(`${API_URL}/auth/me`, { credentials: 'include', headers })
+    fetch(`${API_URL}/auth/me`, { headers })
       .then(res => res.ok ? res.json() : null)
       .then(data => setUser(data))
       .catch(err => console.error('Failed to fetch user:', err));
@@ -118,7 +118,7 @@ export default function AppShell() {
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       await fetch(`${API_URL}/auth/logout`, {
         method: 'POST',
-        credentials: 'include',
+        
         headers,
       });
     } catch (err) {

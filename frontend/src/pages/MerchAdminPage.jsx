@@ -39,10 +39,10 @@ export default function MerchAdminPage() {
     setLoading(true);
     try {
       const [productsRes, summaryRes, ordersRes, settingsRes] = await Promise.all([
-        fetch(`${API_URL}/admin/merch/products`, { credentials: 'include' }),
-        fetch(`${API_URL}/admin/merch/summary`, { credentials: 'include' }),
-        fetch(`${API_URL}/admin/merch/orders?limit=8`, { credentials: 'include' }),
-        fetch(`${API_URL}/admin/merch/settings`, { credentials: 'include' })
+        fetch(`${API_URL}/admin/merch/products`),
+        fetch(`${API_URL}/admin/merch/summary`),
+        fetch(`${API_URL}/admin/merch/orders?limit=8`),
+        fetch(`${API_URL}/admin/merch/settings`)
       ]);
 
       if (productsRes.ok) {
@@ -111,7 +111,7 @@ export default function MerchAdminPage() {
       const res = await fetch(`${API_URL}/admin/merch/products${editingProduct ? `/${editingProduct.id}` : ''}`, {
         method: editingProduct ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify(payload),
       });
       if (res.ok) {
@@ -135,7 +135,7 @@ export default function MerchAdminPage() {
     try {
       const res = await fetch(`${API_URL}/admin/merch/products/${productId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        
       });
       if (res.ok) {
         toast.success('Product deleted');
@@ -158,7 +158,7 @@ export default function MerchAdminPage() {
       const res = await fetch(`${API_URL}/admin/merch/settings`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ merch_embed_url: merchUrl.trim() })
       });
       if (res.ok) {

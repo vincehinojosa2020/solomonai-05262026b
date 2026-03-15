@@ -41,7 +41,7 @@ export default function PortalGive() {
 
   const fetchSavedPaymentMethods = async () => {
     try {
-      const res = await fetch(`${API_URL}/payments/methods`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/payments/methods`);
       if (res.ok) {
         const data = await res.json();
         setSavedCards(data.payment_methods || []);
@@ -72,7 +72,7 @@ export default function PortalGive() {
   const confirmPayment = async (sessionId) => {
     try {
       const res = await fetch(`${API_URL}/payments/status/${sessionId}`, {
-        credentials: 'include'
+        
       });
       
       if (res.ok) {
@@ -96,7 +96,7 @@ export default function PortalGive() {
 
   const fetchFunds = async () => {
     try {
-      const res = await fetch(`${API_URL}/funds`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/funds`);
       if (res.ok) {
         const data = await res.json();
         setFunds(data);
@@ -109,7 +109,7 @@ export default function PortalGive() {
 
   const fetchGivingHistory = async () => {
     try {
-      const res = await fetch(`${API_URL}/portal/giving/history`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/portal/giving/history`);
       if (res.ok) {
         const data = await res.json();
         setGivingHistory(data.donations || []);
@@ -131,7 +131,7 @@ export default function PortalGive() {
       const response = await fetch(`${API_URL}/payments/donate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           package_id: 'custom',
           custom_amount: parseFloat(amount),

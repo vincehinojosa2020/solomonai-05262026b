@@ -13,8 +13,8 @@ export default function PortalPathways() {
     const fetchCourses = async () => {
       try {
         const [coursesRes, nextStepsRes] = await Promise.all([
-          fetch(`${API_URL}/portal/pathways/courses`, { credentials: 'include' }),
-          fetch(`${API_URL}/portal/next-steps/status`, { credentials: 'include' })
+          fetch(`${API_URL}/portal/pathways/courses`),
+          fetch(`${API_URL}/portal/next-steps/status`)
         ]);
 
         if (coursesRes.ok) {

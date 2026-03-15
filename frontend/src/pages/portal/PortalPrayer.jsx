@@ -53,13 +53,13 @@ export default function PortalPrayer() {
         const url = selectedCategory === 'all' 
           ? `${API_URL}/portal/prayer/wall`
           : `${API_URL}/portal/prayer/wall?category=${selectedCategory}`;
-        const res = await fetch(url, { credentials: 'include' });
+        const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
           setPrayerWall(data.requests || []);
         }
       } else {
-        const res = await fetch(`${API_URL}/portal/prayer/requests`, { credentials: 'include' });
+        const res = await fetch(`${API_URL}/portal/prayer/requests`);
         if (res.ok) {
           const data = await res.json();
           setMyRequests(data.requests || []);
@@ -86,7 +86,7 @@ export default function PortalPrayer() {
       const res = await fetch(`${API_URL}/portal/prayer/requests`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify(newRequest)
       });
 
@@ -118,7 +118,7 @@ export default function PortalPrayer() {
     try {
       const res = await fetch(`${API_URL}/portal/prayer/requests/${requestId}/pray`, {
         method: 'POST',
-        credentials: 'include'
+        
       });
 
       if (res.ok) {

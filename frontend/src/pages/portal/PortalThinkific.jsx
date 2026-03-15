@@ -9,7 +9,7 @@ export default function PortalThinkific() {
   useEffect(() => {
     const fetchThinkific = async () => {
       try {
-        const res = await fetch(`${API_URL}/portal/thinkific`, { credentials: 'include' });
+        const res = await fetch(`${API_URL}/portal/thinkific`);
         if (res.ok) {
           const data = await res.json();
           setThinkificUrl(data.thinkific_url || '');

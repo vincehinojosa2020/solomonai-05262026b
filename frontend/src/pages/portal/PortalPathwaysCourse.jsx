@@ -74,7 +74,7 @@ export default function PortalPathwaysCourse() {
 
   const fetchCourse = async () => {
     try {
-      const courseRes = await fetch(`${API_URL}/portal/pathways/courses`, { credentials: 'include' });
+      const courseRes = await fetch(`${API_URL}/portal/pathways/courses`);
       if (courseRes.ok) {
         const data = await courseRes.json();
         const found = (data.courses || []).find((c) => c.id === courseId);
@@ -87,7 +87,7 @@ export default function PortalPathwaysCourse() {
 
   const fetchLessons = async () => {
     try {
-      const res = await fetch(`${API_URL}/portal/pathways/courses/${courseId}/lessons`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/portal/pathways/courses/${courseId}/lessons`);
       if (res.ok) {
         const data = await res.json();
         setLessons(data.lessons || []);
@@ -112,7 +112,7 @@ export default function PortalPathwaysCourse() {
       await fetch(`${API_URL}/portal/pathways/progress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           course_id: courseId,
           lesson_id: lesson.id,

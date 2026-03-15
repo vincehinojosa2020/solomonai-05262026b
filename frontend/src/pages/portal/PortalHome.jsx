@@ -31,7 +31,7 @@ export default function PortalHome() {
 
   const fetchUpcomingEvents = async () => {
     try {
-      const res = await fetch(`${API_URL}/portal/events`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/portal/events`);
       if (res.ok) {
         const data = await res.json();
         setEvents(data.slice(0, 3));
@@ -43,7 +43,7 @@ export default function PortalHome() {
 
   const fetchServiceMode = async () => {
     try {
-      const res = await fetch(`${API_URL}/portal/service-mode`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/portal/service-mode`);
       if (res.ok) {
         const data = await res.json();
         setServiceMode(data);
@@ -55,7 +55,7 @@ export default function PortalHome() {
 
   const fetchStreakData = async () => {
     try {
-      const res = await fetch(`${API_URL}/portal/attendance-streak`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/portal/attendance-streak`);
       if (res.ok) {
         const data = await res.json();
         setStreakData(data);
@@ -67,7 +67,7 @@ export default function PortalHome() {
 
   const fetchNextSteps = async () => {
     try {
-      const res = await fetch(`${API_URL}/portal/next-steps/status`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/portal/next-steps/status`);
       if (res.ok) {
         const data = await res.json();
         setNextSteps(data);
@@ -81,7 +81,7 @@ export default function PortalHome() {
     try {
       const res = await fetch(`${API_URL}/portal/service-checkin?check_in_type=${checkInType}`, {
         method: 'POST',
-        credentials: 'include'
+        
       });
       if (res.ok) {
         const data = await res.json();

@@ -36,10 +36,10 @@ export default function GroupLeaderDashboard() {
     setLoading(true);
     try {
       const [groupRes, attendRes, riskRes, membersRes] = await Promise.all([
-        fetch(`${API_URL}/admin/groups`, { credentials: 'include' }),
-        fetch(`${API_URL}/admin/groups/${groupId}/attendance?limit=8`, { credentials: 'include' }),
-        fetch(`${API_URL}/admin/groups/${groupId}/at-risk`, { credentials: 'include' }),
-        fetch(`${API_URL}/admin/groups/${groupId}/members`, { credentials: 'include' }),
+        fetch(`${API_URL}/admin/groups`),
+        fetch(`${API_URL}/admin/groups/${groupId}/attendance?limit=8`),
+        fetch(`${API_URL}/admin/groups/${groupId}/at-risk`),
+        fetch(`${API_URL}/admin/groups/${groupId}/members`),
       ]);
 
       if (groupRes.ok) {
@@ -73,7 +73,7 @@ export default function GroupLeaderDashboard() {
       const res = await fetch(`${API_URL}/admin/groups/${groupId}/outreach`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ person_id: personId, type, notes: `${type} outreach logged` }),
       });
       if (res.ok) {

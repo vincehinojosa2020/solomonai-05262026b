@@ -16,8 +16,8 @@ export default function PortalMeetings() {
     setLoading(true);
     try {
       const [slotsRes, meetingsRes] = await Promise.all([
-        fetch(`${API_URL}/portal/meetings/slots`, { credentials: 'include' }),
-        fetch(`${API_URL}/portal/meetings`, { credentials: 'include' })
+        fetch(`${API_URL}/portal/meetings/slots`),
+        fetch(`${API_URL}/portal/meetings`)
       ]);
       if (slotsRes.ok) {
         const data = await slotsRes.json();
@@ -56,7 +56,7 @@ export default function PortalMeetings() {
       const res = await fetch(`${API_URL}/portal/meetings/book`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           slot_id: selectedSlot.id,
           topic: topic.trim(),

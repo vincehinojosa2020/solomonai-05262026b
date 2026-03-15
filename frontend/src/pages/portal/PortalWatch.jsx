@@ -47,7 +47,7 @@ const VideoPlayer = ({ isOpen, onClose, video, onShare, user }) => {
     if (!video?.id) return;
     try {
       const res = await fetch(`${API_URL}/portal/video-notes/video/${video.id}`, { 
-        credentials: 'include' 
+        
       });
       if (res.ok) {
         const data = await res.json();
@@ -65,7 +65,7 @@ const VideoPlayer = ({ isOpen, onClose, video, onShare, user }) => {
       const res = await fetch(`${API_URL}/portal/video-notes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           video_id: video.id,
           content: newNote.trim(),
@@ -91,7 +91,7 @@ const VideoPlayer = ({ isOpen, onClose, video, onShare, user }) => {
     try {
       const res = await fetch(`${API_URL}/portal/video-notes/${noteId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        
       });
       if (res.ok) {
         toast.success('Note deleted');
@@ -403,7 +403,7 @@ const NotesPanel = ({ video, user, isOpen, onClose }) => {
       const endpoint = activeTab === 'shared' 
         ? `${API_URL}/portal/video-notes/shared`
         : `${API_URL}/portal/video-notes/video/${video.id}`;
-      const res = await fetch(endpoint, { credentials: 'include' });
+      const res = await fetch(endpoint);
       if (res.ok) {
         const data = await res.json();
         // Ensure is_own is set for filtering
@@ -427,7 +427,7 @@ const NotesPanel = ({ video, user, isOpen, onClose }) => {
       const res = await fetch(`${API_URL}/portal/video-notes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           video_id: video.id,
           content: newNote.trim(),
@@ -450,7 +450,7 @@ const NotesPanel = ({ video, user, isOpen, onClose }) => {
       const res = await fetch(`${API_URL}/portal/video-notes/${noteId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ content })
       });
       
@@ -470,7 +470,7 @@ const NotesPanel = ({ video, user, isOpen, onClose }) => {
     try {
       const res = await fetch(`${API_URL}/portal/video-notes/${noteId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        
       });
       
       if (res.ok) {
@@ -742,7 +742,7 @@ const ShareNoteModal = ({ note, onClose, onShared }) => {
       const url = searchQuery 
         ? `${API_URL}/portal/church-members?search=${encodeURIComponent(searchQuery)}`
         : `${API_URL}/portal/church-members`;
-      const res = await fetch(url, { credentials: 'include' });
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         setMembers(data.members || []);
@@ -766,7 +766,7 @@ const ShareNoteModal = ({ note, onClose, onShared }) => {
       const res = await fetch(`${API_URL}/portal/video-notes/${note.id}/share`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           user_ids: selectedMembers,
           is_public: shareWithChurch
@@ -1119,7 +1119,7 @@ export default function PortalWatch() {
 
   const fetchVideos = async () => {
     try {
-      const res = await fetch(`${API_URL}/portal/media/videos`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/portal/media/videos`);
       if (res.ok) {
         const data = await res.json();
         // Transform database format to UI format

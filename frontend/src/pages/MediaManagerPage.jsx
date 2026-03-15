@@ -62,7 +62,7 @@ export default function MediaManagerPage() {
       }
       
       const res = await fetch(`${API_URL}/admin/media/videos?${params}`, {
-        credentials: 'include'
+        
       });
       
       if (res.ok) {
@@ -90,7 +90,7 @@ export default function MediaManagerPage() {
     try {
       const res = await fetch(`${API_URL}/admin/media/videos/${videoId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        
       });
       
       if (res.ok) {
@@ -108,7 +108,7 @@ export default function MediaManagerPage() {
     try {
       const res = await fetch(`${API_URL}/admin/media/videos/${videoId}/feature`, {
         method: 'POST',
-        credentials: 'include'
+        
       });
       
       if (res.ok) {
@@ -126,7 +126,7 @@ export default function MediaManagerPage() {
       const res = await fetch(`${API_URL}/admin/media/videos/${video.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ is_published: !video.is_published })
       });
       
@@ -494,7 +494,7 @@ function AddVideoModal({ open, onClose, onSuccess }) {
       const res = await fetch(`${API_URL}/admin/media/videos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           youtube_url: youtubeUrl,
           title,
@@ -677,7 +677,7 @@ function EditVideoModal({ video, open, onClose, onSuccess }) {
       const res = await fetch(`${API_URL}/admin/media/videos/${video.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           title,
           instructor,

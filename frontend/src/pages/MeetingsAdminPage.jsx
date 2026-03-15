@@ -24,8 +24,8 @@ export default function MeetingsAdminPage() {
     setLoading(true);
     try {
       const [slotsRes, meetingsRes] = await Promise.all([
-        fetch(`${API_URL}/admin/meetings/slots`, { credentials: 'include' }),
-        fetch(`${API_URL}/admin/meetings`, { credentials: 'include' })
+        fetch(`${API_URL}/admin/meetings/slots`),
+        fetch(`${API_URL}/admin/meetings`)
       ]);
       if (slotsRes.ok) {
         const data = await slotsRes.json();
@@ -65,7 +65,7 @@ export default function MeetingsAdminPage() {
       const res = await fetch(`${API_URL}/admin/meetings/slots`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({
           start_time: start.toISOString(),
           end_time: end.toISOString(),
@@ -91,7 +91,7 @@ export default function MeetingsAdminPage() {
       const res = await fetch(`${API_URL}/admin/meetings/${meetingId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ notes, status })
       });
       if (res.ok) {
@@ -113,7 +113,7 @@ export default function MeetingsAdminPage() {
       toast.info('Transcribing and analyzing recording...', { duration: 10000 });
       const res = await fetch(`${API_URL}/admin/meetings/${meetingId}/recording`, {
         method: 'POST',
-        credentials: 'include',
+        
         body: formData
       });
       if (res.ok) {

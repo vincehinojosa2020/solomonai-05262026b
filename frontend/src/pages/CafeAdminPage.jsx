@@ -45,10 +45,10 @@ export default function CafeAdminPage() {
     setLoading(true);
     try {
       const [itemsRes, ordersRes, summaryRes, settingsRes] = await Promise.all([
-        fetch(`${API_URL}/admin/cafe/items`, { credentials: 'include' }),
-        fetch(`${API_URL}/admin/cafe/orders?limit=8`, { credentials: 'include' }),
-        fetch(`${API_URL}/admin/cafe/summary`, { credentials: 'include' }),
-        fetch(`${API_URL}/admin/cafe/settings`, { credentials: 'include' })
+        fetch(`${API_URL}/admin/cafe/items`),
+        fetch(`${API_URL}/admin/cafe/orders?limit=8`),
+        fetch(`${API_URL}/admin/cafe/summary`),
+        fetch(`${API_URL}/admin/cafe/settings`)
       ]);
 
       if (itemsRes.ok) {
@@ -118,7 +118,7 @@ export default function CafeAdminPage() {
       const res = await fetch(`${API_URL}/admin/cafe/items${editingItem ? `/${editingItem.id}` : ''}`, {
         method: editingItem ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify(payload),
       });
       if (res.ok) {
@@ -142,7 +142,7 @@ export default function CafeAdminPage() {
     try {
       const res = await fetch(`${API_URL}/admin/cafe/items/${itemId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        
       });
       if (res.ok) {
         toast.success('Item deleted');
@@ -161,7 +161,7 @@ export default function CafeAdminPage() {
       const res = await fetch(`${API_URL}/admin/cafe/settings`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify(settings)
       });
       if (res.ok) {

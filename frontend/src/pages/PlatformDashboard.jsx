@@ -41,7 +41,7 @@ export default function PlatformDashboard() {
 
   const fetchPlatformStats = async () => {
     try {
-      const res = await fetch(`${API_URL}/platform/stats`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/platform/stats`);
       if (res.ok) {
         const data = await res.json();
         setStats({
@@ -59,7 +59,7 @@ export default function PlatformDashboard() {
 
   const fetchTenants = async () => {
     try {
-      const res = await fetch(`${API_URL}/tenants`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/tenants`);
       if (res.status === 403) {
         toast.error('Platform admin access required');
         navigate('/dashboard');
@@ -83,7 +83,7 @@ export default function PlatformDashboard() {
       const params = new URLSearchParams({ limit: '50' });
       if (searchQuery) params.append('search', searchQuery);
       
-      const res = await fetch(`${API_URL}/admin/members?${params}`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/admin/members?${params}`);
       if (res.ok) {
         const data = await res.json();
         setMembers(data.members);
@@ -100,7 +100,7 @@ export default function PlatformDashboard() {
     try {
       const res = await fetch(`${API_URL}/tenants/${tenantId}/subscription?status=${status}`, {
         method: 'PATCH',
-        credentials: 'include'
+        
       });
       if (!res.ok) throw new Error('Failed to update subscription');
       

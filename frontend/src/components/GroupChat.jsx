@@ -11,7 +11,7 @@ export default function GroupChat({ groupId, groupName, currentUser, onBack }) {
 
   const fetchMessages = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/groups/${groupId}/messages?limit=100`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/groups/${groupId}/messages?limit=100`);
       if (res.ok) {
         const data = await res.json();
         setMessages(data.messages || []);
@@ -36,7 +36,7 @@ export default function GroupChat({ groupId, groupName, currentUser, onBack }) {
       const res = await fetch(`${API_URL}/groups/${groupId}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ text: text.trim() }),
       });
       if (res.ok) {
@@ -50,7 +50,7 @@ export default function GroupChat({ groupId, groupName, currentUser, onBack }) {
   const handleDelete = async (msgId) => {
     try {
       await fetch(`${API_URL}/groups/${groupId}/messages/${msgId}`, {
-        method: 'DELETE', credentials: 'include',
+        method: 'DELETE', 
       });
       fetchMessages();
     } catch (e) { console.error(e); }

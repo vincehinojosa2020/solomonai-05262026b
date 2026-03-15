@@ -13,7 +13,7 @@ export default function ThinkificPage() {
   useEffect(() => {
     const fetchThinkific = async () => {
       try {
-        const res = await fetch(`${API_URL}/admin/thinkific`, { credentials: 'include' });
+        const res = await fetch(`${API_URL}/admin/thinkific`);
         if (res.ok) {
           const data = await res.json();
           setThinkificUrl(data.thinkific_url || '');
@@ -37,7 +37,7 @@ export default function ThinkificPage() {
       const res = await fetch(`${API_URL}/admin/thinkific`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ thinkific_url: thinkificUrl.trim() })
       });
       if (res.ok) {

@@ -73,8 +73,8 @@ export default function KidsCheckinAdmin() {
   const fetchData = useCallback(async () => {
     try {
       const [checkinsRes, kidsRes] = await Promise.all([
-        fetch(`${API_URL}/admin/kids/checkins?status=checked_in`, { credentials: 'include' }),
-        fetch(`${API_URL}/admin/kids/all`, { credentials: 'include' })
+        fetch(`${API_URL}/admin/kids/checkins?status=checked_in`),
+        fetch(`${API_URL}/admin/kids/all`)
       ]);
       
       if (checkinsRes.ok) {
@@ -135,7 +135,7 @@ export default function KidsCheckinAdmin() {
       const res = await fetch(`${API_URL}/admin/kids/register-family`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify(newFamily)
       });
       
@@ -180,7 +180,7 @@ export default function KidsCheckinAdmin() {
       const res = await fetch(`${API_URL}/admin/kids/${child.id}/checkin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ classroom: 'Sunday School' })
       });
       
@@ -213,7 +213,7 @@ export default function KidsCheckinAdmin() {
       const res = await fetch(`${API_URL}/admin/kids/verify-pickup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ code: pickupCode })
       });
       
@@ -233,7 +233,7 @@ export default function KidsCheckinAdmin() {
     try {
       const res = await fetch(`${API_URL}/admin/kids/checkins/${checkinId}/checkout`, {
         method: 'POST',
-        credentials: 'include'
+        
       });
       
       if (res.ok) {

@@ -67,7 +67,7 @@ export default function AbundantPathwaysAdmin() {
   const fetchCourses = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/admin/pathways/courses`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/admin/pathways/courses`);
       if (res.ok) {
         const data = await res.json();
         setCourses(data.courses || []);
@@ -88,7 +88,7 @@ export default function AbundantPathwaysAdmin() {
   const fetchNextStepsApprovals = async () => {
     setApprovalsLoading(true);
     try {
-      const res = await fetch(`${API_URL}/admin/next-steps/approvals`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/admin/next-steps/approvals`);
       if (res.ok) {
         const data = await res.json();
         setNextStepsApprovals(data.approvals || []);
@@ -133,7 +133,7 @@ export default function AbundantPathwaysAdmin() {
     resetLessonForm();
     try {
       const res = await fetch(`${API_URL}/admin/pathways/courses/${course.id}/lessons`, {
-        credentials: 'include'
+        
       });
       if (res.ok) {
         const data = await res.json();
@@ -153,8 +153,8 @@ export default function AbundantPathwaysAdmin() {
   const refreshAssignments = async (courseId) => {
     try {
       const [assignmentsRes, membersRes] = await Promise.all([
-        fetch(`${API_URL}/admin/pathways/courses/${courseId}/assignments`, { credentials: 'include' }),
-        fetch(`${API_URL}/admin/pathways/available-members?course_id=${courseId}`, { credentials: 'include' })
+        fetch(`${API_URL}/admin/pathways/courses/${courseId}/assignments`),
+        fetch(`${API_URL}/admin/pathways/available-members?course_id=${courseId}`)
       ]);
       if (assignmentsRes.ok) {
         const data = await assignmentsRes.json();
@@ -179,7 +179,7 @@ export default function AbundantPathwaysAdmin() {
       const res = await fetch(`${API_URL}/admin/pathways/courses${editingCourse ? `/${editingCourse.id}` : ''}`, {
         method: editingCourse ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify(courseForm),
       });
       if (res.ok) {
@@ -202,7 +202,7 @@ export default function AbundantPathwaysAdmin() {
     try {
       const res = await fetch(`${API_URL}/admin/pathways/courses/${courseId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        
       });
       if (res.ok) {
         toast.success('Course deleted');
@@ -228,7 +228,7 @@ export default function AbundantPathwaysAdmin() {
       const res = await fetch(endpoint, {
         method: editingLesson ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify(lessonForm),
       });
       if (res.ok) {
@@ -263,7 +263,7 @@ export default function AbundantPathwaysAdmin() {
     try {
       const res = await fetch(`${API_URL}/admin/pathways/lessons/${lessonId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        
       });
       if (res.ok) {
         toast.success('Lesson deleted');
@@ -281,7 +281,7 @@ export default function AbundantPathwaysAdmin() {
       const res = await fetch(`${API_URL}/admin/pathways/courses/${activeCourse.id}/assignments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ member_id: memberId })
       });
       if (res.ok) {
@@ -299,7 +299,7 @@ export default function AbundantPathwaysAdmin() {
     try {
       const res = await fetch(`${API_URL}/admin/pathways/courses/${activeCourse.id}/assignments/${memberId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        
       });
       if (res.ok) {
         toast.success('Member removed');
@@ -317,7 +317,7 @@ export default function AbundantPathwaysAdmin() {
       const res = await fetch(`${API_URL}/admin/next-steps/approvals/${userId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ action })
       });
       if (res.ok) {

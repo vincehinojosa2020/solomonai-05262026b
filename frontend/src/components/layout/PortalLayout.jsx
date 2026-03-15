@@ -38,7 +38,7 @@ export default function PortalLayout() {
 
   const fetchTenant = async () => {
     try {
-      const res = await fetch(`${API_URL}/tenant`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/tenant`);
       if (res.ok) {
         const data = await res.json();
         setTenant(data);
@@ -53,8 +53,8 @@ export default function PortalLayout() {
       const token = localStorage.getItem('session_token');
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       const [meRes, profileRes] = await Promise.all([
-        fetch(`${API_URL}/auth/me`, { credentials: 'include', headers }),
-        fetch(`${API_URL}/portal/me`, { credentials: 'include', headers })
+        fetch(`${API_URL}/auth/me`, { headers }),
+        fetch(`${API_URL}/portal/me`, { headers })
       ]);
 
       if (!meRes.ok) {
@@ -87,7 +87,7 @@ export default function PortalLayout() {
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       await fetch(`${API_URL}/auth/logout`, {
         method: 'POST',
-        credentials: 'include',
+        
         headers,
       });
     } catch (err) {

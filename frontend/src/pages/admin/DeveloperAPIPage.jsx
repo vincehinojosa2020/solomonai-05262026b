@@ -19,7 +19,7 @@ export default function DeveloperAPIPage() {
   const fetchApiKeys = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/admin/api-keys`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/admin/api-keys`);
       if (res.ok) {
         const data = await res.json();
         setApiKeys(data.api_keys || []);
@@ -41,7 +41,7 @@ export default function DeveloperAPIPage() {
       const res = await fetch(`${API_URL}/admin/api-keys`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify(formData)
       });
       if (res.ok) {
@@ -63,7 +63,7 @@ export default function DeveloperAPIPage() {
     try {
       const res = await fetch(`${API_URL}/admin/api-keys/${keyId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        
       });
       if (res.ok) {
         toast.success('API key revoked');

@@ -81,14 +81,14 @@ export default function PortalKidsCheckin() {
     setLoading(true);
     try {
       // Fetch children
-      const childRes = await fetch(`${API_URL}/portal/kids`, { credentials: 'include' });
+      const childRes = await fetch(`${API_URL}/portal/kids`);
       if (childRes.ok) {
         const childData = await childRes.json();
         setChildren(childData.children || []);
       }
       
       // Fetch active checkins
-      const checkinRes = await fetch(`${API_URL}/portal/kids/checkins/active`, { credentials: 'include' });
+      const checkinRes = await fetch(`${API_URL}/portal/kids/checkins/active`);
       if (checkinRes.ok) {
         const checkinData = await checkinRes.json();
         setCheckins(checkinData.checkins || []);
@@ -110,7 +110,7 @@ export default function PortalKidsCheckin() {
       const res = await fetch(`${API_URL}/portal/kids`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify(newChild)
       });
 
@@ -132,7 +132,7 @@ export default function PortalKidsCheckin() {
       const res = await fetch(`${API_URL}/portal/kids/${child.id}/checkin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        
         body: JSON.stringify({ classroom: 'Sunday School' })
       });
 

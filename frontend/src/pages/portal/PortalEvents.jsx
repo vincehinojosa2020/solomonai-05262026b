@@ -36,7 +36,7 @@ export default function PortalEvents() {
 
   const fetchEvents = async () => {
     try {
-      const res = await fetch(`${API_URL}/portal/events`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/portal/events`);
       if (res.ok) setEvents(await res.json());
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
@@ -44,7 +44,7 @@ export default function PortalEvents() {
 
   const fetchMyEvents = async () => {
     try {
-      const res = await fetch(`${API_URL}/portal/my-events`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/portal/my-events`);
       if (res.ok) { const data = await res.json(); setMyEvents(data.events || []); }
     } catch (e) { console.error(e); }
   };
@@ -54,7 +54,7 @@ export default function PortalEvents() {
   const handleRegister = async (eventId) => {
     try {
       const res = await fetch(`${API_URL}/portal/events/${eventId}/register`, {
-        method: 'POST', credentials: 'include'
+        method: 'POST'
       });
       const data = await res.json();
       if (res.ok) {
@@ -70,7 +70,7 @@ export default function PortalEvents() {
     if (!confirm('Cancel your registration for this event?')) return;
     try {
       const res = await fetch(`${API_URL}/portal/events/${eventId}/register`, {
-        method: 'DELETE', credentials: 'include'
+        method: 'DELETE'
       });
       if (res.ok) { toast.success('Registration cancelled'); fetchEvents(); fetchMyEvents(); }
       else toast.error('Failed to cancel registration');
