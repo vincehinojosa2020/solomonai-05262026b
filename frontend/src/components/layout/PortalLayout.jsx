@@ -6,6 +6,7 @@ import { API_URL } from '@/lib/utils';
 import SolomonChat from '@/components/SolomonChat';
 import PWABottomNav from '@/components/PWABottomNav';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import NotificationBell from '@/components/NotificationBell';
 
 export default function PortalLayout() {
   const [user, setUser] = useState(null);
@@ -172,14 +173,7 @@ export default function PortalLayout() {
 
           {/* Right Actions */}
           <div className="portal-header-actions">
-            <button 
-              className="portal-notification-btn" 
-              data-testid="portal-notifications"
-              onClick={() => { if (isSupported && !isSubscribed) subscribe(); }}
-              title={isSubscribed ? 'Notifications enabled' : 'Enable notifications'}
-            >
-              {isSubscribed ? <BellRing className="w-5 h-5 text-blue-400" /> : <Bell className="w-5 h-5" />}
-            </button>
+            <NotificationBell />
             <Avatar className="w-8 h-8 cursor-pointer" onClick={() => navigate('/portal/me')} data-testid="portal-avatar">
               <AvatarImage src={user?.picture} />
               <AvatarFallback className="bg-teal-500 text-white text-xs font-semibold">

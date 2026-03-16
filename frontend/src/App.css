@@ -1698,7 +1698,143 @@ textarea:focus-visible {
 .portal-logout-btn:hover,
 .portal-mobile-toggle:hover {
   background: #f1f5f9;
+}
+
+/* Notification Bell Component */
+.notif-bell-wrapper {
+  position: relative;
+}
+.notif-bell-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #64748b;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+}
+.notif-bell-btn:hover {
+  background: #f1f5f9;
   color: #0f172a;
+}
+.notif-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+}
+.notif-dropdown {
+  position: absolute;
+  top: 44px;
+  right: 0;
+  width: 340px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  z-index: 1000;
+  overflow: hidden;
+}
+.notif-dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.notif-mark-all {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: #4f6ef7;
+  cursor: pointer;
+  font-weight: 600;
+}
+.notif-mark-all:hover {
+  text-decoration: underline;
+}
+.notif-list {
+  max-height: 360px;
+  overflow-y: auto;
+}
+.notif-empty {
+  padding: 40px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+}
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f8fafc;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.notif-item:hover {
+  background: #f8fafc;
+}
+.notif-item.unread {
+  background: #f0f4ff;
+}
+.notif-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.notif-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.notif-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+.notif-body {
+  font-size: 12px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.notif-time {
+  font-size: 11px;
+  color: #94a3b8;
+}
+.notif-dot {
+  width: 8px;
+  height: 8px;
+  background: #4f6ef7;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
 }
 
 /* Mobile Menu */
@@ -1787,6 +1923,115 @@ textarea:focus-visible {
 }
 
 /* Portal Home */
+/* Arrival Nudge Card */
+.arrival-nudge-card {
+  background: linear-gradient(135deg, #eef2ff 0%, #f0fdf4 100%);
+  border: 1px solid #c7d2fe;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.arrival-nudge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.arrival-welcome-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+.arrival-dismiss {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+}
+.arrival-streak {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f97316;
+  margin-bottom: 14px;
+}
+.arrival-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.arrival-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #1e293b;
+  transition: all 0.15s ease;
+}
+.arrival-action-btn:hover {
+  border-color: #4f6ef7;
+  box-shadow: 0 2px 8px rgba(79,110,247,0.1);
+}
+.arrival-action-btn.cafe {
+  color: #92400e;
+}
+.arrival-action-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+}
+.arrival-action-sub {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+}
+.arrival-action-btn .lucide:last-child {
+  margin-left: auto;
+  color: #94a3b8;
+}
+.arrival-giving {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.arrival-giving-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+.arrival-giving-amounts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.arrival-give-btn {
+  padding: 8px 16px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #166534;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.arrival-give-btn:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
 .portal-welcome {
   margin-bottom: 24px;
 }

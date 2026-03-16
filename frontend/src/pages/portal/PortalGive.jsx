@@ -41,7 +41,7 @@ export default function PortalGive() {
 
   const fetchSavedPaymentMethods = async () => {
     try {
-      const res = await fetch(`${API_URL}/payments/methods`);
+      const res = await fetch(`${API_URL}/portal/payment-methods`);
       if (res.ok) {
         const data = await res.json();
         setSavedCards(data.payment_methods || []);
@@ -127,28 +127,28 @@ export default function PortalGive() {
 
     setIsLoading(true);
     try {
-      // Use existing Stripe checkout flow
-      const response = await fetch(`${API_URL}/payments/donate`, {
+      // Use the donate endpoint (mocked payment processing)
+      const response = await fetch(`${API_URL}/portal/giving/donate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        
         body: JSON.stringify({
-          package_id: 'custom',
-          custom_amount: parseFloat(amount),
+          amount: parseFloat(amount),
           fund_id: fund,
-          origin_url: window.location.href,
-          recurring: frequency !== 'one-time',
+          fund_name: funds.find(f => f.id === fund)?.name || 'General Fund',
+          frequency: frequency,
+          payment_method: selectedSavedCard ? 'saved_card' : paymentMethod,
+          payment_method_id: selectedSavedCard || null,
           donor_name: user?.name
         })
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to create checkout session');
-      }
-
-      const data = await response.json();
-      if (data.checkout_url) {
-        window.location.href = data.checkout_url;
+      if (response.ok) {
+        setShowSuccessMessage(true);
+        toast.success(`Thank you for your generous gift of $${amount}!`);
+        setAmount('');
+        setTimeout(() => fetchGivingHistory(), 500);
+      } else {
+        throw new Error('Failed to process donation');
       }
     } catch (error) {
       toast.error('Unable to process donation. Please try again.');

@@ -12212,17 +12212,22 @@ async def check_in_to_service(
     # Calculate new streak
     streak_data = await calculate_attendance_streak(tenant_id, user_id)
 
-    # Build nudge response
-    nudge = {"show_cafe": False, "show_giving": False}
+    # Build nudge response (Geofence arrival flow)
+    nudge = {"show": False, "cafe_open": False, "show_giving": False}
     try:
         geo_config = await db.geofence_config.find_one({"tenant_id": tenant_id}, {"_id": 0})
+        cafe_settings = await db.cafe_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
+        tenant_doc = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+        church_name = tenant_doc.get("name", "your church") if tenant_doc else "your church"
+        
         if geo_config:
-            if geo_config.get("nudge_cafe"):
-                nudge["show_cafe"] = True
-                nudge["cafe_message"] = "Order your coffee for pickup!"
+            nudge["show"] = True
+            if geo_config.get("nudge_cafe") and cafe_settings and cafe_settings.get("is_open"):
+                nudge["cafe_open"] = True
+                nudge["cafe_message"] = f"Order your coffee for {cafe_settings.get('pickup_location', 'Sunday')} pickup"
             if geo_config.get("nudge_giving"):
                 nudge["show_giving"] = True
-                nudge["giving_message"] = "Would you like to give today?"
+                nudge["give_message"] = f"Support {church_name} today"
                 nudge["give_amounts"] = geo_config.get("nudge_giving_amounts", [25, 50, 100, 250])
     except Exception:
         pass
@@ -12231,9 +12236,14 @@ async def check_in_to_service(
         "success": True,
         "message": "Checked in successfully!",
         "check_in_type": check_in_type,
+        "streak": {
+            "current": streak_data["current_streak"],
+            "best": streak_data["longest_streak"],
+            "total": streak_data["total_attended"]
+        },
         "new_streak": streak_data["current_streak"],
         "current_streak": streak_data["current_streak"],
-        "badges_earned": streak_data.get("new_badges", []),
+        "badges_earned": streak_data.get("streak_badges", []),
         "nudge": nudge
     }
 
@@ -13011,6 +13021,86 @@ async def portal_giving_donate(request: Request, payload: GivingDonateRequest):
 
 
 # Include router
+# ============== NOTIFICATIONS ==============
+
+@api_router.get("/portal/notifications")
+async def get_notifications(request: Request, limit: int = 20):
+    """Get user's notifications with unread count."""
+    user = await get_current_member_user(request)
+    notifications = await db.notifications.find(
+        {"user_id": user["user_id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    unread = sum(1 for n in notifications if not n.get("is_read"))
+    return {"notifications": [serialize_doc(n) for n in notifications], "unread_count": unread}
+
+
+@api_router.put("/portal/notifications/{notif_id}/read")
+async def mark_notification_read(request: Request, notif_id: str):
+    """Mark a notification as read."""
+    user = await get_current_member_user(request)
+    await db.notifications.update_one(
+        {"id": notif_id, "user_id": user["user_id"]},
+        {"$set": {"is_read": True}}
+    )
+    return {"message": "Marked as read"}
+
+
+@api_router.put("/portal/notifications/read-all")
+async def mark_all_notifications_read(request: Request):
+    """Mark all notifications as read."""
+    user = await get_current_member_user(request)
+    await db.notifications.update_many(
+        {"user_id": user["user_id"], "is_read": False},
+        {"$set": {"is_read": True}}
+    )
+    return {"message": "All marked as read"}
+
+
+@api_router.post("/admin/notifications/send")
+async def admin_send_notification(request: Request):
+    """Admin sends a notification to all members in their tenant."""
+    user = await get_current_user(request)
+    if not user or user.get("role") not in ["church_admin", "platform_admin"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    body = await request.json()
+    title = body.get("title", "")
+    message = body.get("message", "")
+    notif_type = body.get("type", "announcement")
+    tenant_id = user.get("tenant_id")
+    
+    if not title:
+        raise HTTPException(status_code=400, detail="Title is required")
+    
+    # Find all members in this tenant
+    members = await db.users.find(
+        {"tenant_id": tenant_id, "role": "member", "is_active": True},
+        {"_id": 0, "user_id": 1}
+    ).to_list(10000)
+    
+    now_iso = datetime.now(timezone.utc).isoformat()
+    notifications = []
+    for m in members:
+        notifications.append({
+            "id": str(uuid.uuid4()),
+            "tenant_id": tenant_id,
+            "user_id": m["user_id"],
+            "type": notif_type,
+            "title": title,
+            "body": message,
+            "is_read": False,
+            "sent_by": user.get("user_id"),
+            "created_at": now_iso
+        })
+    
+    if notifications:
+        await db.notifications.insert_many(notifications)
+    
+    return {"message": f"Notification sent to {len(notifications)} members", "count": len(notifications)}
+
+
 # ============== CHURCH HEALTH SCORE ==============
 
 def compute_health_score(cached_stats, tenant):

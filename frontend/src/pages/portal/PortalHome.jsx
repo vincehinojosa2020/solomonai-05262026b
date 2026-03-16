@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
 import { usePolling } from '@/hooks/usePolling';
-import { DollarSign, Users, Calendar, ChevronRight, Flame, GraduationCap, ExternalLink } from 'lucide-react';
-import { API_URL } from '@/lib/utils';
+import { DollarSign, Users, Calendar, ChevronRight, Flame, GraduationCap, ExternalLink, Coffee, Heart } from 'lucide-react';
+import { API_URL, formatCurrency } from '@/lib/utils';
 import { ServiceModeBanner, AttendanceStreakCard } from '@/components/ServiceMode';
+import { toast } from 'sonner';
 
 export default function PortalHome() {
   const { user, memberData, tenant } = useOutletContext();
@@ -14,6 +15,7 @@ export default function PortalHome() {
   const [serviceMode, setServiceMode] = useState(null);
   const [streakData, setStreakData] = useState(null);
   const [nextSteps, setNextSteps] = useState(null);
+  const [checkinNudge, setCheckinNudge] = useState(null);
 
   useEffect(() => {
     fetchUpcomingEvents();
@@ -81,12 +83,18 @@ export default function PortalHome() {
     try {
       const res = await fetch(`${API_URL}/portal/service-checkin?check_in_type=${checkInType}`, {
         method: 'POST',
-        
       });
       if (res.ok) {
         const data = await res.json();
-        toast.success(data.message);
-        // Refresh service mode
+        toast.success(data.message || 'Checked in!');
+        // Show arrival nudge if available
+        if (data.nudge && data.nudge.show) {
+          setCheckinNudge({
+            ...data.nudge,
+            streak: data.streak,
+            churchName: tenant?.name || 'your church',
+          });
+        }
         fetchServiceMode();
         fetchStreakData();
       } else {
@@ -156,6 +164,53 @@ export default function PortalHome() {
           onCheckIn={handleServiceCheckIn}
           streak={serviceMode.attendance_streak}
         />
+      )}
+
+      {/* Arrival Welcome Card — shows after check-in with nudge */}
+      {checkinNudge && (
+        <div className="arrival-nudge-card" data-testid="arrival-nudge-card">
+          <div className="arrival-nudge-header">
+            <span className="arrival-welcome-text">Welcome to {checkinNudge.churchName}!</span>
+            <button className="arrival-dismiss" onClick={() => setCheckinNudge(null)}>Dismiss</button>
+          </div>
+          {checkinNudge.streak && (
+            <div className="arrival-streak">
+              <Flame className="w-4 h-4" style={{ color: '#f97316' }} />
+              <span>{checkinNudge.streak.current} week streak!</span>
+            </div>
+          )}
+          <div className="arrival-actions">
+            {checkinNudge.cafe_open && (
+              <Link to="/portal/cafe" className="arrival-action-btn cafe" data-testid="nudge-order-coffee">
+                <Coffee className="w-5 h-5" />
+                <div>
+                  <span className="arrival-action-title">Order your coffee</span>
+                  <span className="arrival-action-sub">{checkinNudge.cafe_message}</span>
+                </div>
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            )}
+            {checkinNudge.show_giving && (
+              <div className="arrival-giving" data-testid="nudge-give-today">
+                <div className="arrival-giving-header">
+                  <Heart className="w-4 h-4" style={{ color: '#ec4899' }} />
+                  <span>{checkinNudge.give_message}</span>
+                </div>
+                <div className="arrival-giving-amounts">
+                  {(checkinNudge.give_amounts || [25, 50, 100, 250]).map((amt) => (
+                    <Link
+                      key={amt}
+                      to={`/portal/give?amount=${amt}`}
+                      className="arrival-give-btn"
+                    >
+                      ${amt}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       {/* Welcome Banner */}
