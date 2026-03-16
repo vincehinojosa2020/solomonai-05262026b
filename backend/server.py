@@ -13011,6 +13011,104 @@ async def portal_giving_donate(request: Request, payload: GivingDonateRequest):
 
 
 # Include router
+# ============== CHURCH HEALTH SCORE ==============
+
+def compute_health_score(cached_stats, tenant):
+    """
+    Universal Church Health Score (0-100).
+    Weighted composite of 5 dimensions:
+      - Engagement (25%): active_members / total_members
+      - Giving (25%): giving_per_capita benchmarked against $8/member/month
+      - Community (20%): members_per_group, target ~15 per group
+      - Attendance (20%): weekly_attendance / total_members
+      - Growth (10%): recurring_givers / total_members
+    """
+    c = cached_stats or {}
+    members = c.get("total_members", 0)
+    if members == 0:
+        return {"score": 0, "grade": "N/A", "dimensions": {}}
+
+    active = c.get("active_members", 0)
+    mtd_giving = c.get("mtd_giving", 0)
+    attendance = c.get("last_attendance", 0)
+    groups = c.get("active_groups", 0)
+    recurring = c.get("recurring_givers", 0)
+
+    # Engagement: % of members active (benchmark: 60% = perfect)
+    engagement_raw = (active / members) * 100
+    engagement_score = min(100, (engagement_raw / 60) * 100)
+
+    # Giving per capita (benchmark: $8/member/month = perfect)
+    gpc = mtd_giving / members
+    giving_score = min(100, (gpc / 8) * 100)
+
+    # Community: group participation (benchmark: 1 group per 100 members = perfect)
+    if groups > 0:
+        groups_per_100 = (groups / members) * 100
+        community_score = min(100, (groups_per_100 / 1.0) * 100)
+    else:
+        community_score = 0
+
+    # Attendance rate (benchmark: 20% of members weekly = perfect)
+    att_rate = (attendance / members) * 100
+    attendance_score = min(100, (att_rate / 20) * 100)
+
+    # Growth: recurring givers (benchmark: 10% = perfect)
+    rec_rate = (recurring / members) * 100
+    growth_score = min(100, (rec_rate / 10) * 100)
+
+    # Weighted composite
+    total = (engagement_score * 0.25 + giving_score * 0.25 +
+             community_score * 0.20 + attendance_score * 0.20 +
+             growth_score * 0.10)
+    total = round(min(100, max(0, total)))
+
+    grade = "A+" if total >= 90 else "A" if total >= 80 else "B+" if total >= 70 else \
+            "B" if total >= 60 else "C" if total >= 50 else "D" if total >= 40 else "F"
+
+    return {
+        "score": total,
+        "grade": grade,
+        "dimensions": {
+            "engagement": {"score": round(engagement_score), "value": round(engagement_raw, 1), "label": "Engagement Rate", "unit": "%"},
+            "giving": {"score": round(giving_score), "value": round(gpc, 2), "label": "Giving / Member", "unit": "$/mo"},
+            "community": {"score": round(community_score), "value": round((groups / members) * 100, 2) if groups > 0 else 0, "label": "Groups / 100 Mbrs", "unit": ""},
+            "attendance": {"score": round(attendance_score), "value": round(att_rate, 1), "label": "Attendance Rate", "unit": "%"},
+            "growth": {"score": round(growth_score), "value": round(rec_rate, 1), "label": "Recurring Donors", "unit": "%"},
+        }
+    }
+
+
+@api_router.get("/platform/health-scores")
+async def get_all_health_scores(request: Request):
+    """Get Church Health Scores for all tenants."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    tenants = await db.tenants.find({}, {"_id": 0}).to_list(100)
+    results = []
+    for t in tenants:
+        cached = await db.dashboard_stats_cache.find_one({"tenant_id": t["id"]}, {"_id": 0})
+        health = compute_health_score(cached, t)
+        results.append({
+            "tenant_id": t["id"],
+            "name": t["name"],
+            "location": t.get("location", ""),
+            "plan": t.get("plan", ""),
+            "members": cached.get("total_members", 0) if cached else 0,
+            "health": health,
+        })
+
+    results.sort(key=lambda x: x["health"]["score"], reverse=True)
+    return results
+
 # ============== ORGANIZATIONS & CAMPUS COMPARISON (Universal Multi-Campus) ==============
 
 @api_router.get("/platform/organizations")

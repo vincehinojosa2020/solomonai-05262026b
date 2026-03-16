@@ -5,7 +5,7 @@ import {
   CheckCircle, XCircle, AlertCircle, ChevronRight, 
   Search, Filter, MoreVertical, Eye, Edit, Trash2,
   Globe, Shield, Activity, BarChart3, UserPlus, Mail,
-  Heart, Layers, Server, MapPin
+  Heart, Layers, Server, MapPin, Gauge
 } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -21,6 +21,7 @@ export default function PlatformDashboard() {
   const [organizations, setOrganizations] = useState([]);
   const [selectedOrg, setSelectedOrg] = useState(null);
   const [healthData, setHealthData] = useState(null);
+  const [healthScores, setHealthScores] = useState([]);
   const [stats, setStats] = useState({
     totalChurches: 0,
     activeChurches: 0,
@@ -40,6 +41,7 @@ export default function PlatformDashboard() {
     fetchPlatformStats();
     fetchOrganizations();
     fetchHealth();
+    fetchHealthScores();
   }, []);
 
   useEffect(() => {
@@ -87,6 +89,17 @@ export default function PlatformDashboard() {
       }
     } catch (error) {
       console.error('Failed to fetch health:', error);
+    }
+  };
+
+  const fetchHealthScores = async () => {
+    try {
+      const res = await fetch(`${API_URL}/platform/health-scores`);
+      if (res.ok) {
+        setHealthScores(await res.json());
+      }
+    } catch (error) {
+      console.error('Failed to fetch health scores:', error);
     }
   };
 
@@ -344,6 +357,7 @@ export default function PlatformDashboard() {
                 <th>Members</th>
                 <th>MRR</th>
                 <th>MTD Giving</th>
+                <th>Health</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -385,6 +399,20 @@ export default function PlatformDashboard() {
                   </td>
                   <td>
                     <span className="tenant-giving">{formatCurrency(tenant.mtd_giving || 0)}</span>
+                  </td>
+                  <td>
+                    {(() => {
+                      const hs = healthScores.find(h => h.tenant_id === tenant.id);
+                      if (!hs || !hs.health) return <span className="health-score-na">—</span>;
+                      const { score, grade } = hs.health;
+                      const color = score >= 80 ? '#22c55e' : score >= 60 ? '#f59e0b' : score >= 40 ? '#f97316' : '#ef4444';
+                      return (
+                        <div className="health-score-pill" style={{ background: `${color}18`, color }} data-testid={`health-score-${tenant.subdomain}`}>
+                          <span className="health-score-num">{score}</span>
+                          <span className="health-score-grade">{grade}</span>
+                        </div>
+                      );
+                    })()}
                   </td>
                   <td onClick={(e) => e.stopPropagation()}>{getStatusBadge(tenant.subscription_status)}</td>
                   <td onClick={(e) => e.stopPropagation()}>
@@ -574,6 +602,47 @@ export default function PlatformDashboard() {
           organizationId={selectedOrg}
           onBack={() => setSelectedOrg(null)}
         />
+      )}
+
+      {/* Health Scores Leaderboard - visible on churches tab */}
+      {activeTab === 'churches' && healthScores.length > 0 && (
+        <div className="platform-section health-scores-section" data-testid="health-scores-section">
+          <h2><Gauge className="w-5 h-5" /> Church Health Scores</h2>
+          <p className="section-description">Composite score (0-100) based on engagement, giving, community, attendance, and growth</p>
+          <div className="health-scores-grid">
+            {healthScores.map((church, idx) => {
+              const h = church.health;
+              const scoreColor = h.score >= 80 ? '#22c55e' : h.score >= 60 ? '#f59e0b' : h.score >= 40 ? '#f97316' : '#ef4444';
+              const dims = h.dimensions || {};
+              return (
+                <div key={church.tenant_id} className="health-card" data-testid={`health-card-${church.tenant_id}`}>
+                  <div className="health-card-top">
+                    <div>
+                      <span className="health-rank">#{idx + 1}</span>
+                      <h4>{church.name}</h4>
+                      <span className="health-location">{church.location}</span>
+                    </div>
+                    <div className="health-ring" style={{ '--score-color': scoreColor, '--score-pct': `${h.score}%` }}>
+                      <span className="health-ring-score">{h.score}</span>
+                      <span className="health-ring-grade">{h.grade}</span>
+                    </div>
+                  </div>
+                  <div className="health-dimensions">
+                    {Object.entries(dims).map(([key, dim]) => (
+                      <div key={key} className="health-dim-row">
+                        <span className="health-dim-label">{dim.label}</span>
+                        <div className="health-dim-bar-wrap">
+                          <div className="health-dim-bar" style={{ width: `${Math.min(100, dim.score)}%`, background: dim.score >= 70 ? '#22c55e' : dim.score >= 40 ? '#f59e0b' : '#ef4444' }} />
+                        </div>
+                        <span className="health-dim-value">{dim.value}{dim.unit === '%' ? '%' : dim.unit === '$/mo' ? `$/mo` : ''}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       )}
 
       {/* Quick Actions */}
