@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://auth-fix-preview-5.preview.emergentagent.com/api
+https://solomon-qa.preview.emergentagent.com/api
 ```
 
 ### Authentication

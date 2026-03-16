@@ -1,4 +1,4 @@
-const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API_URL = '/api';
 
 /**
  * Authenticated fetch — sends both cookies AND Bearer token.

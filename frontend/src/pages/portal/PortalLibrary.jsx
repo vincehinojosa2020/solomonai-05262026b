@@ -7,7 +7,7 @@ import {
   Briefcase, Home, Users, Heart, Book, Volume2, Bookmark, DollarSign, Calendar, Tv, GraduationCap, BookOpen, ShoppingBag, Coffee, MessageSquare
 } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+const API_URL = '';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // PORTAL NAVIGATION - Premium Dark Theme

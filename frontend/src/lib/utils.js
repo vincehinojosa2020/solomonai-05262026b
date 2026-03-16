@@ -118,4 +118,4 @@ export function generateId() {
   return Math.random().toString(36).substring(2, 15);
 }
 
-export const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api`;
+export const API_URL = '/api';

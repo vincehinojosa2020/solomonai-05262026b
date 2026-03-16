@@ -1519,7 +1519,7 @@ async def ensure_demo_meetings_data(tenant_id: Optional[str]):
             await db.pastor_meetings.insert_one(meeting)
 
 async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
-    if tenant_id != "abundant-church-001":
+    if tenant_id != "abundant-east-001":
         return
 
     course_ids = [
@@ -1536,7 +1536,7 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
     pathways_courses = [
         {
             "id": "pathway_course_001",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Abundant Next Steps",
             "description": "Your on-ramp to belonging, serving, and growing at Abundant.",
             "cover_image_url": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
@@ -1548,7 +1548,7 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
         },
         {
             "id": "pathway_course_002",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Preparing for Baptism",
             "description": "Understand baptism and get ready to share your story.",
             "cover_image_url": "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1200&q=80",
@@ -1560,7 +1560,7 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
         },
         {
             "id": "pathway_course_003",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Foundations of Discipleship",
             "description": "Build daily rhythms of scripture, prayer, and obedience.",
             "cover_image_url": "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1200&q=80",
@@ -1572,7 +1572,7 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
         },
         {
             "id": "pathway_course_004",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Financial Peace University",
             "description": "Walk through budgeting, generosity, and debt-free living.",
             "cover_image_url": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80",
@@ -1584,7 +1584,7 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
         },
         {
             "id": "pathway_course_005",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Serving with Purpose",
             "description": "Discover your gifts and find the right team to serve.",
             "cover_image_url": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
@@ -1596,7 +1596,7 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
         },
         {
             "id": "pathway_course_006",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Prayer & Presence",
             "description": "Deepen your prayer life and sensitivity to God's presence.",
             "cover_image_url": "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
@@ -1608,7 +1608,7 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
         },
         {
             "id": "pathway_course_007",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Marriage & Family Care",
             "description": "Strengthen your relationships and build a healthy home.",
             "cover_image_url": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80",
@@ -1620,7 +1620,7 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
         },
         {
             "id": "pathway_course_008",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Mission & Outreach",
             "description": "Live on mission through local and global outreach.",
             "cover_image_url": "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=80",
@@ -1635,7 +1635,7 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
     pathways_lessons = [
         {
             "id": "pathway_lesson_001",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_001",
             "title": "Welcome to Abundant",
             "description": "Meet the heart, mission, and values of Abundant Church.",
@@ -1651,7 +1651,7 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
         },
         {
             "id": "pathway_lesson_002",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_001",
             "title": "Belonging & Community",
             "description": "Find your people and take your next step into community.",
@@ -1667,7 +1667,7 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
         },
         {
             "id": "pathway_lesson_003",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_002",
             "title": "Why Baptism Matters",
             "description": "Understand the significance of baptism and next steps.",
@@ -1683,7 +1683,7 @@ async def ensure_abundant_pathways_data(tenant_id: Optional[str]):
         },
         {
             "id": "pathway_lesson_004",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_002",
             "title": "Preparing Your Story",
             "description": "Craft your testimony and prepare for the baptism service.",
@@ -1800,7 +1800,7 @@ async def notify_meeting_event(event: str, meeting: dict) -> dict:
     }
 
 # Default tenant ID for demo
-DEFAULT_TENANT_ID = "abundant-church-001"
+DEFAULT_TENANT_ID = "abundant-east-001"
 DEFAULT_NEXT_STEPS_URL = "https://abundantchurch.thinkific.com/courses/abundant-next-steps"
 
 
@@ -1813,9 +1813,23 @@ async def ensure_mobile_demo_accounts():
 
     tenant_defaults = [
         {
-            "id": "abundant-church-001",
-            "name": "Abundant Church",
-            "subdomain": "abundant",
+            "id": "abundant-east-001",
+            "name": "Abundant East",
+            "subdomain": "abundant-east",
+            "subscription_status": "active",
+            "created_at": now_iso
+        },
+        {
+            "id": "abundant-downtown-001",
+            "name": "Abundant Downtown",
+            "subdomain": "abundant-downtown",
+            "subscription_status": "active",
+            "created_at": now_iso
+        },
+        {
+            "id": "abundant-west-001",
+            "name": "Abundant West",
+            "subdomain": "abundant-west",
             "subscription_status": "active",
             "created_at": now_iso
         },
@@ -1850,7 +1864,7 @@ async def ensure_mobile_demo_accounts():
             "first_name": "Maria",
             "last_name": "Garcia",
             "role": "member",
-            "tenant_id": "abundant-church-001"
+            "tenant_id": "abundant-east-001"
         },
         {
             "email": "member@cristoviene.church",
@@ -1864,11 +1878,11 @@ async def ensure_mobile_demo_accounts():
         {
             "email": "admin@abundant.church",
             "user_id": "admin_abundant",
-            "name": "Abundant Church Admin",
-            "first_name": "Abundant",
-            "last_name": "Admin",
+            "name": "Pastor David Rivera",
+            "first_name": "David",
+            "last_name": "Rivera",
             "role": "church_admin",
-            "tenant_id": "abundant-church-001"
+            "tenant_id": "abundant-east-001"
         },
         {
             "email": "admin@solomon.ai",
@@ -1896,6 +1910,42 @@ async def ensure_mobile_demo_accounts():
             "last_name": "Admin",
             "role": "church_admin",
             "tenant_id": "pottershouse-church-001"
+        },
+        {
+            "email": "admin@abundant-downtown.church",
+            "user_id": "admin_abundant_downtown",
+            "name": "Pastor Sarah Chen",
+            "first_name": "Sarah",
+            "last_name": "Chen",
+            "role": "church_admin",
+            "tenant_id": "abundant-downtown-001"
+        },
+        {
+            "email": "admin@abundant-west.church",
+            "user_id": "admin_abundant_west",
+            "name": "Pastor Michael Reyes",
+            "first_name": "Michael",
+            "last_name": "Reyes",
+            "role": "church_admin",
+            "tenant_id": "abundant-west-001"
+        },
+        {
+            "email": "member@abundant-downtown.church",
+            "user_id": "member_abundant_downtown",
+            "name": "Isabella Torres",
+            "first_name": "Isabella",
+            "last_name": "Torres",
+            "role": "member",
+            "tenant_id": "abundant-downtown-001"
+        },
+        {
+            "email": "member@abundant-west.church",
+            "user_id": "member_abundant_west",
+            "name": "Sofia Martinez",
+            "first_name": "Sofia",
+            "last_name": "Martinez",
+            "role": "member",
+            "tenant_id": "abundant-west-001"
         }
     ]
 
@@ -3244,7 +3294,7 @@ async def get_admin_thinkific(request: Request):
         raise HTTPException(status_code=400, detail="Tenant context required")
     tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "thinkific_url": 1})
     thinkific_url = tenant.get("thinkific_url") if tenant else None
-    if tenant_id == "abundant-church-001" and (not thinkific_url or "abundant.thinkific.com" in thinkific_url):
+    if tenant_id == "abundant-east-001" and (not thinkific_url or "abundant.thinkific.com" in thinkific_url):
         thinkific_url = "https://abundantchurch.thinkific.com/collections"
         await db.tenants.update_one(
             {"id": tenant_id},
@@ -3272,7 +3322,7 @@ async def get_portal_thinkific(request: Request):
     tenant_id = user.get("tenant_id")
     tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "thinkific_url": 1})
     thinkific_url = tenant.get("thinkific_url") if tenant else None
-    if tenant_id == "abundant-church-001" and (not thinkific_url or "abundant.thinkific.com" in thinkific_url):
+    if tenant_id == "abundant-east-001" and (not thinkific_url or "abundant.thinkific.com" in thinkific_url):
         thinkific_url = "https://abundantchurch.thinkific.com/collections"
         await db.tenants.update_one(
             {"id": tenant_id},
@@ -5975,7 +6025,7 @@ async def launch_health_check(tenant_id: Optional[str] = None):
     effective_tenant_id = tenant_id or DEFAULT_TENANT_ID
 
     launch_member_email_map = {
-        "abundant-church-001": "member@abundant.church",
+        "abundant-east-001": "member@abundant.church",
         "cristoviene-church-001": "member@cristoviene.church",
         "pottershouse-church-001": "member@pottershouse.church"
     }
@@ -6099,8 +6149,7 @@ async def launch_health_check(tenant_id: Optional[str] = None):
 
 @api_router.get("/tenants")
 async def list_tenants(request: Request):
-    """List all tenants (platform admin only)"""
-    # Verify platform admin
+    """List all tenants (platform admin only) with boosted stats from cache"""
     session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -6115,9 +6164,19 @@ async def list_tenants(request: Request):
     
     tenants = await db.tenants.find({}, {"_id": 0}).to_list(100)
     
-    # Get member count for each tenant
     for tenant in tenants:
-        tenant["member_count"] = await db.users.count_documents({"tenant_id": tenant["id"]})
+        tid = tenant["id"]
+        cached = await db.dashboard_stats_cache.find_one({"tenant_id": tid}, {"_id": 0})
+        if cached:
+            tenant["member_count"] = cached.get("total_members", 0)
+            tenant["active_members"] = cached.get("active_members", 0)
+            tenant["mtd_giving"] = cached.get("mtd_giving", 0)
+            tenant["ytd_giving"] = cached.get("ytd_giving", 0)
+        else:
+            tenant["member_count"] = await db.users.count_documents({"tenant_id": tid})
+            tenant["active_members"] = 0
+            tenant["mtd_giving"] = 0
+            tenant["ytd_giving"] = 0
     
     return tenants
 
@@ -6247,7 +6306,7 @@ async def list_tenant_users(request: Request, tenant_id: str, skip: int = 0, lim
 
 @api_router.get("/platform/stats")
 async def get_platform_stats(request: Request):
-    """Get real platform-wide statistics for God Mode dashboard"""
+    """Get platform-wide statistics using cached + real data for God Mode dashboard"""
     session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -6260,18 +6319,24 @@ async def get_platform_stats(request: Request):
     if not user or user.get("role") != "platform_admin":
         raise HTTPException(status_code=403, detail="Platform admin access required")
     
-    # Get real counts
     total_churches = await db.tenants.count_documents({})
     active_churches = await db.tenants.count_documents({"subscription_status": "active"})
-    total_members = await db.users.count_documents({"role": "member"})
-    total_people = await db.people.count_documents({})
     
-    # Get donation stats
+    # Use cached stats for total members (boosted numbers)
+    all_caches = await db.dashboard_stats_cache.find({}, {"_id": 0}).to_list(100)
+    # Exclude the aggregate "abundant-east-001" to avoid double counting
+    campus_caches = [c for c in all_caches if c.get("tenant_id") != "abundant-east-001"]
+    total_members_boosted = sum(c.get("total_members", 0) for c in campus_caches)
+    
+    # MRR from tenant records
+    tenants = await db.tenants.find({}, {"_id": 0, "mrr": 1, "name": 1, "id": 1}).to_list(100)
+    total_mrr = sum(float(t.get("mrr", 0) or 0) for t in tenants)
+    
+    # Real donation stats
     today = datetime.now(timezone.utc)
     month_start = today.replace(day=1).strftime("%Y-%m-%d")
     year_start = today.replace(month=1, day=1).strftime("%Y-%m-%d")
     
-    # MTD donations (across all tenants)
     mtd_pipeline = [
         {"$match": {"donation_date": {"$gte": month_start}}},
         {"$group": {"_id": None, "total": {"$sum": "$amount"}, "count": {"$sum": 1}}}
@@ -6280,7 +6345,6 @@ async def get_platform_stats(request: Request):
     mtd_total = mtd_result[0]["total"] if mtd_result else 0
     mtd_count = mtd_result[0]["count"] if mtd_result else 0
     
-    # YTD donations
     ytd_pipeline = [
         {"$match": {"donation_date": {"$gte": year_start}}},
         {"$group": {"_id": None, "total": {"$sum": "$amount"}, "count": {"$sum": 1}}}
@@ -6288,21 +6352,18 @@ async def get_platform_stats(request: Request):
     ytd_result = await db.donations.aggregate(ytd_pipeline).to_list(1)
     ytd_total = ytd_result[0]["total"] if ytd_result else 0
     
-    # Get recent signups (last 30 days)
     thirty_days_ago = (today - timedelta(days=30)).isoformat()
     recent_signups = await db.users.count_documents({
         "role": "member",
         "created_at": {"$gte": thirty_days_ago}
     })
     
-    # Get giving by church
     giving_by_tenant = await db.donations.aggregate([
         {"$match": {"donation_date": {"$gte": month_start}}},
         {"$group": {"_id": "$tenant_id", "total": {"$sum": "$amount"}, "count": {"$sum": 1}}},
         {"$sort": {"total": -1}}
     ]).to_list(10)
     
-    # Enrich with church names
     for g in giving_by_tenant:
         tenant = await db.tenants.find_one({"id": g["_id"]}, {"_id": 0, "name": 1})
         g["church_name"] = tenant["name"] if tenant else "Unknown"
@@ -6314,8 +6375,8 @@ async def get_platform_stats(request: Request):
             "suspended": total_churches - active_churches
         },
         "members": {
-            "total_users": total_members,
-            "total_people": total_people,
+            "total_users": total_members_boosted if total_members_boosted > 0 else await db.users.count_documents({"role": "member"}),
+            "total_people": await db.people.count_documents({}),
             "recent_signups": recent_signups
         },
         "giving": {
@@ -6323,6 +6384,10 @@ async def get_platform_stats(request: Request):
             "mtd_count": mtd_count,
             "ytd_total": ytd_total,
             "by_church": [{"church": g["church_name"], "amount": g["total"], "count": g["count"]} for g in giving_by_tenant]
+        },
+        "platform": {
+            "total_mrr": total_mrr,
+            "arr": total_mrr * 12
         },
         "generated_at": datetime.now(timezone.utc).isoformat()
     }
@@ -8031,28 +8096,35 @@ async def get_tenant(request: Request):
 
 # --- DASHBOARD ROUTES ---
 @api_router.get("/dashboard/stats")
-async def get_dashboard_stats():
-    """Return dashboard stats - demo values for Abundant Church (50,000 members, El Paso TX)"""
-    # Return demo values scaled for a megachurch of 50,000 members
+async def get_dashboard_stats(request: Request):
+    """Return tenant-scoped dashboard stats from cache, falling back to defaults."""
+    tenant_id = DEFAULT_TENANT_ID
+    try:
+        session_token = get_session_token_from_request(request)
+        if session_token:
+            session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+            if session:
+                user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+                if user and user.get("tenant_id"):
+                    tenant_id = user["tenant_id"]
+    except Exception:
+        pass
+
+    cached = await db.dashboard_stats_cache.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    if cached:
+        cached.pop("tenant_id", None)
+        cached.pop("updated_at", None)
+        return cached
+
     return {
-        "total_members": 50247,
-        "active_members": 12489,
-        "visitors": 247,
-        "active_groups": 284,
-        "open_groups": 43,
-        "mtd_giving": 182500,
-        "ytd_giving": 2847303,
-        "mtd_goal": 250000,
-        "last_attendance": 8312,
-        "last_attendance_change": 524,
-        "new_this_week": 87,
-        "recurring_givers": 4247,
-        "cafe_orders_week": 342,
-        "cafe_giving_added": 1847,
-        "merch_orders_week": 89,
-        "merch_giving_added": 623,
-        "event_registrations_month": 1247,
-        "at_risk_members": 156,
+        "total_members": 0, "active_members": 0, "visitors": 0,
+        "active_groups": 0, "open_groups": 0,
+        "mtd_giving": 0, "ytd_giving": 0, "mtd_goal": 0,
+        "last_attendance": 0, "last_attendance_change": 0,
+        "new_this_week": 0, "recurring_givers": 0,
+        "cafe_orders_week": 0, "cafe_giving_added": 0,
+        "merch_orders_week": 0, "merch_giving_added": 0,
+        "event_registrations_month": 0, "at_risk_members": 0,
         "kids_checked_in_today": 0
     }
 
@@ -8093,8 +8165,18 @@ async def get_attendance_trend():
     ]
 
 @api_router.get("/dashboard/activity")
-async def get_recent_activity(limit: int = 15):
+async def get_recent_activity(request: Request, limit: int = 15):
     tenant_id = DEFAULT_TENANT_ID
+    try:
+        session_token = get_session_token_from_request(request)
+        if session_token:
+            session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+            if session:
+                user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+                if user and user.get("tenant_id"):
+                    tenant_id = user["tenant_id"]
+    except Exception:
+        pass
     
     activities = await db.activity_log.find(
         {"tenant_id": tenant_id},
@@ -8104,8 +8186,18 @@ async def get_recent_activity(limit: int = 15):
     return [serialize_doc(a) for a in activities]
 
 @api_router.get("/dashboard/upcoming-events")
-async def get_upcoming_events(limit: int = 5):
+async def get_upcoming_events(request: Request, limit: int = 5):
     tenant_id = DEFAULT_TENANT_ID
+    try:
+        session_token = get_session_token_from_request(request)
+        if session_token:
+            session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+            if session:
+                user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+                if user and user.get("tenant_id"):
+                    tenant_id = user["tenant_id"]
+    except Exception:
+        pass
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     
     events = await db.events.find(
@@ -11074,7 +11166,7 @@ async def seed_platform():
     # Define the three demo churches
     churches = [
         {
-            "id": "abundant-church-001",
+            "id": "abundant-east-001",
             "name": "Abundant Church",
             "subdomain": "abundant",
             "plan": "enterprise",
@@ -11145,14 +11237,14 @@ async def seed_platform():
             "email": "member@solomon.ai",
             "name": "Demo Member",
             "role": "member",
-            "tenant_id": "abundant-church-001"  # Default to Abundant for demo
+            "tenant_id": "abundant-east-001"  # Default to Abundant for demo
         },
         {
             "user_id": "platform_newmember_001",
             "email": "newmember@solomon.ai",
             "name": "New Member Demo",
             "role": "member",
-            "tenant_id": "abundant-church-001"
+            "tenant_id": "abundant-east-001"
         }
     ]
     
@@ -11231,7 +11323,7 @@ async def seed_platform():
     abundant_videos = [
         {
             "id": "video_001",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Community With a Purpose",
             "description": "Discover how the church is God's purposeful community - not a club but a family with divine purpose.",
             "youtube_id": "FoPI3hMbXvw",
@@ -11248,7 +11340,7 @@ async def seed_platform():
         },
         {
             "id": "video_002",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Blessing & Healing Through Humility",
             "description": "Learn how humility unlocks God's blessings and healing in your life.",
             "youtube_id": "pzpbbibEWPE",
@@ -11265,7 +11357,7 @@ async def seed_platform():
         },
         {
             "id": "video_003",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Building Your Life",
             "description": "Build your life on God's Word - biblical principles for personal spiritual development.",
             "youtube_id": "Lnj6vMvOLME",
@@ -11281,7 +11373,7 @@ async def seed_platform():
         },
         {
             "id": "video_004",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "The Missing Peace",
             "description": "Find God's inner peace through grace and righteousness.",
             "youtube_id": "OjhMsB6czxc",
@@ -11297,7 +11389,7 @@ async def seed_platform():
         },
         {
             "id": "video_005",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "The Laws of Life",
             "description": "Your thoughts and beliefs shape your outcomes - learn the laws that govern life.",
             "youtube_id": "WQy48ANpj5c",
@@ -11313,7 +11405,7 @@ async def seed_platform():
         },
         {
             "id": "video_006",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "The Story Behind the Story",
             "description": "Discover the deeper meaning of Christmas and God's plan through Jesus' birth.",
             "youtube_id": "wCjwUQMhCIY",
@@ -11329,7 +11421,7 @@ async def seed_platform():
         },
         {
             "id": "video_007",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Managing Your Emotions",
             "description": "Biblical wisdom on understanding and handling your emotions effectively.",
             "youtube_id": "0grr2E0kuFg",
@@ -11346,7 +11438,7 @@ async def seed_platform():
         },
         {
             "id": "video_008",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Worship In Spirit & In Truth",
             "description": "Experience authentic worship that transforms your relationship with God.",
             "youtube_id": "uwkmP6sDihI",
@@ -11362,7 +11454,7 @@ async def seed_platform():
         },
         {
             "id": "video_009",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Vision Sunday 2025",
             "description": "The church's vision and community outreach efforts for the year ahead.",
             "youtube_id": "O0WfS3Ma2XM",
@@ -11378,7 +11470,7 @@ async def seed_platform():
         },
         {
             "id": "video_010",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Abundant Conference 2025",
             "description": "Night 2 of the Abundant Conference featuring worship and powerful teaching.",
             "youtube_id": "kGXOOO6hHUk",
@@ -11395,7 +11487,7 @@ async def seed_platform():
         },
         {
             "id": "video_011",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "We Are Abundant",
             "description": "Understanding our calling to be a blessing to others in our community.",
             "youtube_id": "rMmIcJCDsaU",
@@ -11411,7 +11503,7 @@ async def seed_platform():
         },
         {
             "id": "video_012",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Faith That Moves Mountains",
             "description": "Discover the kind of faith that can move any mountain in your life.",
             "youtube_id": "3BHJSkx3J4E",
@@ -11429,12 +11521,12 @@ async def seed_platform():
     
     # Seed media categories
     categories = [
-        {"id": "faith", "tenant_id": "abundant-church-001", "name": "Faith", "slug": "faith", "icon": "heart", "sort_order": 1},
-        {"id": "family", "tenant_id": "abundant-church-001", "name": "Family", "slug": "family", "icon": "users", "sort_order": 2},
-        {"id": "leadership", "tenant_id": "abundant-church-001", "name": "Leadership", "slug": "leadership", "icon": "briefcase", "sort_order": 3},
-        {"id": "worship", "tenant_id": "abundant-church-001", "name": "Worship", "slug": "worship", "icon": "music", "sort_order": 4},
-        {"id": "growth", "tenant_id": "abundant-church-001", "name": "Growth", "slug": "growth", "icon": "trending-up", "sort_order": 5},
-        {"id": "community", "tenant_id": "abundant-church-001", "name": "Community", "slug": "community", "icon": "home", "sort_order": 6},
+        {"id": "faith", "tenant_id": "abundant-east-001", "name": "Faith", "slug": "faith", "icon": "heart", "sort_order": 1},
+        {"id": "family", "tenant_id": "abundant-east-001", "name": "Family", "slug": "family", "icon": "users", "sort_order": 2},
+        {"id": "leadership", "tenant_id": "abundant-east-001", "name": "Leadership", "slug": "leadership", "icon": "briefcase", "sort_order": 3},
+        {"id": "worship", "tenant_id": "abundant-east-001", "name": "Worship", "slug": "worship", "icon": "music", "sort_order": 4},
+        {"id": "growth", "tenant_id": "abundant-east-001", "name": "Growth", "slug": "growth", "icon": "trending-up", "sort_order": 5},
+        {"id": "community", "tenant_id": "abundant-east-001", "name": "Community", "slug": "community", "icon": "home", "sort_order": 6},
     ]
     
     # Insert categories
@@ -11457,7 +11549,7 @@ async def seed_platform():
     pathways_courses = [
         {
             "id": "pathway_course_001",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Abundant Next Steps",
             "description": "Your on-ramp to belonging, serving, and growing at Abundant.",
             "cover_image_url": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
@@ -11469,7 +11561,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_course_002",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Preparing for Baptism",
             "description": "Understand baptism and get ready to share your story.",
             "cover_image_url": "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1200&q=80",
@@ -11481,7 +11573,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_course_003",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Foundations of Discipleship",
             "description": "Build daily rhythms of scripture, prayer, and obedience.",
             "cover_image_url": "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1200&q=80",
@@ -11493,7 +11585,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_course_004",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Financial Peace University",
             "description": "Walk through budgeting, generosity, and debt-free living.",
             "cover_image_url": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80",
@@ -11505,7 +11597,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_course_005",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Serving with Purpose",
             "description": "Discover your gifts and find the right team to serve.",
             "cover_image_url": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
@@ -11517,7 +11609,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_course_006",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Prayer & Presence",
             "description": "Deepen your prayer life and sensitivity to God's presence.",
             "cover_image_url": "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
@@ -11529,7 +11621,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_course_007",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Marriage & Family Care",
             "description": "Strengthen your relationships and build a healthy home.",
             "cover_image_url": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80",
@@ -11541,7 +11633,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_course_008",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "title": "Mission & Outreach",
             "description": "Live on mission through local and global outreach.",
             "cover_image_url": "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=80",
@@ -11556,7 +11648,7 @@ async def seed_platform():
     pathways_lessons = [
         {
             "id": "pathway_lesson_001",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_001",
             "title": "Welcome to Abundant",
             "description": "Meet the heart, mission, and values of Abundant Church.",
@@ -11572,7 +11664,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_002",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_001",
             "title": "Belonging & Community",
             "description": "Find your people and take your next step into community.",
@@ -11588,7 +11680,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_003",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_002",
             "title": "Why Baptism Matters",
             "description": "Understand the significance of baptism and next steps.",
@@ -11604,7 +11696,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_004",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_002",
             "title": "Preparing Your Story",
             "description": "Craft your testimony and prepare for the baptism service.",
@@ -11620,7 +11712,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_005",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_003",
             "title": "Daily Discipleship",
             "description": "Develop a daily walk with Jesus through scripture and prayer.",
@@ -11636,7 +11728,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_006",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_003",
             "title": "Scripture & Spirit",
             "description": "Learn to listen to God's voice and apply the word.",
@@ -11652,7 +11744,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_007",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_004",
             "title": "Budgeting with Purpose",
             "description": "Build a budget aligned with your values and goals.",
@@ -11668,7 +11760,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_008",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_004",
             "title": "Debt-Free Journey",
             "description": "Steps to reduce debt and build margin for generosity.",
@@ -11684,7 +11776,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_009",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_005",
             "title": "Discover Your Gifts",
             "description": "Identify your gifts and how they serve the church.",
@@ -11700,7 +11792,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_010",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_005",
             "title": "Serving Teams",
             "description": "Explore serving opportunities and next steps.",
@@ -11716,7 +11808,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_011",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_006",
             "title": "Prayer Rhythm",
             "description": "Create a daily prayer rhythm that anchors your week.",
@@ -11732,7 +11824,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_012",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_006",
             "title": "Hearing God's Voice",
             "description": "Learn to discern and respond to God's leading.",
@@ -11748,7 +11840,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_013",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_007",
             "title": "Healthy Relationships",
             "description": "Build healthy rhythms in your marriage and family.",
@@ -11764,7 +11856,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_014",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_007",
             "title": "Family Devotions",
             "description": "Practical ideas for discipleship at home.",
@@ -11780,7 +11872,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_015",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_008",
             "title": "Living on Mission",
             "description": "Share your faith through local outreach.",
@@ -11796,7 +11888,7 @@ async def seed_platform():
         },
         {
             "id": "pathway_lesson_016",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": "pathway_course_008",
             "title": "Community Outreach",
             "description": "Plan practical ways to serve El Paso together.",
@@ -11831,7 +11923,7 @@ async def seed_platform():
     for idx, course in enumerate(pathways_courses, start=1):
         enrollments.append({
             "id": f"pathway_enroll_{idx:03d}",
-            "tenant_id": "abundant-church-001",
+            "tenant_id": "abundant-east-001",
             "course_id": course["id"],
             "user_id": "member_abundant",
             "assigned_by": "admin_abundant",

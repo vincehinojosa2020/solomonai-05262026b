@@ -9,7 +9,7 @@ from datetime import datetime
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://auth-fix-preview-5.preview.emergentagent.com"
+    BASE_URL = "https://solomon-qa.preview.emergentagent.com"
 
 # Test credentials
 MEMBER_EMAIL = "member@abundant.church"

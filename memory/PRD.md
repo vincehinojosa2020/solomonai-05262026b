@@ -7,7 +7,7 @@ Build and maintain "Solomon AI" Church Management System for go-live deployment.
 - **Frontend**: React (CRA) on port 3000
 - **Backend**: FastAPI on port 8001
 - **Database**: MongoDB
-- **Preview URL**: https://auth-fix-preview-5.preview.emergentagent.com
+- **Preview URL**: https://solomon-qa.preview.emergentagent.com
 
 ## Test Accounts
 | Role | Email | Password |

@@ -57,7 +57,8 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 const ActivityItem = ({ activity }) => {
   const getActivityType = (action) => {
-    if (action.includes('member') || action.includes('person')) return 'member';
+    if (!action) return 'event';
+    if (action.includes('member') || action.includes('person') || action.includes('registration')) return 'member';
     if (action.includes('donation') || action.includes('giving')) return 'donation';
     if (action.includes('group')) return 'group';
     return 'event';
@@ -65,9 +66,9 @@ const ActivityItem = ({ activity }) => {
 
   return (
     <div className="activity-item" data-testid="activity-item">
-      <div className={`activity-dot ${getActivityType(activity.action)}`}></div>
+      <div className={`activity-dot ${getActivityType(activity.action || activity.type || '')}`}></div>
       <div className="flex-1 min-w-0">
-        <p className="activity-text">{activity.description}</p>
+        <p className="activity-text">{activity.description || activity.message || ''}</p>
         <p className="activity-time">{formatRelativeTime(activity.created_at)}</p>
       </div>
     </div>

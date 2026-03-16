@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
 // Google SVG Icon
