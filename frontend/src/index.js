@@ -2,6 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "@/index.css";
 import App from "@/App";
+import { injectThemeVariables } from "@/constants/theme";
+
+// Inject design tokens as CSS variables
+injectThemeVariables();
 
 // Global fetch interceptor: strips credentials:'include' (CORS proxy breaks it)
 // and auto-injects Bearer token for API calls

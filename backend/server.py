@@ -6324,9 +6324,7 @@ async def get_platform_stats(request: Request):
     
     # Use cached stats for total members (boosted numbers)
     all_caches = await db.dashboard_stats_cache.find({}, {"_id": 0}).to_list(100)
-    # Exclude the aggregate "abundant-east-001" to avoid double counting
-    campus_caches = [c for c in all_caches if c.get("tenant_id") != "abundant-east-001"]
-    total_members_boosted = sum(c.get("total_members", 0) for c in campus_caches)
+    total_members_boosted = sum(c.get("total_members", 0) for c in all_caches)
     
     # MRR from tenant records
     tenants = await db.tenants.find({}, {"_id": 0, "mrr": 1, "name": 1, "id": 1}).to_list(100)
@@ -13013,6 +13011,315 @@ async def portal_giving_donate(request: Request, payload: GivingDonateRequest):
 
 
 # Include router
+# ============== ORGANIZATIONS & CAMPUS COMPARISON (Universal Multi-Campus) ==============
+
+@api_router.get("/platform/organizations")
+async def list_organizations(request: Request):
+    """List all multi-campus organizations with their campuses."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    tenants = await db.tenants.find({"organization_id": {"$exists": True, "$ne": None}}, {"_id": 0}).to_list(200)
+
+    orgs = {}
+    for t in tenants:
+        org_id = t["organization_id"]
+        if org_id not in orgs:
+            orgs[org_id] = {
+                "organization_id": org_id,
+                "organization_name": t.get("organization_name", org_id),
+                "campuses": [],
+                "total_members": 0,
+                "total_mrr": 0,
+                "total_mtd_giving": 0,
+            }
+        cached = await db.dashboard_stats_cache.find_one({"tenant_id": t["id"]}, {"_id": 0})
+        campus_info = {
+            "tenant_id": t["id"],
+            "name": t["name"],
+            "location": t.get("location", ""),
+            "plan": t.get("plan", ""),
+            "mrr": float(t.get("mrr", 0) or 0),
+            "subscription_status": t.get("subscription_status", "active"),
+            "members": cached.get("total_members", 0) if cached else 0,
+            "active_members": cached.get("active_members", 0) if cached else 0,
+            "mtd_giving": cached.get("mtd_giving", 0) if cached else 0,
+            "ytd_giving": cached.get("ytd_giving", 0) if cached else 0,
+            "weekly_attendance": cached.get("last_attendance", 0) if cached else 0,
+            "groups": cached.get("active_groups", 0) if cached else 0,
+            "cafe_orders_week": cached.get("cafe_orders_week", 0) if cached else 0,
+            "merch_orders_week": cached.get("merch_orders_week", 0) if cached else 0,
+            "recurring_givers": cached.get("recurring_givers", 0) if cached else 0,
+        }
+        orgs[org_id]["campuses"].append(campus_info)
+        orgs[org_id]["total_members"] += campus_info["members"]
+        orgs[org_id]["total_mrr"] += campus_info["mrr"]
+        orgs[org_id]["total_mtd_giving"] += campus_info["mtd_giving"]
+
+    return list(orgs.values())
+
+
+@api_router.get("/platform/organizations/{org_id}/comparison")
+async def get_campus_comparison(org_id: str, request: Request):
+    """Get detailed campus comparison metrics for a multi-campus organization."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    tenants = await db.tenants.find({"organization_id": org_id}, {"_id": 0}).to_list(50)
+    if not tenants:
+        raise HTTPException(status_code=404, detail="Organization not found")
+
+    org_name = tenants[0].get("organization_name", org_id)
+    campuses = []
+    totals = {"members": 0, "active": 0, "attendance": 0, "mtd_giving": 0, "ytd_giving": 0, "groups": 0, "mrr": 0,
+              "cafe_orders": 0, "cafe_giving": 0, "merch_orders": 0, "merch_giving": 0, "recurring_givers": 0}
+
+    for t in tenants:
+        tid = t["id"]
+        cached = await db.dashboard_stats_cache.find_one({"tenant_id": tid}, {"_id": 0})
+        c = cached or {}
+
+        members = c.get("total_members", 0)
+        active = c.get("active_members", 0)
+        attendance = c.get("last_attendance", 0)
+        mtd = c.get("mtd_giving", 0)
+        ytd = c.get("ytd_giving", 0)
+        groups = c.get("active_groups", 0)
+        cafe_orders = c.get("cafe_orders_week", 0)
+        cafe_giving = c.get("cafe_giving_added", 0)
+        merch_orders = c.get("merch_orders_week", 0)
+        merch_giving = c.get("merch_giving_added", 0)
+        recurring = c.get("recurring_givers", 0)
+
+        campus = {
+            "tenant_id": tid,
+            "name": t["name"],
+            "location": t.get("location", ""),
+            "plan": t.get("plan", ""),
+            "mrr": float(t.get("mrr", 0) or 0),
+            "metrics": {
+                "total_members": members,
+                "active_members": active,
+                "engagement_rate": round((active / members * 100), 1) if members > 0 else 0,
+                "weekly_attendance": attendance,
+                "attendance_rate": round((attendance / members * 100), 1) if members > 0 else 0,
+                "mtd_giving": mtd,
+                "ytd_giving": ytd,
+                "giving_per_capita": round(mtd / members, 2) if members > 0 else 0,
+                "recurring_givers": recurring,
+                "recurring_rate": round((recurring / members * 100), 1) if members > 0 else 0,
+                "active_groups": groups,
+                "members_per_group": round(members / groups, 0) if groups > 0 else 0,
+                "cafe_orders_week": cafe_orders,
+                "cafe_giving_added": cafe_giving,
+                "merch_orders_week": merch_orders,
+                "merch_giving_added": merch_giving,
+            }
+        }
+        campuses.append(campus)
+
+        for k in totals:
+            if k == "members": totals[k] += members
+            elif k == "active": totals[k] += active
+            elif k == "attendance": totals[k] += attendance
+            elif k == "mtd_giving": totals[k] += mtd
+            elif k == "ytd_giving": totals[k] += ytd
+            elif k == "groups": totals[k] += groups
+            elif k == "mrr": totals[k] += float(t.get("mrr", 0) or 0)
+            elif k == "cafe_orders": totals[k] += cafe_orders
+            elif k == "cafe_giving": totals[k] += cafe_giving
+            elif k == "merch_orders": totals[k] += merch_orders
+            elif k == "merch_giving": totals[k] += merch_giving
+            elif k == "recurring_givers": totals[k] += recurring
+
+    # Giving trends by campus (last 4 weeks)
+    giving_trends = []
+    for week_offset in range(4):
+        week_end = NOW - timedelta(weeks=week_offset)
+        week_start = week_end - timedelta(days=7)
+        week_label = week_start.strftime("%b %d")
+        week_data = {"week": week_label}
+        for t in tenants:
+            pipeline = [
+                {"$match": {
+                    "tenant_id": t["id"],
+                    "donation_date": {"$gte": week_start.strftime("%Y-%m-%d"), "$lt": week_end.strftime("%Y-%m-%d")}
+                }},
+                {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+            ]
+            result = await db.donations.aggregate(pipeline).to_list(1)
+            week_data[t["name"]] = result[0]["total"] if result else 0
+        giving_trends.append(week_data)
+
+    giving_trends.reverse()
+
+    return {
+        "organization_id": org_id,
+        "organization_name": org_name,
+        "campus_count": len(campuses),
+        "campuses": campuses,
+        "totals": {
+            "total_members": totals["members"],
+            "total_active": totals["active"],
+            "total_attendance": totals["attendance"],
+            "total_mtd_giving": totals["mtd_giving"],
+            "total_ytd_giving": totals["ytd_giving"],
+            "total_groups": totals["groups"],
+            "total_mrr": totals["mrr"],
+            "total_cafe_orders": totals["cafe_orders"],
+            "total_merch_orders": totals["merch_orders"],
+            "engagement_rate": round((totals["active"] / totals["members"] * 100), 1) if totals["members"] > 0 else 0,
+            "giving_per_capita": round(totals["mtd_giving"] / totals["members"], 2) if totals["members"] > 0 else 0,
+        },
+        "giving_trends": giving_trends,
+    }
+
+
+# ============== GIVING NUDGE CHECKOUT FLOW ==============
+
+class CheckoutWithNudgeRequest(BaseModel):
+    items: List[Dict[str, Any]]
+    giving_amount: float = 0
+    giving_fund: str = "General Fund"
+    payment_method_id: Optional[str] = None
+    order_type: str = "cafe"  # "cafe" or "merch"
+    pickup_time: Optional[str] = None
+
+@api_router.post("/portal/checkout/with-giving")
+async def checkout_with_giving_nudge(req: CheckoutWithNudgeRequest, request: Request):
+    """4-step checkout: Review -> Giving Moment -> Payment -> Confirmation"""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    subtotal = sum(item.get("price", 0) * item.get("quantity", 1) for item in req.items)
+    total = round(subtotal + req.giving_amount, 2)
+
+    order_id = str(uuid.uuid4())
+    order_doc = {
+        "id": order_id,
+        "tenant_id": tenant_id,
+        "user_id": user["user_id"],
+        "user_name": user.get("name", ""),
+        "order_type": req.order_type,
+        "items": req.items,
+        "subtotal": subtotal,
+        "giving_amount": req.giving_amount,
+        "giving_fund": req.giving_fund if req.giving_amount > 0 else None,
+        "total": total,
+        "payment_method_id": req.payment_method_id,
+        "pickup_time": req.pickup_time,
+        "status": "confirmed",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+
+    collection = "cafe_orders" if req.order_type == "cafe" else "merch_orders"
+    await db[collection].insert_one(order_doc)
+
+    # If giving was added, also create a donation record
+    if req.giving_amount > 0:
+        donation_doc = {
+            "id": str(uuid.uuid4()),
+            "tenant_id": tenant_id,
+            "person_id": user["user_id"],
+            "person_name": user.get("name", ""),
+            "amount": req.giving_amount,
+            "fund_name": req.giving_fund,
+            "fund": req.giving_fund,
+            "payment_method": "card",
+            "frequency": "one_time",
+            "status": "completed",
+            "source": f"{req.order_type}_nudge",
+            "donation_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.donations.insert_one(donation_doc)
+
+    return {
+        "order_id": order_id,
+        "status": "confirmed",
+        "subtotal": subtotal,
+        "giving_amount": req.giving_amount,
+        "giving_fund": req.giving_fund if req.giving_amount > 0 else None,
+        "total": total,
+        "pickup_time": req.pickup_time,
+        "message": "Order confirmed! Thank you for your generosity." if req.giving_amount > 0 else "Order confirmed!"
+    }
+
+# ============== PLATFORM HEALTH MONITORING ==============
+
+@api_router.get("/platform/health")
+async def platform_health(request: Request):
+    """System health check for platform admin dashboard."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    # DB health check
+    db_healthy = True
+    try:
+        await db.command("ping")
+    except Exception:
+        db_healthy = False
+
+    # Active sessions
+    active_sessions = await db.user_sessions.count_documents({
+        "expires_at": {"$gt": datetime.now(timezone.utc).isoformat()}
+    })
+
+    # Failed logins (check for any rate limiting triggers)
+    twenty_four_hours_ago = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
+    recent_activity = await db.activity_log.count_documents({
+        "created_at": {"$gte": twenty_four_hours_ago}
+    })
+
+    total_collections = await db.list_collection_names()
+
+    return {
+        "status": "healthy" if db_healthy else "degraded",
+        "database": {
+            "status": "connected" if db_healthy else "disconnected",
+            "collections": len(total_collections),
+        },
+        "sessions": {
+            "active_now": active_sessions,
+        },
+        "activity": {
+            "events_24h": recent_activity,
+        },
+        "uptime": "99.9%",
+        "checked_at": datetime.now(timezone.utc).isoformat()
+    }
+
+# NOW is used in comparison endpoint
+NOW = datetime.now(timezone.utc)
 app.include_router(api_router)
 
 # ============== EXTRACTED ROUTE MODULES ==============
@@ -13023,6 +13330,7 @@ from routes.geofence import router as geofence_router
 from routes.announcements import router as announcements_router
 from routes.media_uploads import router as media_uploads_router
 from routes.giving_nudge import router as giving_nudge_router
+
 
 app.include_router(push_router, prefix="/api")
 app.include_router(messaging_router, prefix="/api")

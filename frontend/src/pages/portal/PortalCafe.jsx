@@ -296,14 +296,14 @@ export default function PortalCafe() {
             />
           </div>
 
-          {/* Offering Section */}
-          <div className="portal-cafe-offering">
+          {/* Giving Moment - "While You're Here" */}
+          <div className="portal-cafe-offering" data-testid="cafe-giving-nudge">
             <div className="offering-header">
-              <span className="offering-label">Add an Offering</span>
-              <span className="offering-subtitle">Support our church ministry</span>
+              <span className="offering-label">While You're Here</span>
+              <span className="offering-subtitle">Would you like to add a gift to your church?</span>
             </div>
             <div className="offering-amounts">
-              {[5, 10, 25].map((amount) => (
+              {[5, 10, 20, 100].map((amount) => (
                 <button
                   key={amount}
                   className={`offering-btn ${offeringAmount === amount ? 'active' : ''}`}
@@ -314,21 +314,28 @@ export default function PortalCafe() {
                 </button>
               ))}
               <button
-                className={`offering-btn custom ${offeringAmount > 0 && ![5, 10, 25].includes(offeringAmount) ? 'active' : ''}`}
+                className={`offering-btn custom ${offeringAmount > 0 && ![5, 10, 20, 100].includes(offeringAmount) ? 'active' : ''}`}
                 onClick={() => {
-                  const custom = prompt('Enter custom offering amount:');
+                  const custom = prompt('Enter custom gift amount:');
                   if (custom && !isNaN(parseFloat(custom))) {
                     setOfferingAmount(parseFloat(custom));
                   }
                 }}
                 data-testid="cafe-offering-custom"
               >
-                Other
+                Custom
+              </button>
+              <button
+                className={`offering-btn skip ${offeringAmount === 0 ? 'active' : ''}`}
+                onClick={() => setOfferingAmount(0)}
+                data-testid="cafe-offering-skip"
+              >
+                Skip
               </button>
             </div>
             {offeringAmount > 0 && (
               <div className="offering-selected">
-                <span>Offering: {formatCurrency(offeringAmount)}</span>
+                <span>Gift to Church: {formatCurrency(offeringAmount)}</span>
                 <button onClick={() => setOfferingAmount(0)} className="offering-remove">Remove</button>
               </div>
             )}
@@ -341,7 +348,7 @@ export default function PortalCafe() {
             </div>
             {offeringAmount > 0 && (
               <div className="cart-offering">
-                <span>Offering</span>
+                <span>Gift to Church</span>
                 <span>{formatCurrency(offeringAmount)}</span>
               </div>
             )}

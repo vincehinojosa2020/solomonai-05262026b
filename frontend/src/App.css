@@ -4419,9 +4419,9 @@ textarea:focus-visible {
 /* Platform Stats Grid */
 .platform-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .platform-stat-card {
@@ -4462,6 +4462,371 @@ textarea:focus-visible {
 .platform-stat-card.gold .platform-stat-icon {
   background: #fef3c7;
   color: #f59e0b;
+}
+
+.platform-stat-card.teal .platform-stat-icon {
+  background: #ccfbf1;
+  color: #14b8a6;
+}
+
+.platform-stat-card.pink .platform-stat-icon {
+  background: #fce7f3;
+  color: #ec4899;
+}
+
+/* Health Banner */
+.health-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #475569;
+  margin-bottom: 20px;
+}
+.health-banner.healthy {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+.health-banner.degraded {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+.health-separator {
+  color: #d1d5db;
+}
+
+/* Organizations Tab */
+.section-description {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 4px;
+}
+.no-results-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px;
+  text-align: center;
+  color: #64748b;
+}
+.org-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 20px;
+}
+.org-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.org-card:hover {
+  border-color: #4f6ef7;
+  box-shadow: 0 4px 12px rgba(79, 110, 247, 0.12);
+  transform: translateY(-2px);
+}
+.org-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.org-card-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.org-campus-count {
+  background: #ede9fe;
+  color: #7c3aed;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.org-card-stats {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+.org-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+}
+.org-campuses-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.org-campus-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f5f9;
+  color: #475569;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+.org-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  color: #4f6ef7;
+  font-size: 13px;
+  font-weight: 600;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* Campus Comparison */
+.campus-comparison {
+  padding: 4px 0;
+}
+.comparison-header {
+  margin-bottom: 24px;
+}
+.comparison-back-btn {
+  background: none;
+  border: none;
+  color: #4f6ef7;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 8px;
+}
+.comparison-back-btn:hover {
+  text-decoration: underline;
+}
+.comparison-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.comparison-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 4px;
+}
+.comparison-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.comparison-metric-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.metric-label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.metric-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.comparison-chart-section {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.comparison-chart-section h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 16px;
+}
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.chart-header h3 {
+  margin-bottom: 0;
+}
+.metric-selector {
+  padding: 6px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #475569;
+  background: #f8fafc;
+  cursor: pointer;
+}
+.chart-container {
+  width: 100%;
+  min-height: 280px;
+}
+.comparison-efficiency {
+  margin-bottom: 24px;
+}
+.comparison-efficiency h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 16px;
+}
+.efficiency-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+.efficiency-campus-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-top: 3px solid #4f6ef7;
+  border-radius: 12px;
+  padding: 20px;
+}
+.efficiency-campus-card h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.efficiency-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.efficiency-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.efficiency-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #64748b;
+}
+.efficiency-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+.comparison-campus-cards h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 16px;
+}
+.campus-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+.campus-detail-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #4f6ef7;
+  border-radius: 12px;
+  padding: 20px;
+}
+.campus-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.campus-card-header h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.campus-plan-badge {
+  background: #ede9fe;
+  color: #7c3aed;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.campus-card-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 14px;
+}
+.campus-card-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.campus-card-stats div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #475569;
+}
+.campus-card-stats strong {
+  color: #0f172a;
+}
+.campus-card-mrr {
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 13px;
+  color: #64748b;
+}
+.campus-card-mrr strong {
+  color: #0f172a;
+  font-size: 15px;
+}
+.comparison-loading,
+.comparison-error {
+  display: flex;
+  justify-content: center;
+  padding: 60px;
+  color: #64748b;
+  font-size: 15px;
+}
+.trend-up {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #22c55e;
+  font-size: 12px;
+  font-weight: 600;
+}
+.trend-down {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .platform-stat-content {
@@ -8260,6 +8625,17 @@ textarea:focus-visible {
 
 .offering-btn.custom {
   font-size: 13px;
+}
+
+.offering-btn.skip {
+  font-size: 13px;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+}
+.offering-btn.skip.active {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #64748b;
 }
 
 .offering-selected {
