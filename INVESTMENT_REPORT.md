@@ -134,6 +134,22 @@ If this project were built by a traditional engineering team without AI-assisted
 
 ---
 
+## Capital Invested
+
+| Category | Amount |
+|----------|--------|
+| **Emergent AI Credits (Web MVP)** | $8,000 |
+| **Projected: Mobile App + Post-MVP** | $8,000 |
+| **Total Projected Investment** | **$16,000** |
+
+### ROI Context
+- Traditional equivalent cost for the web MVP alone: **$90,000 - $117,000**
+- Actual spend via AI-assisted development: **$8,000**
+- **Cost savings: 91-93%** vs traditional engineering
+- Remaining $8,000 covers: React Native mobile app, live Stripe integration, push notifications, geofencing, backend modularization, and scaling architecture
+
+---
+
 ## Efficiency Multiplier
 
 | Metric | Value |
