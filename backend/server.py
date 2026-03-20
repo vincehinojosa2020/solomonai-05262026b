@@ -10378,7 +10378,6 @@ async def list_payment_processors():
     return {"processors": [{**v, "id": k} for k, v in PAYMENT_PROCESSORS.items()]}
 
 @api_router.get("/admin/giving/processor-settings")
-@api_router.get("/admin/giving/settings")
 async def get_processor_settings(request: Request):
     """Get configured payment processor for this tenant."""
     user = await require_permission(request, "admin.giving")
@@ -10388,8 +10387,12 @@ async def get_processor_settings(request: Request):
         settings = {"tenant_id": tenant_id, "active_processor": "manual", "processors": {"manual": {"enabled": True, "status": "connected"}}}
     return settings
 
+@api_router.get("/admin/giving/settings")
+async def get_giving_settings_alias(request: Request):
+    """Alias for processor-settings."""
+    return await get_processor_settings(request)
+
 @api_router.post("/admin/giving/processor-settings")
-@api_router.post("/admin/giving/settings")
 async def update_processor_settings(request: Request, payload: dict):
     """Configure payment processor for this tenant."""
     user = await require_permission(request, "admin.giving")
@@ -10428,6 +10431,11 @@ async def update_processor_settings(request: Request, payload: dict):
     await db.payment_processor_settings.update_one({"tenant_id": tenant_id}, {"$set": settings}, upsert=True)
 
     return {"success": True, "active_processor": settings["active_processor"], "processors": settings["processors"]}
+
+@api_router.post("/admin/giving/settings")
+async def update_giving_settings_alias(request: Request, payload: dict):
+    """Alias for processor-settings POST."""
+    return await update_processor_settings(request, payload)
 
 @api_router.post("/giving/process")
 async def process_giving(request: Request, payload: dict):
