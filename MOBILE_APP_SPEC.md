@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://solomon-mvp.preview.emergentagent.com/api
+https://kids-checkin-live.preview.emergentagent.com/api
 ```
 
 ### Authentication
