@@ -50,6 +50,26 @@ Solomon AI is a multi-tenant SaaS Church Management System built with React (fro
 - Giving nudge after check-in: [$10][$25][$50][$100][Not today]
 - Idempotency key on check-in POST
 
+### Task 5 — Ask Solomon Chat in Portal (March 20, 2026)
+- SolomonChat component rendered in PortalLayout (was imported but not rendered)
+- Floating "Ask Solomon" FAB button visible on all portal pages
+- Chat panel with AI responses, sample prompts, voice input, clear chat
+- Connects to existing /api/solomon/chat endpoint (Claude via Emergent LLM Key)
+
+### Task 8 — Sunday Morning Engine (March 20, 2026)
+- Service mode detection (Sunday/Wednesday, 9AM/11AM/7PM services)
+- ServiceModeBanner component with "I'm Here" / "Watching Online" check-in
+- Attendance streak tracking with badges and progress bars
+- Arrival nudge flow: Welcome → Cafe order → Giving prompt
+- Geofence auto-detection hook (useGeofence) for client-side check-in
+- 6 push notification templates (service_starting, welcome_arrived, kids_reminder, giving_reminder, cafe_ready, post_service)
+- Admin broadcast endpoint for Sunday morning notifications
+
+### Portal Dual-Mode Fix (March 20, 2026)
+- Fixed PortalLayout role check that blocked admin users from accessing portal
+- Admin users (church_admin) can now use the portal without redirect
+- Enables Lyft-style dual Admin ↔ Member mode switching
+
 ### Mobile Browser Testing Day Fixes (March 20, 2026)
 - All hardcoded URLs removed
 - Registration with church selector + auto-login
@@ -79,17 +99,15 @@ Solomon AI is a multi-tenant SaaS Church Management System built with React (fro
 - **Payment/Stripe**: Give page simulates donations
 - **SMS Notifications**: Logged to console
 
-## Upcoming Tasks (Phases 5-8)
-1. **Task 5** — Ask Solomon portal nav button + chat panel
-2. **Task 6** — Reporting & Export system (10+ reports, CSV/PDF)
-3. **Task 2** — Platform admin church onboarding wizard
-4. **Task 8** — Sunday Morning Engine (geofence, nudges)
-5. **Task 7 remaining** — Audit trail UI, structured error responses
+## Upcoming Tasks
+1. **Task 2** — Platform admin church onboarding wizard (5-step wizard + POST /api/platform/churches/create)
+2. **Task 6** — Reporting & Export system (10+ reports: Kids, Giving, Attendance, Cafe, Merch, Groups, Next Steps, Executive Summary with CSV/PDF)
+3. **Task 7 remaining** — Audit trail UI, structured error responses
 
 ## Future Backlog
 - Real Stripe payment integration
-- Push notifications (Expo/pywebpush)
+- Push notifications (Expo/pywebpush) — infrastructure ready, needs real VAPID keys
 - Client-side geofencing (React Native)
-- server.py refactor into modular routes
+- server.py refactor into modular routes (~14,000 lines)
 - Admin Permission Editor UI with checkbox grid
-- Dual role leader_roles field
+- CSS refactor
