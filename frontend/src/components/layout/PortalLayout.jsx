@@ -174,6 +174,25 @@ export default function PortalLayout() {
 
           {/* Right Actions */}
           <div className="portal-header-actions">
+            {/* Mode Toggle — visible to admin users */}
+            {user && (user.role === 'church_admin' || user.role === 'admin' || user.role === 'platform_admin' || (user.permissions && user.permissions.some(p => p.startsWith('admin.')))) && (
+              <div className="flex items-center gap-1 bg-white/80 border border-slate-200 rounded-lg p-0.5" data-testid="portal-mode-toggle" style={{marginRight: 4}}>
+                <button
+                  className="px-3 py-1.5 text-xs font-semibold rounded-md transition-all text-slate-500 hover:text-slate-700"
+                  onClick={() => navigate('/dashboard')}
+                  data-testid="portal-mode-admin"
+                >
+                  Admin
+                </button>
+                <button
+                  className="px-3 py-1.5 text-xs font-semibold rounded-md transition-all"
+                  style={{ background: '#0f172a', color: 'white' }}
+                  data-testid="portal-mode-member"
+                >
+                  Member
+                </button>
+              </div>
+            )}
             <NotificationBell />
             <Avatar className="w-8 h-8 cursor-pointer" onClick={() => navigate('/portal/me')} data-testid="portal-avatar">
               <AvatarImage src={user?.picture} />

@@ -142,21 +142,29 @@ export default function PortalKidsCheckin() {
 
   const checkInChild = async (child) => {
     try {
+      const idempotencyKey = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
       const res = await fetch(`${API_URL}/portal/kids/${child.id}/checkin`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Idempotency-Key': idempotencyKey
+        },
         body: JSON.stringify({ classroom: 'Sunday School' })
       });
 
       if (res.ok) {
         const data = await res.json();
-        // Show success celebration
-        setShowSuccess({ child, pickup_code: data.pickup_code });
-        setTimeout(() => setShowSuccess(null), 5000);
+        setShowSuccess({ child, pickup_code: data.pickup_code, nudge: data.nudge });
+        // Request screen wake lock so QR stays visible
+        try {
+          if ('wakeLock' in navigator) {
+            await navigator.wakeLock.request('screen');
+          }
+        } catch (e) { /* wake lock not supported */ }
         fetchData();
       } else {
-        toast.error('Check-in failed');
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.detail || 'Check-in failed');
       }
     } catch (error) {
       toast.error('Error during check-in');
@@ -328,10 +336,10 @@ export default function PortalKidsCheckin() {
                       <Check className="w-4 h-4" />
                       <span>Checked In!</span>
                     </div>
-                    <div className="kc-qr-inline" data-testid={`qr-code-${child.id}`} style={{margin:'12px auto', background:'white', padding: 12, borderRadius: 12, display:'inline-block'}}>
+                    <div className="kc-qr-inline" data-testid={`qr-code-${child.id}`} style={{margin:'16px auto', background:'white', padding: 16, borderRadius: 16, display:'inline-block', boxShadow:'0 2px 12px rgba(0,0,0,0.1)'}}>
                       <QRCodeSVG 
                         value={`SOLOMON_PICKUP_${child.id}_${checkinInfo?.pickup_code}_${new Date().toISOString().split('T')[0]}`}
-                        size={140}
+                        size={200}
                         level="M"
                         bgColor="#ffffff"
                         fgColor="#1f2937"
@@ -339,9 +347,9 @@ export default function PortalKidsCheckin() {
                     </div>
                     <div className="kc-pickup-code">
                       <span className="kc-code-label">Pickup Code</span>
-                      <span className="kc-code-value" style={{fontSize: 28, letterSpacing: 6}}>{checkinInfo?.pickup_code}</span>
+                      <span className="kc-code-value" style={{fontSize: 48, letterSpacing: 8, fontFamily: 'monospace', fontWeight: 700}}>{checkinInfo?.pickup_code}</span>
                     </div>
-                    <p style={{fontSize: 12, color:'#64748b', marginTop: 4}}>Show this to pick up your child at checkout</p>
+                    <p style={{fontSize: 13, color:'#64748b', marginTop: 4}}>Show this to pick up your child at checkout</p>
                     <div className="kc-checkin-time">
                       <Clock className="w-3 h-3" />
                       {new Date(checkinInfo?.checked_in_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -409,15 +417,14 @@ export default function PortalKidsCheckin() {
               <div className="kc-success-icon">
                 <Check className="w-12 h-12" />
               </div>
-              <h2>You're All Set! 🎉</h2>
-              <p className="kc-success-name">{showSuccess.child.name} is checked in!</p>
+              <h2>{showSuccess.child.name} is safe!</h2>
               <p className="kc-success-subtitle">Ready for the best hour of their week!</p>
               
-              {/* QR Code Display */}
-              <div className="kc-success-qr" data-testid="checkin-qr-code">
+              {/* QR Code Display — 200px for bright sunlight readability */}
+              <div className="kc-success-qr" data-testid="checkin-qr-code" style={{padding: 16, background: 'white', borderRadius: 16, display: 'inline-block', margin: '12px auto'}}>
                 <QRCodeSVG 
                   value={`SOLOMON_PICKUP_${showSuccess.child.id}_${showSuccess.pickup_code}_${new Date().toISOString().split('T')[0]}`}
-                  size={140}
+                  size={200}
                   level="M"
                   bgColor="#ffffff"
                   fgColor="#1f2937"
@@ -426,24 +433,38 @@ export default function PortalKidsCheckin() {
               
               <div className="kc-success-code">
                 <span className="kc-success-code-label">Pickup Code</span>
-                <span className="kc-success-code-value" data-testid="pickup-code-display">{showSuccess.pickup_code}</span>
+                <span className="kc-success-code-value" data-testid="pickup-code-display" style={{fontSize: 48, letterSpacing: 8, fontFamily: 'monospace', fontWeight: 700}}>{showSuccess.pickup_code}</span>
               </div>
               
               <div className="kc-success-instructions">
                 <p>Show this QR code or give the 3-digit code at pickup</p>
               </div>
               
-              <div className="kc-success-sms">
-                <Phone className="w-4 h-4" />
-                <span>We'll text you if your child needs you</span>
-              </div>
+              {/* Giving Nudge — warm, not a popup */}
+              {showSuccess.nudge?.show_giving && (
+                <div className="kc-giving-nudge" data-testid="giving-nudge" style={{background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 16, padding: '16px 20px', margin: '16px 0 8px', textAlign: 'center'}}>
+                  <p style={{fontSize: 15, color: '#166534', marginBottom: 12, fontWeight: 500}}>The kids are in — support your church today?</p>
+                  <div style={{display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap'}}>
+                    {(showSuccess.nudge.give_amounts || [10, 25, 50, 100]).map(amt => (
+                      <button key={amt} onClick={(e) => { e.stopPropagation(); window.location.href = `/portal/give?amount=${amt}`; }}
+                        style={{padding: '10px 18px', borderRadius: 10, background: '#22c55e', color: 'white', border: 'none', fontWeight: 600, fontSize: 15, cursor: 'pointer', minWidth: 60}}
+                        data-testid={`give-nudge-${amt}`}
+                      >${amt}</button>
+                    ))}
+                    <button onClick={(e) => { e.stopPropagation(); setShowSuccess(null); }}
+                      style={{padding: '10px 18px', borderRadius: 10, background: 'white', color: '#64748b', border: '1px solid #e2e8f0', fontWeight: 500, fontSize: 15, cursor: 'pointer'}}
+                      data-testid="give-nudge-not-today"
+                    >Not today</button>
+                  </div>
+                </div>
+              )}
               
               <button 
                 className="kc-success-btn"
                 onClick={() => setShowSuccess(null)}
                 data-testid="checkin-done-btn"
               >
-                See you in there, superstar! ⭐
+                Done
               </button>
             </motion.div>
           </motion.div>

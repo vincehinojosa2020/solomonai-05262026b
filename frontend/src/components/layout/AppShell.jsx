@@ -302,6 +302,26 @@ export default function AppShell() {
               <Bell className="w-4 h-4" />
             </button>
 
+            {/* Mode Toggle — Lyft-style Admin ↔ Member switch */}
+            {(user?.role !== 'platform_admin' || impersonatedTenant) && (
+              <div className="flex items-center gap-1 bg-slate-100 border border-slate-200 rounded-lg p-0.5" data-testid="mode-toggle">
+                <button
+                  className="px-3 py-1.5 text-xs font-semibold rounded-md transition-all"
+                  style={{ background: '#0f172a', color: 'white' }}
+                  data-testid="mode-admin"
+                >
+                  Admin
+                </button>
+                <button
+                  className="px-3 py-1.5 text-xs font-semibold rounded-md transition-all text-slate-500 hover:text-slate-700"
+                  onClick={() => navigate('/portal')}
+                  data-testid="mode-member"
+                >
+                  Member
+                </button>
+              </div>
+            )}
+
             {/* Tenant Badge - Hide for platform admin unless impersonating */}
             {(user?.role !== 'platform_admin' || impersonatedTenant) && (
               <div className="flex items-center gap-2 px-2 py-1 bg-slate-100 border border-slate-200">

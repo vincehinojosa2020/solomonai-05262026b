@@ -66,26 +66,35 @@ app = FastAPI(title="Solomon AI Church Management API")
 
 @app.middleware("http")
 async def security_headers_middleware(request: Request, call_next):
-    """Add security headers to all responses (OWASP best practices)"""
+    """Add security headers to all responses (OWASP/Veracode standard)"""
     response = await call_next(request)
-    
-    # Prevent XSS attacks
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
-    
-    # Referrer policy
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    
-    # Content Security Policy (relaxed for development)
-    # response.headers["Content-Security-Policy"] = "default-src 'self'"
-    
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return response
 
-# Rate limiting for auth endpoints (basic in-memory, use Redis in production)
+# Rate limiting for auth endpoints (in-memory, single-instance)
+import time as _time
+RATE_LIMITS = {}  # {bucket_key: {count, window_start}}
+
+def check_rate_limit_v2(bucket: str, max_requests: int, window_seconds: int) -> bool:
+    """Generic rate limiter. Returns True if allowed, False if exceeded."""
+    now = _time.time()
+    if bucket not in RATE_LIMITS:
+        RATE_LIMITS[bucket] = {"count": 0, "window_start": now}
+    entry = RATE_LIMITS[bucket]
+    if now - entry["window_start"] > window_seconds:
+        RATE_LIMITS[bucket] = {"count": 1, "window_start": now}
+        return True
+    entry["count"] += 1
+    return entry["count"] <= max_requests
+
+# Legacy compat
 AUTH_RATE_LIMIT = {}
-AUTH_RATE_LIMIT_MAX = 10  # Max 10 attempts per minute per IP
-AUTH_RATE_LIMIT_WINDOW = 60  # 1 minute window
+AUTH_RATE_LIMIT_MAX = 5  # 5 attempts per minute per IP (Veracode standard)
+AUTH_RATE_LIMIT_WINDOW = 60
 
 def check_rate_limit(ip: str) -> bool:
     """Check if IP has exceeded rate limit for auth endpoints"""
@@ -121,6 +130,153 @@ ROLES = {
     "church_admin": 50,     # Can manage their church
     "member": 10            # Portal access only
 }
+
+# ============== PERMISSION REGISTRY (Active Directory-inspired) ==============
+
+PERMISSION_REGISTRY = [
+    # Member surface
+    "member.home", "member.give", "member.kids", "member.watch",
+    "member.merch", "member.cafe", "member.groups", "member.events",
+    "member.nextsteps", "member.prayer", "member.volunteer",
+    # Ministry operations
+    "admin.dashboard", "admin.members.view", "admin.members.edit",
+    "admin.members.roles", "admin.giving.view", "admin.giving.edit",
+    "admin.kids.manage", "admin.media.manage", "admin.cafe.manage",
+    "admin.merch.manage", "admin.groups.manage", "admin.groups.lead",
+    "admin.events.manage", "admin.announcements", "admin.volunteers.manage",
+    "admin.geofence.manage", "admin.reports.view", "admin.reports.export",
+    "admin.communications", "admin.settings",
+    "admin.users.create", "admin.users.roles",
+    # Platform level
+    "platform.churches.view", "platform.churches.create",
+    "platform.users.create", "platform.billing", "platform.reports",
+]
+
+MEMBER_PERMISSIONS = [p for p in PERMISSION_REGISTRY if p.startswith("member.")]
+ALL_ADMIN_PERMISSIONS = [p for p in PERMISSION_REGISTRY if p.startswith("admin.")]
+ALL_PLATFORM_PERMISSIONS = [p for p in PERMISSION_REGISTRY if p.startswith("platform.")]
+
+ROLE_TEMPLATES = {
+    "member": {
+        "role_title": "Church Member",
+        "permissions": MEMBER_PERMISSIONS,
+    },
+    "kids_volunteer": {
+        "role_title": "Kids Check-In Volunteer",
+        "permissions": MEMBER_PERMISSIONS + ["admin.kids.manage"],
+    },
+    "small_group_leader": {
+        "role_title": "Small Group Leader",
+        "permissions": MEMBER_PERMISSIONS + ["admin.groups.manage", "admin.groups.lead", "admin.events.manage"],
+    },
+    "cafe_manager": {
+        "role_title": "Cafe Manager",
+        "permissions": MEMBER_PERMISSIONS + ["admin.cafe.manage", "admin.reports.view", "admin.reports.export"],
+    },
+    "merch_manager": {
+        "role_title": "Merch Manager",
+        "permissions": MEMBER_PERMISSIONS + ["admin.merch.manage", "admin.reports.view", "admin.reports.export"],
+    },
+    "worship_media_team": {
+        "role_title": "Worship & Media Team",
+        "permissions": MEMBER_PERMISSIONS + ["admin.media.manage", "admin.events.manage", "admin.announcements"],
+    },
+    "ministry_leader": {
+        "role_title": "Ministry Leader",
+        "permissions": MEMBER_PERMISSIONS + [
+            "admin.dashboard", "admin.members.view", "admin.members.edit",
+            "admin.groups.manage", "admin.events.manage", "admin.announcements",
+            "admin.volunteers.manage", "admin.media.manage", "admin.reports.view",
+            "admin.communications",
+        ],
+    },
+    "executive_pastor": {
+        "role_title": "Executive Pastor",
+        "permissions": MEMBER_PERMISSIONS + [p for p in ALL_ADMIN_PERMISSIONS if p not in ("admin.users.create", "admin.users.roles")],
+    },
+    "church_admin": {
+        "role_title": "Church Administrator",
+        "permissions": MEMBER_PERMISSIONS + ALL_ADMIN_PERMISSIONS,
+    },
+    "platform_admin": {
+        "role_title": "Platform Administrator",
+        "permissions": PERMISSION_REGISTRY[:],  # All permissions
+    },
+}
+
+def get_permissions_for_user(user_doc: dict) -> list:
+    """Resolve permissions for a user. Custom permissions take priority over template."""
+    custom = user_doc.get("permissions")
+    if custom and isinstance(custom, list):
+        return custom
+    role = user_doc.get("role", "member")
+    template = ROLE_TEMPLATES.get(role, ROLE_TEMPLATES["member"])
+    return template["permissions"]
+
+def check_permission(user_doc: dict, required: str) -> bool:
+    """Check if user has a specific permission."""
+    if user_doc.get("role") == "platform_admin":
+        return True  # Platform admins bypass all checks
+    perms = get_permissions_for_user(user_doc)
+    return required in perms
+
+async def require_permission(request: Request, permission: str):
+    """Get current user and verify they have the required permission. Returns user doc."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    if not check_permission(user, permission):
+        raise HTTPException(status_code=403, detail=f"Permission denied: {permission} required")
+    return user
+
+# ============== IDEMPOTENCY SYSTEM (MongoDB TTL) ==============
+
+async def check_idempotency(key: str):
+    """Check if an idempotency key has been used. Returns cached result or None."""
+    if not key:
+        return None
+    doc = await db.idempotency_keys.find_one({"key": key}, {"_id": 0})
+    if doc:
+        return doc.get("result")
+    return None
+
+async def store_idempotency(key: str, result: dict):
+    """Store idempotency key with result. TTL index auto-expires after 24hr."""
+    if not key:
+        return
+    await db.idempotency_keys.update_one(
+        {"key": key},
+        {"$set": {"key": key, "result": result, "created_at": datetime.now(timezone.utc)}},
+        upsert=True
+    )
+
+# ============== AUDIT TRAIL ==============
+
+async def audit_log(action: str, entity_type: str, entity_id: str, tenant_id: str,
+                    user_id: str, user_name: str, before_value: dict = None,
+                    after_value: dict = None, request: Request = None):
+    """Create an immutable audit record."""
+    doc = {
+        "id": str(uuid.uuid4()),
+        "action": action,
+        "entity_type": entity_type,
+        "entity_id": entity_id,
+        "tenant_id": tenant_id,
+        "performed_by_user_id": user_id,
+        "performed_by_name": user_name,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "before_value": before_value,
+        "after_value": after_value,
+        "ip_address": request.client.host if request else None,
+        "user_agent": request.headers.get("user-agent", "") if request else None,
+    }
+    await db.audit_log.insert_one(doc)
 
 async def get_tenant_by_subdomain(subdomain: str):
     """Get tenant by subdomain"""
@@ -2774,8 +2930,10 @@ async def get_current_user(request: Request):
         raise HTTPException(status_code=401, detail="User not found")
     
     result = serialize_doc(user_doc)
-    # Ensure role is included
+    # Ensure role and permissions are included
     result["role"] = user_doc.get("role", "admin")  # Default to admin for Google OAuth users
+    result["permissions"] = get_permissions_for_user(user_doc)
+    result["role_title"] = user_doc.get("role_title") or ROLE_TEMPLATES.get(user_doc.get("role", "member"), {}).get("role_title", "Member")
     return result
 
 @api_router.post("/auth/logout")
@@ -2796,49 +2954,58 @@ async def logout(request: Request, response: Response):
     return {"message": "Logged out"}
 
 @api_router.post("/auth/login")
-async def email_password_login(request: EmailLoginRequest, response: Response):
-    """Login with email and password (for demo accounts)"""
+async def email_password_login(request: Request, payload: EmailLoginRequest, response: Response):
+    """Login with email and password"""
     import hashlib
     
-    # Find user by email
-    user_doc = await db.users.find_one({"email": request.email}, {"_id": 0})
+    # Rate limiting: 5 attempts per minute per IP
+    client_ip = request.client.host or "unknown"
+    if not check_rate_limit_v2(f"login:{client_ip}", 5, 60):
+        raise HTTPException(status_code=429, detail="Too many login attempts. Try again in 1 minute.")
     
+    user_doc = await db.users.find_one({"email": payload.email}, {"_id": 0})
     if not user_doc:
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
-    # Verify password (simple hash comparison for demo)
     stored_hash = user_doc.get("password_hash")
     if not stored_hash:
         raise HTTPException(status_code=401, detail="Password login not enabled for this account")
     
-    input_hash = hashlib.sha256(request.password.encode()).hexdigest()
+    input_hash = hashlib.sha256(payload.password.encode()).hexdigest()
     if input_hash != stored_hash:
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
-    # Create session
-    session_token = f"sess_{uuid.uuid4().hex}"
-    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+    # Session management: limit to 5 concurrent sessions
+    existing = await db.user_sessions.count_documents({"user_id": user_doc["user_id"]})
+    if existing >= 5:
+        # Delete oldest session
+        oldest = await db.user_sessions.find({"user_id": user_doc["user_id"]}).sort("created_at", 1).limit(1).to_list(1)
+        if oldest:
+            await db.user_sessions.delete_one({"session_token": oldest[0].get("session_token")})
     
-    await db.user_sessions.delete_many({"user_id": user_doc["user_id"]})
+    session_token = f"sess_{uuid.uuid4().hex}"
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=24)
+    
     await db.user_sessions.insert_one({
         "user_id": user_doc["user_id"],
         "session_token": session_token,
         "expires_at": expires_at,
-        "created_at": datetime.now(timezone.utc)
+        "created_at": datetime.now(timezone.utc),
+        "ip_address": client_ip,
+        "device_hint": "mobile" if "Mobile" in request.headers.get("user-agent", "") else "desktop",
     })
     
-    # Set cookie
     response.set_cookie(
-        key="session_token",
-        value=session_token,
-        httponly=True,
-        secure=True,
-        samesite="none",
-        path="/",
-        max_age=7 * 24 * 60 * 60
+        key="session_token", value=session_token,
+        httponly=True, secure=True, samesite="none",
+        path="/", max_age=24 * 60 * 60
     )
     
-    # Get tenant info if available
+    # Resolve permissions
+    permissions = get_permissions_for_user(user_doc)
+    role = user_doc.get("role", "member")
+    role_title = user_doc.get("role_title") or ROLE_TEMPLATES.get(role, {}).get("role_title", "Member")
+    
     tenant_id = user_doc.get("tenant_id")
     tenant_name = None
     if tenant_id:
@@ -2850,12 +3017,14 @@ async def email_password_login(request: EmailLoginRequest, response: Response):
         "email": user_doc["email"],
         "name": user_doc["name"],
         "picture": user_doc.get("picture"),
-        "role": user_doc.get("role", "member"),
+        "role": role,
+        "role_title": role_title,
+        "permissions": permissions,
         "tenant_id": tenant_id,
         "tenant_name": tenant_name,
         "session_token": session_token,
         "token": session_token,
-        "access_token": session_token
+        "access_token": session_token,
     }
 
 # ============== USER REGISTRATION ==============
@@ -4521,61 +4690,66 @@ async def delete_child(request: Request, child_id: str):
 
 @api_router.post("/portal/kids/{child_id}/checkin")
 async def checkin_child(request: Request, child_id: str, payload: dict = None):
-    """Check in a child for Sunday School"""
+    """Check in a child for Sunday School. Supports idempotency key."""
+    # Idempotency check
+    idem_key = request.headers.get("x-idempotency-key")
+    if idem_key:
+        cached = await check_idempotency(f"checkin:{idem_key}")
+        if cached:
+            return cached
+    
     user = await get_current_member_user(request)
     tenant_id = user.get("tenant_id")
     user_id = user.get("user_id")
     
-    # Get child
     child = await db.children.find_one({"id": child_id, "parent_user_id": user_id}, {"_id": 0})
     if not child:
         raise HTTPException(status_code=404, detail="Child not found")
     
-    # Check if already checked in
-    existing = await db.checkins.find_one({
-        "child_id": child_id,
-        "status": "checked_in"
-    }, {"_id": 0})
+    existing = await db.checkins.find_one({"child_id": child_id, "status": "checked_in"}, {"_id": 0})
     if existing:
-        raise HTTPException(status_code=400, detail="Child is already checked in")
+        # Return existing check-in data instead of error (idempotent)
+        result = {"message": "Child is already checked in", "pickup_code": existing.get("pickup_code"), "checkin_time": existing.get("checked_in_at"), "status": "checked_in", "checkin": serialize_doc(existing), "sms_sent": False}
+        return result
     
-    # Generate pickup code
     pickup_code = generate_pickup_code()
-    
-    # Get parent info
     parent = await db.users.find_one({"user_id": user_id}, {"_id": 0, "name": 1, "phone": 1})
     parent_name = parent.get("name", "Parent") if parent else "Parent"
     parent_phone = parent.get("phone", "") if parent else ""
     
-    # Create checkin record
     checkin = Checkin(
-        tenant_id=tenant_id,
-        child_id=child_id,
-        child_name=child.get("name"),
-        parent_user_id=user_id,
-        parent_name=parent_name,
-        parent_phone=parent_phone,
-        pickup_code=pickup_code,
-        classroom=payload.get("classroom") if payload else "Sunday School",
+        tenant_id=tenant_id, child_id=child_id, child_name=child.get("name"),
+        parent_user_id=user_id, parent_name=parent_name, parent_phone=parent_phone,
+        pickup_code=pickup_code, classroom=payload.get("classroom") if payload else "Sunday School",
         status="checked_in"
     ).model_dump()
     checkin["checked_in_at"] = datetime.now(timezone.utc).isoformat()
     
     await db.checkins.insert_one(checkin)
+    await audit_log("kids_checkin", "checkin", checkin.get("id", ""), tenant_id, user_id, parent_name, request=request)
     
-    # Mock SMS - In production, this would use Twilio
-    sms_message = f"Thanks for bringing {child.get('name')} to Sunday School! Pickup code: {pickup_code}. We'll text you if there's an emergency or {child.get('name')} needs pickup. Have a great service!"
-    print(f"[SMS MOCK] To: {parent_phone or '915-929-4023'} | Message: {sms_message}")
+    sms_message = f"Thanks for bringing {child.get('name')} to Sunday School! Pickup code: {pickup_code}."
     
-    return {
+    result = {
         "message": "Child checked in successfully",
         "pickup_code": pickup_code,
         "checkin_time": checkin["checked_in_at"],
         "status": "checked_in",
         "checkin": serialize_doc(checkin),
         "sms_sent": True,
-        "sms_message": sms_message
+        "sms_message": sms_message,
+        "nudge": {
+            "show_giving": True,
+            "show_cafe": True,
+            "give_amounts": [10, 25, 50, 100],
+            "message": "The kids are in — support your church today?"
+        }
     }
+    
+    if idem_key:
+        await store_idempotency(f"checkin:{idem_key}", result)
+    
+    return result
 
 
 @api_router.post("/portal/kids/checkin")
@@ -6511,50 +6685,175 @@ async def get_admin_member_directory(
         }
     }
 
-# ============== ROLE MANAGEMENT API ==============
+# ============== RBAC, VOLUNTEER, HEALTH ENDPOINTS ==============
 
 class RoleUpdateRequest(BaseModel):
-    role: str  # "member" | "church_admin" | "leader"
+    role: str = None
+    role_template: str = None
+
+class PermissionsUpdateRequest(BaseModel):
+    permissions: List[str]
+
+class PermissionGrantRequest(BaseModel):
+    permission: str
+
+@api_router.get("/admin/roles/templates")
+async def get_role_templates(request: Request):
+    user = await require_permission(request, "admin.users.roles")
+    return {name: {"role_title": t["role_title"], "permissions": t["permissions"]}
+            for name, t in ROLE_TEMPLATES.items()
+            if name != "platform_admin" or user.get("role") == "platform_admin"}
+
+@api_router.get("/admin/roles/users")
+async def get_users_by_role(request: Request):
+    user = await require_permission(request, "admin.members.view")
+    tenant_id = user.get("tenant_id")
+    query = {"tenant_id": tenant_id} if tenant_id and user.get("role") != "platform_admin" else {}
+    users = await db.users.find(query, {"_id": 0, "password_hash": 0}).to_list(1000)
+    grouped = {}
+    for u in users:
+        rt = u.get("role_title") or ROLE_TEMPLATES.get(u.get("role", "member"), {}).get("role_title", "Member")
+        grouped.setdefault(rt, []).append({"user_id": u.get("user_id"), "name": u.get("name"), "email": u.get("email"), "role": u.get("role"), "role_title": rt, "permissions": get_permissions_for_user(u)})
+    return grouped
+
+@api_router.get("/admin/members/{user_id}/permissions")
+async def get_member_permissions(request: Request, user_id: str):
+    admin = await require_permission(request, "admin.users.roles")
+    target = await db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0})
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+    if admin.get("role") != "platform_admin" and target.get("tenant_id") != admin.get("tenant_id"):
+        raise HTTPException(status_code=403, detail="Cannot view users outside your church")
+    perms = get_permissions_for_user(target)
+    template_match = None
+    for tname, tdata in ROLE_TEMPLATES.items():
+        if set(tdata["permissions"]) == set(perms):
+            template_match = tname
+            break
+    return {"user_id": user_id, "name": target.get("name"), "email": target.get("email"), "role": target.get("role"), "role_title": target.get("role_title", ""), "permissions": perms, "template_match": template_match, "is_custom": template_match is None}
 
 @api_router.put("/admin/members/{user_id}/role")
 async def update_member_role(request: Request, user_id: str, payload: RoleUpdateRequest):
-    """Promote or demote a user's role. Requires church_admin or platform_admin."""
-    admin = await get_current_admin_user(request)
-    admin_role = admin.get("role")
-    
-    if admin_role not in ("church_admin", "admin", "platform_admin"):
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
-    valid_roles = {"member", "church_admin", "leader"}
-    if payload.role not in valid_roles:
-        raise HTTPException(status_code=400, detail=f"Invalid role. Must be one of: {', '.join(valid_roles)}")
-    
-    # Find the target user
+    admin = await require_permission(request, "admin.users.roles")
     target = await db.users.find_one({"user_id": user_id}, {"_id": 0})
     if not target:
         raise HTTPException(status_code=404, detail="User not found")
-    
-    # Church admins can only promote within their tenant
-    if admin_role in ("church_admin", "admin"):
-        if target.get("tenant_id") != admin.get("tenant_id"):
-            raise HTTPException(status_code=403, detail="Cannot modify users outside your church")
-    
-    await db.users.update_one(
-        {"user_id": user_id},
-        {"$set": {"role": payload.role}}
-    )
-    
-    logger.info(f"Role updated: {target.get('email')} -> {payload.role} by {admin.get('email')}")
-    
-    return {"success": True, "user_id": user_id, "new_role": payload.role, "name": target.get("name")}
+    if admin.get("role") != "platform_admin" and target.get("tenant_id") != admin.get("tenant_id"):
+        raise HTTPException(status_code=403, detail="Cannot modify users outside your church")
+    before = {"role": target.get("role"), "role_title": target.get("role_title"), "permissions": get_permissions_for_user(target)}
+    template_key = payload.role_template or payload.role
+    if not template_key or template_key not in ROLE_TEMPLATES:
+        raise HTTPException(status_code=400, detail=f"Invalid role. Must be one of: {', '.join(sorted(ROLE_TEMPLATES.keys()))}")
+    tmpl = ROLE_TEMPLATES[template_key]
+    role_field = template_key if template_key in ("church_admin", "platform_admin", "member") else ("church_admin" if any(p.startswith("admin.") for p in tmpl["permissions"]) else "member")
+    update_fields = {"role": role_field, "role_title": tmpl["role_title"], "permissions": tmpl["permissions"]}
+    await db.users.update_one({"user_id": user_id}, {"$set": update_fields})
+    after = {"role": update_fields["role"], "role_title": update_fields["role_title"], "permissions": update_fields["permissions"]}
+    await audit_log("role_change", "user", user_id, target.get("tenant_id", ""), admin.get("user_id", ""), admin.get("name", ""), before, after, request)
+    return {"success": True, "user_id": user_id, "new_role": update_fields["role"], "role_title": update_fields["role_title"], "permissions": update_fields["permissions"], "name": target.get("name")}
+
+@api_router.put("/admin/members/{user_id}/permissions")
+async def update_member_permissions(request: Request, user_id: str, payload: PermissionsUpdateRequest):
+    admin = await require_permission(request, "admin.users.roles")
+    target = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+    if admin.get("role") != "platform_admin" and target.get("tenant_id") != admin.get("tenant_id"):
+        raise HTTPException(status_code=403, detail="Cannot modify users outside your church")
+    invalid = [p for p in payload.permissions if p not in PERMISSION_REGISTRY]
+    if invalid:
+        raise HTTPException(status_code=400, detail=f"Unknown permissions: {', '.join(invalid)}")
+    has_admin = any(p.startswith("admin.") for p in payload.permissions)
+    role_field = "church_admin" if has_admin else "member"
+    if target.get("role") == "platform_admin":
+        role_field = "platform_admin"
+    await db.users.update_one({"user_id": user_id}, {"$set": {"permissions": payload.permissions, "role": role_field}})
+    await audit_log("permissions_change", "user", user_id, target.get("tenant_id", ""), admin.get("user_id", ""), admin.get("name", ""), {"permissions": get_permissions_for_user(target)}, {"permissions": payload.permissions}, request)
+    return {"success": True, "user_id": user_id, "permissions": payload.permissions}
+
+@api_router.post("/admin/members/{user_id}/permissions/grant")
+async def grant_permission(request: Request, user_id: str, payload: PermissionGrantRequest):
+    admin = await require_permission(request, "admin.users.roles")
+    if payload.permission not in PERMISSION_REGISTRY:
+        raise HTTPException(status_code=400, detail=f"Unknown permission: {payload.permission}")
+    target = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+    current = get_permissions_for_user(target)
+    if payload.permission not in current:
+        current.append(payload.permission)
+    await db.users.update_one({"user_id": user_id}, {"$set": {"permissions": current}})
+    return {"success": True, "user_id": user_id, "permissions": current}
+
+@api_router.delete("/admin/members/{user_id}/permissions/{perm}")
+async def revoke_permission(request: Request, user_id: str, perm: str):
+    admin = await require_permission(request, "admin.users.roles")
+    target = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+    current = [p for p in get_permissions_for_user(target) if p != perm]
+    await db.users.update_one({"user_id": user_id}, {"$set": {"permissions": current}})
+    return {"success": True, "user_id": user_id, "permissions": current}
+
+# ============== VOLUNTEER TEAM ENDPOINTS ==============
+
+@api_router.get("/admin/volunteers")
+async def get_volunteer_teams(request: Request):
+    user = await require_permission(request, "admin.volunteers.manage")
+    tenant_id = user.get("tenant_id")
+    teams = await db.volunteer_teams.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(100)
+    for team in teams:
+        members = await db.volunteer_assignments.find({"team_id": team["id"], "tenant_id": tenant_id}, {"_id": 0}).to_list(200)
+        for m in members:
+            u = await db.users.find_one({"user_id": m.get("user_id")}, {"_id": 0, "name": 1, "email": 1, "picture": 1})
+            m["user"] = u
+        team["members"] = members
+    return {"teams": teams, "total": len(teams)}
+
+@api_router.post("/admin/volunteers/teams")
+async def create_volunteer_team(request: Request, payload: dict):
+    user = await require_permission(request, "admin.volunteers.manage")
+    tenant_id = user.get("tenant_id")
+    team = {"id": str(uuid.uuid4()), "tenant_id": tenant_id, "team_name": payload.get("team_name"), "ministry": payload.get("ministry", ""), "description": payload.get("description", ""), "created_at": datetime.now(timezone.utc).isoformat(), "created_by": user.get("user_id")}
+    await db.volunteer_teams.insert_one(team)
+    return {"success": True, "team": {k: v for k, v in team.items() if k != "_id"}}
+
+@api_router.post("/admin/volunteers/assign")
+async def assign_volunteer(request: Request, payload: dict):
+    user = await require_permission(request, "admin.volunteers.manage")
+    tenant_id = user.get("tenant_id")
+    assignment = {"id": str(uuid.uuid4()), "tenant_id": tenant_id, "user_id": payload.get("user_id"), "team_id": payload.get("team_id"), "role_title": payload.get("role_title", "Volunteer"), "assigned_at": datetime.now(timezone.utc).isoformat(), "assigned_by": user.get("user_id")}
+    await db.volunteer_assignments.update_one({"user_id": payload.get("user_id"), "team_id": payload.get("team_id"), "tenant_id": tenant_id}, {"$set": assignment}, upsert=True)
+    return {"success": True, "assignment": {k: v for k, v in assignment.items() if k != "_id"}}
+
+@api_router.get("/admin/volunteers/user/{user_id}")
+async def get_user_volunteer_teams(request: Request, user_id: str):
+    user = await require_permission(request, "admin.volunteers.manage")
+    tenant_id = user.get("tenant_id")
+    assignments = await db.volunteer_assignments.find({"user_id": user_id, "tenant_id": tenant_id}, {"_id": 0}).to_list(50)
+    for a in assignments:
+        team = await db.volunteer_teams.find_one({"id": a.get("team_id")}, {"_id": 0})
+        a["team"] = team
+    return {"assignments": assignments}
+
+# ============== HEALTH ENDPOINTS ==============
+
+@api_router.get("/health")
+async def health_check():
+    return {"status": "ok", "timestamp": datetime.now(timezone.utc).isoformat(), "version": "2.0.0"}
+
+@api_router.get("/health/detailed")
+async def health_detailed():
+    checks = {"database": "ok", "media": "ok", "giving": "ok", "cache": "ok"}
+    try:
+        await db.command("ping")
+    except Exception:
+        checks["database"] = "down"
+    return {"status": "ok" if all(v == "ok" for v in checks.values()) else "degraded", "services": checks, "timestamp": datetime.now(timezone.utc).isoformat()}
 
 @api_router.get("/churches/list")
 async def list_churches_public():
-    """Alias for /tenants/list — public church listing for registration."""
-    tenants = await db.tenants.find(
-        {"subscription_status": "active"},
-        {"_id": 0, "id": 1, "name": 1, "subdomain": 1, "city": 1, "state": 1, "primary_color": 1}
-    ).to_list(100)
+    tenants = await db.tenants.find({"subscription_status": "active"}, {"_id": 0, "id": 1, "name": 1, "subdomain": 1, "city": 1, "state": 1, "primary_color": 1}).to_list(100)
     return tenants
 
 # ============== MEDIA MANAGEMENT API ==============
@@ -13690,7 +13989,32 @@ async def startup_ensure_mobile_seed_data():
     try:
         await ensure_mobile_demo_accounts()
         await seed_vol_data()
-        logger.info("Mobile demo accounts and volunteer leaderboard ensured")
+        # Create TTL index for idempotency keys (24hr expiry)
+        try:
+            await db.idempotency_keys.create_index("created_at", expireAfterSeconds=86400)
+        except Exception:
+            pass  # Index already exists
+        # Session TTL - drop conflicting index first if needed
+        try:
+            await db.user_sessions.create_index("expires_at", expireAfterSeconds=0)
+        except Exception:
+            pass
+        # Seed volunteer team for Abundant East
+        existing_team = await db.volunteer_teams.find_one({"id": "kids-checkin-team", "tenant_id": "abundant-east-001"})
+        if not existing_team:
+            await db.volunteer_teams.insert_one({
+                "id": "kids-checkin-team", "tenant_id": "abundant-east-001",
+                "team_name": "Kids Check-In Team", "ministry": "Children's Ministry",
+                "description": "Ensuring every child is safe and accounted for every Sunday.",
+                "created_at": datetime.now(timezone.utc).isoformat(), "created_by": "system"
+            })
+        # Assign Aivy to Kids Check-In Team
+        await db.volunteer_assignments.update_one(
+            {"user_id": "f1d0f1d8-de66-4fc0-a8c7-8f81f679ce22", "team_id": "kids-checkin-team", "tenant_id": "abundant-east-001"},
+            {"$set": {"id": str(uuid.uuid4()), "user_id": "f1d0f1d8-de66-4fc0-a8c7-8f81f679ce22", "team_id": "kids-checkin-team", "tenant_id": "abundant-east-001", "role_title": "Team Lead", "assigned_at": datetime.now(timezone.utc).isoformat(), "assigned_by": "system"}},
+            upsert=True
+        )
+        logger.info("Mobile demo accounts, volunteer teams, and indexes ensured")
     except Exception as exc:
         logger.error(f"Failed to ensure startup seed data: {exc}")
 
