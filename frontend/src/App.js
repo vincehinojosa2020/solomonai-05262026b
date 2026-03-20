@@ -34,6 +34,7 @@ import DeveloperAPIPage from "@/pages/admin/DeveloperAPIPage";
 import GroupLeaderDashboard from "@/pages/admin/GroupLeaderDashboard";
 import KidsCheckinAdmin from "@/pages/KidsCheckinAdmin";
 import WarRoom from "@/pages/WarRoom";
+import AuditLogPage from "@/pages/AuditLogPage";
 // Portal Pages
 import PortalHome from "@/pages/portal/PortalHome";
 import PortalGive from "@/pages/portal/PortalGive";
@@ -100,6 +101,7 @@ function AppRouter() {
         <Route path="/developer" element={<DeveloperAPIPage />} />
         <Route path="/kids-checkin" element={<KidsCheckinAdmin />} />
         <Route path="/war-room" element={<WarRoom />} />
+        <Route path="/audit-log" element={<AuditLogPage />} />
         <Route path="/admin/groups" element={<GroupsManagerPage />} />
         <Route path="/admin/groups/:groupId/dashboard" element={<GroupLeaderDashboard />} />
         <Route path="/admin/events" element={<EventsManagerPage />} />

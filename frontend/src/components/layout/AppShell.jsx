@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, Home, UsersRound, Calendar, 
   CheckSquare, DollarSign, Mail, BarChart3, Settings, 
   Building2, Search, Bell, ChevronLeft, Menu, Command,
-  LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, MessageSquare, Coffee, Code, Baby, Zap
+  LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, MessageSquare, Coffee, Code, Baby, Zap, Shield
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -48,6 +48,7 @@ const navItems = [
   ]},
   { section: 'ANALYTICS', items: [
     { name: 'Reports', path: '/reports', icon: BarChart3 },
+    { name: 'Audit Log', path: '/audit-log', icon: Shield },
   ]},
   { section: 'ADMIN', items: [
     { name: 'Settings', path: '/settings', icon: Settings },
@@ -192,7 +193,7 @@ export default function AppShell() {
               // If platform admin and NOT impersonating, hide church-specific items
               if (isPlatformAdmin && !isImpersonating) {
                 // Only show Settings, Integrations for platform admin without context
-                const platformOnlyPaths = ['/settings', '/integrations'];
+                const platformOnlyPaths = ['/settings', '/integrations', '/audit-log', '/reports', '/war-room', '/dashboard'];
                 return platformOnlyPaths.includes(item.path);
               }
               // If impersonating or regular church admin, show all items

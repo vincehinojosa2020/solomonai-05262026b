@@ -81,19 +81,38 @@ export default function ReportsPage() {
     }
   };
 
-  const handleExport = async (reportId) => {
+  const handleExport = async (reportId, format = 'csv') => {
     setExporting(true);
     try {
-      const url = `${API_URL}/reports/${reportId}/export?format=csv&start_date=${dateRange.start}&end_date=${dateRange.end}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Export failed');
-      const blob = await res.blob();
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `${reportId}_report.csv`;
-      a.click();
-      URL.revokeObjectURL(a.href);
-      toast.success('Report exported successfully');
+      const token = localStorage.getItem('session_token');
+      const typeMap = { 'kids-history': 'kids', 'giving-fund': 'giving', 'giving-method': 'giving', 'top-donors': 'giving', 'attendance': 'attendance', 'executive-summary': 'executive' };
+      const reportType = typeMap[reportId];
+
+      if (reportType) {
+        const res = await fetch(`${API_URL}/admin/reports/export`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
+          body: JSON.stringify({ report_type: reportType, format, start_date: dateRange.start, end_date: dateRange.end })
+        });
+        if (!res.ok) throw new Error('Export failed');
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `solomon-${reportId}.${format}`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      } else {
+        const url = `${API_URL}/reports/${reportId}/export?format=csv&start_date=${dateRange.start}&end_date=${dateRange.end}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Export failed');
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${reportId}_report.csv`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+      toast.success(`Report exported as ${format.toUpperCase()}`);
     } catch (error) {
       toast.error('Export failed');
     } finally {
@@ -160,9 +179,13 @@ export default function ReportsPage() {
                   </div>
                 </>
               )}
-              <Button variant="outline" size="sm" onClick={() => handleExport(activeReport)} disabled={exporting} data-testid="report-export-csv">
+              <Button variant="outline" size="sm" onClick={() => handleExport(activeReport, 'csv')} disabled={exporting} data-testid="report-export-csv">
                 <Download className="w-4 h-4 mr-2" />
-                {exporting ? 'Exporting...' : 'Export CSV'}
+                CSV
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => handleExport(activeReport, 'pdf')} disabled={exporting} data-testid="report-export-pdf">
+                <FileText className="w-4 h-4 mr-2" />
+                PDF
               </Button>
             </div>
           </div>

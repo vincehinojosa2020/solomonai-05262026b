@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
+import PermissionEditor from '@/components/PermissionEditor';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,8 +20,8 @@ import {
 } from '@/lib/utils';
 
 const StatusBadge = ({ status }) => (
-  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(status)}`}>
-    {status.charAt(0).toUpperCase() + status.slice(1)}
+  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(status || 'visitor')}`}>
+    {(status || 'visitor').charAt(0).toUpperCase() + (status || 'visitor').slice(1)}
   </span>
 );
 
@@ -191,6 +192,7 @@ export default function PersonDetail() {
           <TabsTrigger value="attendance" data-testid="tab-attendance">Attendance</TabsTrigger>
           <TabsTrigger value="groups" data-testid="tab-groups">Groups</TabsTrigger>
           <TabsTrigger value="communications" data-testid="tab-communications">Communications</TabsTrigger>
+          <TabsTrigger value="permissions" data-testid="tab-permissions">Permissions</TabsTrigger>
           <TabsTrigger value="notes" data-testid="tab-notes">Notes</TabsTrigger>
         </TabsList>
 
@@ -457,6 +459,13 @@ export default function PersonDetail() {
             <h3 className="font-semibold text-slate-900 mb-2">Email History</h3>
             <p className="text-slate-400 text-sm mb-4">View all emails sent to this person</p>
             <Button variant="outline" size="sm">Send Message</Button>
+          </div>
+        </TabsContent>
+
+        {/* Permissions Tab */}
+        <TabsContent value="permissions">
+          <div className="bg-white border border-slate-200 rounded-xl p-6">
+            <PermissionEditor userId={personId} userName={person?.name} />
           </div>
         </TabsContent>
 

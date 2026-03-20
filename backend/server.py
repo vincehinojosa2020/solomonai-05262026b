@@ -79,6 +79,17 @@ async def security_headers_middleware(request: Request, call_next):
 import time as _time
 RATE_LIMITS = {}  # {bucket_key: {count, window_start}}
 
+# Structured error handler for unhandled 500 errors
+@app.exception_handler(500)
+async def structured_500_handler(request: Request, exc):
+    from fastapi.responses import JSONResponse
+    correlation_id = f"req_{uuid.uuid4().hex[:12]}"
+    logger.error(f"[{correlation_id}] Internal error: {exc}")
+    return JSONResponse(status_code=500, content={
+        "error": "INTERNAL_ERROR", "message": "An unexpected error occurred",
+        "code": 500, "correlation_id": correlation_id
+    })
+
 def check_rate_limit_v2(bucket: str, max_requests: int, window_seconds: int) -> bool:
     """Generic rate limiter. Returns True if allowed, False if exceeded."""
     now = _time.time()
@@ -6700,9 +6711,10 @@ class PermissionGrantRequest(BaseModel):
 @api_router.get("/admin/roles/templates")
 async def get_role_templates(request: Request):
     user = await require_permission(request, "admin.users.roles")
-    return {name: {"role_title": t["role_title"], "permissions": t["permissions"]}
+    templates = {name: {"title": t["role_title"], "permissions": t["permissions"]}
             for name, t in ROLE_TEMPLATES.items()
             if name != "platform_admin" or user.get("role") == "platform_admin"}
+    return {"templates": templates}
 
 @api_router.get("/admin/roles/users")
 async def get_users_by_role(request: Request):
@@ -10484,6 +10496,237 @@ async def process_giving(request: Request, payload: dict):
     await audit_log("donation_processed", "giving", donation_record["id"], tenant_id, user.get("user_id"), user.get("name", ""), {}, {"amount": amount, "processor": active_processor, "fund": fund}, request)
 
     return processor_response
+
+
+# ============== AUDIT TRAIL ENDPOINT ==============
+
+@api_router.get("/admin/audit-log")
+async def get_audit_log(
+    request: Request,
+    start_date: str = None,
+    end_date: str = None,
+    entity_type: str = None,
+    user_id: str = None,
+    action: str = None,
+    page: int = 1,
+    limit: int = 50
+):
+    """Get audit log entries with filtering."""
+    user = await require_permission(request, "admin.dashboard")
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    query = {"tenant_id": tenant_id}
+
+    if start_date:
+        query["timestamp"] = {"$gte": start_date}
+    if end_date:
+        query.setdefault("timestamp", {})["$lte"] = end_date + "T23:59:59"
+    if entity_type:
+        query["entity_type"] = entity_type
+    if user_id:
+        query["performed_by"] = user_id
+    if action:
+        query["action"] = action
+
+    total = await db.audit_log.count_documents(query)
+    skip = (page - 1) * limit
+    entries = await db.audit_log.find(query, {"_id": 0}).sort("timestamp", -1).skip(skip).limit(limit).to_list(limit)
+
+    return {
+        "entries": entries,
+        "total": total,
+        "page": page,
+        "pages": max(1, (total + limit - 1) // limit)
+    }
+
+
+# ============== ADMIN REPORT ALIASES + PDF EXPORT ==============
+
+@api_router.get("/admin/reports/kids/history")
+async def admin_report_kids_history(request: Request, start_date: str = None, end_date: str = None):
+    user = await require_permission(request, "admin.reports")
+    return await report_kids_history(start_date, end_date)
+
+@api_router.get("/admin/reports/giving/summary")
+async def admin_report_giving_summary(request: Request, start_date: str = None, end_date: str = None):
+    user = await require_permission(request, "admin.reports")
+    if not start_date: start_date = "2020-01-01"
+    if not end_date: end_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    funds = await report_giving_by_fund(start_date, end_date)
+    methods = await report_giving_by_method(start_date, end_date)
+    donors = await report_top_donors(start_date, end_date, 10)
+    return {"by_fund": funds, "by_method": methods, "top_donors": donors, "period": {"start": start_date, "end": end_date}}
+
+@api_router.get("/admin/reports/attendance/summary")
+async def admin_report_attendance_summary(request: Request, start_date: str = None, end_date: str = None):
+    user = await require_permission(request, "admin.reports")
+    return await report_attendance(start_date, end_date)
+
+@api_router.get("/admin/reports/executive-summary")
+async def admin_report_executive_summary(request: Request):
+    user = await require_permission(request, "admin.reports")
+    return await report_executive_summary()
+
+@api_router.post("/admin/reports/export")
+async def admin_export_report(request: Request, payload: dict):
+    """Export any report as CSV or PDF."""
+    user = await require_permission(request, "admin.reports")
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    report_type = payload.get("report_type", "executive")
+    fmt = payload.get("format", "csv")
+    start_date = payload.get("start_date")
+    end_date = payload.get("end_date")
+
+    tenant_doc = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "name": 1})
+    church_name = (tenant_doc or {}).get("name", "Church")
+
+    # Gather report data
+    if report_type == "kids":
+        data = await report_kids_history(start_date, end_date)
+        title = "Kids Check-In History"
+    elif report_type == "giving":
+        s = start_date or "2020-01-01"
+        e = end_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        funds = await report_giving_by_fund(s, e)
+        data = {"by_fund": funds, "summary": {"total_funds": len(funds), "total": sum(f.get("total", 0) for f in funds)}}
+        title = "Giving Summary"
+    elif report_type == "attendance":
+        data = await report_attendance(start_date, end_date)
+        title = "Attendance Summary"
+    elif report_type == "executive":
+        data = await report_executive_summary()
+        title = "Executive Summary"
+    else:
+        raise HTTPException(status_code=400, detail=f"Unknown report_type: {report_type}")
+
+    # Audit the export
+    await audit_log("export_report", "report", report_type, tenant_id, user.get("user_id"), user.get("name", ""),
+                     {}, {"report_type": report_type, "format": fmt, "start_date": start_date, "end_date": end_date}, request)
+
+    now_str = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    safe_church = church_name.lower().replace(" ", "-")[:20]
+    filename = f"solomon-{report_type}-{safe_church}-{now_str}"
+
+    if fmt == "csv":
+        import io as _io, csv as _csv
+        output = _io.StringIO()
+        writer = _csv.writer(output)
+
+        if report_type == "kids":
+            writer.writerow(["Child Name", "Parent", "Service Type", "Check-in Time", "Check-out Time", "Pickup Code"])
+            for r in data.get("records", []):
+                writer.writerow([r.get("child_name", ""), r.get("parent_name", ""), r.get("service_type", ""), r.get("checked_in_at", ""), r.get("checked_out_at", ""), r.get("pickup_code", "")])
+        elif report_type == "giving":
+            writer.writerow(["Fund", "Total", "Count"])
+            for f in data.get("by_fund", []):
+                writer.writerow([f.get("fund_name", ""), f.get("total", 0), f.get("count", 0)])
+        elif report_type == "attendance":
+            writer.writerow(["Date", "In Person", "Online", "Total"])
+            for w in data.get("weekly", []):
+                writer.writerow([w.get("date", ""), w.get("in_person", 0), w.get("online", 0), w.get("total", 0)])
+        elif report_type == "executive":
+            writer.writerow(["Metric", "Value"])
+            writer.writerow(["Period", data.get("period", {}).get("month", "")])
+            for section, metrics in [("membership", data.get("membership", {})), ("giving", data.get("giving", {})), ("attendance", data.get("attendance", {})), ("kids", data.get("kids", {})), ("groups", data.get("groups", {}))]:
+                for k, v in metrics.items():
+                    writer.writerow([f"{section}.{k}", v])
+
+        from fastapi.responses import Response
+        return Response(content=output.getvalue(), media_type="text/csv",
+                       headers={"Content-Disposition": f"attachment; filename={filename}.csv"})
+
+    elif fmt == "pdf":
+        from reportlab.lib.pagesizes import letter
+        from reportlab.lib import colors
+        from reportlab.lib.units import inch
+        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        import io as _io
+
+        buf = _io.BytesIO()
+        doc = SimpleDocTemplate(buf, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
+        styles = getSampleStyleSheet()
+
+        header_style = ParagraphStyle("Header", parent=styles["Heading1"], fontSize=16, textColor=colors.HexColor("#1e293b"), spaceAfter=4)
+        sub_style = ParagraphStyle("Sub", parent=styles["Normal"], fontSize=9, textColor=colors.HexColor("#64748b"), spaceAfter=12)
+        section_style = ParagraphStyle("Section", parent=styles["Heading2"], fontSize=12, textColor=colors.HexColor("#334155"), spaceAfter=6, spaceBefore=16)
+        footer_style = ParagraphStyle("Footer", parent=styles["Normal"], fontSize=7, textColor=colors.HexColor("#94a3b8"))
+
+        elements = []
+        elements.append(Paragraph(f"SOLOMON AI — {title.upper()} — CONFIDENTIAL", ParagraphStyle("Brand", parent=styles["Normal"], fontSize=8, textColor=colors.HexColor("#4f6ef7"), spaceAfter=2)))
+        elements.append(Paragraph(title, header_style))
+        elements.append(Paragraph(f"{church_name} | {start_date or 'All time'} to {end_date or 'Present'} | Generated by {user.get('name', 'Admin')} on {datetime.now(timezone.utc).strftime('%B %d, %Y at %I:%M %p UTC')}", sub_style))
+        elements.append(Spacer(1, 8))
+
+        table_style = TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#f1f5f9")),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#334155")),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("FONTSIZE", (0, 0), (-1, 0), 9),
+            ("FONTSIZE", (0, 1), (-1, -1), 8),
+            ("ALIGN", (1, 0), (-1, -1), "RIGHT"),
+            ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
+            ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f8fafc")]),
+            ("TOPPADDING", (0, 0), (-1, -1), 4),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ])
+
+        if report_type == "kids":
+            s = data.get("summary", {})
+            elements.append(Paragraph("Summary", section_style))
+            sum_data = [["Total Check-Ins", "Unique Kids", "Checked Out", "Still In"],
+                        [str(s.get("total_checkins", 0)), str(s.get("unique_kids", 0)), str(s.get("checked_out", 0)), str(s.get("still_checked_in", 0))]]
+            elements.append(Table(sum_data, colWidths=[1.5*inch]*4, style=table_style))
+            elements.append(Spacer(1, 12))
+            elements.append(Paragraph("Check-In Records", section_style))
+            rows = [["Child", "Service", "Check-In", "Pickup Code", "Status"]]
+            for r in data.get("records", [])[:100]:
+                rows.append([r.get("child_name", ""), r.get("service_type", ""), r.get("checked_in_at", "")[:16], r.get("pickup_code", ""), "Out" if r.get("checked_out_at") else "In"])
+            elements.append(Table(rows, colWidths=[1.4*inch, 1.2*inch, 1.4*inch, 1*inch, 0.6*inch], style=table_style))
+            elements.append(Spacer(1, 16))
+            elements.append(Paragraph("Records retained 7 years. Encrypted at rest.", footer_style))
+
+        elif report_type == "giving":
+            elements.append(Paragraph("Giving by Fund", section_style))
+            rows = [["Fund", "Total", "Donations"]]
+            for f in data.get("by_fund", []):
+                rows.append([f.get("fund_name", ""), f"${f.get('total', 0):,.2f}", str(f.get("count", 0))])
+            if len(rows) > 1:
+                elements.append(Table(rows, colWidths=[2.5*inch, 1.5*inch, 1.5*inch], style=table_style))
+
+        elif report_type == "attendance":
+            s = data.get("summary", {})
+            elements.append(Paragraph("Summary", section_style))
+            sum_data = [["Total Services", "Total Check-Ins", "Avg per Service"],
+                        [str(s.get("total_services", 0)), str(s.get("total_checkins", 0)), str(s.get("avg_per_service", 0))]]
+            elements.append(Table(sum_data, colWidths=[2*inch]*3, style=table_style))
+            elements.append(Spacer(1, 12))
+            elements.append(Paragraph("Weekly Breakdown", section_style))
+            rows = [["Date", "In Person", "Online", "Total"]]
+            for w in data.get("weekly", [])[:52]:
+                rows.append([w.get("date", ""), str(w.get("in_person", 0)), str(w.get("online", 0)), str(w.get("total", 0))])
+            if len(rows) > 1:
+                elements.append(Table(rows, colWidths=[1.5*inch]*4, style=table_style))
+
+        elif report_type == "executive":
+            for section_name, section_key in [("Membership", "membership"), ("Giving", "giving"), ("Attendance", "attendance"), ("Kids", "kids"), ("Groups", "groups"), ("Cafe", "cafe"), ("Merch", "merch")]:
+                section_data = data.get(section_key, {})
+                if section_data:
+                    elements.append(Paragraph(section_name, section_style))
+                    rows = [["Metric", "Value"]]
+                    for k, v in section_data.items():
+                        display_val = f"${v:,.2f}" if "giving" in section_key and isinstance(v, (int, float)) and "count" not in k else str(v)
+                        rows.append([k.replace("_", " ").title(), display_val])
+                    elements.append(Table(rows, colWidths=[3*inch, 2.5*inch], style=table_style))
+
+        doc.build(elements)
+        pdf_bytes = buf.getvalue()
+
+        from fastapi.responses import Response
+        return Response(content=pdf_bytes, media_type="application/pdf",
+                       headers={"Content-Disposition": f"attachment; filename={filename}.pdf"})
+
+    else:
+        raise HTTPException(status_code=400, detail="format must be 'csv' or 'pdf'")
 
 
 # --- SEARCH ROUTE ---
