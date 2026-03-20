@@ -10378,6 +10378,7 @@ async def list_payment_processors():
     return {"processors": [{**v, "id": k} for k, v in PAYMENT_PROCESSORS.items()]}
 
 @api_router.get("/admin/giving/processor-settings")
+@api_router.get("/admin/giving/settings")
 async def get_processor_settings(request: Request):
     """Get configured payment processor for this tenant."""
     user = await require_permission(request, "admin.giving")
@@ -10388,6 +10389,7 @@ async def get_processor_settings(request: Request):
     return settings
 
 @api_router.post("/admin/giving/processor-settings")
+@api_router.post("/admin/giving/settings")
 async def update_processor_settings(request: Request, payload: dict):
     """Configure payment processor for this tenant."""
     user = await require_permission(request, "admin.giving")
