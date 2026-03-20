@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import CommandPalette from '@/components/CommandPalette';
 import SolomonChat from '@/components/SolomonChat';
+import DemoWalkthrough from '@/components/DemoWalkthrough';
 import { API_URL } from '@/lib/utils';
 
 const navItems = [
@@ -371,6 +372,13 @@ export default function AppShell() {
 
       {/* Solomon AI Chat */}
       <SolomonChat />
+      
+      {/* Demo Walkthrough for first-time admins */}
+      <DemoWalkthrough 
+        userRole={user?.role || 'church_admin'} 
+        userName={user?.name?.split(' ')[0] || 'there'}
+        onNavigate={navigate}
+      />
     </div>
   );
 }

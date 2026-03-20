@@ -37,6 +37,14 @@ Solomon AI is a multi-tenant SaaS Church Management System built with React (fro
 - **Fix 7**: Enhanced Add Child form (first/last name, grade, classroom)
 - **Fix 8**: Mobile Safari optimizations (font-size 16px, 48px tap targets, safe areas)
 
+### Demo Walkthrough Feature (March 20, 2026)
+- First-login guided tour with spotlight tooltips
+- Separate flows for members (5 steps: Kids → Check In → QR Code → Pickup Code) and admins (6 steps: Kids Admin → Counter → Children → Checkout → Scan QR → Manual Code)
+- Welcome modal with "Start Quick Tour" / "I'll figure it out myself"
+- Step-by-step tooltips with spotlight mask, progress indicators, Back/Next navigation
+- Works on both desktop and mobile viewports
+- Dismissible, persists in localStorage to not show again
+
 ### Data & Demo
 - 50,000+ seeded demo records
 - 3 Abundant Church campuses (East, Downtown, West)

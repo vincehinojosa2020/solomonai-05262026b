@@ -7,6 +7,7 @@ import SolomonChat from '@/components/SolomonChat';
 import PWABottomNav from '@/components/PWABottomNav';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import NotificationBell from '@/components/NotificationBell';
+import DemoWalkthrough from '@/components/DemoWalkthrough';
 
 export default function PortalLayout() {
   const [user, setUser] = useState(null);
@@ -237,6 +238,13 @@ export default function PortalLayout() {
 
       {/* PWA Bottom Navigation — only in standalone mode */}
       {isPWA && <PWABottomNav />}
+      
+      {/* Demo Walkthrough for first-time users */}
+      <DemoWalkthrough 
+        userRole={user?.role || 'member'} 
+        userName={user?.name?.split(' ')[0] || 'there'}
+        onNavigate={navigate}
+      />
     </div>
   );
 }
