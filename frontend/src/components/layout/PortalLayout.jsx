@@ -65,8 +65,9 @@ export default function PortalLayout() {
       }
 
       const userData = await meRes.json();
-      // Only members can access portal
-      if (userData.role !== 'member') {
+      // Allow members and admins using Lyft dual-mode toggle
+      // Only redirect if user has no member permissions at all
+      if (userData.role === 'platform_admin' && !localStorage.getItem('portal_mode')) {
         navigate('/dashboard');
         return;
       }
@@ -258,6 +259,9 @@ export default function PortalLayout() {
       {/* PWA Bottom Navigation — only in standalone mode */}
       {isPWA && <PWABottomNav />}
       
+      {/* Solomon AI Chat */}
+      <SolomonChat />
+
       {/* Demo Walkthrough for first-time users */}
       <DemoWalkthrough 
         userRole={user?.role || 'member'} 

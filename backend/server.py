@@ -12773,6 +12773,97 @@ async def get_mobile_attendance_history(request: Request, limit: int = 90):
         "total": len(checkins)
     }
 
+# ============== SUNDAY MORNING PUSH NOTIFICATION PAYLOADS ==============
+
+SUNDAY_MORNING_NOTIFICATIONS = {
+    "service_starting": {
+        "title": "Service Starting Soon!",
+        "body": "Join us in {minutes} minutes. Tap to check in!",
+        "url": "/portal"
+    },
+    "welcome_arrived": {
+        "title": "Welcome to {church_name}!",
+        "body": "You're checked in. Order your coffee or give today!",
+        "url": "/portal"
+    },
+    "kids_reminder": {
+        "title": "Don't Forget Kids Check-In",
+        "body": "Check your kids into Sunday School before service starts.",
+        "url": "/portal/kids"
+    },
+    "giving_reminder": {
+        "title": "Give Today",
+        "body": "Your generosity makes a difference at {church_name}.",
+        "url": "/portal/give"
+    },
+    "cafe_ready": {
+        "title": "Your Coffee is Ready!",
+        "body": "Pick up your order at the cafe counter.",
+        "url": "/portal/cafe"
+    },
+    "post_service": {
+        "title": "Thank You for Worshipping With Us!",
+        "body": "Have a blessed week. See you next Sunday!",
+        "url": "/portal"
+    }
+}
+
+@api_router.get("/admin/sunday-morning/notification-templates")
+async def get_notification_templates(request: Request):
+    """Get available Sunday Morning push notification templates."""
+    user = await require_permission(request, "admin.communications")
+    return {"templates": SUNDAY_MORNING_NOTIFICATIONS}
+
+@api_router.post("/admin/sunday-morning/broadcast")
+async def broadcast_sunday_notification(request: Request, payload: dict):
+    """Broadcast a Sunday Morning push notification to all members."""
+    user = await require_permission(request, "admin.communications")
+    tenant_id = user.get("tenant_id")
+    template_key = payload.get("template")
+    custom_title = payload.get("title")
+    custom_body = payload.get("body")
+
+    if template_key and template_key in SUNDAY_MORNING_NOTIFICATIONS:
+        tmpl = SUNDAY_MORNING_NOTIFICATIONS[template_key]
+        tenant_doc = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "name": 1})
+        church_name = (tenant_doc or {}).get("name", "your church")
+        title = tmpl["title"].format(church_name=church_name, minutes=payload.get("minutes", 15))
+        body = tmpl["body"].format(church_name=church_name, minutes=payload.get("minutes", 15))
+        url = tmpl["url"]
+    elif custom_title and custom_body:
+        title = custom_title
+        body = custom_body
+        url = payload.get("url", "/portal")
+    else:
+        raise HTTPException(status_code=400, detail="Provide a template key or custom title/body")
+
+    subs = await db.push_subscriptions.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(5000)
+    sent = 0
+    failed = 0
+    for sub in subs:
+        try:
+            from routes.push import send_push_notification
+            await send_push_notification(sub.get("user_id", ""), tenant_id, title, body, url)
+            sent += 1
+        except Exception:
+            failed += 1
+
+    await db.notification_logs.insert_one({
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "type": "sunday_morning_broadcast",
+        "template": template_key,
+        "title": title,
+        "body": body,
+        "sent": sent,
+        "failed": failed,
+        "sent_by": user.get("user_id"),
+        "sent_at": datetime.now(timezone.utc).isoformat()
+    })
+
+    return {"success": True, "sent": sent, "failed": failed, "title": title, "body": body}
+
+
 # ============== PRAYER REQUEST ENDPOINTS ==============
 
 @api_router.get("/portal/prayer-requests")

@@ -314,7 +314,7 @@ export default function AppShell() {
                 </button>
                 <button
                   className="px-3 py-1.5 text-xs font-semibold rounded-md transition-all text-slate-500 hover:text-slate-700"
-                  onClick={() => navigate('/portal')}
+                  onClick={() => { localStorage.setItem('portal_mode', 'true'); navigate('/portal'); }}
                   data-testid="mode-member"
                 >
                   Member
