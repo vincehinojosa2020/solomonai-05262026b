@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, Home, UsersRound, Calendar, 
   CheckSquare, DollarSign, Mail, BarChart3, Settings, 
   Building2, Search, Bell, ChevronLeft, Menu, Command,
-  LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, MessageSquare, Coffee, Code, Baby
+  LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, MessageSquare, Coffee, Code, Baby, Zap
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -23,6 +23,7 @@ import { API_URL } from '@/lib/utils';
 const navItems = [
   { section: 'OVERVIEW', items: [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'War Room', path: '/war-room', icon: Zap, badge: 'live' },
   ]},
   { section: 'PEOPLE', items: [
     { name: 'Members', path: '/people', icon: Users },
@@ -216,6 +217,11 @@ export default function AppShell() {
                 >
                   <item.icon className="icon" />
                   {!collapsed && <span>{item.name}</span>}
+                  {!collapsed && item.badge === 'live' && (
+                    <span className="ml-auto flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                    </span>
+                  )}
                 </NavLink>
               ))}
             </div>
