@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, RefreshCw, UserCheck, UserX, Clock, 
   AlertCircle, CheckCircle2, Phone, User, Users,
-  QrCode, Sparkles, Shield, Cross, Plus, Mail, PartyPopper
+  QrCode, Sparkles, Shield, Cross, Plus, Mail, PartyPopper,
+  Camera, Keyboard
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -58,6 +59,11 @@ export default function KidsCheckinAdmin() {
   const [showRegisterFamily, setShowRegisterFamily] = useState(false);
   const [lastCheckinCount, setLastCheckinCount] = useState(0);
   const [newCheckinAlert, setNewCheckinAlert] = useState(false);
+  const [scannerActive, setScannerActive] = useState(false);
+  const [checkoutMode, setCheckoutMode] = useState('choose'); // choose | scan | manual
+  const [scanResult, setScanResult] = useState(null);
+  const scannerRef = useRef(null);
+  const html5QrCodeRef = useRef(null);
   
   // New family registration form
   const [newFamily, setNewFamily] = useState({
@@ -241,6 +247,8 @@ export default function KidsCheckinAdmin() {
         setShowCheckoutModal(null);
         setVerifyResult(null);
         setPickupCode('');
+        setScanResult(null);
+        setCheckoutMode('choose');
         fetchData();
       } else {
         const error = await res.json();
@@ -250,6 +258,83 @@ export default function KidsCheckinAdmin() {
       toast.error('Error during checkout');
     }
   };
+
+  const startQrScanner = async () => {
+    setScannerActive(true);
+    setCheckoutMode('scan');
+    setScanResult(null);
+    
+    // Dynamic import to avoid SSR issues
+    try {
+      const { Html5Qrcode } = await import('html5-qrcode');
+      
+      // Wait for DOM element
+      await new Promise(r => setTimeout(r, 300));
+      
+      if (!document.getElementById('qr-reader')) return;
+      
+      const html5QrCode = new Html5Qrcode('qr-reader');
+      html5QrCodeRef.current = html5QrCode;
+      
+      await html5QrCode.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        async (decodedText) => {
+          // Stop scanner on success
+          try { await html5QrCode.stop(); } catch(e) {}
+          setScannerActive(false);
+          
+          // Process the QR code
+          try {
+            const res = await fetch(`${API_URL}/admin/kids/checkout-by-code`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ pickup_code: decodedText })
+            });
+            
+            if (res.ok) {
+              const data = await res.json();
+              setScanResult({ success: true, ...data });
+              toast.success(`${data.child_name} checked out!`);
+              fetchData();
+            } else {
+              const err = await res.json();
+              setScanResult({ success: false, message: err.detail || 'Invalid code' });
+              toast.error(err.detail || 'Invalid QR code');
+            }
+          } catch (error) {
+            setScanResult({ success: false, message: 'Error processing code' });
+          }
+        },
+        () => {} // ignore scan errors (no QR in frame)
+      );
+    } catch (err) {
+      console.error('QR Scanner error:', err);
+      toast.error('Camera access denied or not available. Use manual code entry.');
+      setScannerActive(false);
+      setCheckoutMode('manual');
+    }
+  };
+
+  const stopQrScanner = async () => {
+    try {
+      if (html5QrCodeRef.current) {
+        await html5QrCodeRef.current.stop();
+        html5QrCodeRef.current = null;
+      }
+    } catch(e) {}
+    setScannerActive(false);
+    setCheckoutMode('choose');
+  };
+
+  // Cleanup scanner on unmount
+  useEffect(() => {
+    return () => {
+      if (html5QrCodeRef.current) {
+        try { html5QrCodeRef.current.stop(); } catch(e) {}
+      }
+    };
+  }, []);
 
   // Enrich checkins with child data
   const enrichedCheckins = checkins.map(checkin => {
@@ -517,36 +602,128 @@ export default function KidsCheckinAdmin() {
               exit={{ opacity: 0, y: -20 }}
               className="kca-checkout-tab"
             >
-              <div className="kca-verify-section">
-                <div className="kca-verify-icon">
-                  <QrCode className="w-12 h-12" />
+              {/* Mode Selection */}
+              {checkoutMode === 'choose' && !scanResult && (
+                <div className="kca-checkout-modes" data-testid="checkout-mode-select">
+                  <h2 style={{textAlign:'center', marginBottom: 8}}>Check Out a Child</h2>
+                  <p style={{textAlign:'center', color:'#64748b', marginBottom: 24}}>Choose how to verify the pickup code</p>
+                  <div style={{display:'flex', gap: 16, justifyContent:'center', flexWrap:'wrap'}}>
+                    <button
+                      className="kca-mode-btn"
+                      onClick={startQrScanner}
+                      data-testid="scan-qr-btn"
+                      style={{display:'flex', flexDirection:'column', alignItems:'center', gap: 12, padding: '24px 32px', background:'#f0fdf4', border:'2px solid #22c55e', borderRadius: 16, cursor:'pointer', minWidth: 180}}
+                    >
+                      <Camera className="w-10 h-10" style={{color:'#22c55e'}} />
+                      <span style={{fontWeight: 600, fontSize: 16}}>Scan QR Code</span>
+                      <span style={{fontSize: 12, color:'#64748b'}}>Camera permission required</span>
+                    </button>
+                    <button
+                      className="kca-mode-btn"
+                      onClick={() => setCheckoutMode('manual')}
+                      data-testid="manual-code-btn"
+                      style={{display:'flex', flexDirection:'column', alignItems:'center', gap: 12, padding: '24px 32px', background:'#eff6ff', border:'2px solid #3b82f6', borderRadius: 16, cursor:'pointer', minWidth: 180}}
+                    >
+                      <Keyboard className="w-10 h-10" style={{color:'#3b82f6'}} />
+                      <span style={{fontWeight: 600, fontSize: 16}}>Enter Code Manually</span>
+                      <span style={{fontSize: 12, color:'#64748b'}}>Type the 3-digit code</span>
+                    </button>
+                  </div>
                 </div>
-                <h2>Enter Pickup Code</h2>
-                <p>Parents should show their pickup code from the SMS or app</p>
-                
-                <div className="kca-verify-input-group">
-                  <input
-                    type="text"
-                    placeholder="ABC-1234"
-                    value={pickupCode}
-                    onChange={(e) => setPickupCode(e.target.value.toUpperCase())}
-                    className="kca-verify-input"
-                    maxLength={8}
-                    data-testid="pickup-code-input"
-                  />
-                  <button 
-                    className="kca-verify-btn"
-                    onClick={handleVerifyCode}
-                    data-testid="verify-code-btn"
+              )}
+
+              {/* QR Scanner Mode */}
+              {checkoutMode === 'scan' && (
+                <div className="kca-scanner-section" data-testid="qr-scanner-section">
+                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: 16}}>
+                    <h2>Scan Parent's QR Code</h2>
+                    <button onClick={stopQrScanner} style={{padding:'8px 16px', background:'#ef4444', color:'white', border:'none', borderRadius:8, cursor:'pointer'}}>
+                      Stop Scanner
+                    </button>
+                  </div>
+                  <div id="qr-reader" style={{width: '100%', maxWidth: 400, margin: '0 auto', borderRadius: 12, overflow:'hidden'}}></div>
+                  <p style={{textAlign:'center', marginTop: 12, color:'#64748b'}}>
+                    Point the camera at the QR code on the parent's phone
+                  </p>
+                  <button
+                    onClick={() => { stopQrScanner(); setCheckoutMode('manual'); }}
+                    style={{display:'block', margin:'16px auto', padding:'10px 20px', background:'none', border:'1px solid #cbd5e1', borderRadius:8, cursor:'pointer', color:'#475569'}}
                   >
-                    Verify Code
+                    Switch to manual code entry
                   </button>
                 </div>
-              </div>
+              )}
 
-              {/* Verification Result */}
+              {/* Manual Code Entry Mode */}
+              {checkoutMode === 'manual' && !scanResult && (
+                <div className="kca-verify-section" data-testid="manual-code-section">
+                  <div className="kca-verify-icon">
+                    <Keyboard className="w-12 h-12" />
+                  </div>
+                  <h2>Enter Pickup Code</h2>
+                  <p>Parents show their 3-digit pickup code from the app</p>
+                  
+                  <div className="kca-verify-input-group">
+                    <input
+                      type="text"
+                      placeholder="Enter 3-digit code"
+                      value={pickupCode}
+                      onChange={(e) => setPickupCode(e.target.value)}
+                      className="kca-verify-input"
+                      maxLength={6}
+                      inputMode="numeric"
+                      style={{fontSize: 24, textAlign:'center', letterSpacing: 8}}
+                      data-testid="pickup-code-input"
+                    />
+                    <button 
+                      className="kca-verify-btn"
+                      onClick={handleVerifyCode}
+                      data-testid="verify-code-btn"
+                    >
+                      Verify Code
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => { setCheckoutMode('choose'); setPickupCode(''); setVerifyResult(null); }}
+                    style={{display:'block', margin:'16px auto', padding:'10px 20px', background:'none', border:'1px solid #cbd5e1', borderRadius:8, cursor:'pointer', color:'#475569'}}
+                  >
+                    Back to checkout options
+                  </button>
+                </div>
+              )}
+
+              {/* Scan Result */}
+              {scanResult && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="kca-verify-result valid"
+                  style={{textAlign:'center'}}
+                >
+                  {scanResult.success ? (
+                    <>
+                      <CheckCircle2 className="w-16 h-16" style={{color:'#22c55e', margin:'0 auto 16px'}} />
+                      <h3 style={{fontSize: 20, marginBottom: 8}}>{scanResult.child_name} Checked Out!</h3>
+                      <p style={{color:'#64748b'}}>Checkout time: {new Date(scanResult.checkout_time).toLocaleTimeString()}</p>
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle className="w-16 h-16" style={{color:'#ef4444', margin:'0 auto 16px'}} />
+                      <h3>{scanResult.message || 'Invalid Code'}</h3>
+                    </>
+                  )}
+                  <button
+                    onClick={() => { setScanResult(null); setCheckoutMode('choose'); }}
+                    style={{marginTop: 20, padding:'12px 24px', background:'#3b82f6', color:'white', border:'none', borderRadius:10, cursor:'pointer', fontSize: 16}}
+                  >
+                    Check Out Another Child
+                  </button>
+                </motion.div>
+              )}
+
+              {/* Verification Result (for manual code) */}
               <AnimatePresence>
-                {verifyResult && (
+                {verifyResult && checkoutMode === 'manual' && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

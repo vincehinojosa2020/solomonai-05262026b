@@ -62,8 +62,12 @@ export default function PortalKidsCheckin() {
   
   // New child form
   const [newChild, setNewChild] = useState({
+    first_name: '',
+    last_name: '',
     name: '',
     birthdate: '',
+    grade: 'PreK',
+    classroom: 'Sunday School Adventures',
     allergies: '',
     special_needs: '',
     emergency_contact: '',
@@ -101,23 +105,32 @@ export default function PortalKidsCheckin() {
   };
 
   const addChild = async () => {
-    if (!newChild.name || !newChild.birthdate) {
+    const childName = newChild.first_name && newChild.last_name 
+      ? `${newChild.first_name} ${newChild.last_name}` 
+      : newChild.name;
+    
+    if (!childName || !newChild.birthdate) {
       toast.error('Please enter child name and birthdate');
       return;
     }
 
     try {
+      const payload = { 
+        ...newChild, 
+        name: childName,
+        first_name: newChild.first_name,
+        last_name: newChild.last_name
+      };
       const res = await fetch(`${API_URL}/portal/kids`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        
-        body: JSON.stringify(newChild)
+        body: JSON.stringify(payload)
       });
 
       if (res.ok) {
-        toast.success(`${newChild.name} added!`);
+        toast.success(`${childName} added! Ready to check in.`);
         setShowAddChild(false);
-        setNewChild({ name: '', birthdate: '', allergies: '', special_needs: '', emergency_contact: '', emergency_phone: '' });
+        setNewChild({ first_name: '', last_name: '', name: '', birthdate: '', grade: 'PreK', classroom: 'Sunday School Adventures', allergies: '', special_needs: '', emergency_contact: '', emergency_phone: '' });
         fetchData();
       } else {
         toast.error('Failed to add child');
@@ -310,15 +323,25 @@ export default function PortalKidsCheckin() {
                 </div>
                 
                 {checkedIn ? (
-                  <div className="kc-checked-status">
+                  <div className="kc-checked-status" data-testid={`checked-in-status-${child.id}`}>
                     <div className="kc-status-badge">
                       <Check className="w-4 h-4" />
                       <span>Checked In!</span>
                     </div>
+                    <div className="kc-qr-inline" data-testid={`qr-code-${child.id}`} style={{margin:'12px auto', background:'white', padding: 12, borderRadius: 12, display:'inline-block'}}>
+                      <QRCodeSVG 
+                        value={`SOLOMON_PICKUP_${child.id}_${checkinInfo?.pickup_code}_${new Date().toISOString().split('T')[0]}`}
+                        size={140}
+                        level="M"
+                        bgColor="#ffffff"
+                        fgColor="#1f2937"
+                      />
+                    </div>
                     <div className="kc-pickup-code">
                       <span className="kc-code-label">Pickup Code</span>
-                      <span className="kc-code-value">{checkinInfo?.pickup_code}</span>
+                      <span className="kc-code-value" style={{fontSize: 28, letterSpacing: 6}}>{checkinInfo?.pickup_code}</span>
                     </div>
+                    <p style={{fontSize: 12, color:'#64748b', marginTop: 4}}>Show this to pick up your child at checkout</p>
                     <div className="kc-checkin-time">
                       <Clock className="w-3 h-3" />
                       {new Date(checkinInfo?.checked_in_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -457,37 +480,76 @@ export default function PortalKidsCheckin() {
               </div>
 
               <div className="kc-modal-form">
-                <div className="kc-form-group">
-                  <label>
-                    <span className="kc-label-emoji">📝</span>
-                    Child's Name
-                  </label>
-                  <input
-                    type="text"
-                    value={newChild.name}
-                    onChange={(e) => setNewChild({ ...newChild, name: e.target.value })}
-                    placeholder="Enter your child's name"
-                    data-testid="child-name-input"
-                  />
+                <div className="kc-form-row">
+                  <div className="kc-form-group">
+                    <label>
+                      <span className="kc-label-emoji">📝</span>
+                      First Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={newChild.first_name}
+                      onChange={(e) => setNewChild({ ...newChild, first_name: e.target.value })}
+                      placeholder="First name"
+                      data-testid="child-first-name-input"
+                      style={{fontSize: 16}}
+                    />
+                  </div>
+                  <div className="kc-form-group">
+                    <label>
+                      <span className="kc-label-emoji">📝</span>
+                      Last Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={newChild.last_name}
+                      onChange={(e) => setNewChild({ ...newChild, last_name: e.target.value })}
+                      placeholder="Last name"
+                      data-testid="child-last-name-input"
+                      style={{fontSize: 16}}
+                    />
+                  </div>
                 </div>
 
                 <div className="kc-form-group">
                   <label>
                     <span className="kc-label-emoji">🎂</span>
-                    Date of Birth
+                    Date of Birth *
                   </label>
                   <input
                     type="date"
                     value={newChild.birthdate}
                     onChange={(e) => setNewChild({ ...newChild, birthdate: e.target.value })}
                     data-testid="child-birthdate-input"
+                    style={{fontSize: 16}}
                   />
                 </div>
 
                 <div className="kc-form-group">
                   <label>
+                    <span className="kc-label-emoji">🎒</span>
+                    Grade / Class
+                  </label>
+                  <select
+                    value={newChild.grade}
+                    onChange={(e) => setNewChild({ ...newChild, grade: e.target.value })}
+                    data-testid="child-grade-select"
+                    style={{fontSize: 16, padding: '10px 12px', borderRadius: 8, border: '1px solid #e2e8f0', width: '100%'}}
+                  >
+                    <option value="PreK">PreK</option>
+                    <option value="Kindergarten">Kindergarten</option>
+                    <option value="1st">1st Grade</option>
+                    <option value="2nd">2nd Grade</option>
+                    <option value="3rd">3rd Grade</option>
+                    <option value="4th">4th Grade</option>
+                    <option value="5th">5th Grade</option>
+                  </select>
+                </div>
+
+                <div className="kc-form-group">
+                  <label>
                     <span className="kc-label-emoji">⚠️</span>
-                    Any Allergies?
+                    Allergies or Special Notes
                   </label>
                   <input
                     type="text"
@@ -495,19 +557,7 @@ export default function PortalKidsCheckin() {
                     onChange={(e) => setNewChild({ ...newChild, allergies: e.target.value })}
                     placeholder="e.g., Peanuts, Dairy (leave blank if none)"
                     data-testid="child-allergies-input"
-                  />
-                </div>
-
-                <div className="kc-form-group">
-                  <label>
-                    <span className="kc-label-emoji">💝</span>
-                    Special Needs / Notes
-                  </label>
-                  <textarea
-                    value={newChild.special_needs}
-                    onChange={(e) => setNewChild({ ...newChild, special_needs: e.target.value })}
-                    placeholder="Any special accommodations we should know about?"
-                    rows={2}
+                    style={{fontSize: 16}}
                   />
                 </div>
 
@@ -526,6 +576,7 @@ export default function PortalKidsCheckin() {
                       value={newChild.emergency_contact}
                       onChange={(e) => setNewChild({ ...newChild, emergency_contact: e.target.value })}
                       placeholder="Contact name"
+                      style={{fontSize: 16}}
                     />
                   </div>
                   <div className="kc-form-group">
@@ -538,6 +589,7 @@ export default function PortalKidsCheckin() {
                       value={newChild.emergency_phone}
                       onChange={(e) => setNewChild({ ...newChild, emergency_phone: e.target.value })}
                       placeholder="(555) 123-4567"
+                      style={{fontSize: 16}}
                     />
                   </div>
                 </div>
@@ -548,7 +600,7 @@ export default function PortalKidsCheckin() {
                   data-testid="save-child-btn"
                 >
                   <Heart className="w-5 h-5" />
-                  <span>Add Child</span>
+                  <span>Add Child to My Account</span>
                 </button>
               </div>
             </motion.div>

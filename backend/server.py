@@ -908,7 +908,11 @@ class Child(BaseModel):
 
 class ChildCreate(BaseModel):
     name: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     birthdate: str
+    grade: Optional[str] = None
+    classroom: Optional[str] = "Sunday School Adventures"
     allergies: Optional[str] = None
     special_needs: Optional[str] = None
     emergency_contact: Optional[str] = None
@@ -1946,16 +1950,39 @@ async def ensure_mobile_demo_accounts():
             "last_name": "Martinez",
             "role": "member",
             "tenant_id": "abundant-west-001"
+        },
+        {
+            "email": "vince@charlottesoftwareengineering.com",
+            "user_id": "cc7a823c-4d38-45d9-bb09-1df8caffe258",
+            "name": "Vince Hinojosa",
+            "first_name": "Vince",
+            "last_name": "Hinojosa",
+            "role": "member",
+            "tenant_id": "abundant-east-001"
+        },
+        {
+            "email": "avopham@gmail.com",
+            "user_id": "f1d0f1d8-de66-4fc0-a8c7-8f81f679ce22",
+            "name": "Aivy Vopham",
+            "first_name": "Aivy",
+            "last_name": "Vopham",
+            "role": "church_admin",
+            "tenant_id": "abundant-east-001"
         }
     ]
 
+    # Accounts that use SolomonTest2026! password
+    test_password_hash = hashlib.sha256("SolomonTest2026!".encode()).hexdigest()
+    test_accounts_emails = {"vince@charlottesoftwareengineering.com", "avopham@gmail.com"}
+
     for account in required_accounts:
+        pw = test_password_hash if account["email"] in test_accounts_emails else demo_password_hash
         await db.users.update_one(
             {"email": account["email"]},
             {
                 "$set": {
                     **account,
-                    "password_hash": demo_password_hash,
+                    "password_hash": pw,
                     "is_active": True,
                     "updated_at": now_iso
                 },
@@ -2295,6 +2322,30 @@ async def ensure_abundant_mobile_demo_content(now_iso: Optional[str] = None):
     await db.children.update_one(
         {"id": ethan_doc["id"], "tenant_id": tenant_id},
         {"$set": ethan_doc},
+        upsert=True
+    )
+
+    # Baby Hinojosa (Vince's child) for mobile QA testing
+    baby_hinojosa_doc = {
+        "id": "80f242e5-de94-4d96-9f21-1a3aff0ba40d",
+        "tenant_id": tenant_id,
+        "parent_user_id": "cc7a823c-4d38-45d9-bb09-1df8caffe258",
+        "name": "Baby Hinojosa",
+        "first_name": "Baby",
+        "last_name": "Hinojosa",
+        "birthdate": "2023-03-15",
+        "grade": "PreK",
+        "classroom": "Sunday School Adventures",
+        "allergies": "",
+        "special_needs": "",
+        "emergency_contact": "Vince Hinojosa",
+        "emergency_phone": "",
+        "updated_at": now_iso,
+        "created_at": now_iso
+    }
+    await db.children.update_one(
+        {"id": baby_hinojosa_doc["id"], "tenant_id": tenant_id},
+        {"$set": baby_hinojosa_doc},
         upsert=True
     )
 
@@ -4441,6 +4492,10 @@ async def add_child(request: Request, payload: ChildCreate):
         emergency_phone=payload.emergency_phone
     ).model_dump()
     child["created_at"] = datetime.now(timezone.utc).isoformat()
+    child["grade"] = payload.grade
+    child["classroom"] = payload.classroom or "Sunday School Adventures"
+    child["first_name"] = payload.first_name
+    child["last_name"] = payload.last_name
     
     await db.children.insert_one(child)
     return {"message": "Child added", "child": serialize_doc(child)}
@@ -6455,6 +6510,52 @@ async def get_admin_member_directory(
             "status": status
         }
     }
+
+# ============== ROLE MANAGEMENT API ==============
+
+class RoleUpdateRequest(BaseModel):
+    role: str  # "member" | "church_admin" | "leader"
+
+@api_router.put("/admin/members/{user_id}/role")
+async def update_member_role(request: Request, user_id: str, payload: RoleUpdateRequest):
+    """Promote or demote a user's role. Requires church_admin or platform_admin."""
+    admin = await get_current_admin_user(request)
+    admin_role = admin.get("role")
+    
+    if admin_role not in ("church_admin", "admin", "platform_admin"):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    valid_roles = {"member", "church_admin", "leader"}
+    if payload.role not in valid_roles:
+        raise HTTPException(status_code=400, detail=f"Invalid role. Must be one of: {', '.join(valid_roles)}")
+    
+    # Find the target user
+    target = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Church admins can only promote within their tenant
+    if admin_role in ("church_admin", "admin"):
+        if target.get("tenant_id") != admin.get("tenant_id"):
+            raise HTTPException(status_code=403, detail="Cannot modify users outside your church")
+    
+    await db.users.update_one(
+        {"user_id": user_id},
+        {"$set": {"role": payload.role}}
+    )
+    
+    logger.info(f"Role updated: {target.get('email')} -> {payload.role} by {admin.get('email')}")
+    
+    return {"success": True, "user_id": user_id, "new_role": payload.role, "name": target.get("name")}
+
+@api_router.get("/churches/list")
+async def list_churches_public():
+    """Alias for /tenants/list — public church listing for registration."""
+    tenants = await db.tenants.find(
+        {"subscription_status": "active"},
+        {"_id": 0, "id": 1, "name": 1, "subdomain": 1, "city": 1, "state": 1, "primary_color": 1}
+    ).to_list(100)
+    return tenants
 
 # ============== MEDIA MANAGEMENT API ==============
 
@@ -12851,13 +12952,22 @@ async def get_admin_kids_checkins_today(request: Request):
     """Get ALL children checked in today for this tenant."""
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    # Use UTC start/end of today for reliable matching
+    now_utc = datetime.now(timezone.utc)
+    today_start = now_utc.replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
+    today_end = now_utc.replace(hour=23, minute=59, second=59, microsecond=999999).isoformat()
     checkins = await db.checkins.find(
-        {"tenant_id": tenant_id, "checked_in_at": {"$regex": f"^{today}"}},
+        {"tenant_id": tenant_id, "checked_in_at": {"$gte": today_start, "$lte": today_end}},
         {"_id": 0}
     ).sort("checked_in_at", -1).to_list(500)
+    # Also include any still checked_in from previous days (edge case: overnight)
+    still_checked_in = await db.checkins.find(
+        {"tenant_id": tenant_id, "status": "checked_in", "checked_in_at": {"$lt": today_start}},
+        {"_id": 0}
+    ).to_list(100)
+    all_checkins = checkins + still_checked_in
     enriched = []
-    for c in checkins:
+    for c in all_checkins:
         child = await db.children.find_one({"id": c.get("child_id")}, {"_id": 0})
         enriched.append({
             "child_id": c.get("child_id"),
@@ -12893,6 +13003,43 @@ async def admin_kids_checkout(request: Request, payload: KidsCheckoutRequest):
         {"$set": {"status": "checked_out", "checked_out_at": now_iso, "checked_out_by": user.get("name", "Admin")}}
     )
     return {"success": True, "child_name": checkin.get("child_name"), "checkout_time": now_iso}
+
+@api_router.post("/admin/kids/checkout-by-code")
+async def admin_kids_checkout_by_code(request: Request, payload: dict):
+    """Admin scans QR or enters code — checkout without knowing child_id."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    code = payload.get("pickup_code", "").strip()
+    if not code:
+        raise HTTPException(status_code=400, detail="Pickup code required")
+    
+    # Parse QR code format: SOLOMON_PICKUP_{child_id}_{code}_{date}
+    actual_code = code
+    if code.startswith("SOLOMON_PICKUP_"):
+        parts = code.split("_")
+        if len(parts) >= 4:
+            actual_code = parts[3]
+    
+    checkin = await db.checkins.find_one(
+        {"tenant_id": tenant_id, "pickup_code": actual_code, "status": "checked_in"},
+        {"_id": 0}
+    )
+    if not checkin:
+        raise HTTPException(status_code=404, detail="No active check-in found for this code")
+    
+    now_iso = datetime.now(timezone.utc).isoformat()
+    await db.checkins.update_one(
+        {"id": checkin["id"]},
+        {"$set": {"status": "checked_out", "checked_out_at": now_iso, "checked_out_by": user.get("name", "Admin")}}
+    )
+    child = await db.children.find_one({"id": checkin.get("child_id")}, {"_id": 0})
+    return {
+        "success": True, 
+        "child_name": checkin.get("child_name"), 
+        "child": serialize_doc(child) if child else None,
+        "checkout_time": now_iso,
+        "checkin_id": checkin.get("id")
+    }
 
 # --- Admin Media Sermons CRUD ---
 class SermonCreate(BaseModel):

@@ -15,19 +15,14 @@ const GoogleIcon = () => (
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const authUrl = process.env.REACT_APP_AUTH_URL;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleLogin = () => {
-    if (!authUrl) {
-      toast.error('Auth URL is not configured');
-      return;
-    }
     const redirectUrl = window.location.origin + '/dashboard';
-    window.location.href = `${authUrl}/?redirect=${encodeURIComponent(redirectUrl)}`;
+    window.location.href = `/api/auth/google?redirect=${encodeURIComponent(redirectUrl)}`;
   };
 
   const handleEmailLogin = async (e) => {

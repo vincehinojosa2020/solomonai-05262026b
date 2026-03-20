@@ -140,7 +140,12 @@ export default function SignUpPage() {
 
       // Get church name for welcome message
       const selectedChurch = churches.find(c => c.id === formData.churchId);
-      toast.success(`Welcome to ${selectedChurch?.name || 'your church'}!`);
+      toast.success(`Account created! Welcome to Solomon AI`);
+      
+      // Store auth token for auto-login
+      if (data.token || data.session_token) {
+        document.cookie = `session_token=${data.token || data.session_token}; path=/; max-age=${7 * 24 * 60 * 60}`;
+      }
       
       // Store user info
       localStorage.setItem('solomon_user', JSON.stringify({
@@ -148,6 +153,8 @@ export default function SignUpPage() {
         email: data.email,
         name: data.name,
         role: data.role,
+        token: data.token || data.session_token,
+        tenant_id: formData.churchId,
       }));
 
       // Redirect to portal
