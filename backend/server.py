@@ -10074,6 +10074,218 @@ async def report_membership():
         "total": total
     }
 
+# ============== EXTENDED REPORT ENDPOINTS (Task 6) ==============
+
+@api_router.get("/reports/kids-history")
+async def report_kids_history(start_date: str = None, end_date: str = None):
+    """Kids check-in/check-out history report."""
+    tenant_id = DEFAULT_TENANT_ID
+    query = {"tenant_id": tenant_id}
+    if start_date:
+        query["checked_in_at"] = {"$gte": start_date}
+    if end_date:
+        query.setdefault("checked_in_at", {})["$lte"] = end_date + "T23:59:59"
+
+    records = await db.kids_checkins.find(query, {"_id": 0}).sort("checked_in_at", -1).to_list(500)
+    total_checkins = len(records)
+    unique_kids = len(set(r.get("child_id", "") for r in records))
+    checked_out = sum(1 for r in records if r.get("checked_out_at"))
+    return {
+        "records": records,
+        "summary": {"total_checkins": total_checkins, "unique_kids": unique_kids, "checked_out": checked_out, "still_checked_in": total_checkins - checked_out}
+    }
+
+@api_router.get("/reports/attendance")
+async def report_attendance(start_date: str = None, end_date: str = None):
+    """Attendance report with weekly breakdown."""
+    tenant_id = DEFAULT_TENANT_ID
+    query = {"tenant_id": tenant_id}
+    if start_date:
+        query["service_date"] = {"$gte": start_date}
+    if end_date:
+        query.setdefault("service_date", {})["$lte"] = end_date
+
+    checkins = await db.member_checkins.find(query, {"_id": 0}).sort("service_date", -1).to_list(2000)
+    by_date = {}
+    for c in checkins:
+        d = c.get("service_date", "unknown")
+        by_date.setdefault(d, {"date": d, "in_person": 0, "online": 0, "total": 0})
+        t = c.get("check_in_type", "in_person")
+        by_date[d][t if t in ("in_person", "online") else "in_person"] += 1
+        by_date[d]["total"] += 1
+    weekly = sorted(by_date.values(), key=lambda x: x["date"], reverse=True)
+    return {
+        "weekly": weekly,
+        "summary": {"total_services": len(weekly), "total_checkins": len(checkins), "avg_per_service": round(len(checkins) / max(len(weekly), 1), 1)}
+    }
+
+@api_router.get("/reports/cafe")
+async def report_cafe(start_date: str = None, end_date: str = None):
+    """Cafe orders report."""
+    tenant_id = DEFAULT_TENANT_ID
+    query = {"tenant_id": tenant_id}
+    if start_date:
+        query["created_at"] = {"$gte": start_date}
+    if end_date:
+        query.setdefault("created_at", {})["$lte"] = end_date + "T23:59:59"
+
+    orders = await db.cafe_orders.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    total_revenue = sum(o.get("total", 0) for o in orders)
+    item_counts = {}
+    for o in orders:
+        for item in o.get("items", []):
+            name = item.get("name", "Unknown")
+            item_counts[name] = item_counts.get(name, 0) + item.get("quantity", 1)
+    top_items = sorted([{"name": k, "quantity": v} for k, v in item_counts.items()], key=lambda x: x["quantity"], reverse=True)[:10]
+    return {
+        "orders": orders[:100],
+        "summary": {"total_orders": len(orders), "total_revenue": round(total_revenue, 2), "avg_order": round(total_revenue / max(len(orders), 1), 2)},
+        "top_items": top_items
+    }
+
+@api_router.get("/reports/merch")
+async def report_merch(start_date: str = None, end_date: str = None):
+    """Merch orders report."""
+    tenant_id = DEFAULT_TENANT_ID
+    query = {"tenant_id": tenant_id}
+    if start_date:
+        query["created_at"] = {"$gte": start_date}
+    if end_date:
+        query.setdefault("created_at", {})["$lte"] = end_date + "T23:59:59"
+
+    orders = await db.merch_orders.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    total_revenue = sum(o.get("total", 0) for o in orders)
+    return {
+        "orders": orders[:100],
+        "summary": {"total_orders": len(orders), "total_revenue": round(total_revenue, 2)}
+    }
+
+@api_router.get("/reports/groups")
+async def report_groups():
+    """Groups and small group report."""
+    tenant_id = DEFAULT_TENANT_ID
+    groups = await db.groups.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(200)
+    total_members = 0
+    group_data = []
+    for g in groups:
+        member_count = len(g.get("members", []))
+        total_members += member_count
+        group_data.append({"id": g.get("id"), "name": g.get("name"), "type": g.get("group_type", "small_group"), "members": member_count, "leader": g.get("leader_name", ""), "status": g.get("status", "active")})
+    return {
+        "groups": group_data,
+        "summary": {"total_groups": len(groups), "total_members_in_groups": total_members, "avg_group_size": round(total_members / max(len(groups), 1), 1)}
+    }
+
+@api_router.get("/reports/next-steps")
+async def report_next_steps():
+    """Next Steps / Membership Pathway completion report."""
+    tenant_id = DEFAULT_TENANT_ID
+    journeys = await db.next_steps_journeys.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(500)
+    memberships = await db.next_steps_memberships.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(500)
+    completed = sum(1 for m in memberships if m.get("completed"))
+    in_progress = len(journeys)
+    return {
+        "journeys": journeys[:100],
+        "memberships": memberships[:100],
+        "summary": {"total_enrolled": in_progress, "completed_membership": completed, "completion_rate": round(completed / max(in_progress, 1) * 100, 1)}
+    }
+
+@api_router.get("/reports/executive-summary")
+async def report_executive_summary():
+    """Executive summary combining all key metrics."""
+    tenant_id = DEFAULT_TENANT_ID
+    now = datetime.now(timezone.utc)
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0).isoformat()
+
+    members_total = await db.people.count_documents({"tenant_id": tenant_id})
+    members_active = await db.people.count_documents({"tenant_id": tenant_id, "membership_status": "active"})
+    new_this_month = await db.people.count_documents({"tenant_id": tenant_id, "created_at": {"$gte": month_start}})
+
+    donations = await db.donations.find({"tenant_id": tenant_id, "created_at": {"$gte": month_start}}, {"_id": 0, "amount": 1}).to_list(5000)
+    giving_this_month = sum(d.get("amount", 0) for d in donations)
+
+    attendance_checkins = await db.member_checkins.find({"tenant_id": tenant_id, "service_date": {"$gte": now.strftime("%Y-%m-01")}}, {"_id": 0}).to_list(5000)
+    unique_attendees = len(set(c.get("user_id", "") for c in attendance_checkins))
+
+    kids_checkins = await db.kids_checkins.count_documents({"tenant_id": tenant_id, "checked_in_at": {"$gte": month_start}})
+    groups_count = await db.groups.count_documents({"tenant_id": tenant_id, "status": "active"})
+    cafe_orders = await db.cafe_orders.count_documents({"tenant_id": tenant_id, "created_at": {"$gte": month_start}})
+    merch_orders = await db.merch_orders.count_documents({"tenant_id": tenant_id, "created_at": {"$gte": month_start}})
+
+    return {
+        "period": {"month": now.strftime("%B %Y"), "start": month_start[:10], "end": now.strftime("%Y-%m-%d")},
+        "membership": {"total": members_total, "active": members_active, "new_this_month": new_this_month},
+        "giving": {"total_this_month": round(giving_this_month, 2), "donation_count": len(donations), "avg_gift": round(giving_this_month / max(len(donations), 1), 2)},
+        "attendance": {"total_checkins": len(attendance_checkins), "unique_attendees": unique_attendees},
+        "kids": {"checkins_this_month": kids_checkins},
+        "groups": {"active_groups": groups_count},
+        "cafe": {"orders_this_month": cafe_orders},
+        "merch": {"orders_this_month": merch_orders}
+    }
+
+@api_router.get("/reports/{report_type}/export")
+async def export_report_csv(report_type: str, format: str = "csv", start_date: str = None, end_date: str = None):
+    """Export any report as CSV."""
+    import io, csv
+    if format != "csv":
+        raise HTTPException(status_code=400, detail="Only CSV export is currently supported")
+
+    tenant_id = DEFAULT_TENANT_ID
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    if report_type == "kids-history":
+        writer.writerow(["Child Name", "Parent", "Service Type", "Check-in Time", "Check-out Time", "Pickup Code"])
+        records = await db.kids_checkins.find({"tenant_id": tenant_id}, {"_id": 0}).sort("checked_in_at", -1).to_list(2000)
+        for r in records:
+            writer.writerow([r.get("child_name", ""), r.get("parent_name", ""), r.get("service_type", ""), r.get("checked_in_at", ""), r.get("checked_out_at", ""), r.get("pickup_code", "")])
+    elif report_type == "attendance":
+        writer.writerow(["Date", "User", "Check-in Type", "Service"])
+        records = await db.member_checkins.find({"tenant_id": tenant_id}, {"_id": 0}).sort("service_date", -1).to_list(2000)
+        for r in records:
+            writer.writerow([r.get("service_date", ""), r.get("user_id", ""), r.get("check_in_type", ""), r.get("service_name", "")])
+    elif report_type == "giving-fund":
+        data = await report_giving_by_fund(start_date or "2020-01-01", end_date or datetime.now(timezone.utc).strftime("%Y-%m-%d"))
+        writer.writerow(["Fund", "Total", "Count"])
+        for item in data:
+            writer.writerow([item.get("fund_name", ""), item.get("total", 0), item.get("count", 0)])
+    elif report_type == "top-donors":
+        data = await report_top_donors(start_date or "2020-01-01", end_date or datetime.now(timezone.utc).strftime("%Y-%m-%d"))
+        writer.writerow(["Rank", "Name", "Total", "Count"])
+        for idx, d in enumerate(data):
+            writer.writerow([idx + 1, d.get("name", ""), d.get("total", 0), d.get("count", 0)])
+    elif report_type == "cafe":
+        writer.writerow(["Order ID", "Customer", "Total", "Status", "Created"])
+        records = await db.cafe_orders.find({"tenant_id": tenant_id}, {"_id": 0}).sort("created_at", -1).to_list(2000)
+        for r in records:
+            writer.writerow([r.get("id", ""), r.get("customer_name", ""), r.get("total", 0), r.get("status", ""), r.get("created_at", "")])
+    elif report_type == "groups":
+        groups = await db.groups.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(200)
+        writer.writerow(["Group Name", "Type", "Members", "Leader", "Status"])
+        for g in groups:
+            writer.writerow([g.get("name", ""), g.get("group_type", ""), len(g.get("members", [])), g.get("leader_name", ""), g.get("status", "")])
+    elif report_type == "executive-summary":
+        summary = await report_executive_summary()
+        writer.writerow(["Metric", "Value"])
+        writer.writerow(["Period", summary["period"]["month"]])
+        writer.writerow(["Total Members", summary["membership"]["total"]])
+        writer.writerow(["Active Members", summary["membership"]["active"]])
+        writer.writerow(["New This Month", summary["membership"]["new_this_month"]])
+        writer.writerow(["Giving This Month", summary["giving"]["total_this_month"]])
+        writer.writerow(["Avg Gift", summary["giving"]["avg_gift"]])
+        writer.writerow(["Attendance Checkins", summary["attendance"]["total_checkins"]])
+        writer.writerow(["Kids Checkins", summary["kids"]["checkins_this_month"]])
+        writer.writerow(["Active Groups", summary["groups"]["active_groups"]])
+        writer.writerow(["Cafe Orders", summary["cafe"]["orders_this_month"]])
+        writer.writerow(["Merch Orders", summary["merch"]["orders_this_month"]])
+    else:
+        raise HTTPException(status_code=404, detail=f"Unknown report type: {report_type}")
+
+    csv_content = output.getvalue()
+    from fastapi.responses import Response
+    return Response(content=csv_content, media_type="text/csv", headers={"Content-Disposition": f"attachment; filename={report_type}_report.csv"})
+
+
 # --- SEARCH ROUTE ---
 @api_router.get("/search")
 async def global_search(q: str, limit: int = 10):
@@ -13735,6 +13947,101 @@ async def get_all_health_scores(request: Request):
 
     results.sort(key=lambda x: x["health"]["score"], reverse=True)
     return results
+
+# ============== PLATFORM CHURCH ONBOARDING (Task 2) ==============
+
+class ChurchOnboardingRequest(BaseModel):
+    name: str
+    city: str = ""
+    state: str = ""
+    denomination: str = ""
+    website: str = ""
+    service_times: list = []
+    primary_color: str = "#2563eb"
+    subdomain: str = ""
+    admin_name: str = ""
+    admin_email: str = ""
+    admin_password: str = ""
+    admin_phone: str = ""
+    estimated_members: int = 0
+    plan: str = "starter"
+
+@api_router.post("/platform/churches/create")
+async def create_church_onboarding(request: Request, payload: ChurchOnboardingRequest):
+    """5-step church onboarding wizard — creates a new tenant with admin account."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    if not payload.name:
+        raise HTTPException(status_code=400, detail="Church name is required")
+    if not payload.admin_email:
+        raise HTTPException(status_code=400, detail="Admin email is required")
+
+    subdomain = payload.subdomain or payload.name.lower().replace(" ", "-").replace("'", "")[:30]
+    existing = await db.tenants.find_one({"subdomain": subdomain})
+    if existing:
+        raise HTTPException(status_code=409, detail=f"Subdomain '{subdomain}' is already taken")
+
+    existing_email = await db.users.find_one({"email": payload.admin_email.lower()})
+    if existing_email:
+        raise HTTPException(status_code=409, detail=f"Email '{payload.admin_email}' is already registered")
+
+    tenant_id = f"{subdomain}-001"
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    tenant = {
+        "id": tenant_id,
+        "name": payload.name,
+        "subdomain": subdomain,
+        "city": payload.city,
+        "state": payload.state,
+        "denomination": payload.denomination,
+        "website": payload.website,
+        "primary_color": payload.primary_color,
+        "plan": payload.plan,
+        "subscription_status": "active",
+        "estimated_members": payload.estimated_members,
+        "service_times": payload.service_times,
+        "created_at": now_iso,
+        "onboarded_by": user.get("user_id")
+    }
+    await db.tenants.insert_one({**tenant})
+
+    admin_password_hash = hashlib.sha256(payload.admin_password.encode()).hexdigest() if payload.admin_password else hashlib.sha256("Welcome2026!".encode()).hexdigest()
+    admin_user = {
+        "user_id": str(uuid.uuid4()),
+        "email": payload.admin_email.lower(),
+        "password_hash": admin_password_hash,
+        "name": payload.admin_name or payload.name + " Admin",
+        "role": "church_admin",
+        "role_title": "Church Administrator",
+        "permissions": ROLE_TEMPLATES["church_admin"]["permissions"],
+        "tenant_id": tenant_id,
+        "phone": payload.admin_phone,
+        "created_at": now_iso,
+        "is_verified": True
+    }
+    await db.users.insert_one({**admin_user})
+
+    await audit_log("church_created", "tenant", tenant_id, tenant_id, user.get("user_id"), user.get("name", ""), {}, {"tenant": payload.name, "admin_email": payload.admin_email}, request)
+
+    return {
+        "success": True,
+        "tenant_id": tenant_id,
+        "subdomain": subdomain,
+        "church_name": payload.name,
+        "admin_email": payload.admin_email,
+        "admin_user_id": admin_user["user_id"],
+        "message": f"Church '{payload.name}' created successfully with admin account."
+    }
+
 
 # ============== ORGANIZATIONS & CAMPUS COMPARISON (Universal Multi-Campus) ==============
 

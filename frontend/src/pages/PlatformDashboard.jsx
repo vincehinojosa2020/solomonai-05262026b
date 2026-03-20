@@ -10,6 +10,7 @@ import {
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import CampusComparison from '@/components/CampusComparison';
+import ChurchOnboardingWizard from '@/components/ChurchOnboardingWizard';
 
 export default function PlatformDashboard() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function PlatformDashboard() {
   const [selectedOrg, setSelectedOrg] = useState(null);
   const [healthData, setHealthData] = useState(null);
   const [healthScores, setHealthScores] = useState([]);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [stats, setStats] = useState({
     totalChurches: 0,
     activeChurches: 0,
@@ -205,7 +207,7 @@ export default function PlatformDashboard() {
           <p className="platform-subtitle">Manage all churches on Solomon AI</p>
         </div>
         <div className="platform-header-actions">
-          <button className="btn-primary" onClick={() => toast.info('Coming soon: Add new church')}>
+          <button className="btn-primary" onClick={() => setShowOnboarding(true)} data-testid="add-church-btn">
             <Building2 className="w-4 h-4" />
             Add Church
           </button>
@@ -724,6 +726,13 @@ export default function PlatformDashboard() {
           </div>
         </div>
       )}
+
+      {/* Church Onboarding Wizard */}
+      <ChurchOnboardingWizard
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+        onSuccess={() => fetchTenants()}
+      />
     </div>
   );
 }
