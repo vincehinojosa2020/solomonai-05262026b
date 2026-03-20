@@ -47,40 +47,37 @@ Solomon AI is a multi-tenant SaaS Church Management System built with React (fro
 - QR code increased to 200px (bright sunlight readable)
 - Pickup code at 48px monospace bold
 - Screen wake lock on check-in
-- Giving nudge after check-in: [$10][$25][$50][$100][Not today]
+- Giving nudge after check-in
 - Idempotency key on check-in POST
 
-### Task 5 — Ask Solomon Chat in Portal (March 20, 2026)
-- SolomonChat component rendered in PortalLayout (was imported but not rendered)
-- Floating "Ask Solomon" FAB button visible on all portal pages
-- Chat panel with AI responses, sample prompts, voice input, clear chat
-- Connects to existing /api/solomon/chat endpoint (Claude via Emergent LLM Key)
+### Task 5 — Ask Solomon Chat (March 20, 2026)
+- SolomonChat floating FAB + chat panel rendered in both AppShell (admin) and PortalLayout (member)
+- AI-powered responses via /api/solomon/chat (Claude via Emergent LLM Key)
+- Features: sample prompts, voice input, clear chat, markdown formatting
+- Fixed: portal dual-mode allowing admins to access member portal
 
 ### Task 8 — Sunday Morning Engine (March 20, 2026)
-- Service mode detection (Sunday/Wednesday, 9AM/11AM/7PM services)
-- ServiceModeBanner component with "I'm Here" / "Watching Online" check-in
+- Service mode detection (Sunday/Wednesday, multi-service)
+- ServiceModeBanner with "I'm Here" / "Watching Online" check-in
 - Attendance streak tracking with badges and progress bars
 - Arrival nudge flow: Welcome → Cafe order → Giving prompt
 - Geofence auto-detection hook (useGeofence) for client-side check-in
-- 6 push notification templates (service_starting, welcome_arrived, kids_reminder, giving_reminder, cafe_ready, post_service)
-- Admin broadcast endpoint for Sunday morning notifications
+- 6 push notification templates + admin broadcast endpoint
+- Geofence routes: config, check-in with haversine distance
 
-### Portal Dual-Mode Fix (March 20, 2026)
-- Fixed PortalLayout role check that blocked admin users from accessing portal
-- Admin users (church_admin) can now use the portal without redirect
-- Enables Lyft-style dual Admin ↔ Member mode switching
+### Task 2 — Church Onboarding Wizard (March 20, 2026)
+- POST /api/platform/churches/create: Creates tenant + admin account
+- 5-step wizard UI: Church Info → Services → Branding → Admin Account → Review
+- Validates subdomain uniqueness and email uniqueness
+- Color picker with presets, plan selection (starter/growth/enterprise)
+- Integrated into PlatformDashboard "Add Church" button
 
-### Mobile Browser Testing Day Fixes (March 20, 2026)
-- All hardcoded URLs removed
-- Registration with church selector + auto-login
-- Admin QR scanner (html5-qrcode camera) + manual code entry
-- Kids admin count bug fixed (UTC date range)
-- Enhanced Add Child form (first/last name, grade)
-- Mobile Safari optimized (16px inputs, 48px tap targets, safe areas)
-
-### Demo Walkthrough (March 20, 2026)
-- Guided first-login tour (5 steps member, 6 steps admin)
-- Spotlight tooltips with progress indicators
+### Task 6 — Reports & Export System (March 20, 2026)
+- 11 report types: Executive Summary, Membership, Giving by Fund, Giving by Method, Top Donors, Attendance, Kids History, Cafe, Merch, Groups, Next Steps
+- CSV export for all report types via /api/reports/{type}/export?format=csv
+- Executive Summary: combined monthly metrics across all operations
+- Charts: Bar charts (attendance, giving), Pie charts (membership, giving method)
+- Date range filtering for time-based reports
 
 ---
 
@@ -100,14 +97,13 @@ Solomon AI is a multi-tenant SaaS Church Management System built with React (fro
 - **SMS Notifications**: Logged to console
 
 ## Upcoming Tasks
-1. **Task 2** — Platform admin church onboarding wizard (5-step wizard + POST /api/platform/churches/create)
-2. **Task 6** — Reporting & Export system (10+ reports: Kids, Giving, Attendance, Cafe, Merch, Groups, Next Steps, Executive Summary with CSV/PDF)
-3. **Task 7 remaining** — Audit trail UI, structured error responses
+1. **Task 7 remaining** — Audit trail UI, structured error responses
+2. **Admin Permission Editor UI** — Checkbox grid for fine-grained permission assignment
+3. **PDF Export** — Add PDF generation for reports (currently CSV only)
 
 ## Future Backlog
 - Real Stripe payment integration
-- Push notifications (Expo/pywebpush) — infrastructure ready, needs real VAPID keys
+- Push notifications (Expo/pywebpush) — infrastructure ready
 - Client-side geofencing (React Native)
 - server.py refactor into modular routes (~14,000 lines)
-- Admin Permission Editor UI with checkbox grid
-- CSS refactor
+- CSS refactor and design system consolidation
