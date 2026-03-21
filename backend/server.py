@@ -8193,89 +8193,87 @@ SOLOMON_SYSTEM_PROMPT = """You are Solomon, an intelligent AI assistant for the 
 
 You are serving a multi-tenant church management platform with multiple churches."""
 
-async def get_church_context() -> str:
+async def get_church_context(user=None) -> str:
     """Gather current church data for Solomon's context"""
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = (user or {}).get("tenant_id", DEFAULT_TENANT_ID)
     
-    # Get key stats
     total_members = await db.people.count_documents({"tenant_id": tenant_id})
     active_members = await db.people.count_documents({"tenant_id": tenant_id, "membership_status": "member"})
     visitors = await db.people.count_documents({"tenant_id": tenant_id, "membership_status": "visitor"})
-    
-    # Get groups info
     total_groups = await db.groups.count_documents({"tenant_id": tenant_id, "is_active": True})
-
     media_count = await db.media_videos.count_documents({"tenant_id": tenant_id})
-    pathways_count = await db.pathways_courses.count_documents({"tenant_id": tenant_id})
-    merch_count = await db.merch_products.count_documents({"tenant_id": tenant_id})
     
-    # Get giving stats
     today = datetime.now(timezone.utc)
     month_start = today.replace(day=1).strftime("%Y-%m-%d")
     year_start = today.replace(month=1, day=1).strftime("%Y-%m-%d")
     
-    mtd_pipeline = [
-        {"$match": {"tenant_id": tenant_id, "donation_date": {"$gte": month_start}}},
-        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
-    ]
+    mtd_pipeline = [{"$match": {"tenant_id": tenant_id, "donation_date": {"$gte": month_start}}}, {"$group": {"_id": None, "total": {"$sum": "$amount"}}}]
     mtd_result = await db.donations.aggregate(mtd_pipeline).to_list(1)
     mtd_giving = mtd_result[0]["total"] if mtd_result else 0
-    
-    ytd_pipeline = [
-        {"$match": {"tenant_id": tenant_id, "donation_date": {"$gte": year_start}}},
-        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
-    ]
+    ytd_pipeline = [{"$match": {"tenant_id": tenant_id, "donation_date": {"$gte": year_start}}}, {"$group": {"_id": None, "total": {"$sum": "$amount"}}}]
     ytd_result = await db.donations.aggregate(ytd_pipeline).to_list(1)
     ytd_giving = ytd_result[0]["total"] if ytd_result else 0
     
-    # Get recent activity
-    recent_activities = await db.activity_log.find(
-        {"tenant_id": tenant_id}, {"_id": 0}
-    ).sort("created_at", -1).limit(5).to_list(5)
+    # Upcoming events (next 7 days)
+    from datetime import timedelta
+    next_week = (today + timedelta(days=7)).strftime("%Y-%m-%d")
+    upcoming_events = await db.events.find({"tenant_id": tenant_id, "start_datetime": {"$gte": today.strftime("%Y-%m-%d"), "$lte": next_week}}, {"_id": 0, "name": 1, "start_datetime": 1, "location": 1, "description": 1}).sort("start_datetime", 1).to_list(10)
+    events_text = "\n".join([f"- {e.get('name', 'Event')} on {e.get('start_datetime', 'TBD')} at {e.get('location', 'Church')}" for e in upcoming_events]) or "No events in the next 7 days."
     
-    activities_text = "\n".join([f"- {a.get('description', 'Unknown activity')}" for a in recent_activities])
+    # Latest announcements
+    announcements = await db.announcements.find({"tenant_id": tenant_id}, {"_id": 0, "title": 1, "message": 1, "created_at": 1}).sort("created_at", -1).to_list(3)
+    ann_text = "\n".join([f"- {a.get('title', '')}: {a.get('message', '')[:100]}" for a in announcements]) or "No recent announcements."
     
-    # Get upcoming events
-    upcoming_events = await db.events.find(
-        {"tenant_id": tenant_id, "start_datetime": {"$gte": today.strftime("%Y-%m-%d")}},
-        {"_id": 0}
-    ).sort("start_datetime", 1).limit(3).to_list(3)
+    # This week's service plan
+    service_plans = await db.service_plans.find({"tenant_id": tenant_id, "date": {"$gte": today.strftime("%Y-%m-%d"), "$lte": next_week}}, {"_id": 0}).to_list(5)
+    plan_text = ""
+    for sp in service_plans:
+        plan_text += f"\n{sp.get('title', 'Service')} on {sp.get('date', '')}:\n"
+        for item in sp.get("items", []):
+            plan_text += f"  - {item.get('type', 'Item')}: {item.get('title', '')} {item.get('key', '')} {item.get('reference', '')}\n"
+        for ta in sp.get("team_assignments", []):
+            plan_text += f"  - {ta.get('role', 'Role')}: {ta.get('user_name', 'TBD')}\n"
+    if not plan_text:
+        plan_text = "No service plan created for this week yet."
     
-    events_text = "\n".join([f"- {e.get('name', 'Unknown')} on {e.get('start_datetime', 'TBD')}" for e in upcoming_events])
+    # Groups with meeting times
+    groups = await db.groups.find({"tenant_id": tenant_id, "is_active": True}, {"_id": 0, "name": 1, "meeting_day": 1, "meeting_time": 1, "group_type": 1}).to_list(50)
+    groups_text = "\n".join([f"- {g.get('name', '')} ({g.get('group_type', 'small_group')}) meets {g.get('meeting_day', 'TBD')} at {g.get('meeting_time', 'TBD')}" for g in groups]) or "No active groups."
+    
+    # Member-specific context
+    member_text = ""
+    if user:
+        user_name = user.get("name", "Member")
+        member_text = f"\nCURRENT MEMBER: {user_name}"
+        user_groups = await db.group_memberships.find({"user_id": user.get("user_id"), "tenant_id": tenant_id}, {"_id": 0, "group_name": 1}).to_list(20)
+        if user_groups:
+            member_text += f"\nTheir groups: {', '.join(g.get('group_name', '') for g in user_groups)}"
     
     context = f"""
 CURRENT CHURCH DATA (as of {today.strftime('%B %d, %Y')}):
 
-MEMBERSHIP:
-- Total Members: {total_members:,}
-- Active Members: {active_members:,}
-- Visitors: {visitors:,}
-- Active Groups: {total_groups}
-- Media Library Videos: {media_count}
-- Abundant Pathways Courses: {pathways_count}
-- Merch Products: {merch_count}
+MEMBERSHIP: {total_members:,} total, {active_members:,} active, {visitors:,} visitors
+GROUPS: {total_groups} active groups
+MEDIA: {media_count} videos
 
 GIVING:
 - Month-to-Date: ${mtd_giving:,.2f}
 - Year-to-Date: ${ytd_giving:,.2f}
-- Monthly Goal: $95,000
 
-CURRENT GIVING NEEDS (share when members ask about giving):
-- Building Fund: We're $345,000 short of our goal for the new community ballroom - a space for weddings, youth events, and community outreach
-- Missions Fund: Supporting 12 missionary families worldwide
-- Benevolence Fund: Helping families in our community with emergency needs - rent, utilities, food
-- Youth Ministry: Summer camp scholarships for 50 students
-
-IMPACT STORIES (use these to inspire):
-- Last month, our Benevolence Fund helped 15 families stay in their homes
-- Our Missions Fund supported clean water projects reaching 2,000 people
-- Youth camp changed 23 lives last summer through scholarship giving
-
-RECENT ACTIVITY:
-{activities_text}
-
-UPCOMING EVENTS:
+UPCOMING EVENTS (NEXT 7 DAYS):
 {events_text}
+
+LATEST ANNOUNCEMENTS:
+{ann_text}
+
+THIS WEEK'S SERVICE PLAN:
+{plan_text}
+
+SMALL GROUPS:
+{groups_text}
+{member_text}
+
+GIVING NEEDS: Building Fund ($345K to goal), Missions (12 families), Benevolence, Youth camp scholarships.
 """
     return context
 
@@ -10737,6 +10735,204 @@ async def admin_export_report(request: Request, payload: dict):
 
     else:
         raise HTTPException(status_code=400, detail="format must be 'csv' or 'pdf'")
+
+
+# ============== SERVICES / WORSHIP PLANNING ==============
+
+@api_router.get("/admin/services/plans")
+async def get_service_plans(request: Request, week: str = None):
+    user = await require_permission(request, "admin.dashboard")
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    query = {"tenant_id": tenant_id}
+    if week:
+        from datetime import timedelta
+        week_start = week
+        week_end_dt = datetime.fromisoformat(week) + timedelta(days=7)
+        query["date"] = {"$gte": week_start, "$lte": week_end_dt.strftime("%Y-%m-%d")}
+    plans = await db.service_plans.find(query, {"_id": 0}).sort("date", -1).to_list(100)
+    return {"plans": plans}
+
+@api_router.post("/admin/services/plans")
+async def create_service_plan(request: Request, payload: dict):
+    user = await require_permission(request, "admin.dashboard")
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    plan = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "date": payload.get("date", datetime.now(timezone.utc).strftime("%Y-%m-%d")),
+        "service_type": payload.get("service_type", "sunday_morning"),
+        "title": payload.get("title", "Sunday Service"),
+        "items": payload.get("items", []),
+        "team_assignments": payload.get("team_assignments", []),
+        "status": "draft",
+        "created_by": user.get("user_id"),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.service_plans.insert_one({**plan})
+    return plan
+
+@api_router.put("/admin/services/plans/{plan_id}")
+async def update_service_plan(request: Request, plan_id: str, payload: dict):
+    user = await require_permission(request, "admin.dashboard")
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    updates = {}
+    for field in ["date", "service_type", "title", "items", "team_assignments", "status"]:
+        if field in payload:
+            updates[field] = payload[field]
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.service_plans.update_one({"id": plan_id, "tenant_id": tenant_id}, {"$set": updates})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    updated = await db.service_plans.find_one({"id": plan_id}, {"_id": 0})
+    return updated
+
+
+# ============== VOLUNTEER SCHEDULING ==============
+
+@api_router.post("/admin/volunteers/schedule")
+async def create_volunteer_schedule(request: Request, payload: dict):
+    user = await require_permission(request, "admin.volunteers.manage")
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    entry = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "date": payload.get("date"),
+        "role": payload.get("role"),
+        "user_id": payload.get("user_id"),
+        "user_name": payload.get("user_name", ""),
+        "service_plan_id": payload.get("service_plan_id"),
+        "status": "confirmed",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.volunteer_schedule.insert_one({**entry})
+    return entry
+
+@api_router.get("/admin/volunteers/schedule")
+async def get_volunteer_schedule(request: Request, week: str = None):
+    user = await require_permission(request, "admin.volunteers.manage")
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    query = {"tenant_id": tenant_id}
+    if week:
+        from datetime import timedelta
+        week_end = (datetime.fromisoformat(week) + timedelta(days=7)).strftime("%Y-%m-%d")
+        query["date"] = {"$gte": week, "$lte": week_end}
+    entries = await db.volunteer_schedule.find(query, {"_id": 0}).sort("date", 1).to_list(500)
+    roles = list(set(e.get("role", "") for e in entries))
+    return {"schedule": entries, "roles": roles}
+
+@api_router.get("/portal/volunteer/schedule")
+async def get_my_volunteer_schedule(request: Request):
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    entries = await db.volunteer_schedule.find({"user_id": user["user_id"], "date": {"$gte": datetime.now(timezone.utc).strftime("%Y-%m-%d")}}, {"_id": 0}).sort("date", 1).to_list(50)
+    return {"schedule": entries}
+
+
+# ============== HOUSEHOLDS / FAMILIES ==============
+
+@api_router.get("/admin/households")
+async def get_households(request: Request):
+    user = await require_permission(request, "admin.members.view")
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    households = await db.households.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(500)
+    return {"households": households, "total": len(households)}
+
+@api_router.post("/admin/households")
+async def create_household(request: Request, payload: dict):
+    user = await require_permission(request, "admin.members.edit")
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    household = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "household_name": payload.get("household_name", ""),
+        "member_ids": payload.get("member_ids", []),
+        "primary_contact_id": payload.get("primary_contact_id"),
+        "address": payload.get("address", {}),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.households.insert_one({**household})
+    return household
+
+@api_router.put("/admin/households/{household_id}")
+async def update_household(request: Request, household_id: str, payload: dict):
+    user = await require_permission(request, "admin.members.edit")
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    updates = {k: v for k, v in payload.items() if k in ["household_name", "member_ids", "primary_contact_id", "address"]}
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.households.update_one({"id": household_id, "tenant_id": tenant_id}, {"$set": updates})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Household not found")
+    return await db.households.find_one({"id": household_id}, {"_id": 0})
+
+
+# ============== MEMBER DIRECTORY ==============
+
+@api_router.get("/portal/directory")
+async def get_member_directory(request: Request, search: str = None, group: str = None):
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+
+    query = {"tenant_id": tenant_id}
+    members = await db.people.find(query, {"_id": 0, "name": 1, "email": 1, "phone": 1, "membership_status": 1, "groups": 1, "directory_visible": 1, "share_email": 1, "share_phone": 1, "user_id": 1}).to_list(2000)
+
+    directory = []
+    for m in members:
+        visible = m.get("directory_visible", True)
+        if not visible:
+            continue
+        entry = {
+            "name": m.get("name", ""),
+            "avatar_initials": "".join(w[0].upper() for w in (m.get("name", "?")).split()[:2]),
+            "groups": m.get("groups", []),
+            "membership_status": m.get("membership_status", "visitor"),
+        }
+        if m.get("share_email", True):
+            entry["email"] = m.get("email", "")
+        if m.get("share_phone", False):
+            entry["phone"] = m.get("phone", "")
+        directory.append(entry)
+
+    if search:
+        search_lower = search.lower()
+        directory = [d for d in directory if search_lower in d.get("name", "").lower()]
+    if group:
+        directory = [d for d in directory if group in [g.get("name", "") if isinstance(g, dict) else g for g in d.get("groups", [])]]
+
+    return {"members": directory, "total": len(directory)}
+
+
+# ============== CHURCH BRANDING SETTINGS ==============
+
+@api_router.get("/admin/settings/branding")
+async def get_branding(request: Request):
+    user = await require_permission(request, "admin.settings")
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    branding = await db.tenant_branding.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    if not branding:
+        tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "name": 1, "primary_color": 1})
+        branding = {"tenant_id": tenant_id, "app_name": (tenant or {}).get("name", "My Church"), "primary_color": (tenant or {}).get("primary_color", "#3b82f6"), "logo_url": "", "tagline": "", "app_store_description": ""}
+    return branding
+
+@api_router.put("/admin/settings/branding")
+async def update_branding(request: Request, payload: dict):
+    user = await require_permission(request, "admin.settings")
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    updates = {k: v for k, v in payload.items() if k in ["app_name", "primary_color", "logo_url", "tagline", "app_store_description"]}
+    updates["tenant_id"] = tenant_id
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.tenant_branding.update_one({"tenant_id": tenant_id}, {"$set": updates}, upsert=True)
+    return {**updates, "success": True}
 
 
 # --- SEARCH ROUTE ---
