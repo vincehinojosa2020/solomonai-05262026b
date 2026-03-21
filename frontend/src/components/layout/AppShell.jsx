@@ -4,7 +4,8 @@ import {
   LayoutDashboard, Users, Home, UsersRound, Calendar, 
   CheckSquare, DollarSign, Mail, BarChart3, Settings, 
   Building2, Search, Bell, ChevronLeft, Menu, Command,
-  LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, MessageSquare, Coffee, Code, Baby, Zap, Shield
+  LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, MessageSquare, Coffee, Code, Baby, Zap, Shield,
+  ChevronDown, MapPin, Check
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -71,8 +72,39 @@ export default function AppShell() {
   const [tenant, setTenant] = useState(null);
   const [user, setUser] = useState(null);
   const [impersonatedTenant, setImpersonatedTenant] = useState(null);
+  const [campusSwitching, setCampusSwitching] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const switchCampus = async (tenantId) => {
+    const token = localStorage.getItem('session_token');
+    if (!token) return;
+    setCampusSwitching(true);
+    try {
+      const res = await fetch(`${API_URL}/auth/switch-campus`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tenant_id: tenantId }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        // Re-fetch user data to reflect new campus
+        const meRes = await fetch(`${API_URL}/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (meRes.ok) {
+          const userData = await meRes.json();
+          setUser(userData);
+        }
+        // Re-fetch tenant info
+        fetch(`${API_URL}/tenant`).then(r => r.json()).then(d => setTenant(d)).catch(() => {});
+        // Navigate to dashboard to refresh data
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      console.error('Campus switch failed:', err);
+    } finally {
+      setCampusSwitching(false);
+    }
+  };
 
   useEffect(() => {
     // Check if platform admin is viewing a specific church
@@ -329,14 +361,53 @@ export default function AppShell() {
               </div>
             )}
 
-            {/* Tenant Badge - Hide for platform admin unless impersonating */}
+            {/* Campus Switcher / Tenant Badge */}
             {(user?.role !== 'platform_admin' || impersonatedTenant) && (
-              <div className="flex items-center gap-2 px-2 py-1 bg-slate-100 border border-slate-200">
-                <Building2 className="w-3 h-3 text-slate-500" />
-                <span className="text-xs font-medium text-slate-600">
-                  {impersonatedTenant?.name || tenant?.name || 'Church'}
-                </span>
-              </div>
+              user?.accessible_campuses && user.accessible_campuses.length > 1 ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button 
+                      className="flex items-center gap-2 px-2.5 py-1.5 bg-slate-100 border border-slate-200 rounded-lg hover:bg-slate-200 transition-colors"
+                      data-testid="campus-switcher-btn"
+                      disabled={campusSwitching}
+                    >
+                      <MapPin className="w-3 h-3 text-blue-600" />
+                      <span className="text-xs font-semibold text-slate-700">
+                        {campusSwitching ? 'Switching...' : (user.active_tenant_name || tenant?.name || user.tenant_name || 'Campus')}
+                      </span>
+                      <ChevronDown className="w-3 h-3 text-slate-400" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel className="text-xs text-slate-500">
+                      {user.organization_name || 'Your Campuses'}
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {user.accessible_campuses.map((campus) => {
+                      const isActive = (user.active_tenant_id || user.tenant_id) === campus.id;
+                      return (
+                        <DropdownMenuItem 
+                          key={campus.id}
+                          onClick={() => !isActive && switchCampus(campus.id)}
+                          className={`flex items-center gap-2 ${isActive ? 'bg-blue-50 text-blue-700' : ''}`}
+                          data-testid={`campus-option-${campus.id}`}
+                        >
+                          <MapPin className={`w-3.5 h-3.5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                          <span className="flex-1 text-sm">{campus.name}</span>
+                          {isActive && <Check className="w-3.5 h-3.5 text-blue-600" />}
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <div className="flex items-center gap-2 px-2 py-1 bg-slate-100 border border-slate-200">
+                  <Building2 className="w-3 h-3 text-slate-500" />
+                  <span className="text-xs font-medium text-slate-600">
+                    {impersonatedTenant?.name || tenant?.name || 'Church'}
+                  </span>
+                </div>
+              )
             )}
 
             {/* Preview Portal Link - Hide for platform admin unless impersonating */}

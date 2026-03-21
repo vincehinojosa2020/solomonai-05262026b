@@ -2945,7 +2945,71 @@ async def get_current_user(request: Request):
     result["role"] = user_doc.get("role", "admin")  # Default to admin for Google OAuth users
     result["permissions"] = get_permissions_for_user(user_doc)
     result["role_title"] = user_doc.get("role_title") or ROLE_TEMPLATES.get(user_doc.get("role", "member"), {}).get("role_title", "Member")
+    
+    # Multi-campus support: include accessible tenants
+    accessible = user_doc.get("accessible_tenant_ids", [])
+    if accessible and len(accessible) > 1:
+        campus_list = []
+        for tid in accessible:
+            t = await db.tenants.find_one({"id": tid}, {"_id": 0, "id": 1, "name": 1, "city": 1, "state": 1})
+            if t:
+                campus_list.append(t)
+        result["accessible_campuses"] = campus_list
+        result["organization_id"] = user_doc.get("organization_id")
+        result["organization_name"] = user_doc.get("organization_name")
+    
+    # Check if user has an active campus override in their session
+    active_campus = session_doc.get("active_tenant_id")
+    if active_campus and active_campus in accessible:
+        result["active_tenant_id"] = active_campus
+        active_tenant = await db.tenants.find_one({"id": active_campus}, {"_id": 0, "name": 1})
+        result["active_tenant_name"] = active_tenant.get("name") if active_tenant else None
+    
     return result
+
+@api_router.post("/auth/switch-campus")
+async def switch_campus(request: Request, payload: dict):
+    """Switch the active campus for multi-campus admin users."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session_doc = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session_doc:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user_doc = await db.users.find_one({"user_id": session_doc["user_id"]}, {"_id": 0})
+    if not user_doc:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    target_tenant_id = payload.get("tenant_id")
+    if not target_tenant_id:
+        raise HTTPException(status_code=400, detail="tenant_id required")
+    
+    accessible = user_doc.get("accessible_tenant_ids", [])
+    if target_tenant_id not in accessible:
+        raise HTTPException(status_code=403, detail="You do not have access to this campus")
+    
+    # Update the session with the active tenant override
+    await db.user_sessions.update_one(
+        {"session_token": session_token},
+        {"$set": {"active_tenant_id": target_tenant_id}}
+    )
+    
+    # Also update the user's current tenant_id for data queries
+    await db.users.update_one(
+        {"user_id": user_doc["user_id"]},
+        {"$set": {"tenant_id": target_tenant_id}}
+    )
+    
+    tenant = await db.tenants.find_one({"id": target_tenant_id}, {"_id": 0, "name": 1})
+    tenant_name = tenant.get("name") if tenant else target_tenant_id
+    
+    return {
+        "message": f"Switched to {tenant_name}",
+        "active_tenant_id": target_tenant_id,
+        "active_tenant_name": tenant_name,
+    }
 
 @api_router.post("/auth/logout")
 async def logout(request: Request, response: Response):
@@ -3023,7 +3087,7 @@ async def email_password_login(request: Request, payload: EmailLoginRequest, res
         tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "name": 1})
         tenant_name = tenant.get("name") if tenant else None
     
-    return {
+    login_response = {
         "user_id": user_doc["user_id"],
         "email": user_doc["email"],
         "name": user_doc["name"],
@@ -3037,6 +3101,20 @@ async def email_password_login(request: Request, payload: EmailLoginRequest, res
         "token": session_token,
         "access_token": session_token,
     }
+    
+    # Multi-campus support
+    accessible = user_doc.get("accessible_tenant_ids", [])
+    if accessible and len(accessible) > 1:
+        campus_list = []
+        for tid in accessible:
+            t = await db.tenants.find_one({"id": tid}, {"_id": 0, "id": 1, "name": 1})
+            if t:
+                campus_list.append(t)
+        login_response["accessible_campuses"] = campus_list
+        login_response["organization_id"] = user_doc.get("organization_id")
+        login_response["organization_name"] = user_doc.get("organization_name")
+    
+    return login_response
 
 # ============== USER REGISTRATION ==============
 
