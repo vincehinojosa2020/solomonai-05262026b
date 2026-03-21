@@ -87,13 +87,28 @@ Solomon AI is a multi-tenant SaaS Church Management System built with React (fro
 |------|-------|----------|
 | Platform Admin | admin@solomon.ai | Demo2026! |
 | Church Admin (Aivy) | avopham@gmail.com | SolomonTest2026! |
+| Lead Pastor (Shannon) | shannonnieman1030@gmail.com | SolomonTest2026! |
+| Member (Jacob) | jacobpacheco@abundanteast.com | SolomonTest2026! |
 | Member (Vince) | vince@charlottesoftwareengineering.com | SolomonTest2026! |
+
+Shannon Nieman has GOD MODE (all 38 permissions across member, admin, and platform scopes).
 
 ## Mocked Features
 - **Payment Processors**: All 6 return realistic mock responses
 - **SMS Notifications**: Logged to console
 
+## Phase A: Planning Center Competitor Features (IN PROGRESS)
+Backend routes completed, frontend pages NOT YET built:
+- Services/Worship Planning (`/api/admin/services/plans`)
+- Volunteer Scheduling (`/api/admin/volunteers/schedule`)
+- Households (`/api/admin/households`)
+- Member Directory (`/api/portal/directory`)
+- Pricing Page (public `/pricing`)
+- Church Branding Settings (`/api/admin/settings/branding`)
+- Smart Ask Solomon context injection
+
 ## Remaining Backlog
+- Phase A frontend implementation
 - Real Stripe/Pushpay integration (when accounts ready)
 - Push notifications with real VAPID keys
 - Solomon AI as native payment processor
