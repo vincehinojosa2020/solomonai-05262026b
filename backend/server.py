@@ -2041,6 +2041,15 @@ async def ensure_mobile_demo_accounts():
             upsert=True
         )
 
+    # === CRITICAL: Migrate old platform admin email BEFORE account upserts ===
+    old_admin = await db.users.find_one({"email": "admin@solomon.ai"})
+    if old_admin:
+        await db.users.update_one(
+            {"email": "admin@solomon.ai"},
+            {"$set": {"email": "admin@solomonai.us", "password_hash": demo_password_hash}}
+        )
+        logging.info("Migrated admin@solomon.ai -> admin@solomonai.us")
+
     required_accounts = [
         # === REAL ACCOUNTS (Abundant.org leadership) ===
         {
@@ -2212,18 +2221,6 @@ async def ensure_mobile_demo_accounts():
             },
             upsert=True
         )
-
-    # Clean up old platform admin email if it exists
-    old_admin = await db.users.find_one({"email": "admin@solomon.ai"})
-    if old_admin:
-        existing_new = await db.users.find_one({"email": "admin@solomonai.us"})
-        if existing_new:
-            await db.users.delete_one({"email": "admin@solomon.ai"})
-        else:
-            await db.users.update_one(
-                {"email": "admin@solomon.ai"},
-                {"$set": {"email": "admin@solomonai.us"}}
-            )
 
     await ensure_abundant_mobile_demo_content(now_iso)
     await ensure_abundant_go_live_portal_content(now_iso)
