@@ -14770,6 +14770,150 @@ async def create_church_onboarding(request: Request, payload: ChurchOnboardingRe
     }
 
 
+# ============== PLATFORM USER MANAGEMENT ==============
+
+@api_router.post("/platform/users/create")
+async def platform_create_user(request: Request, payload: dict):
+    """Platform admin creates a user tied to a specific church."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    admin = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not admin or admin.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    email = (payload.get("email") or "").strip().lower()
+    name = (payload.get("name") or "").strip()
+    tenant_id = payload.get("tenant_id")
+    role_template = payload.get("role_template", "member")
+    password = payload.get("password", "Welcome2026!")
+
+    if not email or not name or not tenant_id:
+        raise HTTPException(status_code=400, detail="email, name, and tenant_id are required")
+
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+    if not tenant:
+        raise HTTPException(status_code=404, detail=f"Church '{tenant_id}' not found")
+
+    existing = await db.users.find_one({"email": email})
+    if existing:
+        raise HTTPException(status_code=409, detail=f"Email '{email}' is already registered")
+
+    if role_template not in ROLE_TEMPLATES:
+        raise HTTPException(status_code=400, detail=f"Invalid role_template. Options: {', '.join(sorted(ROLE_TEMPLATES.keys()))}")
+
+    tmpl = ROLE_TEMPLATES[role_template]
+    role_field = role_template if role_template in ("church_admin", "platform_admin", "member") else ("church_admin" if any(p.startswith("admin.") for p in tmpl["permissions"]) else "member")
+
+    new_user = {
+        "user_id": str(uuid.uuid4()),
+        "id": str(uuid.uuid4()),
+        "email": email,
+        "password_hash": hashlib.sha256(password.encode()).hexdigest(),
+        "name": name,
+        "first_name": name.split()[0] if name.split() else name,
+        "last_name": name.split()[-1] if len(name.split()) > 1 else "",
+        "role": role_field,
+        "role_title": tmpl["role_title"],
+        "permissions": tmpl["permissions"],
+        "tenant_id": tenant_id,
+        "church_id": tenant_id,
+        "is_active": True,
+        "membership_status": "Active",
+        "email_verified": True,
+        "registration_source": "platform_created",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "directory_visible": True,
+        "share_email": True,
+        "share_phone": True,
+    }
+    await db.users.insert_one({**new_user})
+
+    await db.people.insert_one({
+        "id": str(uuid.uuid4()),
+        "user_id": new_user["user_id"],
+        "name": name,
+        "first_name": new_user["first_name"],
+        "last_name": new_user["last_name"],
+        "email": email,
+        "role": role_field,
+        "membership_status": "Active",
+        "tenant_id": tenant_id,
+        "created_at": new_user["created_at"],
+        "directory_visible": True,
+        "share_email": True,
+        "share_phone": True,
+        "groups": [],
+        "tags": [],
+    })
+
+    await audit_log("user_created", "user", new_user["user_id"], tenant_id, admin.get("user_id"), admin.get("name", ""), {}, {"email": email, "name": name, "role": role_field, "church": tenant.get("name")}, request)
+
+    return {
+        "success": True,
+        "user_id": new_user["user_id"],
+        "email": email,
+        "name": name,
+        "role": role_field,
+        "role_title": tmpl["role_title"],
+        "church": tenant.get("name"),
+        "message": f"User '{name}' created for {tenant.get('name')}"
+    }
+
+
+@api_router.put("/platform/users/{user_id}/promote")
+async def platform_promote_user(request: Request, user_id: str, payload: dict):
+    """Platform admin promotes a member to admin (or changes their role template)."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    admin = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not admin or admin.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    target = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    role_template = payload.get("role_template", "church_admin")
+    if role_template not in ROLE_TEMPLATES:
+        raise HTTPException(status_code=400, detail=f"Invalid role. Options: {', '.join(sorted(ROLE_TEMPLATES.keys()))}")
+
+    tmpl = ROLE_TEMPLATES[role_template]
+    role_field = role_template if role_template in ("church_admin", "platform_admin", "member") else ("church_admin" if any(p.startswith("admin.") for p in tmpl["permissions"]) else "member")
+
+    before = {"role": target.get("role"), "role_title": target.get("role_title"), "permissions": get_permissions_for_user(target)}
+
+    await db.users.update_one(
+        {"user_id": user_id},
+        {"$set": {
+            "role": role_field,
+            "role_title": tmpl["role_title"],
+            "permissions": tmpl["permissions"],
+        }}
+    )
+
+    after = {"role": role_field, "role_title": tmpl["role_title"], "permissions": tmpl["permissions"]}
+    await audit_log("role_promotion", "user", user_id, target.get("tenant_id", ""), admin.get("user_id"), admin.get("name", ""), before, after, request)
+
+    return {
+        "success": True,
+        "user_id": user_id,
+        "name": target.get("name"),
+        "email": target.get("email"),
+        "new_role": role_field,
+        "role_title": tmpl["role_title"],
+        "permissions_count": len(tmpl["permissions"]),
+        "message": f"{target.get('name')} promoted to {tmpl['role_title']}"
+    }
+
+
 # ============== ORGANIZATIONS & CAMPUS COMPARISON (Universal Multi-Campus) ==============
 
 @api_router.get("/platform/organizations")

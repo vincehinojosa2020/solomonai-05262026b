@@ -16305,3 +16305,70 @@ textarea:focus-visible {
     padding-bottom: env(safe-area-inset-bottom) !important;
   }
 }
+
+/* ============== Platform Dashboard Modals & Role Badges ============== */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.modal-content {
+  background: white; border-radius: 16px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 24px; border-bottom: 1px solid #e2e8f0;
+}
+.modal-header h3 { font-size: 16px; font-weight: 700; color: #1e3a5f; margin: 0; }
+.modal-close {
+  background: none; border: none; cursor: pointer; padding: 4px;
+  color: #94a3b8; border-radius: 6px;
+}
+.modal-close:hover { background: #f1f5f9; color: #334155; }
+.modal-body { padding: 20px 24px; }
+.modal-footer {
+  display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+  padding: 16px 24px; border-top: 1px solid #e2e8f0; background: #f8fafc;
+}
+.modal-label {
+  display: flex; flex-direction: column; gap: 5px;
+  font-size: 13px; font-weight: 600; color: #475569;
+}
+.modal-input {
+  padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px;
+  font-size: 14px; color: #1e293b; outline: none; transition: border-color 0.2s;
+}
+.modal-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+.modal-input option { padding: 8px; }
+
+.platform-btn.primary {
+  background: #3b82f6; color: white; border: none; padding: 9px 18px;
+  border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s;
+}
+.platform-btn.primary:hover { background: #2563eb; }
+.platform-btn.secondary {
+  background: white; color: #475569; border: 1px solid #cbd5e1; padding: 9px 18px;
+  border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer;
+}
+.platform-btn.secondary:hover { background: #f1f5f9; }
+
+.role-badge {
+  display: inline-block; padding: 2px 10px; border-radius: 99px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+}
+.role-badge.role-admin { background: rgba(59,130,246,0.1); color: #2563eb; }
+.role-badge.role-leader { background: rgba(168,85,247,0.1); color: #7c3aed; }
+.role-badge.role-member { background: rgba(100,116,139,0.08); color: #64748b; }
+
+.member-title-sub {
+  display: block; font-size: 11px; color: #94a3b8; font-weight: 400; margin-top: 1px;
+}
+
+.promote-btn {
+  background: none; border: 1px solid #e2e8f0; border-radius: 6px;
+  padding: 5px 8px; cursor: pointer; color: #94a3b8; transition: all 0.2s;
+}
+.promote-btn:hover { background: #f1f5f9; color: #3b82f6; border-color: #3b82f6; }

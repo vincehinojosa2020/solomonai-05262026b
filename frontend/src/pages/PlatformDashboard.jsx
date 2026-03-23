@@ -5,12 +5,29 @@ import {
   CheckCircle, XCircle, AlertCircle, ChevronRight, 
   Search, Filter, MoreVertical, Eye, Edit, Trash2,
   Globe, Shield, Activity, BarChart3, UserPlus, Mail,
-  Heart, Layers, Server, MapPin, Gauge
+  Heart, Layers, Server, MapPin, Gauge, X, ChevronDown, ArrowUpCircle
 } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import CampusComparison from '@/components/CampusComparison';
 import ChurchOnboardingWizard from '@/components/ChurchOnboardingWizard';
+
+const ROLE_OPTIONS = [
+  { value: 'member', label: 'Church Member' },
+  { value: 'kids_volunteer', label: 'Kids Check-In Volunteer' },
+  { value: 'small_group_leader', label: 'Small Group Leader' },
+  { value: 'cafe_manager', label: 'Cafe Manager' },
+  { value: 'merch_manager', label: 'Merch Manager' },
+  { value: 'worship_media_team', label: 'Worship & Media Team' },
+  { value: 'ministry_leader', label: 'Ministry Leader' },
+  { value: 'executive_pastor', label: 'Executive Pastor' },
+  { value: 'church_admin', label: 'Church Administrator' },
+];
+
+function getAuthHeaders() {
+  const token = localStorage.getItem('session_token');
+  return token ? { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+}
 
 export default function PlatformDashboard() {
   const navigate = useNavigate();
@@ -24,6 +41,10 @@ export default function PlatformDashboard() {
   const [healthData, setHealthData] = useState(null);
   const [healthScores, setHealthScores] = useState([]);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showCreateUser, setShowCreateUser] = useState(false);
+  const [showPromote, setShowPromote] = useState(null);
+  const [createUserForm, setCreateUserForm] = useState({ name: '', email: '', tenant_id: '', role_template: 'member', password: 'Welcome2026!' });
+  const [promoteRole, setPromoteRole] = useState('church_admin');
   const [stats, setStats] = useState({
     totalChurches: 0,
     activeChurches: 0,
@@ -160,10 +181,56 @@ export default function PlatformDashboard() {
   };
 
   const viewAsChurchAdmin = (tenant) => {
-    // Store selected tenant for impersonation
     sessionStorage.setItem('impersonate_tenant', JSON.stringify(tenant));
     toast.success(`Viewing as ${tenant.name} admin`);
     navigate('/dashboard');
+  };
+
+  const handleCreateUser = async () => {
+    const { name, email, tenant_id, role_template, password } = createUserForm;
+    if (!name || !email || !tenant_id) {
+      toast.error('Name, email, and church are required');
+      return;
+    }
+    try {
+      const res = await fetch(`${API_URL}/platform/users/create`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ name, email, tenant_id, role_template, password }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message);
+        setShowCreateUser(false);
+        setCreateUserForm({ name: '', email: '', tenant_id: '', role_template: 'member', password: 'Welcome2026!' });
+        fetchMembers();
+        fetchPlatformStats();
+      } else {
+        toast.error(data.detail || 'Failed to create user');
+      }
+    } catch (err) {
+      toast.error('Failed to create user');
+    }
+  };
+
+  const handlePromote = async (userId) => {
+    try {
+      const res = await fetch(`${API_URL}/platform/users/${userId}/promote`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ role_template: promoteRole }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message);
+        setShowPromote(null);
+        fetchMembers();
+      } else {
+        toast.error(data.detail || 'Failed to update role');
+      }
+    } catch (err) {
+      toast.error('Failed to update role');
+    }
   };
 
   const filteredTenants = tenants.filter(tenant => {
@@ -477,6 +544,14 @@ export default function PlatformDashboard() {
                 data-testid="member-search"
               />
             </div>
+            <button 
+              className="platform-btn primary"
+              onClick={() => setShowCreateUser(true)}
+              data-testid="create-user-btn"
+            >
+              <UserPlus className="w-4 h-4" />
+              Create User
+            </button>
             <span className="member-count-badge">
               {membersTotal.toLocaleString()} total members
             </span>
@@ -493,19 +568,30 @@ export default function PlatformDashboard() {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Church</th>
+                <th>Role</th>
                 <th>Status</th>
                 <th>Joined</th>
+                <th style={{ width: 90, textAlign: 'center' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {members.map((member) => (
+              {members.map((member) => {
+                const hasAdmin = member.permissions?.some(p => p.startsWith('admin.'));
+                const roleLabel = member.role === 'church_admin' ? 'Admin' : (hasAdmin ? 'Leader' : 'Member');
+                const roleClass = member.role === 'church_admin' ? 'role-admin' : (hasAdmin ? 'role-leader' : 'role-member');
+                return (
                 <tr key={member.user_id || member.id} data-testid={`member-row-${member.email}`}>
                   <td>
                     <div className="member-info">
                       <div className="member-avatar">
                         {member.name?.charAt(0)?.toUpperCase() || '?'}
                       </div>
-                      <span className="member-name">{member.name || 'Unknown'}</span>
+                      <div>
+                        <span className="member-name">{member.name || 'Unknown'}</span>
+                        {member.role_title && member.role_title !== 'Church Member' && (
+                          <span className="member-title-sub">{member.role_title}</span>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td>
@@ -513,6 +599,9 @@ export default function PlatformDashboard() {
                   </td>
                   <td>
                     <span className="member-church">{member.church_name || 'N/A'}</span>
+                  </td>
+                  <td>
+                    <span className={`role-badge ${roleClass}`}>{roleLabel}</span>
                   </td>
                   <td>
                     <span className={`member-status ${member.membership_status?.toLowerCase() || 'active'}`}>
@@ -524,11 +613,22 @@ export default function PlatformDashboard() {
                       {member.created_at ? new Date(member.created_at).toLocaleDateString() : 'N/A'}
                     </span>
                   </td>
+                  <td style={{ textAlign: 'center' }}>
+                    <button
+                      className="promote-btn"
+                      title="Change Role"
+                      onClick={() => { setShowPromote(member); setPromoteRole('church_admin'); }}
+                      data-testid={`promote-btn-${member.email}`}
+                    >
+                      <ArrowUpCircle className="w-4 h-4" />
+                    </button>
+                  </td>
                 </tr>
-              ))}
+                );
+              })}
               {members.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="no-results">
+                  <td colSpan="7" className="no-results">
                     {searchQuery ? 'No members found matching your search' : 'No members yet'}
                   </td>
                 </tr>
@@ -538,6 +638,82 @@ export default function PlatformDashboard() {
           )}
         </div>
       </div>
+      )}
+
+      {/* Create User Modal */}
+      {showCreateUser && (
+        <div className="modal-overlay" onClick={() => setShowCreateUser(false)} data-testid="create-user-modal">
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: 460 }}>
+            <div className="modal-header">
+              <h3><UserPlus className="w-5 h-5" style={{ display: 'inline', verticalAlign: '-3px', marginRight: 8 }} />Create User Account</h3>
+              <button className="modal-close" onClick={() => setShowCreateUser(false)} data-testid="close-create-user"><X className="w-4 h-4" /></button>
+            </div>
+            <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <label className="modal-label">
+                Full Name
+                <input className="modal-input" placeholder="e.g. Shannon Nieman" value={createUserForm.name} onChange={e => setCreateUserForm(f => ({...f, name: e.target.value}))} data-testid="create-user-name" />
+              </label>
+              <label className="modal-label">
+                Email
+                <input className="modal-input" type="email" placeholder="e.g. shannon@abundant.org" value={createUserForm.email} onChange={e => setCreateUserForm(f => ({...f, email: e.target.value}))} data-testid="create-user-email" />
+              </label>
+              <label className="modal-label">
+                Church
+                <select className="modal-input" value={createUserForm.tenant_id} onChange={e => setCreateUserForm(f => ({...f, tenant_id: e.target.value}))} data-testid="create-user-church">
+                  <option value="">Select a church...</option>
+                  {tenants.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                </select>
+              </label>
+              <label className="modal-label">
+                Role
+                <select className="modal-input" value={createUserForm.role_template} onChange={e => setCreateUserForm(f => ({...f, role_template: e.target.value}))} data-testid="create-user-role">
+                  {ROLE_OPTIONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+                </select>
+              </label>
+              <label className="modal-label">
+                Temporary Password
+                <input className="modal-input" value={createUserForm.password} onChange={e => setCreateUserForm(f => ({...f, password: e.target.value}))} data-testid="create-user-password" />
+              </label>
+            </div>
+            <div className="modal-footer">
+              <button className="platform-btn secondary" onClick={() => setShowCreateUser(false)}>Cancel</button>
+              <button className="platform-btn primary" onClick={handleCreateUser} data-testid="submit-create-user">Create Account</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Promote / Change Role Modal */}
+      {showPromote && (
+        <div className="modal-overlay" onClick={() => setShowPromote(null)} data-testid="promote-modal">
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: 420 }}>
+            <div className="modal-header">
+              <h3><ArrowUpCircle className="w-5 h-5" style={{ display: 'inline', verticalAlign: '-3px', marginRight: 8 }} />Change Role</h3>
+              <button className="modal-close" onClick={() => setShowPromote(null)}><X className="w-4 h-4" /></button>
+            </div>
+            <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ padding: '12px 16px', background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                <div style={{ fontWeight: 600, color: '#1e3a5f' }}>{showPromote.name}</div>
+                <div style={{ fontSize: 13, color: '#64748b' }}>{showPromote.email}</div>
+                <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 4 }}>Current: {showPromote.role_title || showPromote.role}</div>
+              </div>
+              <label className="modal-label">
+                New Role
+                <select className="modal-input" value={promoteRole} onChange={e => setPromoteRole(e.target.value)} data-testid="promote-role-select">
+                  {ROLE_OPTIONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+                </select>
+              </label>
+              <p style={{ fontSize: 12, color: '#64748b', lineHeight: '1.5' }}>
+                Changing role updates permissions immediately. The user will see the change on their next login or page refresh.
+                {promoteRole !== 'member' && ' They will gain the Admin/Member toggle.'}
+              </p>
+            </div>
+            <div className="modal-footer">
+              <button className="platform-btn secondary" onClick={() => setShowPromote(null)}>Cancel</button>
+              <button className="platform-btn primary" onClick={() => handlePromote(showPromote.user_id)} data-testid="submit-promote">Update Role</button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Organizations Tab Content */}
