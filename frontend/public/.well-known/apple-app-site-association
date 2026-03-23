@@ -3,7 +3,7 @@
     "apps": [],
     "details": [
       {
-        "appIDs": ["XXXXXXXXXX.com.solomonai.app"],
+        "appIDs": ["9L3Z3G4KFB.app.emergent.adminmemberportalsl1b45d5d"],
         "paths": [
           "/login",
           "/give",
@@ -26,7 +26,7 @@
     ]
   },
   "webcredentials": {
-    "apps": ["XXXXXXXXXX.com.solomonai.app"]
+    "apps": ["9L3Z3G4KFB.app.emergent.adminmemberportalsl1b45d5d"]
   },
   "appclips": {
     "apps": []
