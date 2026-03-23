@@ -2201,6 +2201,8 @@ async def ensure_mobile_demo_accounts():
     # Demo church accounts also use Demo2026!
     # God mode accounts (Shannon, Jacob) get ALL permissions
     god_mode_emails = {"shannonnieman1030@gmail.com", "jacobpacheco@abundanteast.com"}
+    seed_success = []
+    seed_fail = []
     for account in required_accounts:
         pw = demo_password_hash
         if account["email"] in god_mode_emails:
@@ -2216,20 +2218,32 @@ async def ensure_mobile_demo_accounts():
         }
         try:
             # Try upsert by email first
-            await db.users.update_one(
+            result = await db.users.update_one(
                 {"email": account["email"]},
                 {"$set": update_doc, "$setOnInsert": {"created_at": now_iso}},
                 upsert=True
             )
-        except Exception:
+            seed_success.append(f"{account['email']} (matched={result.matched_count}, modified={result.modified_count}, upserted={result.upserted_id is not None})")
+        except Exception as e1:
             try:
                 # Fallback: update by user_id (handles unique index conflicts)
-                await db.users.update_one(
+                result = await db.users.update_one(
                     {"user_id": account["user_id"]},
                     {"$set": update_doc}
                 )
+                seed_success.append(f"{account['email']} via user_id fallback (modified={result.modified_count})")
             except Exception as e2:
-                logging.warning(f"Account seed warning for {account['email']}: {e2}")
+                try:
+                    # Last resort: delete and recreate
+                    await db.users.delete_one({"user_id": account["user_id"]})
+                    await db.users.insert_one({**update_doc, "created_at": now_iso})
+                    seed_success.append(f"{account['email']} via delete+insert")
+                except Exception as e3:
+                    seed_fail.append(f"{account['email']}: {e3}")
+    
+    logging.info(f"[SEED] Success: {len(seed_success)} accounts - {', '.join(seed_success)}")
+    if seed_fail:
+        logging.error(f"[SEED] FAILED: {seed_fail}")
 
     await ensure_abundant_mobile_demo_content(now_iso)
     await ensure_abundant_go_live_portal_content(now_iso)
@@ -3112,26 +3126,74 @@ async def logout(request: Request, response: Response):
     
     return {"message": "Logged out"}
 
+
+@api_router.get("/auth/debug/verify-accounts")
+async def debug_verify_accounts():
+    """Temporary diagnostic endpoint to verify seed accounts exist and have correct password hashes."""
+    import hashlib
+    expected_hash = hashlib.sha256("Demo2026!".encode()).hexdigest()
+
+    accounts_to_check = [
+        "admin@solomonai.us",
+        "admin@solomon.ai",
+        "shannonnieman1030@gmail.com",
+        "jacobpacheco@abundanteast.com",
+    ]
+
+    results = []
+    for email in accounts_to_check:
+        user = await db.users.find_one({"email": email}, {"_id": 0, "email": 1, "name": 1, "role": 1, "password_hash": 1, "user_id": 1, "is_active": 1})
+        if user:
+            stored = user.get("password_hash", "")
+            results.append({
+                "email": email,
+                "exists": True,
+                "name": user.get("name"),
+                "role": user.get("role"),
+                "user_id": user.get("user_id"),
+                "is_active": user.get("is_active"),
+                "has_password_hash": bool(stored),
+                "hash_starts_with": stored[:12] if stored else None,
+                "expected_hash_starts_with": expected_hash[:12],
+                "password_matches_Demo2026": stored == expected_hash,
+            })
+        else:
+            results.append({"email": email, "exists": False})
+
+    total_users = await db.users.count_documents({})
+    return {
+        "total_users_in_db": total_users,
+        "expected_hash_for_Demo2026": expected_hash[:16] + "...",
+        "accounts": results,
+    }
+
+
 @api_router.post("/auth/login")
 async def email_password_login(request: Request, payload: EmailLoginRequest, response: Response):
     """Login with email and password"""
     import hashlib
+    
+    # Normalize email
+    login_email = payload.email.strip().lower()
     
     # Rate limiting: 5 attempts per minute per IP
     client_ip = request.client.host or "unknown"
     if not check_rate_limit_v2(f"login:{client_ip}", 5, 60):
         raise HTTPException(status_code=429, detail="Too many login attempts. Try again in 1 minute.")
     
-    user_doc = await db.users.find_one({"email": payload.email}, {"_id": 0})
+    user_doc = await db.users.find_one({"email": login_email}, {"_id": 0})
     if not user_doc:
+        logging.warning(f"[AUTH] Login failed - user not found: {login_email}")
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
     stored_hash = user_doc.get("password_hash")
     if not stored_hash:
+        logging.warning(f"[AUTH] Login failed - no password_hash for: {login_email}")
         raise HTTPException(status_code=401, detail="Password login not enabled for this account")
     
     input_hash = hashlib.sha256(payload.password.encode()).hexdigest()
     if input_hash != stored_hash:
+        logging.warning(f"[AUTH] Login failed - password mismatch for: {login_email} (stored_hash starts with: {stored_hash[:8]})")
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
     # Session management: limit to 5 concurrent sessions
