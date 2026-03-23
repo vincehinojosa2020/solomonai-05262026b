@@ -133,7 +133,7 @@ logger = logging.getLogger(__name__)
 # ============== MULTI-TENANT CONFIGURATION ==============
 
 # Platform admin accounts (can access all tenants)
-PLATFORM_ADMIN_EMAILS = ["admin@solomon.ai", "admin@abundant.org"]
+PLATFORM_ADMIN_EMAILS = ["admin@solomonai.us", "admin@abundant.org", "admin@solomon.ai"]
 
 # Role hierarchy
 ROLES = {
@@ -1988,46 +1988,120 @@ async def ensure_mobile_demo_accounts():
             "name": "Abundant East",
             "subdomain": "abundant-east",
             "subscription_status": "active",
-            "created_at": now_iso
+            "created_at": now_iso,
+            "organization_id": "abundant-org-001",
+            "organization_name": "Abundant Church",
+            "city": "Charlotte", "state": "NC", "plan": "enterprise", "monthly_rate": 2999,
+            "senior_pastor": "Shannon Nieman",
         },
         {
             "id": "abundant-downtown-001",
             "name": "Abundant Downtown",
             "subdomain": "abundant-downtown",
             "subscription_status": "active",
-            "created_at": now_iso
+            "created_at": now_iso,
+            "organization_id": "abundant-org-001",
+            "organization_name": "Abundant Church",
+            "city": "Charlotte", "state": "NC", "plan": "enterprise", "monthly_rate": 2999,
+            "senior_pastor": "Shannon Nieman",
         },
         {
             "id": "abundant-west-001",
             "name": "Abundant West",
             "subdomain": "abundant-west",
             "subscription_status": "active",
-            "created_at": now_iso
+            "created_at": now_iso,
+            "organization_id": "abundant-org-001",
+            "organization_name": "Abundant Church",
+            "city": "Charlotte", "state": "NC", "plan": "enterprise", "monthly_rate": 2999,
+            "senior_pastor": "Shannon Nieman",
         },
         {
             "id": "cristoviene-church-001",
             "name": "Cristo Viene",
             "subdomain": "cristoviene",
             "subscription_status": "active",
-            "created_at": now_iso
+            "created_at": now_iso,
+            "plan": "starter", "monthly_rate": 499,
         },
         {
             "id": "pottershouse-church-001",
             "name": "The Potter's House",
             "subdomain": "pottershouse",
             "subscription_status": "active",
-            "created_at": now_iso
+            "created_at": now_iso,
+            "plan": "growth", "monthly_rate": 1499,
         }
     ]
 
     for tenant in tenant_defaults:
         await db.tenants.update_one(
             {"id": tenant["id"]},
-            {"$setOnInsert": tenant},
+            {"$set": tenant},
             upsert=True
         )
 
     required_accounts = [
+        # === REAL ACCOUNTS (Abundant.org leadership) ===
+        {
+            "email": "shannonnieman1030@gmail.com",
+            "user_id": "shannon_nieman_001",
+            "name": "Shannon Nieman",
+            "first_name": "Shannon",
+            "last_name": "Nieman",
+            "role": "church_admin",
+            "role_title": "Lead Pastor",
+            "tenant_id": "abundant-east-001",
+            "accessible_tenant_ids": ["abundant-east-001", "abundant-downtown-001", "abundant-west-001"],
+            "organization_id": "abundant-org-001",
+            "organization_name": "Abundant Church",
+        },
+        {
+            "email": "jacobpacheco@abundanteast.com",
+            "user_id": "jacob_pacheco_001",
+            "name": "Jacob Pacheco",
+            "first_name": "Jacob",
+            "last_name": "Pacheco",
+            "role": "church_admin",
+            "role_title": "Pastoral Staff",
+            "tenant_id": "abundant-east-001",
+            "accessible_tenant_ids": ["abundant-east-001", "abundant-downtown-001", "abundant-west-001"],
+            "organization_id": "abundant-org-001",
+            "organization_name": "Abundant Church",
+        },
+        {
+            "email": "avopham@gmail.com",
+            "user_id": "f1d0f1d8-de66-4fc0-a8c7-8f81f679ce22",
+            "name": "Aivy Vopham",
+            "first_name": "Aivy",
+            "last_name": "Vopham",
+            "role": "church_admin",
+            "role_title": "Church Administrator",
+            "tenant_id": "abundant-east-001",
+            "accessible_tenant_ids": ["abundant-east-001", "abundant-downtown-001", "abundant-west-001"],
+            "organization_id": "abundant-org-001",
+            "organization_name": "Abundant Church",
+        },
+        {
+            "email": "vince@charlottesoftwareengineering.com",
+            "user_id": "cc7a823c-4d38-45d9-bb09-1df8caffe258",
+            "name": "Vince Hinojosa",
+            "first_name": "Vince",
+            "last_name": "Hinojosa",
+            "role": "member",
+            "tenant_id": "abundant-east-001"
+        },
+        # === PLATFORM ADMIN ===
+        {
+            "email": "admin@solomonai.us",
+            "user_id": "platform_admin_001",
+            "name": "Solomon Platform Admin",
+            "first_name": "Solomon",
+            "last_name": "Admin",
+            "role": "platform_admin",
+            "tenant_id": None
+        },
+        # === DEMO CHURCH ACCOUNTS ===
         {
             "email": "member@abundant.church",
             "user_id": "member_abundant",
@@ -2054,15 +2128,6 @@ async def ensure_mobile_demo_accounts():
             "last_name": "Rivera",
             "role": "church_admin",
             "tenant_id": "abundant-east-001"
-        },
-        {
-            "email": "admin@solomon.ai",
-            "user_id": "platform_admin_001",
-            "name": "Solomon Platform Admin",
-            "first_name": "Solomon",
-            "last_name": "Admin",
-            "role": "platform_admin",
-            "tenant_id": None
         },
         {
             "email": "admin@cristoviene.church",
@@ -2118,41 +2183,29 @@ async def ensure_mobile_demo_accounts():
             "role": "member",
             "tenant_id": "abundant-west-001"
         },
-        {
-            "email": "vince@charlottesoftwareengineering.com",
-            "user_id": "cc7a823c-4d38-45d9-bb09-1df8caffe258",
-            "name": "Vince Hinojosa",
-            "first_name": "Vince",
-            "last_name": "Hinojosa",
-            "role": "member",
-            "tenant_id": "abundant-east-001"
-        },
-        {
-            "email": "avopham@gmail.com",
-            "user_id": "f1d0f1d8-de66-4fc0-a8c7-8f81f679ce22",
-            "name": "Aivy Vopham",
-            "first_name": "Aivy",
-            "last_name": "Vopham",
-            "role": "church_admin",
-            "tenant_id": "abundant-east-001"
-        }
     ]
 
-    # Accounts that use SolomonTest2026! password
-    test_password_hash = hashlib.sha256("SolomonTest2026!".encode()).hexdigest()
-    test_accounts_emails = {"vince@charlottesoftwareengineering.com", "avopham@gmail.com"}
-
+    # ALL real accounts use Demo2026!
+    # Demo church accounts also use Demo2026!
+    # God mode accounts (Shannon, Jacob) get ALL permissions
+    god_mode_emails = {"shannonnieman1030@gmail.com", "jacobpacheco@abundanteast.com"}
     for account in required_accounts:
-        pw = test_password_hash if account["email"] in test_accounts_emails else demo_password_hash
+        pw = demo_password_hash
+        if account["email"] in god_mode_emails:
+            permissions = PERMISSION_REGISTRY[:]
+        else:
+            permissions = get_permissions_for_user(account)
+        update_doc = {
+            **account,
+            "password_hash": pw,
+            "permissions": permissions,
+            "is_active": True,
+            "updated_at": now_iso
+        }
         await db.users.update_one(
             {"email": account["email"]},
             {
-                "$set": {
-                    **account,
-                    "password_hash": pw,
-                    "is_active": True,
-                    "updated_at": now_iso
-                },
+                "$set": update_doc,
                 "$setOnInsert": {
                     "created_at": now_iso
                 }
@@ -2160,8 +2213,33 @@ async def ensure_mobile_demo_accounts():
             upsert=True
         )
 
+    # Clean up old platform admin email if it exists
+    old_admin = await db.users.find_one({"email": "admin@solomon.ai"})
+    if old_admin:
+        existing_new = await db.users.find_one({"email": "admin@solomonai.us"})
+        if existing_new:
+            await db.users.delete_one({"email": "admin@solomon.ai"})
+        else:
+            await db.users.update_one(
+                {"email": "admin@solomon.ai"},
+                {"$set": {"email": "admin@solomonai.us"}}
+            )
+
     await ensure_abundant_mobile_demo_content(now_iso)
     await ensure_abundant_go_live_portal_content(now_iso)
+
+    # Seed health score data (A+ for Abundant, F for others)
+    health_stats = {
+        "abundant-east-001": {"total_members": 22000, "active_members": 15400, "mtd_giving": 220000, "ytd_giving": 2420000, "last_attendance": 5280, "active_groups": 264, "recurring_givers": 2860, "new_members_this_month": 87, "first_time_visitors": 134, "average_attendance": 5100, "total_giving": 2420000},
+        "abundant-downtown-001": {"total_members": 18500, "active_members": 12950, "mtd_giving": 185000, "ytd_giving": 2035000, "last_attendance": 4440, "active_groups": 222, "recurring_givers": 2405, "new_members_this_month": 72, "first_time_visitors": 113, "average_attendance": 4300, "total_giving": 2035000},
+        "abundant-west-001": {"total_members": 14000, "active_members": 9800, "mtd_giving": 140000, "ytd_giving": 1540000, "last_attendance": 3360, "active_groups": 168, "recurring_givers": 1820, "new_members_this_month": 54, "first_time_visitors": 86, "average_attendance": 3250, "total_giving": 1540000},
+        "cristoviene-church-001": {"total_members": 1200, "active_members": 240, "mtd_giving": 2400, "ytd_giving": 26400, "last_attendance": 96, "active_groups": 3, "recurring_givers": 36, "new_members_this_month": 2, "first_time_visitors": 5, "average_attendance": 90, "total_giving": 26400},
+        "pottershouse-church-001": {"total_members": 8500, "active_members": 1700, "mtd_giving": 17000, "ytd_giving": 187000, "last_attendance": 680, "active_groups": 17, "recurring_givers": 255, "new_members_this_month": 8, "first_time_visitors": 15, "average_attendance": 650, "total_giving": 187000},
+    }
+    for tid, stats in health_stats.items():
+        stats["tenant_id"] = tid
+        stats["updated_at"] = now_iso
+        await db.dashboard_stats_cache.update_one({"tenant_id": tid}, {"$set": stats}, upsert=True)
 
 
 async def ensure_abundant_mobile_demo_content(now_iso: Optional[str] = None):
@@ -6417,7 +6495,8 @@ async def launch_health_check(tenant_id: Optional[str] = None):
         "admin@abundant.church",
         "admin@cristoviene.church",
         "admin@pottershouse.church",
-        "admin@solomon.ai"
+        "admin@solomon.ai",
+        "admin@solomonai.us"
     ]
     account_presence = {}
     for email in required_accounts:
