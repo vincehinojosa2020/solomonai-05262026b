@@ -51,7 +51,6 @@ import PortalCafe from "@/pages/portal/PortalCafe";
 import PortalMeetings from "@/pages/portal/PortalMeetings";
 import PortalKidsCheckin from "@/pages/portal/PortalKidsCheckin";
 import PortalPrayer from "@/pages/portal/PortalPrayer";
-import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import LandingPage from "@/pages/LandingPage";
 import SupportPage from "@/pages/SupportPage";
 
@@ -140,7 +139,6 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <AppRouter />
-        <PWAInstallPrompt />
       </BrowserRouter>
       <Toaster position="bottom-right" richColors />
     </div>
