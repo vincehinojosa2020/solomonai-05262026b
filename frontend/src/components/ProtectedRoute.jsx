@@ -76,7 +76,8 @@ export default function ProtectedRoute({ children, requiredRole }) {
 
   if (requiredRole) {
     const userRole = user?.role || 'admin';
-    if (requiredRole === 'admin' && userRole === 'member') {
+    const hasAdminPerms = user?.permissions?.some(p => p.startsWith('admin.'));
+    if (requiredRole === 'admin' && userRole === 'member' && !hasAdminPerms) {
       return <Navigate to="/portal" replace />;
     }
   }
