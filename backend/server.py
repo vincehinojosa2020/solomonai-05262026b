@@ -2044,11 +2044,14 @@ async def ensure_mobile_demo_accounts():
     # === CRITICAL: Migrate old platform admin email BEFORE account upserts ===
     old_admin = await db.users.find_one({"email": "admin@solomon.ai"})
     if old_admin:
-        await db.users.update_one(
-            {"email": "admin@solomon.ai"},
-            {"$set": {"email": "admin@solomonai.us", "password_hash": demo_password_hash}}
-        )
-        logging.info("Migrated admin@solomon.ai -> admin@solomonai.us")
+        try:
+            await db.users.update_one(
+                {"email": "admin@solomon.ai"},
+                {"$set": {"email": "admin@solomonai.us", "password_hash": demo_password_hash}}
+            )
+            logging.info("Migrated admin@solomon.ai -> admin@solomonai.us")
+        except Exception as e:
+            logging.warning(f"Admin email migration warning: {e}")
 
     required_accounts = [
         # === REAL ACCOUNTS (Abundant.org leadership) ===
@@ -2211,16 +2214,22 @@ async def ensure_mobile_demo_accounts():
             "is_active": True,
             "updated_at": now_iso
         }
-        await db.users.update_one(
-            {"email": account["email"]},
-            {
-                "$set": update_doc,
-                "$setOnInsert": {
-                    "created_at": now_iso
-                }
-            },
-            upsert=True
-        )
+        try:
+            # Try upsert by email first
+            await db.users.update_one(
+                {"email": account["email"]},
+                {"$set": update_doc, "$setOnInsert": {"created_at": now_iso}},
+                upsert=True
+            )
+        except Exception:
+            try:
+                # Fallback: update by user_id (handles unique index conflicts)
+                await db.users.update_one(
+                    {"user_id": account["user_id"]},
+                    {"$set": update_doc}
+                )
+            except Exception as e2:
+                logging.warning(f"Account seed warning for {account['email']}: {e2}")
 
     await ensure_abundant_mobile_demo_content(now_iso)
     await ensure_abundant_go_live_portal_content(now_iso)
