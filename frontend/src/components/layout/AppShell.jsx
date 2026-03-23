@@ -5,7 +5,7 @@ import {
   CheckSquare, DollarSign, Mail, BarChart3, Settings, 
   Building2, Search, Bell, ChevronLeft, Menu, Command,
   LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, MessageSquare, Coffee, Code, Baby, Zap, Shield,
-  ChevronDown, MapPin, Check
+  ChevronDown, MapPin, Check, Music, HandHeart
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -33,6 +33,8 @@ const navItems = [
     { name: 'Notes', path: '/notes', icon: MessageSquare },
   ]},
   { section: 'MINISTRY', items: [
+    { name: 'Services', path: '/services', icon: Music },
+    { name: 'Volunteers', path: '/volunteers', icon: HandHeart },
     { name: 'Groups', path: '/admin/groups', icon: UsersRound },
     { name: 'Events', path: '/admin/events', icon: Calendar },
     { name: 'Kids Check-in', path: '/kids-checkin', icon: Baby },

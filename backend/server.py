@@ -3168,6 +3168,45 @@ async def debug_verify_accounts():
     }
 
 
+@api_router.post("/auth/debug/test-login")
+async def debug_test_login(request: Request, payload: EmailLoginRequest):
+    """Temporary diagnostic endpoint - simulates login flow and reports each step."""
+    import hashlib
+    
+    steps = []
+    login_email = payload.email.strip().lower()
+    steps.append({"step": "1_email_normalized", "value": login_email})
+    steps.append({"step": "2_password_length", "value": len(payload.password)})
+    steps.append({"step": "3_password_first_3_chars", "value": payload.password[:3] + "***"})
+    
+    input_hash = hashlib.sha256(payload.password.encode()).hexdigest()
+    steps.append({"step": "4_input_hash", "value": input_hash[:16] + "..."})
+    
+    user_doc = await db.users.find_one({"email": login_email}, {"_id": 0})
+    steps.append({"step": "5_user_found", "value": user_doc is not None})
+    
+    if user_doc:
+        steps.append({"step": "6_user_name", "value": user_doc.get("name")})
+        steps.append({"step": "7_user_role", "value": user_doc.get("role")})
+        stored_hash = user_doc.get("password_hash", "")
+        steps.append({"step": "8_stored_hash_field", "value": "password_hash"})
+        steps.append({"step": "9_stored_hash", "value": stored_hash[:16] + "..." if stored_hash else "EMPTY"})
+        steps.append({"step": "10_hashes_match", "value": input_hash == stored_hash})
+        
+        # Also check if password is stored in other fields
+        for field in ["password", "pwd", "pass", "hashed_password"]:
+            val = user_doc.get(field)
+            if val:
+                steps.append({"step": f"11_alt_field_{field}", "value": str(val)[:16] + "..."})
+    else:
+        # Check case-insensitive
+        all_emails = await db.users.distinct("email")
+        similar = [e for e in all_emails if login_email in e.lower() or e.lower() in login_email]
+        steps.append({"step": "6_similar_emails", "value": similar[:5]})
+    
+    return {"email": login_email, "steps": steps}
+
+
 @api_router.post("/auth/login")
 async def email_password_login(request: Request, payload: EmailLoginRequest, response: Response):
     """Login with email and password"""

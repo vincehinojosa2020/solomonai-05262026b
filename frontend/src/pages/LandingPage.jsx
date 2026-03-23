@@ -22,14 +22,19 @@ function Header() {
             AI
           </span>
         </Link>
-        <Link
-          to="/login"
-          className="px-5 py-2 text-sm font-semibold rounded-lg border-2 transition-all duration-200 hover:shadow-md"
-          style={{ borderColor: '#3b82f6', color: '#3b82f6' }}
-          data-testid="landing-login-btn"
-        >
-          Login
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link to="/pricing" className="text-sm text-slate-600 hover:text-slate-900 transition-colors font-medium" data-testid="landing-pricing-link">
+            Pricing
+          </Link>
+          <Link
+            to="/login"
+            className="px-5 py-2 text-sm font-semibold rounded-lg border-2 transition-all duration-200 hover:shadow-md"
+            style={{ borderColor: '#3b82f6', color: '#3b82f6' }}
+            data-testid="landing-login-btn"
+          >
+            Login
+          </Link>
+        </div>
       </div>
     </header>
   );
@@ -43,6 +48,9 @@ function Footer() {
           &copy; 2026 Solomon AI LLC. All rights reserved.
         </p>
         <div className="flex items-center gap-6">
+          <Link to="/pricing" className="text-sm text-slate-500 hover:text-slate-800 transition-colors">
+            Pricing
+          </Link>
           <Link to="/support" className="text-sm text-slate-500 hover:text-slate-800 transition-colors">
             Support
           </Link>

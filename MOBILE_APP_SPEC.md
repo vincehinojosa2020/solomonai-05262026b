@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://solomon-phase-a.preview.emergentagent.com/api
+https://church-planning.preview.emergentagent.com/api
 ```
 
 ### Authentication

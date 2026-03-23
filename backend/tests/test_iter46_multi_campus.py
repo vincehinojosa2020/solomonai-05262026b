@@ -15,7 +15,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://solomon-phase-a.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://church-planning.preview.emergentagent.com').rstrip('/')
 
 # Global session storage to avoid rate limiting
 _sessions = {}

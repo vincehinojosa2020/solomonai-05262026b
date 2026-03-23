@@ -6,14 +6,22 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { API_URL } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export default function SettingsPage() {
   const [tenant, setTenant] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('general');
+  const [branding, setBranding] = useState(null);
+  const [brandingDirty, setBrandingDirty] = useState(false);
+  const [savingBranding, setSavingBranding] = useState(false);
+
+  const token = localStorage.getItem('session_token');
+  const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   useEffect(() => {
     fetchTenant();
+    fetchBranding();
   }, []);
 
   const fetchTenant = async () => {
@@ -26,6 +34,40 @@ export default function SettingsPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchBranding = async () => {
+    try {
+      const res = await fetch(`${API_URL}/admin/settings/branding`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setBranding(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch branding:', err);
+    }
+  };
+
+  const updateBrandingField = (field, value) => {
+    setBranding(prev => ({ ...prev, [field]: value }));
+    setBrandingDirty(true);
+  };
+
+  const saveBranding = async () => {
+    setSavingBranding(true);
+    try {
+      const res = await fetch(`${API_URL}/admin/settings/branding`, {
+        method: 'PUT', headers: authHeaders,
+        body: JSON.stringify(branding),
+      });
+      if (res.ok) {
+        toast.success('Branding settings saved');
+        setBrandingDirty(false);
+      } else {
+        toast.error('Failed to save branding');
+      }
+    } catch (err) { toast.error('Failed to save branding'); }
+    finally { setSavingBranding(false); }
   };
 
   if (loading) {
@@ -122,36 +164,91 @@ export default function SettingsPage() {
         {/* Appearance Settings */}
         <TabsContent value="appearance" className="space-y-6">
           <div className="bg-white border border-slate-200 rounded-lg p-6">
-            <h3 className="font-semibold text-slate-900 mb-6">Brand Colors</h3>
+            <h3 className="font-semibold text-slate-900 mb-6">Church Branding</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="form-group">
+                <Label className="form-label">App Name</Label>
+                <Input
+                  value={branding?.app_name || ''}
+                  onChange={(e) => updateBrandingField('app_name', e.target.value)}
+                  placeholder="Your Church Name"
+                  data-testid="branding-app-name"
+                />
+              </div>
+              <div className="form-group">
+                <Label className="form-label">Tagline</Label>
+                <Input
+                  value={branding?.tagline || ''}
+                  onChange={(e) => updateBrandingField('tagline', e.target.value)}
+                  placeholder="e.g. Life. Community. Purpose."
+                  data-testid="branding-tagline"
+                />
+              </div>
               <div className="form-group">
                 <Label className="form-label">Primary Color</Label>
                 <div className="flex items-center gap-3">
-                  <div 
-                    className="w-10 h-10 rounded-lg border border-slate-200"
-                    style={{ backgroundColor: tenant?.primary_color || '#4f6ef7' }}
-                  ></div>
-                  <Input defaultValue={tenant?.primary_color || '#4f6ef7'} className="flex-1" />
+                  <input
+                    type="color"
+                    value={branding?.primary_color || '#4f6ef7'}
+                    onChange={(e) => updateBrandingField('primary_color', e.target.value)}
+                    className="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer"
+                    data-testid="branding-color-picker"
+                  />
+                  <Input
+                    value={branding?.primary_color || '#4f6ef7'}
+                    onChange={(e) => updateBrandingField('primary_color', e.target.value)}
+                    className="flex-1"
+                    data-testid="branding-color-input"
+                  />
                 </div>
               </div>
               <div className="form-group">
-                <Label className="form-label">Accent Color</Label>
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="w-10 h-10 rounded-lg border border-slate-200"
-                    style={{ backgroundColor: tenant?.accent_color || '#00c896' }}
-                  ></div>
-                  <Input defaultValue={tenant?.accent_color || '#00c896'} className="flex-1" />
-                </div>
+                <Label className="form-label">Logo URL</Label>
+                <Input
+                  value={branding?.logo_url || ''}
+                  onChange={(e) => updateBrandingField('logo_url', e.target.value)}
+                  placeholder="https://example.com/logo.png"
+                  data-testid="branding-logo-url"
+                />
+              </div>
+              <div className="form-group col-span-2">
+                <Label className="form-label">App Store Description</Label>
+                <Input
+                  value={branding?.app_store_description || ''}
+                  onChange={(e) => updateBrandingField('app_store_description', e.target.value)}
+                  placeholder="Brief description for the App Store listing"
+                  data-testid="branding-description"
+                />
               </div>
             </div>
-          </div>
-
-          <div className="bg-white border border-slate-200 rounded-lg p-6">
-            <h3 className="font-semibold text-slate-900 mb-6">Logo</h3>
-            <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center">
-              <p className="text-slate-500 mb-4">Upload your church logo</p>
-              <Button variant="outline">Upload Image</Button>
+            {/* Preview */}
+            {branding && (
+              <div className="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200" data-testid="branding-preview">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Preview</p>
+                <div className="flex items-center gap-3">
+                  {branding.logo_url ? (
+                    <img src={branding.logo_url} alt="Logo" className="w-12 h-12 rounded-lg object-cover" />
+                  ) : (
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg" style={{ background: branding.primary_color || '#3b82f6' }}>
+                      {(branding.app_name || 'C')[0]}
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-bold text-slate-900">{branding.app_name || 'Your Church'}</p>
+                    <p className="text-sm text-slate-500">{branding.tagline || 'Your tagline here'}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="mt-6">
+              <Button
+                className="btn-primary"
+                onClick={saveBranding}
+                disabled={!brandingDirty || savingBranding}
+                data-testid="save-branding-btn"
+              >
+                {savingBranding ? 'Saving...' : 'Save Branding'}
+              </Button>
             </div>
           </div>
         </TabsContent>

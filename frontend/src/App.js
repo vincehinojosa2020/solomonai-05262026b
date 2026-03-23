@@ -53,6 +53,11 @@ import PortalKidsCheckin from "@/pages/portal/PortalKidsCheckin";
 import PortalPrayer from "@/pages/portal/PortalPrayer";
 import LandingPage from "@/pages/LandingPage";
 import SupportPage from "@/pages/SupportPage";
+import PricingPage from "@/pages/PricingPage";
+import ServicesPage from "@/pages/ServicesPage";
+import HouseholdsPage from "@/pages/HouseholdsPage";
+import VolunteerPage from "@/pages/VolunteerPage";
+import PortalDirectory from "@/pages/portal/PortalDirectory";
 
 // Router wrapper to detect session_id in URL
 function AppRouter() {
@@ -69,6 +74,7 @@ function AppRouter() {
       {/* Public routes */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/support" element={<SupportPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/register" element={<Navigate to="/signup" replace />} />
@@ -83,7 +89,9 @@ function AppRouter() {
         <Route path="/platform" element={<PlatformDashboard />} />
         <Route path="/people" element={<PeopleList />} />
         <Route path="/people/:personId" element={<PersonDetail />} />
-        <Route path="/households" element={<PeopleList type="households" />} />
+        <Route path="/households" element={<HouseholdsPage />} />
+        <Route path="/services" element={<ServicesPage />} />
+        <Route path="/volunteers" element={<VolunteerPage />} />
         <Route path="/groups" element={<GroupsList />} />
         <Route path="/groups/:groupId" element={<GroupDetail />} />
         <Route path="/events" element={<EventsPage />} />
@@ -123,6 +131,7 @@ function AppRouter() {
         <Route path="cafe" element={<PortalCafe />} />
         <Route path="meetings" element={<PortalMeetings />} />
         <Route path="prayer" element={<PortalPrayer />} />
+        <Route path="directory" element={<PortalDirectory />} />
         <Route path="groups" element={<PortalGroups />} />
         <Route path="events" element={<PortalEvents />} />
         <Route path="me" element={<PortalMe />} />

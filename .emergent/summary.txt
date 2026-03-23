@@ -1,122 +1,140 @@
 <analysis>**original_problem_statement:**
-The user's goal is to finalize the Solomon AI MVP for an immediate, high-stakes demo (Abundant Church). The user provided a highly detailed Master Engineering Constitution v2.0 dictating strict zero-trust security (Veracode standards), Active Directory-style RBAC, Instagram-grade UX, and mobile-first principles tailored for a high-stress Sunday Morning environment. The immediate requirement was to implement Phases 1-4 of this constitution, focusing on claims-based RBAC, security hardening (rate-limiting, idempotency), volunteer team assignment, and extensive UI/UX polish for the QR kids check-in flow on mobile web. 
+The user's goal is to finalize the Solomon AI MVP to serve as a complete Planning Center replacement. The mandate includes Phase A: Planning Center Competitor Features (Services, Volunteer Scheduling, Households, Directory, Public Pricing Page, Church Branding Settings). 
+*Recent Shift:* The user prioritized building a public Landing Page, configuring Apple App Site Association (AASA) for mobile app deployment, building Platform Admin user management tools, and setting up Multi-Campus views. Most critically, the user reported a major bug where core accounts cannot log in on the production deployment, completely blocking their launch.
+
+**PRODUCT REQUIREMENTS:**
+- **Phase A (Pending Frontend):** Services (), Volunteers (), Households (), Directory (), Pricing (), Branding ().
+- **Multi-Campus:** Allow high-level admins (e.g., Lead Pastors) to toggle between multiple campuses (e.g., Abundant East, West, Downtown) using  and .
+- **Admin/Member Toggle:** Lyft-style dual-mode where admins can toggle their view to experience the app as a standard member.
+- **Platform Management:** Ability for Platform Admins to create users and promote members to admins across all tenants.
 
 **User's preferred language**: English
 *(Note for next agent: Always respond in English)*
 
 **what currently exists?** 
-A highly stable, feature-complete multi-tenant SaaS church management platform ready for live mobile-web demonstrations. It features 39 frontend routes and 270 backend endpoints. Recent massive upgrades include a robust claims-based RBAC system, security-hardened endpoints (rate-limiting, idempotency keys, HSTS), Lyft-style Admin/Member UI toggles, and a highly polished, mobile-optimized QR kids check-in/out flow (featuring  for parents and  camera scanners for admins) designed specifically for Sunday morning high-traffic usage. 
+A highly stable, feature-complete multi-tenant SaaS church management platform. Recently added features include a public landing page (), a support page (), an Apple AASA file for iOS universal links, a multi-campus switcher dropdown, and Platform Dashboard user management. However, the production environment is currently experiencing a critical authentication blockage.
 
 **Last working item**: 
-    - Last item agent was working: Implementation and testing of Phases 1-4 from the Master Constitution (RBAC, Security Hardening, Volunteer Teams, QR Polish). The agent completed all code changes, promoted the designated test user, and successfully validated the flows.
+    - Last item agent was working: Debugging a critical production authentication failure. The agent updated the  endpoint to append detailed diagnostic data directly into the HTTP 401  string (e.g., [User not found], [Hash mismatch]) so the user can deploy and report back exactly where the prod DB is failing.
     - Status: USER VERIFICATION PENDING
-    - Agent Testing Done: Y
-    - Which testing method agent to use?: NA (testing agent v3 fork completed successfully with a 100% pass rate).
-    - User Testing Done: N
+    - Agent Testing Done: Y (Works perfectly in Preview environment)
+    - Which testing method agent to use?: curl / backend testing for auth endpoints.
+    - User Testing Done: N (Waiting for user to trigger the login error on their live deployment and share the results).
 
 **All Pending/In progress Issue list**: 
-There are no broken features or bugs. The platform is highly stable.
-*Note: The user previously flagged the Ask Solomon AI chat as RED (missing) in a pre-demo QA. The backend endpoint () has been verified to exist, but the frontend UI button (Task 5) is still pending implementation.*
+  Issue 1 (P0): Production Authentication Failure
+     - Attempted fixes: The startup seed script  was failing silently on prod due to a MongoDB  on . Fixed the script to handle upserts/updates atomically. Verified bcrypt hash generation matches . Added a  endpoint.
+     - Next debug checklist: 
+        1. Ask user for the exact error message they see on the production login screen (the modified backend now sends detailed reasons inside the 401 error).
+        2. Check   logic against prod DB state.
+     - Why fix this issue and what will be achieved with the fix? It is a hard blocker for the user's App Store submission and real-world demo.
+     - Status: BLOCKED (Waiting for user feedback from prod deployment)
+     - Is recurring issue? Y (Discrepancy between Preview DB and Prod DB state)
+     - Should Test frontend/backend/both after fix? Backend.
 
 **In progress Task List**: 
-There are no tasks currently partially completed. The agent cleanly finished Phases 1-4 of the Constitution.
+  Task 1 (P1): Frontend Implementation of Phase A
+     - Where to resume: Create React pages for ,  (Admin),  (Admin), , and Branding settings.
+     - What will be achieved with this? Fulfills the user's initial requirement to match Planning Center's core strengths.
+     - Status: NOT STARTED (Backend routes exist, frontend was delayed due to the critical auth bug).
+     - Should Test frontend/backend/both after fix? Both.
 
 **Upcoming and Future Tasks**
-*Referenced from PRD.md and the Master Constitution. These are the immediate next steps.*
-    - **P0: Task 5 — Ask Solomon in Portal Nav:** Add floating ✦ Ask Solomon button and chat panel to the frontend connecting to the existing  endpoint.
-    - **P0: Task 8 — Sunday Morning Engine:** Implement geofence triggers, Sunday Morning Home screen, Arrival Giving Nudge (after check-in), Cafe Integration, and Push Notifications payloads.
-    - **P1: Task 2 — Platform Admin (Church Onboarding):** Build the 5-step onboarding wizard in the platform UI and corresponding backend logic ().
-    - **P1: Task 6 — Reporting & Export System:** Build the  endpoints and UI for Kids history, Giving, Attendance, Cafe, Merch, Groups, Next Steps, and Executive Summary with CSV/PDF exports.
-    - **P2: Post-MVP Backlog:** Real Stripe payment integration (currently mocked), Push notifications integration (Expo Push),  modular refactor, CSS refactor.
+    Upcoming Tasks:
+    - P1: Complete the Phase A frontend UIs (Pricing, Services, Households, Directory, Branding).
+    - P1: Test the enhanced Ask Solomon chat context injection.
+    
+    Future Tasks (Post-MVP Backlog):
+    - P2: Real Stripe/Pushpay integration (currently mocked).
+    - P2: Push notifications with real VAPID keys.
+    - P2:  modular refactor (currently ~15,400 lines).
+    - P2: React Native mobile app development.
 
 **Completed work in this session**
-- **Mobile Alignment & Bug Fixes:**
-  - Removed all hardcoded API URLs; enforced relative paths ().
-  - Fixed Kids Admin count bug (implemented UTC date matching).
-  - Built a Demo Walkthrough spotlight UI for first-time logins.
-- **Phase 1 (RBAC):** Implemented Claims-based RBAC with permission registries (, etc.), UI checkboxes, and role templates. Built  and successfully promoted test user 'Aivy'.
-- **Phase 2 (Security Hardening):** Implemented Idempotency keys (using TTL indexes in MongoDB) for state-changing POSTs, tightened rate limiting (5/min for auth), and enforced HSTS/security headers.
-- **Phase 3 (Volunteers):** Built volunteer team assignment endpoints and assigned test users.
-- **Phase 4 (QR Polish):** Scaled QR code to 200px, pickup code to 48px monospace, implemented screen wake lock, and added giving nudges. Added  rear-camera scanner for Admins.
-- Added a Member/Admin Lyft-style layout toggle in the top nav for cross-permission users.
+- Multi-Campus Switcher UI in  and backend support (DONE)
+- Lyft-style Admin/Member view toggle fixed for members with admin claims (DONE)
+- Public Landing Page () and Support Page () (DONE)
+- Removed PWA Install prompt (DONE)
+- Apple App Site Association (AASA) file configured with real Apple Team ID/Bundle ID (DONE)
+- Platform Dashboard: Create User and Promote to Admin functionality (DONE)
+- Startup DB Seed script refactored to safely handle  and persist core demo accounts (DONE)
 
 **Earlier issues found/mentioned but not fixed**
-- None.
+- Prod DB vs Preview DB mismatch. The agent relies on startup scripts to sync them, but edge cases in Prod DB schemas (unique indexes) have caused silent failures.
 
 **Known issue recurrence from previous fork**
-- None.
+  - Issue recurrence in previous fork: Works in preview, broken in prod (Specifically related to routing in previous fork, and DB state in current fork).
+  - Recurrence count: 2
+  - Status: IN PROGRESS
+  - Note: Always remind the user to press the Deploy button in the Emergent Dashboard to sync changes. Prod relies heavily on the  events in .
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Claims-Based Identity:** JWTs now contain full permission arrays. The backend relies strictly on the  middleware validating claims, not checking static role strings.
-- **Idempotency:** Critical POST endpoints (like Kids Check-in) use  headers stored in MongoDB with a TTL. This prevents double-processing on congested church networks.
-- **Lyft Dual Mode:** Church Admins can toggle seamlessly between Admin and Member views via a nav bar switch without logging out or losing session.
-- **Mobile-First UX:** Strict adherence to 390px width, minimum 48px tap targets, and ≥16px font sizes to prevent Safari zooming.
+- **Universal Multi-Campus:** Tenants are linked via . Users have .
+- **Lyft Dual Mode:** Handled via  to bypass route guards.
+- **Startup DB Seeding:**  uses  to force-inject required accounts on every deployment.
 
 **key DB schema**
-- : Now heavily utilizes a  array (e.g., ) alongside  and .
-- : Modified to support idempotency tracking with  TTL indexes.
+  - : 
+  - *Note:  collection has unique indexes on  and .*
 
 **changes in tech stack**
-- Added  (for Admin camera scanning) and  (for Member display) to the frontend dependencies.
+  - None
 
 **All files of reference**
-- : Core backend logic.
-- : Member check-in with QR display and giving nudge.
-- : Admin QR camera scanner and checkout flow.
--  & : Navigation logic handling RBAC and Mode Toggles.
-- : Master roadmap.
+  - : Auth logic, DB seeding logic, APIs.
+  - : Public routes added.
+  - : Campus switcher, Role toggle.
+  - : User management UI.
+  - : iOS configuration.
 
 **Areas that need refactoring**:
-- : Remains a massive monolith (~14,000 lines). A structured modular breakdown into a  directory is pending in the post-MVP backlog.
+  - : Over 15,400 lines. Refactor postponed until MVP web launch is complete.
 
 **key api endpoints**
-- : Updates roles/templates and assigns claim permissions.
-- : Member check-in (strictly requires Idempotency).
-- : Admin checkout via QR scan or manual entry.
-- : Strictly rate-limited (5/min). Returns the  array.
+  - : Heavily modified with diagnostic error messages.
+  - : New diagnostic endpoint to check hash validity.
+  - : Onboarding endpoints.
 
 **Critical Info for New Agent**
-- **Context is King:** The user is optimizing for a high-stress Sunday Morning environment. Performance (sub-1 second), idempotency (preventing double taps on slow networks), and strict mobile UX (no zooming, large tap targets) are non-negotiable.
-- **API Paths:** The API base URL must *always* be relative (). Never hardcode domains.
-- **Security:** When checking permissions, *always* rely on the backend  claims array logic. The frontend hiding a button is purely UX; the backend must independently reject unauthorized requests.
-- **Mocked Data:** Payment flows are currently mocked. Do not attempt to wire up real Stripe logic unless explicitly moved from the backlog to active tasks.
+  - **DO NOT TOUCH the password hashing logic** without extreme caution. The user is highly frustrated by a production login bug. 
+  - The login endpoint  currently has debug strings appended to the  detail. Wait for the user to tell you what error the UI throws (e.g., [Hash mismatch]).
+  - The seeded accounts are:
+    1.  /  (Platform Admin)
+    2.  /  (Lead Pastor, Multi-campus)
+    3.  /  (Pastoral Staff, Multi-campus)
 
 **documents and test reports created in this job**
--  (Generated for the user's investor)
-- 
-- 
-- 
+  - 
+  - 
 
 **Last 10 User Messages and any pending HUMAN messages** 
-- *Message:* 1. yes, start phases 1-4 2. a 3a -> *Status: Completed.* User approved the batch implementation of RBAC, Security, Volunteers, and QR polish. 
-- *Message:* (The Master Engineering Constitution v2.0) -> *Status: Active.* User provided a massive, highly detailed specification for the remaining build phases.
-- *Message:* User requested a complete inventory of frontend/backend endpoints and mobile readiness. -> *Status: Answered.* Agent provided an exhaustive list.
-- *Message:* yes to last question! -> *Status: Completed.* User approved building a Demo Walkthrough tooltip feature.
-- *Message:* SOLOMON AI — MOBILE BROWSER TESTING DAY... -> *Status: Completed.* User requested 8 critical mobile-alignment fixes. Agent implemented and tested all 8.
+ - *Message:* User requested  platform account and requested fix for Shannon/Jacob permissions. -> *Completed.*
+ - *Message:* User requested Platform Dashboard user creation/promotion tools. -> *Completed.*
+ - *Message:* User complained they cannot log in to ANY accounts after redeploying. -> *Agent investigated and found  in the startup seed script. Fixed and verified.*
+ - *Message:* User complained they *still* cannot sign into . -> *Agent verified it works in preview and told user to Deploy.*
+ - *Message:* User provided a massive, frantic prompt demanding a complete overhaul of the auth endpoint, believing password hashing is broken on Prod. -> *Status: IN PROGRESS. Agent verified hashes are perfectly fine, added diagnostic endpoints, and appended detailed tracing into the 401 error payload so the user can deploy and report the exact failure point.*
 
 **Project Health Check:**
-- **Broken:** None.
-- **Mocked:** Stripe giving processing (simulates successful donations). SMS notifications (logs to console instead of sending).
+  Broken: Production Authentication (Preview works 100%).
+  Mocked: Payment Processors (Stripe, Pushpay).
 
 **3rd Party Integrations**
-- Stripe (Payments) — *Currently Mocked*
-- Anthropic Claude (Ask Solomon AI Chat) — *uses Emergent LLM Key*
-- Twilio SMS — *Currently Mocked (console logs)*
-- html5-qrcode / qrcode.react — Client-side standard libraries (No keys required)
+  • Anthropic Claude (Ask Solomon) — *uses Emergent LLM Key*
+  • Stripe/Pushpay — *Mocked*
 
 **Testing status**
-- Testing agent used after significant changes: YES (Iterations 40 and 41 both achieved a 100% pass rate).
-- Troubleshoot agent used after agent stuck in loop: NO.
-- Test files created: , 
-- Known regressions: None.
+  - Testing agent used after significant changes: YES (Iteration 46 passed 100%).
+  - Troubleshoot agent used after agent stuck in loop: NO.
+  - Test files created: .
+  - Known regressions: Production environment authentication.
 
 **Credentials to test flow:**
-- Platform Admin:  / 
-- Test Member (Vince):  /  (Member mode)
-- Test Admin (Aivy):  /  (Church Admin mode)
+  - Platform Admin:  / 
+  - Church Admin:  / 
+  - Church Admin:  / 
 
 **What agent forgot to execute**
-- The agent executed exactly what was requested. Per the user's instruction to start phases 1-4, the agent completed those and stopped. Tasks 5, 6, 8, and 2 from the Constitution prompt were correctly left untouched and are queued as priority upcoming tasks.</analysis>
+  - Due to the critical P0 authentication bug raised by the user in the final prompts, the actual Phase A frontend development (Pricing page, Services UI, Households UI) was entirely sidelined. It remains pending.</analysis>
