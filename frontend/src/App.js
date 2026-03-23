@@ -52,6 +52,8 @@ import PortalMeetings from "@/pages/portal/PortalMeetings";
 import PortalKidsCheckin from "@/pages/portal/PortalKidsCheckin";
 import PortalPrayer from "@/pages/portal/PortalPrayer";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import LandingPage from "@/pages/LandingPage";
+import SupportPage from "@/pages/SupportPage";
 
 // Router wrapper to detect session_id in URL
 function AppRouter() {
@@ -66,6 +68,8 @@ function AppRouter() {
   return (
     <Routes>
       {/* Public routes */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/support" element={<SupportPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/register" element={<Navigate to="/signup" replace />} />
@@ -76,7 +80,6 @@ function AppRouter() {
           <AppShell />
         </ProtectedRoute>
       }>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/platform" element={<PlatformDashboard />} />
         <Route path="/people" element={<PeopleList />} />
