@@ -148,19 +148,19 @@ export default function PortalLayout() {
       {!isLibraryPage && (
         <header className={`portal-header ${isDarkPage ? 'portal-header-dark' : ''}`}>
         <div className="portal-header-content">
-          {/* Logo - Dynamic church name */}
-          <div className="portal-logo" data-testid="portal-logo">
+          {/* Logo - Dynamic church name, links to Home */}
+          <NavLink to="/portal" className="portal-logo" data-testid="portal-logo" style={{ textDecoration: 'none' }}>
             <span 
               className="font-bold text-lg tracking-wide"
               style={{ color: tenant?.primary_color || '#2563eb' }}
             >
               {getChurchDisplayName()}
             </span>
-          </div>
+          </NavLink>
 
           {/* Desktop Nav */}
           <nav className="portal-nav-desktop" data-testid="portal-nav">
-            {navItems.map((item) => (
+            {navItems.filter(item => !item.exact && item.name !== 'Me').map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
