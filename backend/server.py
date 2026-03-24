@@ -148,7 +148,7 @@ PERMISSION_REGISTRY = [
     # Member surface
     "member.home", "member.give", "member.kids", "member.watch",
     "member.merch", "member.cafe", "member.groups", "member.events",
-    "member.nextsteps", "member.prayer", "member.volunteer",
+    "member.nextsteps", "member.prayer", "member.volunteer", "member.courses",
     # Ministry operations
     "admin.dashboard", "admin.members.view", "admin.members.edit",
     "admin.members.roles", "admin.giving.view", "admin.giving.edit",
@@ -157,6 +157,7 @@ PERMISSION_REGISTRY = [
     "admin.events.manage", "admin.announcements", "admin.volunteers.manage",
     "admin.geofence.manage", "admin.reports.view", "admin.reports.export",
     "admin.communications", "admin.settings",
+    "admin.courses.view", "admin.courses.edit",
     "admin.users.create", "admin.users.roles",
     # Platform level
     "platform.churches.view", "platform.churches.create",
@@ -4043,9 +4044,9 @@ async def get_portal_next_steps(request: Request):
     }
 
 
-@api_router.get("/portal/courses")
+@api_router.get("/portal/legacy-courses")
 async def get_portal_courses(request: Request):
-    """Get member courses for mobile clients."""
+    """Get member courses for mobile clients (legacy pathways)."""
     user = await get_current_member_user(request)
     tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
 
@@ -15419,6 +15420,7 @@ from routes.geofence import router as geofence_router
 from routes.announcements import router as announcements_router
 from routes.media_uploads import router as media_uploads_router
 from routes.giving_nudge import router as giving_nudge_router
+from routes.courses import router as courses_router, _init as courses_init, seed_academy_course
 
 
 app.include_router(push_router, prefix="/api")
@@ -15428,6 +15430,10 @@ app.include_router(geofence_router, prefix="/api")
 app.include_router(announcements_router, prefix="/api")
 app.include_router(media_uploads_router, prefix="/api")
 app.include_router(giving_nudge_router, prefix="/api")
+app.include_router(courses_router, prefix="/api")
+
+# Initialize courses router with shared dependencies
+courses_init(db, require_permission, get_current_member_user, DEFAULT_TENANT_ID)
 
 # CORS middleware
 app.add_middleware(
@@ -15444,6 +15450,7 @@ async def startup_ensure_mobile_seed_data():
     try:
         await ensure_mobile_demo_accounts()
         await seed_vol_data()
+        await seed_academy_course()
         # Create TTL index for idempotency keys (24hr expiry)
         try:
             await db.idempotency_keys.create_index("created_at", expireAfterSeconds=86400)

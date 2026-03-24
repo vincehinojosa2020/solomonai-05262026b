@@ -58,6 +58,12 @@ import ServicesPage from "@/pages/ServicesPage";
 import HouseholdsPage from "@/pages/HouseholdsPage";
 import VolunteerPage from "@/pages/VolunteerPage";
 import PortalDirectory from "@/pages/portal/PortalDirectory";
+import AdminCourseList from "@/pages/admin/AdminCourseList";
+import AdminCourseEditor from "@/pages/admin/AdminCourseEditor";
+import AdminCourseMembers from "@/pages/admin/AdminCourseMembers";
+import PortalCourses from "@/pages/portal/PortalCourses";
+import PortalCourseDetail from "@/pages/portal/PortalCourseDetail";
+import PortalLessonViewer from "@/pages/portal/PortalLessonViewer";
 
 // Router wrapper to detect session_id in URL
 function AppRouter() {
@@ -115,6 +121,9 @@ function AppRouter() {
         <Route path="/admin/groups" element={<GroupsManagerPage />} />
         <Route path="/admin/groups/:groupId/dashboard" element={<GroupLeaderDashboard />} />
         <Route path="/admin/events" element={<EventsManagerPage />} />
+        <Route path="/admin/courses" element={<AdminCourseList />} />
+        <Route path="/admin/courses/:id/edit" element={<AdminCourseEditor />} />
+        <Route path="/admin/courses/:id/members" element={<AdminCourseMembers />} />
       </Route>
       
       {/* Member Portal routes */}
@@ -132,6 +141,9 @@ function AppRouter() {
         <Route path="meetings" element={<PortalMeetings />} />
         <Route path="prayer" element={<PortalPrayer />} />
         <Route path="directory" element={<PortalDirectory />} />
+        <Route path="courses" element={<PortalCourses />} />
+        <Route path="courses/:id" element={<PortalCourseDetail />} />
+        <Route path="courses/:id/lessons/:lessonId" element={<PortalLessonViewer />} />
         <Route path="groups" element={<PortalGroups />} />
         <Route path="events" element={<PortalEvents />} />
         <Route path="me" element={<PortalMe />} />
