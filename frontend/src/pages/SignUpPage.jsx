@@ -1,416 +1,246 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, Check, X, Shield, Lock, Mail, User, Phone, ArrowRight, Loader2, Building2 } from 'lucide-react';
+import { Check, ArrowRight, ArrowLeft, Loader2, Eye, EyeOff } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
-// Password requirements checker
-const checkPasswordRequirements = (password) => {
-  return {
-    minLength: password.length >= 8,
-    hasUppercase: /[A-Z]/.test(password),
-    hasLowercase: /[a-z]/.test(password),
-    hasNumber: /\d/.test(password),
-    hasSpecial: /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\;'`~]/.test(password),
-  };
-};
+const STEPS = ['Your Church', 'Your Account', 'Launch'];
 
-const PasswordRequirement = ({ met, text }) => (
-  <div className={`signup-req ${met ? 'met' : ''}`}>
-    {met ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
-    <span>{text}</span>
-  </div>
-);
+const memberCounts = ['Under 200', '200-1,000', '1,000-5,000', '5,000-20,000', '20,000+'];
+const roles = ['Lead Pastor', 'Executive Pastor', 'Church Administrator', 'IT/Tech Director', 'Other'];
 
 export default function SignUpPage() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-    churchId: '',  // Added church selection
-  });
+  const [step, setStep] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [emailAvailable, setEmailAvailable] = useState(null);
-  const [checkingEmail, setCheckingEmail] = useState(false);
-  const [churches, setChurches] = useState([]);
-  const [loadingChurches, setLoadingChurches] = useState(true);
+  const [form, setForm] = useState({
+    church_name: '', city: '', state: '', denomination: '', member_count: '', referral: '',
+    first_name: '', last_name: '', email: '', role_title: '', password: '', confirm: ''
+  });
 
-  // Fetch available churches on mount
-  useEffect(() => {
-    const fetchChurches = async () => {
-      try {
-        const res = await fetch(`${API_URL}/tenants/list`);
-        if (res.ok) {
-          const data = await res.json();
-          setChurches(data);  // API already filters for active only
-          console.log('Churches loaded:', data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch churches:', error);
-      } finally {
-        setLoadingChurches(false);
-      }
-    };
-    fetchChurches();
-  }, []);
+  const set = (key) => (e) => setForm(prev => ({ ...prev, [key]: e.target.value }));
+  const setCount = (val) => setForm(prev => ({ ...prev, member_count: val }));
 
-  const passwordReqs = checkPasswordRequirements(formData.password);
-  const allRequirementsMet = Object.values(passwordReqs).every(Boolean);
-  const passwordsMatch = formData.password === formData.confirmPassword && formData.confirmPassword.length > 0;
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Reset email availability when email changes
-    if (name === 'email') {
-      setEmailAvailable(null);
-    }
+  const canAdvance = () => {
+    if (step === 0) return form.church_name && form.city && form.state;
+    if (step === 1) return form.first_name && form.email && form.password && form.password === form.confirm && form.password.length >= 8;
+    return true;
   };
 
-  const checkEmailAvailability = async () => {
-    if (!formData.email || !formData.email.includes('@')) return;
-    
-    setCheckingEmail(true);
+  const handleLaunch = async () => {
+    setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/auth/check-email`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email }),
+      const res = await fetch(`${API_URL}/auth/register-church`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
       });
-      const data = await res.json();
-      setEmailAvailable(data.available);
-    } catch (error) {
-      console.error('Email check failed:', error);
-    } finally {
-      setCheckingEmail(false);
-    }
-  };
-
-  const handleGoogleSignUp = () => {
-    window.location.href = `${API_URL}/auth/google`;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!allRequirementsMet) {
-      toast.error('Please meet all password requirements');
-      return;
-    }
-    
-    if (!passwordsMatch) {
-      toast.error('Passwords do not match');
-      return;
-    }
-    
-    if (emailAvailable === false) {
-      toast.error('This email is already registered');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          confirm_password: formData.confirmPassword,
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          phone: formData.phone || null,
-          tenant_id: formData.churchId,  // Church selection
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.detail || 'Registration failed');
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('session_token', data.token);
+        localStorage.setItem('user_data', JSON.stringify(data));
+        toast.success('Welcome to Solomon AI!');
+        navigate('/dashboard', { state: { user: data } });
+      } else {
+        const err = await res.json();
+        toast.error(err.detail || 'Registration failed');
       }
-
-      // Get church name for welcome message
-      const selectedChurch = churches.find(c => c.id === formData.churchId);
-      toast.success(`Account created! Welcome to Solomon AI`);
-      
-      // Store auth token for auto-login
-      if (data.token || data.session_token) {
-        document.cookie = `session_token=${data.token || data.session_token}; path=/; max-age=${7 * 24 * 60 * 60}`;
-      }
-      
-      // Store user info
-      localStorage.setItem('solomon_user', JSON.stringify({
-        user_id: data.user_id,
-        email: data.email,
-        name: data.name,
-        role: data.role,
-        token: data.token || data.session_token,
-        tenant_id: formData.churchId,
-      }));
-
-      // Redirect to portal
-      navigate('/portal');
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setIsLoading(false);
-    }
+    } catch { toast.error('Registration failed'); }
+    finally { setLoading(false); }
   };
+
+  const inputStyle = { width: '100%', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, fontSize: 14, color: '#fff', background: 'rgba(30,41,59,0.6)', outline: 'none' };
+  const labelStyle = { display: 'block', fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 };
 
   return (
-    <div className="signup-page" data-testid="signup-page">
-      <div className="signup-sidebar">
-        <div className="signup-brand">
-          <h1 className="signup-logo">SOL<span>O</span>MON</h1>
-          <p className="signup-tagline">AI-Powered Church Management</p>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, fontFamily: "'Inter',-apple-system,sans-serif" }} data-testid="signup-page">
+      <div style={{ width: '100%', maxWidth: 480 }}>
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: 36 }}>
+          <Link to="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'baseline', gap: 6 }}>
+            <span style={{ fontSize: 22, fontWeight: 200, letterSpacing: 6, color: '#fff' }}>SOLOMON</span>
+            <span style={{ fontSize: 22, fontWeight: 700, color: '#3b82f6' }}>AI</span>
+          </Link>
+          <p style={{ fontSize: 13, color: '#64748b', marginTop: 8 }}>Start your 30-day free trial</p>
         </div>
-        
-        <div className="signup-features">
-          <div className="signup-feature">
-            <Shield className="w-5 h-5" />
-            <div>
-              <h3>Bank-Level Security</h3>
-              <p>256-bit encryption protects your data</p>
+
+        {/* Steps */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 28, justifyContent: 'center' }}>
+          {STEPS.map((label, idx) => (
+            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 12, fontWeight: 700, transition: 'all 0.2s',
+                background: idx < step ? '#3b82f6' : idx === step ? '#fff' : 'rgba(51,65,85,0.5)',
+                color: idx < step ? '#fff' : idx === step ? '#0f172a' : '#64748b'
+              }}>{idx < step ? <Check style={{ width: 14, height: 14 }} /> : idx + 1}</div>
+              <span style={{ fontSize: 12, fontWeight: 600, color: idx <= step ? '#fff' : '#64748b' }}>{label}</span>
+              {idx < STEPS.length - 1 && <div style={{ width: 32, height: 1, background: idx < step ? '#3b82f6' : 'rgba(51,65,85,0.5)' }} />}
             </div>
-          </div>
-          <div className="signup-feature">
-            <Lock className="w-5 h-5" />
-            <div>
-              <h3>SOC 2 Compliant</h3>
-              <p>Enterprise security standards</p>
+          ))}
+        </div>
+
+        {/* Card */}
+        <div style={{ background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '32px 28px', backdropFilter: 'blur(8px)' }}>
+          {/* Step 0: Church Info */}
+          {step === 0 && (
+            <div data-testid="signup-step-church">
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#fff', margin: '0 0 4px 0' }}>Tell us about your church</h2>
+              <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 24px 0' }}>We'll set up your platform in seconds.</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div>
+                  <label style={labelStyle}>Church name *</label>
+                  <input value={form.church_name} onChange={set('church_name')} style={inputStyle} placeholder="e.g. Abundant Church" data-testid="signup-church-name" />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div>
+                    <label style={labelStyle}>City *</label>
+                    <input value={form.city} onChange={set('city')} style={inputStyle} placeholder="Charlotte" data-testid="signup-city" />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>State *</label>
+                    <input value={form.state} onChange={set('state')} style={inputStyle} placeholder="NC" data-testid="signup-state" />
+                  </div>
+                </div>
+                <div>
+                  <label style={labelStyle}>Denomination (optional)</label>
+                  <select value={form.denomination} onChange={set('denomination')} style={inputStyle} data-testid="signup-denomination">
+                    <option value="">Select...</option>
+                    <option>Non-denominational</option><option>Baptist</option><option>Methodist</option><option>Pentecostal</option><option>Presbyterian</option><option>Catholic</option><option>Lutheran</option><option>Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>Approximate member count</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    {memberCounts.map(c => (
+                      <button type="button" key={c} onClick={() => setCount(c)} style={{
+                        padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                        background: form.member_count === c ? '#3b82f6' : 'rgba(51,65,85,0.5)',
+                        color: '#fff', border: 'none', transition: 'all 0.15s'
+                      }} data-testid={`signup-count-${c.replace(/[^a-zA-Z0-9]/g, '')}`}>{c}</button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
+          )}
+
+          {/* Step 1: Account */}
+          {step === 1 && (
+            <div data-testid="signup-step-account">
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#fff', margin: '0 0 4px 0' }}>Create your account</h2>
+              <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 24px 0' }}>You'll be the admin for {form.church_name}.</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div>
+                    <label style={labelStyle}>First name *</label>
+                    <input value={form.first_name} onChange={set('first_name')} style={inputStyle} data-testid="signup-first-name" />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Last name</label>
+                    <input value={form.last_name} onChange={set('last_name')} style={inputStyle} data-testid="signup-last-name" />
+                  </div>
+                </div>
+                <div>
+                  <label style={labelStyle}>Email *</label>
+                  <input type="email" value={form.email} onChange={set('email')} style={inputStyle} data-testid="signup-email" />
+                </div>
+                <div>
+                  <label style={labelStyle}>Your role</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    {roles.map(r => (
+                      <button type="button" key={r} onClick={() => setForm(prev => ({ ...prev, role_title: r }))} style={{
+                        padding: '8px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                        background: form.role_title === r ? '#3b82f6' : 'rgba(51,65,85,0.5)',
+                        color: '#fff', border: 'none'
+                      }}>{r}</button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label style={labelStyle}>Password *</label>
+                  <div style={{ position: 'relative' }}>
+                    <input type={showPassword ? 'text' : 'password'} value={form.password} onChange={set('password')} style={inputStyle} data-testid="signup-password" />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
+                      {showPassword ? <EyeOff style={{ width: 16, height: 16 }} /> : <Eye style={{ width: 16, height: 16 }} />}
+                    </button>
+                  </div>
+                  {form.password && form.password.length < 8 && <p style={{ fontSize: 11, color: '#ef4444', marginTop: 4 }}>Must be at least 8 characters</p>}
+                </div>
+                <div>
+                  <label style={labelStyle}>Confirm password *</label>
+                  <input type="password" value={form.confirm} onChange={set('confirm')} style={inputStyle} data-testid="signup-confirm" />
+                  {form.confirm && form.password !== form.confirm && <p style={{ fontSize: 11, color: '#ef4444', marginTop: 4 }}>Passwords don't match</p>}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Summary & Launch */}
+          {step === 2 && (
+            <div data-testid="signup-step-launch" style={{ textAlign: 'center' }}>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#fff', margin: '0 0 4px 0' }}>You're almost ready</h2>
+              <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 24px 0' }}>Review and launch your Solomon AI platform.</p>
+              <div style={{ background: 'rgba(30,41,59,0.8)', borderRadius: 12, padding: 24, textAlign: 'left', marginBottom: 24 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(51,65,85,0.4)' }}>
+                  <span style={{ fontSize: 13, color: '#94a3b8' }}>Church</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{form.church_name}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(51,65,85,0.4)' }}>
+                  <span style={{ fontSize: 13, color: '#94a3b8' }}>Location</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{form.city}, {form.state}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(51,65,85,0.4)' }}>
+                  <span style={{ fontSize: 13, color: '#94a3b8' }}>Admin</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{form.first_name} {form.last_name}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(51,65,85,0.4)' }}>
+                  <span style={{ fontSize: 13, color: '#94a3b8' }}>Email</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{form.email}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
+                  <span style={{ fontSize: 13, color: '#94a3b8' }}>Plan</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#3b82f6' }}>Growth — 30-day free trial</span>
+                </div>
+              </div>
+              <p style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>We'll import your member list in Week 1.</p>
+            </div>
+          )}
+
+          {/* Navigation */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 28 }}>
+            {step > 0 ? (
+              <button onClick={() => setStep(s => s - 1)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '12px 20px', background: 'none', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, color: '#94a3b8', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                <ArrowLeft style={{ width: 16, height: 16 }} /> Back
+              </button>
+            ) : <div />}
+            {step < 2 ? (
+              <button onClick={() => canAdvance() && setStep(s => s + 1)} disabled={!canAdvance()} style={{
+                display: 'flex', alignItems: 'center', gap: 6, padding: '12px 24px', background: canAdvance() ? '#3b82f6' : 'rgba(59,130,246,0.3)',
+                border: 'none', borderRadius: 10, color: '#fff', fontSize: 14, fontWeight: 700, cursor: canAdvance() ? 'pointer' : 'default'
+              }} data-testid="signup-next-btn">
+                Continue <ArrowRight style={{ width: 16, height: 16 }} />
+              </button>
+            ) : (
+              <button onClick={handleLaunch} disabled={loading} style={{
+                display: 'flex', alignItems: 'center', gap: 8, padding: '14px 28px', background: '#f59e0b',
+                border: 'none', borderRadius: 10, color: '#fff', fontSize: 15, fontWeight: 800, cursor: 'pointer'
+              }} data-testid="signup-launch-btn">
+                {loading ? <Loader2 style={{ width: 18, height: 18, animation: 'spin 0.8s linear infinite' }} /> : null}
+                Launch Solomon AI <ArrowRight style={{ width: 18, height: 18 }} />
+              </button>
+            )}
           </div>
         </div>
-        
-        <p className="signup-version">Version 1.0.0 • Build 2026.02</p>
-      </div>
 
-      <div className="signup-main">
-        <div className="signup-container">
-          <div className="signup-header">
-            <h2>Create Your Account</h2>
-            <p>Join your church community today</p>
-          </div>
-
-          {/* Google Sign Up */}
-          <button 
-            onClick={handleGoogleSignUp}
-            className="signup-google-btn"
-            data-testid="google-signup-btn"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            Continue with Google
-          </button>
-
-          <div className="signup-divider">
-            <span>or sign up with email</span>
-          </div>
-
-          <form onSubmit={handleSubmit} className="signup-form">
-            {/* Church Selector */}
-            <div className="signup-field">
-              <label>Select Your Church</label>
-              <div className="signup-input-wrapper">
-                <Building2 className="signup-input-icon" />
-                <select
-                  name="churchId"
-                  value={formData.churchId}
-                  onChange={handleChange}
-                  required
-                  className="signup-select"
-                  data-testid="signup-church"
-                >
-                  <option value="">Choose your church...</option>
-                  {churches.map((church) => (
-                    <option key={church.id} value={church.id}>
-                      {church.name} — {church.city}, {church.state}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {loadingChurches && (
-                <span className="signup-hint">Loading churches...</span>
-              )}
-            </div>
-
-            {/* Name Row */}
-            <div className="signup-row">
-              <div className="signup-field">
-                <label>First Name</label>
-                <div className="signup-input-wrapper">
-                  <User className="signup-input-icon" />
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    placeholder="John"
-                    required
-                    data-testid="signup-firstname"
-                  />
-                </div>
-              </div>
-              <div className="signup-field">
-                <label>Last Name</label>
-                <div className="signup-input-wrapper">
-                  <User className="signup-input-icon" />
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Smith"
-                    required
-                    data-testid="signup-lastname"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Email */}
-            <div className="signup-field">
-              <label>Email Address</label>
-              <div className="signup-input-wrapper">
-                <Mail className="signup-input-icon" />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  onBlur={checkEmailAvailability}
-                  placeholder="john@example.com"
-                  required
-                  data-testid="signup-email"
-                />
-                {checkingEmail && <Loader2 className="signup-input-status checking" />}
-                {emailAvailable === true && <Check className="signup-input-status available" />}
-                {emailAvailable === false && <X className="signup-input-status taken" />}
-              </div>
-              {emailAvailable === false && (
-                <p className="signup-field-error">This email is already registered. <Link to="/login">Sign in instead?</Link></p>
-              )}
-            </div>
-
-            {/* Phone (Optional) */}
-            <div className="signup-field">
-              <label>Phone Number <span className="optional">(optional)</span></label>
-              <div className="signup-input-wrapper">
-                <Phone className="signup-input-icon" />
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="(555) 123-4567"
-                  data-testid="signup-phone"
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div className="signup-field">
-              <label>Password</label>
-              <div className="signup-input-wrapper">
-                <Lock className="signup-input-icon" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Create a strong password"
-                  required
-                  data-testid="signup-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="signup-toggle-pw"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-              
-              {/* Password Requirements */}
-              {formData.password.length > 0 && (
-                <div className="signup-requirements" data-testid="password-requirements">
-                  <PasswordRequirement met={passwordReqs.minLength} text="At least 8 characters" />
-                  <PasswordRequirement met={passwordReqs.hasUppercase} text="One uppercase letter" />
-                  <PasswordRequirement met={passwordReqs.hasLowercase} text="One lowercase letter" />
-                  <PasswordRequirement met={passwordReqs.hasNumber} text="One number" />
-                  <PasswordRequirement met={passwordReqs.hasSpecial} text="One special character (!@#$%^&*)" />
-                </div>
-              )}
-            </div>
-
-            {/* Confirm Password */}
-            <div className="signup-field">
-              <label>Confirm Password</label>
-              <div className="signup-input-wrapper">
-                <Lock className="signup-input-icon" />
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Confirm your password"
-                  required
-                  data-testid="signup-confirm-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="signup-toggle-pw"
-                >
-                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-                {formData.confirmPassword.length > 0 && (
-                  passwordsMatch ? 
-                    <Check className="signup-input-status available" /> : 
-                    <X className="signup-input-status taken" />
-                )}
-              </div>
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={isLoading || !allRequirementsMet || !passwordsMatch}
-              className="signup-submit-btn"
-              data-testid="signup-submit"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Creating Account...
-                </>
-              ) : (
-                <>
-                  Create Account
-                  <ArrowRight className="w-5 h-5" />
-                </>
-              )}
-            </button>
-          </form>
-
-          <p className="signup-login-link">
-            Already have an account? <Link to="/login">Sign in</Link>
+        {/* Footer */}
+        <div style={{ textAlign: 'center', marginTop: 20 }}>
+          <p style={{ fontSize: 13, color: '#475569' }}>
+            Already have an account? <Link to="/login" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 600 }}>Sign In</Link>
           </p>
         </div>
       </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   );
 }

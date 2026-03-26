@@ -85,6 +85,9 @@ export default function LoginPage() {
           <span className="solomon-logo-ai">AI</span>
         </div>
 
+        {/* Tagline */}
+        <p style={{ fontSize: 13, color: '#64748b', marginBottom: 32, letterSpacing: '0.02em' }}>Your church. Elevated.</p>
+
         {/* Login Card */}
         <div className="solomon-login-card">
           
@@ -154,11 +157,16 @@ export default function LoginPage() {
 
         {/* Footer */}
         <div className="solomon-footer">
-          <Link to="/signup" className="solomon-footer-link">Create account</Link>
-          <span style={{margin: '0 8px', color: '#475569'}}>|</span>
-          <a href="/test-login.html" className="solomon-footer-link" data-testid="direct-login-link" style={{color: '#3b82f6'}}>
-            Direct Login
-          </a>
+          <p style={{ color: '#475569', fontSize: 13, marginBottom: 8 }}>
+            Don't have an account? <Link to="/signup" className="solomon-footer-link" style={{ color: '#3b82f6', fontWeight: 600 }}>Start Free Trial</Link>
+          </p>
+          <div style={{ fontSize: 12, color: '#334155', marginTop: 24 }}>
+            <span>&copy; 2026 Solomon AI</span>
+            <span style={{ margin: '0 8px', color: '#475569' }}>&middot;</span>
+            <span style={{ color: '#475569' }}>Privacy</span>
+            <span style={{ margin: '0 8px', color: '#475569' }}>&middot;</span>
+            <span style={{ color: '#475569' }}>Terms</span>
+          </div>
         </div>
 
       </div>

@@ -1,244 +1,380 @@
-import { Link } from 'react-router-dom';
-import { 
-  Smartphone, Bot, ShieldCheck, Heart, Tv, QrCode, 
-  Users, CalendarDays, MessageCircle, ArrowRight, Mail, Phone, ChevronRight
-} from 'lucide-react';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowRight, Check, X, ChevronRight, Tv, Baby, Heart, Coffee, Zap, Users, ShoppingBag, MessageSquare, Play } from 'lucide-react';
+import { API_URL } from '@/lib/utils';
+import { toast } from 'sonner';
 
-const NAV_HEIGHT = 64;
-
-function Header() {
-  return (
-    <header 
-      className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100"
-      style={{ height: NAV_HEIGHT }}
-      data-testid="landing-header"
-    >
-      <div className="max-w-6xl mx-auto h-full flex items-center justify-between px-6">
-        <Link to="/" className="flex items-center gap-1.5 select-none" data-testid="landing-logo">
-          <span className="text-xl font-bold tracking-tight" style={{ color: '#1e3a5f' }}>
-            SOLOMON
-          </span>
-          <span className="text-xl font-bold tracking-tight" style={{ color: '#3b82f6' }}>
-            AI
-          </span>
-        </Link>
-        <div className="flex items-center gap-4">
-          <Link to="/pricing" className="text-sm text-slate-600 hover:text-slate-900 transition-colors font-medium" data-testid="landing-pricing-link">
-            Pricing
-          </Link>
-          <Link
-            to="/login"
-            className="px-5 py-2 text-sm font-semibold rounded-lg border-2 transition-all duration-200 hover:shadow-md"
-            style={{ borderColor: '#3b82f6', color: '#3b82f6' }}
-            data-testid="landing-login-btn"
-          >
-            Login
-          </Link>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="border-t border-slate-200 bg-white" data-testid="landing-footer">
-      <div className="max-w-6xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <p className="text-sm text-slate-500">
-          &copy; 2026 Solomon AI LLC. All rights reserved.
-        </p>
-        <div className="flex items-center gap-6">
-          <Link to="/pricing" className="text-sm text-slate-500 hover:text-slate-800 transition-colors">
-            Pricing
-          </Link>
-          <Link to="/support" className="text-sm text-slate-500 hover:text-slate-800 transition-colors">
-            Support
-          </Link>
-          <span className="text-sm text-slate-400 cursor-default">Privacy</span>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-const VALUE_PROPS = [
-  {
-    icon: Smartphone,
-    title: 'One App, Not Seven',
-    desc: 'Stop juggling Planning Center, Pushpay, and five other logins. Everything your church needs, unified.',
-  },
-  {
-    icon: Bot,
-    title: 'AI That Actually Helps',
-    desc: 'Ask Solomon anything — service times, giving history, group signups. Your members get answers instantly.',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Safe & Secure',
-    desc: 'Kids check-in with QR verification. PCI-compliant giving. Your congregation\'s data, protected.',
-  },
-];
-
-const FEATURES = [
-  { icon: Heart, label: 'Give', desc: 'Effortless generosity' },
-  { icon: Tv, label: 'Watch', desc: 'Sermons on demand' },
-  { icon: QrCode, label: 'Check-In', desc: 'Kids secured with QR' },
-  { icon: Users, label: 'Groups', desc: 'Find your people' },
-  { icon: CalendarDays, label: 'Events', desc: 'Never miss a moment' },
-  { icon: MessageCircle, label: 'Ask Solomon', desc: 'AI assistant built in' },
-];
+const S = {
+  navy: '#0f172a', navyLight: '#1e293b', blue: '#3b82f6', gold: '#f59e0b',
+  grayLight: '#f8fafc', white: '#ffffff', textPrimary: '#f8fafc', textMuted: '#94a3b8',
+  textDark: '#111827', textGray: '#6b7280', border: '#e5e7eb',
+};
 
 export default function LandingPage() {
+  const navigate = useNavigate();
+  const [waitlistEmail, setWaitlistEmail] = useState('');
+  const [waitlistChurch, setWaitlistChurch] = useState('');
+  const [waitlistSent, setWaitlistSent] = useState(false);
+
+  const submitWaitlist = async () => {
+    if (!waitlistEmail) return;
+    try {
+      await fetch(`${API_URL}/waitlist/solomon-pay`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: waitlistEmail, church_name: waitlistChurch })
+      });
+      setWaitlistSent(true);
+      toast.success("You're on the waitlist!");
+    } catch { toast.error('Failed to join waitlist'); }
+  };
+
   return (
-    <div className="min-h-screen bg-white" data-testid="landing-page">
-      <Header />
+    <div style={{ background: S.white, color: S.textDark, fontFamily: "'Inter',-apple-system,BlinkMacSystemFont,sans-serif" }} data-testid="landing-page">
 
-      {/* ===== HERO ===== */}
-      <section
-        className="relative overflow-hidden"
-        style={{ paddingTop: NAV_HEIGHT }}
-        data-testid="hero-section"
-      >
-        {/* Subtle gradient bg */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,130,246,0.06) 0%, transparent 70%)',
-        }} />
+      {/* ── NAV ── */}
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: 'rgba(15,23,42,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }} data-testid="landing-header">
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: 6 }} data-testid="landing-logo">
+            <span style={{ fontSize: 18, fontWeight: 200, letterSpacing: 6, color: '#fff' }}>SOLOMON</span>
+            <span style={{ fontSize: 18, fontWeight: 700, color: S.blue }}>AI</span>
+          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Link to="/login" style={{ padding: '8px 20px', fontSize: 14, fontWeight: 600, color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, textDecoration: 'none' }} data-testid="landing-login-btn">Sign In</Link>
+            <Link to="/signup" style={{ padding: '8px 20px', fontSize: 14, fontWeight: 700, color: '#fff', background: S.blue, borderRadius: 8, textDecoration: 'none' }} data-testid="landing-get-started-btn">Get Started</Link>
+          </div>
+        </div>
+      </nav>
 
-        <div className="relative max-w-3xl mx-auto text-center px-6 pt-20 pb-16 sm:pt-28 sm:pb-24">
-          <h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight"
-            style={{ color: '#1e3a5f' }}
-          >
-            One App for Your<br className="hidden sm:block" /> Entire Church
-          </h1>
-
-          <p className="mt-6 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Giving. Check-in. Sermons. Groups. Events. Prayer.<br className="hidden sm:block" />
-            All in one place — powered by AI that actually helps.
-          </p>
-
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              className="w-full sm:w-auto px-8 py-3.5 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2"
-              style={{ background: '#3b82f6' }}
-              data-testid="hero-demo-btn"
-              onClick={() => {
-                const el = document.getElementById('demo');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              Request a Demo
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <a
-              href="sms:+14084176674"
-              className="w-full sm:w-auto px-8 py-3.5 font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all duration-200 flex items-center justify-center gap-2"
-              data-testid="hero-text-btn"
-            >
-              <Phone className="w-4 h-4 text-slate-400" />
-              Text to Start: (408) 417-6674
-            </a>
+      {/* ── 1.1 HERO ── */}
+      <section style={{ background: `linear-gradient(160deg, ${S.navy} 0%, #0c1220 60%, ${S.navyLight} 100%)`, minHeight: '100vh', paddingTop: 120, paddingBottom: 80 }} data-testid="hero-section">
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', gap: 60 }}>
+          <div style={{ flex: '1 1 55%' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 100, marginBottom: 28 }}>
+              <span style={{ color: S.gold, fontSize: 13, fontWeight: 600 }}>Trusted by 11 churches &middot; 64,500 members</span>
+            </div>
+            <h1 style={{ fontSize: 'clamp(40px, 5vw, 64px)', fontWeight: 800, color: '#fff', lineHeight: 1.08, letterSpacing: '-0.03em', margin: '0 0 24px 0' }} data-testid="hero-headline">
+              Your church deserves<br />better technology.
+            </h1>
+            <p style={{ fontSize: 'clamp(16px, 1.5vw, 20px)', color: S.textMuted, lineHeight: 1.6, maxWidth: 560, margin: '0 0 40px 0' }}>
+              Solomon AI replaces Planning Center, Church Center, and SecureGive — in one platform, at one price, powered by AI.
+            </p>
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              <Link to="/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '16px 32px', background: S.blue, color: '#fff', fontSize: 16, fontWeight: 700, borderRadius: 10, textDecoration: 'none', transition: 'transform 0.2s' }} data-testid="hero-cta-trial">
+                Start Free Trial <ArrowRight style={{ width: 18, height: 18 }} />
+              </Link>
+              <Link to="/demo" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 28px', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontSize: 16, fontWeight: 600, borderRadius: 10, textDecoration: 'none' }} data-testid="hero-cta-demo">
+                <Play style={{ width: 16, height: 16 }} /> Watch Demo
+              </Link>
+            </div>
+            <p style={{ fontSize: 13, color: '#64748b', marginTop: 20 }}>
+              Join churches saving $2,000+/month vs Planning Center + SecureGive combined
+            </p>
+          </div>
+          <div style={{ flex: '1 1 45%', position: 'relative' }} data-testid="hero-visual">
+            <div style={{ background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 16, padding: 24, boxShadow: '0 0 80px rgba(59,130,246,0.12)', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: -10, right: -10, padding: '4px 12px', background: S.blue, borderRadius: 6, fontSize: 10, fontWeight: 700, color: '#fff', letterSpacing: '0.06em' }}>LIVE DEMO DATA</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+                {[
+                  { label: 'Members', val: '312', sub: 'Present today', color: '#60a5fa' },
+                  { label: 'Kids', val: '47', sub: 'Checked in', color: '#4ade80' },
+                  { label: 'Given Today', val: '$28,450', sub: 'General + Building', color: '#34d399' },
+                  { label: 'Cafe Orders', val: '34', sub: 'Before service', color: '#fbbf24' },
+                ].map(k => (
+                  <div key={k.label} style={{ background: 'rgba(30,41,59,0.8)', borderRadius: 10, padding: '14px 16px' }}>
+                    <p style={{ fontSize: 10, color: '#64748b', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>{k.label}</p>
+                    <p style={{ fontSize: 24, fontWeight: 800, fontFamily: 'monospace', color: k.color, margin: '4px 0 0 0' }}>{k.val}</p>
+                    <p style={{ fontSize: 11, color: '#475569', margin: 0 }}>{k.sub}</p>
+                  </div>
+                ))}
+              </div>
+              <div style={{ background: 'rgba(30,41,59,0.8)', borderRadius: 10, padding: 14 }}>
+                <p style={{ fontSize: 10, color: '#64748b', margin: '0 0 8px 0', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Live Activity</p>
+                {['Emma Davis checked in to PreK', 'Anonymous gave $100 to General Fund', 'James Wilson ordered Latte'].map((t, i) => (
+                  <div key={i} style={{ fontSize: 12, color: '#94a3b8', padding: '6px 0', borderTop: i > 0 ? '1px solid rgba(51,65,85,0.4)' : 'none' }}>{t}</div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ===== VALUE PROPS ===== */}
-      <section className="py-16 sm:py-24 bg-slate-50/60" data-testid="value-props-section">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {VALUE_PROPS.map((v, i) => (
-              <div key={i} className="text-center" data-testid={`value-prop-${i}`}>
-                <div
-                  className="mx-auto w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
-                  style={{ background: 'rgba(59,130,246,0.08)' }}
-                >
-                  <v.icon className="w-6 h-6" style={{ color: '#3b82f6' }} />
-                </div>
-                <h3 className="text-lg font-bold mb-2" style={{ color: '#1e3a5f' }}>
-                  {v.title}
-                </h3>
-                <p className="text-sm text-slate-600 leading-relaxed">{v.desc}</p>
+      {/* ── 1.2 SOCIAL PROOF BAR ── */}
+      <section style={{ background: S.white, padding: '48px 32px', borderBottom: `1px solid ${S.border}` }} data-testid="social-proof-section">
+        <div style={{ maxWidth: 1000, margin: '0 auto', textAlign: 'center' }}>
+          <p style={{ fontSize: 12, color: S.textGray, textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600, marginBottom: 28 }}>Powering churches across America</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 32 }}>
+            {[
+              { num: '11', label: 'Churches', sub: 'Active' },
+              { num: '64,500', label: 'Members', sub: 'Engaged' },
+              { num: '$151M', label: 'YTD Given', sub: 'Processed' },
+              { num: '3', label: 'Campuses', sub: 'Abundant' },
+            ].map(s => (
+              <div key={s.label}>
+                <p style={{ fontSize: 40, fontWeight: 800, color: S.textDark, margin: 0, fontFamily: 'monospace', letterSpacing: '-0.03em' }}>{s.num}</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: S.textDark, margin: '4px 0 0 0' }}>{s.label}</p>
+                <p style={{ fontSize: 12, color: S.textGray, margin: 0 }}>{s.sub}</p>
+              </div>
+            ))}
+          </div>
+          <p style={{ fontSize: 12, color: S.textGray, marginTop: 20 }}>Real data. Live platform.</p>
+        </div>
+      </section>
+
+      {/* ── 1.3 THE PROBLEM ── */}
+      <section style={{ background: S.grayLight, padding: '80px 32px' }} data-testid="problem-section">
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: S.blue, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>The Problem</p>
+          <h2 style={{ fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 800, color: S.textDark, letterSpacing: '-0.02em', margin: '0 0 48px 0', lineHeight: 1.15 }}>
+            Your church is paying too much<br />for too little.
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+            {[
+              { title: 'Too many bills', body: 'Planning Center: $300-$1,500/mo\nSecureGive: $99-$199/mo + 2% fees\nSermon platform: $50-$200/mo\nChurch app: $200-$500/mo', highlight: 'TOTAL: $700-$2,400/month for tools that don\'t talk to each other', color: '#ef4444' },
+              { title: 'Too complex', body: 'Church Center is not your app. It says "Church Center" — not your church\'s name. Planning Center takes months to learn. Your staff dreads Sunday morning logistics.', highlight: '', color: '#f59e0b' },
+              { title: 'Zero AI', body: 'Planning Center was built in 2006. Church Center has no AI assistant. No geofencing. No giving nudges. No war room. No cafe ordering. They\'re not building for 2026.', highlight: 'Solomon AI is.', color: '#8b5cf6' },
+            ].map(card => (
+              <div key={card.title} style={{ background: S.white, borderRadius: 16, padding: 28, border: `1px solid ${S.border}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: S.textDark, margin: '0 0 12px 0' }}>{card.title}</h3>
+                <p style={{ fontSize: 14, color: S.textGray, lineHeight: 1.7, margin: '0 0 12px 0', whiteSpace: 'pre-line' }}>{card.body}</p>
+                {card.highlight && <p style={{ fontSize: 14, fontWeight: 700, color: card.color, margin: 0 }}>{card.highlight}</p>}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== FEATURES GRID ===== */}
-      <section className="py-16 sm:py-24" data-testid="features-section">
-        <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-center text-base sm:text-lg font-bold uppercase tracking-widest mb-2" style={{ color: '#3b82f6' }}>
-            Everything Built In
+      {/* ── 1.4 THE SOLUTION ── */}
+      <section style={{ background: S.white, padding: '80px 32px' }} data-testid="solution-section">
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: S.blue, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>Everything Your Church Needs</p>
+          <h2 style={{ fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 800, color: S.textDark, letterSpacing: '-0.02em', margin: '0 0 48px 0', lineHeight: 1.15 }}>
+            One platform. Every ministry.<br />Powered by AI.
           </h2>
-          <p className="text-center text-2xl sm:text-3xl font-bold mb-14" style={{ color: '#1e3a5f' }}>
-            Church tech that just works.
-          </p>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-            {FEATURES.map((f, i) => (
-              <div
-                key={i}
-                className="group p-6 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all duration-300 cursor-default"
-                data-testid={`feature-card-${i}`}
-              >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-colors"
-                  style={{ background: 'rgba(59,130,246,0.06)' }}
-                >
-                  <f.icon className="w-5 h-5" style={{ color: '#3b82f6' }} />
-                </div>
-                <h4 className="font-bold text-sm" style={{ color: '#1e3a5f' }}>{f.label}</h4>
-                <p className="text-xs text-slate-500 mt-1">{f.desc}</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+            {[
+              { icon: Tv, title: 'Watch', desc: 'MasterClass-quality sermon library. Members watch Monday. They come back Sunday.' },
+              { icon: Baby, title: 'Kids Check-In', desc: 'QR codes. Real-time bidirectional sync. Parent checks in on iPhone. Admin scans instantly. No paper.' },
+              { icon: Heart, title: 'Give', desc: 'One tap to give. Every fund. Recurring. Beautiful thank-you experience. Tax statements auto-generated.' },
+              { icon: Coffee, title: 'Cafe + Merch', desc: 'Order Sunday coffee before you arrive. Buy church merchandise in 3 taps. Every order includes a giving nudge.' },
+              { icon: MessageSquare, title: 'Ask Solomon AI', desc: "An AI pastor's assistant. 'What time is the marriage retreat?' 'Who's preaching Sunday?' — instant answers." },
+              { icon: Zap, title: 'War Room', desc: 'Live Sunday command center. Kids checked in. Giving flowing. Cafe ordered. All on one screen.' },
+            ].map(f => (
+              <div key={f.title} style={{ background: S.grayLight, borderRadius: 14, padding: 28, border: `1px solid ${S.border}` }}>
+                <f.icon style={{ width: 28, height: 28, color: S.blue, marginBottom: 16 }} />
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: S.textDark, margin: '0 0 8px 0' }}>{f.title}</h3>
+                <p style={{ fontSize: 14, color: S.textGray, lineHeight: 1.6, margin: 0 }}>{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== TRUST LINE ===== */}
-      <section className="py-10 text-center">
-        <p className="text-sm font-medium text-slate-400 tracking-wide">
-          Trusted by churches ready for what&apos;s next.
-        </p>
-      </section>
-
-      {/* ===== CTA BANNER ===== */}
-      <section
-        id="demo"
-        className="py-16 sm:py-20"
-        style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #1e3a5f 60%, #2563eb 100%)' }}
-        data-testid="cta-section"
-      >
-        <div className="max-w-2xl mx-auto text-center px-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-            Ready to simplify your church&apos;s tech?
+      {/* ── 1.5 COMPARISON TABLE ── */}
+      <section style={{ background: S.grayLight, padding: '80px 32px' }} data-testid="comparison-section">
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <h2 style={{ fontSize: 'clamp(28px, 3vw, 36px)', fontWeight: 800, color: S.textDark, letterSpacing: '-0.02em', margin: '0 0 40px 0', textAlign: 'center' }}>
+            Everything they have.<br />Everything they don't.
           </h2>
-          <p className="text-blue-200 mb-10 text-sm sm:text-base">
-            Built for the next generation of church leaders. Modern, intuitive, and actually easy to use.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="mailto:support@solomonai.us?subject=Demo%20Request"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-              style={{ color: '#1e3a5f' }}
-              data-testid="cta-demo-btn"
-            >
-              Request a Demo
-              <ChevronRight className="w-4 h-4" />
-            </a>
-            <a
-              href="sms:+14084176674"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 border border-white/30 text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-200"
-              data-testid="cta-text-btn"
-            >
-              <Phone className="w-4 h-4" />
-              Text us: (408) 417-6674
-            </a>
+          <div style={{ background: S.white, borderRadius: 16, overflow: 'hidden', border: `1px solid ${S.border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+              <thead>
+                <tr style={{ borderBottom: `2px solid ${S.border}` }}>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: S.textGray }}>Feature</th>
+                  <th style={{ padding: '16px 16px', textAlign: 'center', fontWeight: 700, color: S.blue }}>Solomon AI</th>
+                  <th style={{ padding: '16px 16px', textAlign: 'center', fontWeight: 600, color: S.textGray }}>Planning Center</th>
+                  <th style={{ padding: '16px 16px', textAlign: 'center', fontWeight: 600, color: S.textGray }}>SecureGive</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ['Member Management', true, true, false],
+                  ['Kids Check-In (QR)', true, true, false],
+                  ['Online Giving', true, true, true],
+                  ['Small Groups', true, true, false],
+                  ['Events & Registration', true, true, false],
+                  ['Sermon Library', true, false, false],
+                  ['Cafe Ordering', true, false, false],
+                  ['Merch Store', true, false, false],
+                  ['AI Assistant', true, false, false],
+                  ['Geofencing Check-in', true, false, false],
+                  ['Real-time War Room', true, false, false],
+                  ['White-label App', true, false, false],
+                  ['Multi-campus (1 bill)', true, false, false],
+                  ['Flat Monthly Price', true, false, false],
+                ].map(([feature, sol, pc, sg], i) => (
+                  <tr key={feature} style={{ borderBottom: `1px solid ${S.border}`, background: i % 2 === 0 ? S.white : S.grayLight }}>
+                    <td style={{ padding: '12px 20px', color: S.textDark, fontWeight: 500 }}>{feature}</td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>{sol ? <Check style={{ width: 18, height: 18, color: '#22c55e', margin: '0 auto' }} /> : <X style={{ width: 18, height: 18, color: '#d1d5db', margin: '0 auto' }} />}</td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>{pc ? <Check style={{ width: 18, height: 18, color: '#22c55e', margin: '0 auto' }} /> : <X style={{ width: 18, height: 18, color: '#d1d5db', margin: '0 auto' }} />}</td>
+                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>{sg ? <Check style={{ width: 18, height: 18, color: '#22c55e', margin: '0 auto' }} /> : <X style={{ width: 18, height: 18, color: '#d1d5db', margin: '0 auto' }} />}</td>
+                  </tr>
+                ))}
+                <tr style={{ background: '#f0f9ff' }}>
+                  <td style={{ padding: '14px 20px', fontWeight: 700, color: S.textDark }}>Monthly Cost</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 700, color: S.blue }}>$499-$2,999</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'center', color: S.textGray }}>$700-$2,400+</td>
+                  <td style={{ padding: '14px 16px', textAlign: 'center', color: S.textGray }}>$99-$199+2%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 12, padding: '20px 24px', marginTop: 24, textAlign: 'center' }}>
+            <p style={{ fontSize: 15, fontWeight: 700, color: '#92400e', margin: '0 0 4px 0' }}>
+              A 50,000-member church on SecureGive pays $20,000/month in transaction fees alone.
+            </p>
+            <p style={{ fontSize: 14, color: '#a16207', margin: 0 }}>
+              Solomon AI: one flat price. No transaction fees.* <span style={{ fontSize: 12 }}>*Until we launch Solomon Pay in 2026.</span>
+            </p>
           </div>
         </div>
       </section>
 
-      <Footer />
+      {/* ── 1.6 PRICING ── */}
+      <section style={{ background: S.white, padding: '80px 32px' }} data-testid="pricing-section">
+        <div style={{ maxWidth: 1000, margin: '0 auto', textAlign: 'center' }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: S.blue, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>Pricing</p>
+          <h2 style={{ fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 800, color: S.textDark, letterSpacing: '-0.02em', margin: '0 0 8px 0' }}>Simple pricing. No surprises.</h2>
+          <p style={{ fontSize: 16, color: S.textGray, margin: '0 0 48px 0' }}>One price. Every feature. All campuses included.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, textAlign: 'left' }}>
+            {[
+              { name: 'Starter', price: '$499', period: '/mo', desc: 'Up to 500 members', features: ['All features included', '1 campus', 'Email support'], popular: false, cta: 'Get Started' },
+              { name: 'Growth', price: '$1,499', period: '/mo', desc: 'Up to 5,000 members', features: ['All features included', 'Up to 3 campuses', 'Priority support', 'Onboarding included'], popular: true, cta: 'Get Started' },
+              { name: 'Enterprise', price: '$2,999', period: '/mo', desc: 'Unlimited members', features: ['All features included', 'Unlimited campuses', 'Dedicated success manager', 'Custom integrations', 'SLA guarantee'], popular: false, cta: 'Contact Sales' },
+            ].map(plan => (
+              <div key={plan.name} style={{ background: S.white, borderRadius: 16, padding: 32, border: plan.popular ? `2px solid ${S.gold}` : `1px solid ${S.border}`, position: 'relative', boxShadow: plan.popular ? '0 4px 24px rgba(245,158,11,0.12)' : 'none' }}>
+                {plan.popular && <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', padding: '4px 16px', background: S.gold, borderRadius: 100, fontSize: 11, fontWeight: 700, color: '#fff', letterSpacing: '0.04em' }}>MOST POPULAR</div>}
+                <h3 style={{ fontSize: 20, fontWeight: 700, color: S.textDark, margin: '0 0 4px 0' }}>{plan.name}</h3>
+                <p style={{ fontSize: 12, color: S.textGray, margin: '0 0 16px 0' }}>{plan.desc}</p>
+                <div style={{ margin: '0 0 24px 0' }}>
+                  <span style={{ fontSize: 40, fontWeight: 800, color: S.textDark }}>{plan.price}</span>
+                  <span style={{ fontSize: 16, color: S.textGray }}>{plan.period}</span>
+                </div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px 0' }}>
+                  {plan.features.map(f => (
+                    <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: S.textGray, padding: '6px 0' }}>
+                      <Check style={{ width: 16, height: 16, color: '#22c55e', flexShrink: 0 }} /> {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link to={plan.cta === 'Contact Sales' ? '/demo' : '/signup'} style={{ display: 'block', textAlign: 'center', padding: '14px 0', background: plan.popular ? S.blue : S.navy, color: '#fff', borderRadius: 10, fontSize: 15, fontWeight: 700, textDecoration: 'none' }} data-testid={`pricing-cta-${plan.name.toLowerCase()}`}>
+                  {plan.cta} <ArrowRight style={{ width: 14, height: 14, display: 'inline', verticalAlign: 'middle' }} />
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          {/* FAQ */}
+          <div style={{ maxWidth: 700, margin: '60px auto 0', textAlign: 'left' }}>
+            {[
+              { q: 'Do you charge per campus?', a: "No. One account covers all your campuses. Abundant Church's 3 campuses: one bill." },
+              { q: 'Are there transaction fees on giving?', a: 'Currently we process through Stripe at standard rates. In 2026 we launch Solomon Pay — our own payment processor at lower rates than SecureGive, Pushpay, or Venmo.' },
+              { q: 'How long does onboarding take?', a: 'Week 1: we import your member list from your current system (Excel, CSV, or Planning Center export). Week 2: staff training. Week 3: you\'re live.' },
+            ].map(faq => (
+              <div key={faq.q} style={{ padding: '20px 0', borderBottom: `1px solid ${S.border}` }}>
+                <h4 style={{ fontSize: 15, fontWeight: 700, color: S.textDark, margin: '0 0 8px 0' }}>{faq.q}</h4>
+                <p style={{ fontSize: 14, color: S.textGray, lineHeight: 1.6, margin: 0 }}>{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 1.7 THE VISION ── */}
+      <section style={{ background: S.navy, padding: '80px 32px', color: '#fff' }} data-testid="vision-section">
+        <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: S.gold, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>The Future</p>
+          <h2 style={{ fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 800, letterSpacing: '-0.02em', margin: '0 0 56px 0', lineHeight: 1.15 }}>
+            We're building the financial<br />infrastructure of the church.
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, textAlign: 'left' }}>
+            {[
+              { label: 'NOW', badge: 'bg-green-500', title: 'Church Management', desc: 'Replace Planning Center + Church Center + SecureGive in one platform.', status: 'Live' },
+              { label: '2026', badge: 'bg-blue-500', title: 'Solomon Pay', desc: 'Our own payment processor. Transaction fees lower than Venmo. Lower than Pushpay. Lower than anyone. Every dollar stays in ministry.', status: 'Coming' },
+              { label: 'BEYOND', badge: 'bg-purple-500', title: 'The Church OS', desc: 'Every API. Every integration. Every system a church uses — connected through Solomon AI. The operating system of the American church.', status: 'Vision' },
+            ].map(item => (
+              <div key={item.label} style={{ background: 'rgba(30,41,59,0.5)', border: '1px solid rgba(51,65,85,0.5)', borderRadius: 14, padding: 28 }}>
+                <div style={{ display: 'inline-block', padding: '4px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', marginBottom: 16, background: item.label === 'NOW' ? 'rgba(34,197,94,0.15)' : item.label === '2026' ? 'rgba(59,130,246,0.15)' : 'rgba(168,85,247,0.15)', color: item.label === 'NOW' ? '#4ade80' : item.label === '2026' ? '#60a5fa' : '#c084fc' }}>
+                  {item.label} — {item.status}
+                </div>
+                <h3 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 8px 0' }}>{item.title}</h3>
+                <p style={{ fontSize: 14, color: S.textMuted, lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Waitlist form */}
+          <div style={{ marginTop: 48, padding: '28px 32px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 14 }} data-testid="waitlist-form">
+            {waitlistSent ? (
+              <p style={{ fontSize: 16, color: S.gold, fontWeight: 600 }}>You're on the Solomon Pay waitlist! We'll be in touch.</p>
+            ) : (
+              <>
+                <p style={{ fontSize: 15, fontWeight: 700, color: S.gold, marginBottom: 16 }}>Join the waitlist for Solomon Pay</p>
+                <div style={{ display: 'flex', gap: 8, maxWidth: 500, margin: '0 auto' }}>
+                  <input value={waitlistEmail} onChange={e => setWaitlistEmail(e.target.value)} placeholder="Email" style={{ flex: 1, padding: '12px 16px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(15,23,42,0.6)', color: '#fff', fontSize: 14 }} data-testid="waitlist-email" />
+                  <input value={waitlistChurch} onChange={e => setWaitlistChurch(e.target.value)} placeholder="Church name" style={{ flex: 1, padding: '12px 16px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(15,23,42,0.6)', color: '#fff', fontSize: 14 }} data-testid="waitlist-church" />
+                  <button onClick={submitWaitlist} style={{ padding: '12px 20px', background: S.gold, color: '#fff', borderRadius: 8, border: 'none', fontWeight: 700, fontSize: 14, cursor: 'pointer' }} data-testid="waitlist-submit">Join</button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 1.8 FINAL CTA ── */}
+      <section style={{ background: `linear-gradient(135deg, ${S.navy} 0%, #1a2744 100%)`, padding: '80px 32px', textAlign: 'center' }} data-testid="final-cta-section">
+        <div style={{ maxWidth: 700, margin: '0 auto' }}>
+          <h2 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.15, margin: '0 0 32px 0' }}>
+            Your church deserves<br />better technology.<br />Starting today.
+          </h2>
+          <Link to="/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '18px 40px', background: S.gold, color: '#fff', fontSize: 18, fontWeight: 800, borderRadius: 12, textDecoration: 'none' }} data-testid="final-cta-btn">
+            Start Free Trial <ArrowRight style={{ width: 20, height: 20 }} />
+          </Link>
+          <p style={{ fontSize: 13, color: '#64748b', marginTop: 16 }}>No credit card required &middot; 30-day free trial &middot; Cancel anytime</p>
+        </div>
+      </section>
+
+      {/* ── 1.9 FOOTER ── */}
+      <footer style={{ background: S.navy, padding: '48px 32px 24px', borderTop: '1px solid rgba(51,65,85,0.4)' }} data-testid="landing-footer">
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 40 }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 12 }}>
+                <span style={{ fontSize: 16, fontWeight: 200, letterSpacing: 6, color: '#fff' }}>SOLOMON</span>
+                <span style={{ fontSize: 16, fontWeight: 700, color: S.blue }}>AI</span>
+              </div>
+              <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6, maxWidth: 280 }}>The church platform built for what's next.</p>
+            </div>
+            <div>
+              <h4 style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 16px 0' }}>Product</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <Link to="/" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }}>Features</Link>
+                <Link to="/pricing" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }}>Pricing</Link>
+                <Link to="/demo" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }}>Demo</Link>
+              </div>
+            </div>
+            <div>
+              <h4 style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 16px 0' }}>Company</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <span style={{ fontSize: 13, color: '#64748b' }}>About</span>
+                <span style={{ fontSize: 13, color: '#64748b' }}>Blog</span>
+                <span style={{ fontSize: 13, color: '#64748b' }}>Contact</span>
+              </div>
+            </div>
+            <div>
+              <h4 style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 16px 0' }}>Legal</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <span style={{ fontSize: 13, color: '#64748b' }}>Privacy</span>
+                <span style={{ fontSize: 13, color: '#64748b' }}>Terms</span>
+                <span style={{ fontSize: 13, color: '#64748b' }}>Security</span>
+              </div>
+            </div>
+          </div>
+          <div style={{ borderTop: '1px solid rgba(51,65,85,0.4)', paddingTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <p style={{ fontSize: 12, color: '#475569', margin: 0 }}>&copy; 2026 Solomon AI &middot; Built on Google Cloud &middot; Powered by Anthropic Claude</p>
+            <p style={{ fontSize: 11, color: '#475569', margin: 0 }}>SOC 2 Type II In Progress &middot; PCI DSS Ready</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

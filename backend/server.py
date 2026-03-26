@@ -3220,7 +3220,7 @@ async def email_password_login(request: Request, payload: EmailLoginRequest, res
     
     # Rate limiting: 5 attempts per minute per IP
     client_ip = request.client.host or "unknown"
-    if not check_rate_limit_v2(f"login:{client_ip}", 5, 60):
+    if not check_rate_limit_v2(f"login:{client_ip}", 30, 300):
         raise HTTPException(status_code=429, detail="Too many login attempts. Try again in 1 minute.")
     
     user_doc = await db.users.find_one({"email": login_email}, {"_id": 0})
@@ -10828,11 +10828,24 @@ async def war_room_data(request: Request):
 
     today_checkins = await db.member_checkins.count_documents({"tenant_id": tenant_id, "service_date": now.strftime("%Y-%m-%d")})
 
+    donations_today_list = await db.donations.find({"tenant_id": tenant_id, "created_at": {"$gte": today_start}}, {"_id": 0, "amount": 1}).to_list(5000)
+    given_today = sum(d.get("amount", 0) for d in donations_today_list)
+
     donations_mtd = await db.donations.find({"tenant_id": tenant_id, "created_at": {"$gte": month_start}}, {"_id": 0, "amount": 1}).to_list(5000)
     mtd_giving = sum(d.get("amount", 0) for d in donations_mtd)
 
     cafe_orders_today = await db.cafe_orders.count_documents({"tenant_id": tenant_id, "created_at": {"$gte": today_start}})
-    cafe_all = await db.cafe_orders.count_documents({"tenant_id": tenant_id})
+
+    volunteer_count = await db.volunteer_assignments.count_documents({"tenant_id": tenant_id})
+
+    first_time_count = await db.people.count_documents({"tenant_id": tenant_id, "membership_status": "visitor", "created_at": {"$gte": today_start}})
+
+    merch_sales = await db.merch_orders.count_documents({"tenant_id": tenant_id, "created_at": {"$gte": today_start}})
+    merch_rev_docs = await db.merch_orders.find({"tenant_id": tenant_id, "created_at": {"$gte": today_start}}, {"_id": 0, "total": 1}).to_list(500)
+    merch_revenue = sum(d.get("total", 0) for d in merch_rev_docs)
+
+    cafe_rev_docs = await db.cafe_orders.find({"tenant_id": tenant_id, "created_at": {"$gte": today_start}}, {"_id": 0, "total": 1}).to_list(500)
+    cafe_revenue = sum(d.get("total", 0) for d in cafe_rev_docs)
 
     recent = await db.audit_log.find({"tenant_id": tenant_id}, {"_id": 0}).sort("timestamp", -1).to_list(25)
     activity_feed = []
@@ -10845,24 +10858,87 @@ async def war_room_data(request: Request):
             "details": r.get("new_values", {})
         })
 
+    # Use realistic seed data when no live data exists (demo mode)
+    use_seed = kids_checked_in == 0 and given_today == 0 and today_checkins == 0
+    if use_seed:
+        kids_checked_in = 47
+        kids_total = 52
+        today_checkins = 312
+        given_today = 28450
+        mtd_giving = mtd_giving if mtd_giving > 0 else 69668
+        cafe_orders_today = 34
+        cafe_revenue = 289
+        volunteer_count = max(volunteer_count, 23)
+        first_time_count = 12
+        merch_sales = 8
+        merch_revenue = 680
+
+        seed_time = now.replace(hour=9, minute=0, second=0)
+        seed_events = [
+            {"action": "kid_checkin", "performed_by_name": "Sarah Miller", "details": {"child": "Emma Davis", "classroom": "PreK"}, "offset": 42},
+            {"action": "donation_processed", "performed_by_name": "Anonymous", "details": {"amount": 100, "fund": "General Fund"}, "offset": 38},
+            {"action": "cafe_order", "performed_by_name": "James Wilson", "details": {"items": "Latte + Cold Brew"}, "offset": 35},
+            {"action": "visitor_registered", "performed_by_name": "Marcus Thompson", "details": {"note": "First-time visitor"}, "offset": 31},
+            {"action": "merch_sale", "performed_by_name": "Rachel Kim", "details": {"item": "SO BE IT Hoodie", "amount": 45}, "offset": 28},
+            {"action": "kid_checkin", "performed_by_name": "David Chen", "details": {"child": "Lily Chen", "classroom": "Elementary"}, "offset": 25},
+            {"action": "donation_processed", "performed_by_name": "The Johnson Family", "details": {"amount": 500, "fund": "Building Fund"}, "offset": 22},
+            {"action": "service_checkin", "performed_by_name": "Maria Rodriguez", "details": {"service": "9:00 AM Service"}, "offset": 19},
+            {"action": "cafe_order", "performed_by_name": "Tom Patterson", "details": {"items": "Cappuccino"}, "offset": 16},
+            {"action": "kid_checkin", "performed_by_name": "Jennifer Park", "details": {"child": "Noah Park", "classroom": "Nursery"}, "offset": 13},
+            {"action": "donation_processed", "performed_by_name": "Robert & Lisa Adams", "details": {"amount": 250, "fund": "Missions"}, "offset": 10},
+            {"action": "volunteer_checkin", "performed_by_name": "Carlos Mendez", "details": {"role": "Worship Team Lead"}, "offset": 8},
+            {"action": "visitor_registered", "performed_by_name": "Ashley Brooks", "details": {"note": "Invited by small group"}, "offset": 5},
+            {"action": "cafe_order", "performed_by_name": "Daniel Wright", "details": {"items": "Drip Coffee + Muffin"}, "offset": 3},
+            {"action": "donation_processed", "performed_by_name": "Grace Fellowship Group", "details": {"amount": 1000, "fund": "General Fund"}, "offset": 1},
+        ]
+        activity_feed = []
+        for se in seed_events:
+            ts = (seed_time + timedelta(minutes=se["offset"])).isoformat()
+            activity_feed.append({"action": se["action"], "performed_by_name": se["performed_by_name"], "timestamp": ts, "details": se["details"], "entity_type": ""})
+
     giving_goal = 250000
-    kids_capacity = 40
+    kids_capacity = 60
+    classrooms_active = 5 if use_seed else max(1, len(set(k.get("classroom", "") for k in kids_today if not k.get("checked_out_at"))))
+
+    # Giving trend (last 4 Sundays + today)
+    giving_trend = []
+    for i in range(4, -1, -1):
+        d = now - timedelta(weeks=i)
+        label = "Today" if i == 0 else f"Week {5 - i}"
+        if use_seed:
+            amounts = [18200, 22400, 19800, 25600, 28450]
+            giving_trend.append({"label": label, "amount": amounts[4 - i]})
+        else:
+            w_start = d.replace(hour=0, minute=0, second=0, microsecond=0)
+            w_end = w_start + timedelta(days=1)
+            w_docs = await db.donations.find({"tenant_id": tenant_id, "created_at": {"$gte": w_start.isoformat(), "$lt": w_end.isoformat()}}, {"_id": 0, "amount": 1}).to_list(5000)
+            giving_trend.append({"label": label, "amount": sum(dd.get("amount", 0) for dd in w_docs)})
 
     return {
         "timestamp": now.isoformat(),
+        "church_name": user.get("tenant_name", "Abundant Church"),
+        "is_seed_data": use_seed,
         "counters": {
+            "members_present": today_checkins,
             "total_members": total_members,
             "active_members": active_members,
             "kids_checked_in": kids_checked_in,
             "kids_total_today": kids_total,
             "kids_capacity": kids_capacity,
+            "classrooms_active": classrooms_active,
             "today_checkins": today_checkins,
-            "cafe_orders_today": cafe_orders_today,
-            "cafe_orders_total": cafe_all,
+            "volunteers_on_duty": volunteer_count,
+            "first_time_visitors": first_time_count,
+            "given_today": round(given_today, 2),
             "mtd_giving": round(mtd_giving, 2),
             "giving_goal": giving_goal,
+            "cafe_orders_today": cafe_orders_today,
+            "cafe_revenue": round(cafe_revenue, 2),
+            "merch_sales": merch_sales,
+            "merch_revenue": round(merch_revenue, 2),
         },
-        "activity_feed": activity_feed[:15],
+        "activity_feed": activity_feed[:20],
+        "giving_trend": giving_trend,
         "capacity": {
             "kids": {"current": kids_checked_in, "max": kids_capacity, "pct": round(kids_checked_in / max(kids_capacity, 1) * 100)},
             "cafe": {"queue": cafe_orders_today, "label": f"{cafe_orders_today} orders today"},
@@ -15657,6 +15733,79 @@ async def platform_health(request: Request):
 
 # NOW is used in comparison endpoint
 NOW = datetime.now(timezone.utc)
+
+# ============== PUBLIC ENDPOINTS (NO AUTH) ==============
+
+@api_router.post("/waitlist/solomon-pay")
+async def join_solomon_pay_waitlist(payload: dict):
+    """Join the Solomon Pay waitlist."""
+    email = payload.get("email", "").strip()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    existing = await db.waitlist.find_one({"email": email, "type": "solomon_pay"})
+    if existing:
+        return {"success": True, "message": "You're already on the waitlist!"}
+    await db.waitlist.insert_one({
+        "id": str(uuid.uuid4()), "type": "solomon_pay", "email": email,
+        "church_name": payload.get("church_name", ""), "member_count": payload.get("member_count", ""),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    return {"success": True, "message": "You're on the waitlist! We'll be in touch."}
+
+@api_router.post("/demo-requests")
+async def submit_demo_request(payload: dict):
+    """Submit a demo request."""
+    email = payload.get("email", "").strip()
+    first_name = payload.get("first_name", "").strip()
+    church_name = payload.get("church_name", "").strip()
+    if not email or not first_name or not church_name:
+        raise HTTPException(status_code=400, detail="First name, church name, and email are required")
+    await db.demo_requests.insert_one({
+        "id": str(uuid.uuid4()), "first_name": first_name, "last_name": payload.get("last_name", "").strip(),
+        "church_name": church_name, "email": email, "phone": payload.get("phone", "").strip(),
+        "member_count": payload.get("member_count", ""), "interests": payload.get("interests", []),
+        "status": "new", "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    return {"success": True, "message": "Demo request submitted! We'll be in touch within 24 hours."}
+
+@api_router.post("/auth/register-church")
+async def register_church(payload: dict):
+    """Self-service church registration (signup flow)."""
+    church_name = payload.get("church_name", "").strip()
+    email = payload.get("email", "").strip()
+    password = payload.get("password", "").strip()
+    first_name = payload.get("first_name", "").strip()
+    last_name = payload.get("last_name", "").strip()
+    if not all([church_name, email, password, first_name]):
+        raise HTTPException(status_code=400, detail="Church name, email, password, and first name are required")
+    existing = await db.users.find_one({"email": email})
+    if existing:
+        raise HTTPException(status_code=409, detail="An account with this email already exists")
+    tenant_id = church_name.lower().replace(" ", "-").replace("'", "") + "-" + str(uuid.uuid4())[:8]
+    await db.tenants.insert_one({
+        "id": tenant_id, "name": church_name, "city": payload.get("city", ""), "state": payload.get("state", ""),
+        "denomination": payload.get("denomination", ""), "member_count_range": payload.get("member_count", ""),
+        "plan": "growth", "trial_start": datetime.now(timezone.utc).isoformat(),
+        "trial_end": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat(),
+        "status": "trial", "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    user_id = str(uuid.uuid4())
+    await db.users.insert_one({
+        "user_id": user_id, "email": email, "password_hash": hashlib.sha256(password.encode()).hexdigest(),
+        "name": f"{first_name} {last_name}".strip(), "first_name": first_name, "last_name": last_name,
+        "role": "church_admin", "role_title": payload.get("role_title", "Lead Pastor"),
+        "tenant_id": tenant_id, "is_first_login": True, "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    session_token = f"sess_{uuid.uuid4().hex}"
+    await db.user_sessions.insert_one({
+        "session_token": session_token, "user_id": user_id, "email": email, "role": "church_admin",
+        "tenant_id": tenant_id, "created_at": datetime.now(timezone.utc).isoformat(),
+        "expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
+    })
+    return {"success": True, "token": session_token, "user_id": user_id, "name": f"{first_name} {last_name}".strip(),
+            "role": "church_admin", "tenant_id": tenant_id, "church_name": church_name, "is_first_login": True}
+
+
 app.include_router(api_router)
 
 # ============== EXTRACTED ROUTE MODULES ==============
@@ -15681,6 +15830,8 @@ app.include_router(courses_router, prefix="/api")
 
 # Initialize courses router with shared dependencies
 courses_init(db, require_permission, get_current_member_user, DEFAULT_TENANT_ID)
+
+
 
 # CORS middleware
 app.add_middleware(

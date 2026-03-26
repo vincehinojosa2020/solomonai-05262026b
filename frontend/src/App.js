@@ -52,6 +52,7 @@ import PortalMeetings from "@/pages/portal/PortalMeetings";
 import PortalKidsCheckin from "@/pages/portal/PortalKidsCheckin";
 import PortalPrayer from "@/pages/portal/PortalPrayer";
 import LandingPage from "@/pages/LandingPage";
+import DemoPage from "@/pages/DemoPage";
 import SupportPage from "@/pages/SupportPage";
 import PricingPage from "@/pages/PricingPage";
 import ServicesPage from "@/pages/ServicesPage";
@@ -84,6 +85,7 @@ function AppRouter() {
       <Route path="/pricing" element={<PricingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
+      <Route path="/demo" element={<DemoPage />} />
       <Route path="/register" element={<Navigate to="/signup" replace />} />
       
       {/* Admin Protected routes */}
