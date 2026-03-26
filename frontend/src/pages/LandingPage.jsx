@@ -30,6 +30,28 @@ export default function LandingPage() {
 
   return (
     <div style={{ background: S.white, color: S.textDark, fontFamily: "'Inter',-apple-system,BlinkMacSystemFont,sans-serif" }} data-testid="landing-page">
+      <style>{`
+        @media (max-width: 768px) {
+          .lp-nav-links { gap: 10px !important; }
+          .lp-nav-links a { font-size: 12px !important; }
+          .lp-nav-links .nav-btn { padding: 6px 14px !important; font-size: 12px !important; }
+          .lp-grid-3 { grid-template-columns: 1fr !important; }
+          .lp-grid-4 { grid-template-columns: 1fr !important; }
+          .lp-stats-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 16px !important; }
+          .lp-stats-grid p:first-child { font-size: 28px !important; }
+          .lp-hero-btns { flex-direction: column !important; align-items: center !important; }
+          .lp-hero-btns a { width: 100% !important; max-width: 300px !important; justify-content: center !important; }
+          .lp-footer-grid { grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
+          .lp-footer-bottom { flex-direction: column !important; gap: 8px !important; text-align: center !important; }
+          .lp-table-wrap { overflow-x: auto !important; }
+          .lp-waitlist-row { flex-direction: column !important; }
+          .lp-waitlist-row input, .lp-waitlist-row button { width: 100% !important; }
+          .lp-pricing-grid { grid-template-columns: 1fr !important; max-width: 400px !important; margin-left: auto !important; margin-right: auto !important; }
+        }
+        @media (max-width: 480px) {
+          .lp-stats-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
 
       {/* ── NAV ── */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: 'rgba(15,23,42,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }} data-testid="landing-header">
@@ -38,12 +60,12 @@ export default function LandingPage() {
             <span style={{ fontSize: 18, fontWeight: 200, letterSpacing: 6, color: '#fff' }}>SOLOMON</span>
             <span style={{ fontSize: 18, fontWeight: 700, color: S.blue }}>AI</span>
           </Link>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div className="lp-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <Link to="/pricing" style={{ fontSize: 14, fontWeight: 500, color: '#cbd5e1', textDecoration: 'none' }} data-testid="nav-pricing">Pricing</Link>
             <Link to="/demo" style={{ fontSize: 14, fontWeight: 500, color: '#cbd5e1', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }} data-testid="nav-watch-demo">
               <Play style={{ width: 13, height: 13 }} /> Watch Demo
             </Link>
-            <Link to="/login" style={{ padding: '8px 20px', fontSize: 14, fontWeight: 600, color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, textDecoration: 'none' }} data-testid="landing-login-btn">Login</Link>
+            <Link to="/login" className="nav-btn" style={{ padding: '8px 20px', fontSize: 14, fontWeight: 600, color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, textDecoration: 'none' }} data-testid="landing-login-btn">Login</Link>
           </div>
         </div>
       </nav>
@@ -57,7 +79,7 @@ export default function LandingPage() {
           <p style={{ fontSize: 'clamp(17px, 1.8vw, 21px)', color: S.textGray, lineHeight: 1.65, maxWidth: 580, margin: '0 auto 44px auto' }} data-testid="hero-subtitle">
             From Sunday morning to Monday morning &mdash; everything your congregation needs, in the palm of their hand.
           </p>
-          <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div className="lp-hero-btns" style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link to="/demo" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '16px 36px', background: S.blue, color: '#fff', fontSize: 16, fontWeight: 700, borderRadius: 10, textDecoration: 'none', transition: 'transform 0.15s' }} data-testid="hero-cta-demo">
               Request a Demo <ArrowRight style={{ width: 18, height: 18 }} />
             </Link>
@@ -72,7 +94,7 @@ export default function LandingPage() {
       <section style={{ background: S.white, padding: '48px 32px', borderTop: `1px solid ${S.border}`, borderBottom: `1px solid ${S.border}` }} data-testid="social-proof-section">
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
           <p style={{ fontSize: 12, color: S.textGray, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600, marginBottom: 28 }}>Powering Churches Across America</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32 }}>
+          <div className="lp-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32 }}>
             {[
               { num: '64,500', label: 'Members Engaged' },
               { num: '$151M+', label: 'Given in 2026' },
@@ -94,7 +116,7 @@ export default function LandingPage() {
           <h2 style={{ fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 800, color: S.textDark, letterSpacing: '-0.02em', margin: '0 0 48px 0', lineHeight: 1.15 }}>
             Your church is paying too much<br />for too little.
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+          <div className="lp-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {[
               { title: 'Too many bills', body: 'Planning Center: $300-$1,500/mo\nSecureGive: $99-$199/mo + 2% fees\nSermon platform: $50-$200/mo\nChurch app: $200-$500/mo', highlight: 'TOTAL: $700-$2,400/month for tools that don\'t talk to each other', color: '#ef4444' },
               { title: 'Too complex', body: 'Church Center is not your app. It says "Church Center" — not your church\'s name. Planning Center takes months to learn. Your staff dreads Sunday morning logistics.', highlight: '', color: '#f59e0b' },
@@ -117,7 +139,7 @@ export default function LandingPage() {
           <h2 style={{ fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 800, color: S.textDark, letterSpacing: '-0.02em', margin: '0 0 48px 0', lineHeight: 1.15 }}>
             One platform. Every ministry.<br />Powered by AI.
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+          <div className="lp-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {[
               { icon: Heart, title: 'Give', desc: 'One tap. Any fund. Any amount. Giving the way it was always meant to be.' },
               { icon: Tv, title: 'Watch', desc: "MasterClass-quality. Your pastor's best messages \u2014 always on, always available." },
@@ -145,7 +167,7 @@ export default function LandingPage() {
           <h2 style={{ fontSize: 'clamp(28px, 3vw, 36px)', fontWeight: 800, color: S.textDark, letterSpacing: '-0.02em', margin: '0 0 40px 0', textAlign: 'center' }}>
             Everything they have.<br />Everything they don't.
           </h2>
-          <div style={{ background: S.white, borderRadius: 16, overflow: 'hidden', border: `1px solid ${S.border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+          <div className="lp-table-wrap" style={{ background: S.white, borderRadius: 16, overflow: 'hidden', border: `1px solid ${S.border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
               <thead>
                 <tr style={{ borderBottom: `2px solid ${S.border}` }}>
@@ -205,7 +227,7 @@ export default function LandingPage() {
           <p style={{ fontSize: 12, fontWeight: 700, color: S.blue, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>Pricing</p>
           <h2 style={{ fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 800, color: S.textDark, letterSpacing: '-0.02em', margin: '0 0 8px 0' }}>Simple pricing. No surprises.</h2>
           <p style={{ fontSize: 16, color: S.textGray, margin: '0 0 48px 0' }}>One price. Every feature. All campuses included.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, textAlign: 'left' }}>
+          <div className="lp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, textAlign: 'left' }}>
             {[
               { name: 'Starter', price: '$499', period: '/mo', desc: 'Up to 500 members', features: ['All features included', '1 campus', 'Email support'], popular: false, cta: 'Get Started' },
               { name: 'Growth', price: '$1,499', period: '/mo', desc: 'Up to 5,000 members', features: ['All features included', 'Up to 3 campuses', 'Priority support', 'Onboarding included'], popular: true, cta: 'Get Started' },
@@ -256,7 +278,7 @@ export default function LandingPage() {
           <h2 style={{ fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 800, letterSpacing: '-0.02em', margin: '0 0 56px 0', lineHeight: 1.15 }}>
             We're building the financial<br />infrastructure of the church.
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, textAlign: 'left' }}>
+          <div className="lp-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, textAlign: 'left' }}>
             {[
               { label: 'NOW', title: 'Church Management', desc: 'Replace Planning Center + Church Center + SecureGive in one platform.', status: 'Live' },
               { label: '2026', title: 'Solomon Pay', desc: 'Our own payment processor. Transaction fees lower than Venmo. Lower than Pushpay. Lower than anyone. Every dollar stays in ministry.', status: 'Coming' },
@@ -279,7 +301,7 @@ export default function LandingPage() {
             ) : (
               <>
                 <p style={{ fontSize: 15, fontWeight: 700, color: S.gold, marginBottom: 16 }}>Join the waitlist for Solomon Pay</p>
-                <div style={{ display: 'flex', gap: 8, maxWidth: 540, margin: '0 auto', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <div className="lp-waitlist-row" style={{ display: 'flex', gap: 8, maxWidth: 540, margin: '0 auto', flexWrap: 'wrap', justifyContent: 'center' }}>
                   <input value={waitlistEmail} onChange={e => setWaitlistEmail(e.target.value)} placeholder="Email" style={{ flex: '1 1 180px', minWidth: 160, padding: '12px 16px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(15,23,42,0.6)', color: '#fff', fontSize: 14 }} data-testid="waitlist-email" />
                   <input value={waitlistChurch} onChange={e => setWaitlistChurch(e.target.value)} placeholder="Church name" style={{ flex: '1 1 180px', minWidth: 160, padding: '12px 16px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(15,23,42,0.6)', color: '#fff', fontSize: 14 }} data-testid="waitlist-church" />
                   <button onClick={submitWaitlist} style={{ padding: '12px 24px', background: S.gold, color: '#fff', borderRadius: 8, border: 'none', fontWeight: 700, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap', minWidth: 'auto' }} data-testid="waitlist-submit">Join Waitlist</button>
@@ -309,7 +331,7 @@ export default function LandingPage() {
       {/* ── FOOTER ── */}
       <footer style={{ background: S.navy, padding: '48px 32px 24px', borderTop: '1px solid rgba(51,65,85,0.4)' }} data-testid="landing-footer">
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 40 }}>
+          <div className="lp-footer-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 40 }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 12 }}>
                 <span style={{ fontSize: 16, fontWeight: 200, letterSpacing: 6, color: '#fff' }}>SOLOMON</span>
@@ -342,7 +364,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-          <div style={{ borderTop: '1px solid rgba(51,65,85,0.4)', paddingTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div className="lp-footer-bottom" style={{ borderTop: '1px solid rgba(51,65,85,0.4)', paddingTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <p style={{ fontSize: 12, color: '#475569', margin: 0 }} data-testid="footer-credit">&copy; 2026 Solomon AI &middot; Built on Google Cloud Platform &middot; Powered by Anthropic</p>
             <p style={{ fontSize: 11, color: '#475569', margin: 0 }}>SOC 2 Type II In Progress &middot; PCI DSS Ready</p>
           </div>
