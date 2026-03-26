@@ -188,62 +188,77 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── COMPARISON TABLE ── */}
+      {/* ── WHY CHURCHES ARE SWITCHING ── */}
       <section style={{ background: S.grayLight, padding: '80px 32px' }} data-testid="comparison-section">
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(28px, 3vw, 36px)', fontWeight: 800, color: S.textDark, letterSpacing: '-0.02em', margin: '0 0 40px 0', textAlign: 'center' }}>
-            Everything they have.<br />Everything they don't.
+          <p style={{ fontSize: 12, fontWeight: 700, color: S.blue, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12, textAlign: 'center' }}>How We Compare</p>
+          <h2 style={{ fontSize: 'clamp(28px, 3vw, 36px)', fontWeight: 800, color: S.textDark, letterSpacing: '-0.02em', margin: '0 0 12px 0', textAlign: 'center', lineHeight: 1.15 }}>
+            We respect the platforms that came before us.
           </h2>
+          <p style={{ fontSize: 16, color: S.textGray, textAlign: 'center', maxWidth: 620, margin: '0 auto 40px auto', lineHeight: 1.6 }}>
+            Planning Center and Church Center paved the way for church technology. Solomon AI is built for what comes next.
+          </p>
           <div className="lp-table-wrap" style={{ background: S.white, borderRadius: 16, overflow: 'hidden', border: `1px solid ${S.border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
               <thead>
                 <tr style={{ borderBottom: `2px solid ${S.border}` }}>
-                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: S.textGray }}>Feature</th>
+                  <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600, color: S.textGray }}>Capability</th>
                   <th style={{ padding: '16px 16px', textAlign: 'center', fontWeight: 700, color: S.blue }}>Solomon AI</th>
-                  <th style={{ padding: '16px 16px', textAlign: 'center', fontWeight: 600, color: S.textGray }}>Planning Center</th>
-                  <th style={{ padding: '16px 16px', textAlign: 'center', fontWeight: 600, color: S.textGray }}>SecureGive</th>
+                  <th style={{ padding: '16px 16px', textAlign: 'center', fontWeight: 600, color: S.textGray }}>Planning Center<br /><span style={{ fontSize: 11, fontWeight: 400 }}>+ Church Center</span></th>
                 </tr>
               </thead>
               <tbody>
                 {[
-                  ['Member Management', true, true, false],
-                  ['Kids Check-In (QR)', true, true, false],
-                  ['Online Giving', true, true, true],
-                  ['Small Groups', true, true, false],
-                  ['Events & Registration', true, true, false],
-                  ['Sermon Library', true, false, false],
-                  ['Cafe Ordering', true, false, false],
-                  ['Merch Store', true, false, false],
-                  ['AI Assistant', true, false, false],
-                  ['Geofencing Check-in', true, false, false],
-                  ['Real-time War Room', true, false, false],
-                  ['White-label App', true, false, false],
-                  ['Multi-campus (1 bill)', true, false, false],
-                  ['Flat Monthly Price', true, false, false],
-                ].map(([feature, sol, pc, sg], i) => (
+                  ['Member Management', true, true],
+                  ['Kids Check-In (QR)', true, true],
+                  ['Small Groups', true, true],
+                  ['Events & Registration', true, true],
+                  ['Sermon Library', true, false],
+                  ['Cafe & Merch Ordering', true, false],
+                  ['AI Church Assistant', true, false],
+                  ['Geofence Check-in', true, false],
+                  ['Real-time War Room', true, false],
+                  ['Your Brand, Your App', true, false],
+                  ['Multi-campus (1 bill)', true, false],
+                  ['Flat Monthly Price', true, false],
+                ].map(([feature, sol, pc], i) => (
                   <tr key={feature} style={{ borderBottom: `1px solid ${S.border}`, background: i % 2 === 0 ? S.white : S.grayLight }}>
                     <td style={{ padding: '12px 20px', color: S.textDark, fontWeight: 500 }}>{feature}</td>
                     <td style={{ padding: '12px 16px', textAlign: 'center' }}>{sol ? <Check style={{ width: 18, height: 18, color: '#22c55e', margin: '0 auto' }} /> : <X style={{ width: 18, height: 18, color: '#d1d5db', margin: '0 auto' }} />}</td>
                     <td style={{ padding: '12px 16px', textAlign: 'center' }}>{pc ? <Check style={{ width: 18, height: 18, color: '#22c55e', margin: '0 auto' }} /> : <X style={{ width: 18, height: 18, color: '#d1d5db', margin: '0 auto' }} />}</td>
-                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>{sg ? <Check style={{ width: 18, height: 18, color: '#22c55e', margin: '0 auto' }} /> : <X style={{ width: 18, height: 18, color: '#d1d5db', margin: '0 auto' }} />}</td>
                   </tr>
                 ))}
-                <tr style={{ background: '#f0f9ff' }}>
-                  <td style={{ padding: '14px 20px', fontWeight: 700, color: S.textDark }}>Monthly Cost</td>
-                  <td style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 700, color: S.blue }}>$499-$2,999</td>
-                  <td style={{ padding: '14px 16px', textAlign: 'center', color: S.textGray }}>$700-$2,400+</td>
-                  <td style={{ padding: '14px 16px', textAlign: 'center', color: S.textGray }}>$99-$199+2%</td>
-                </tr>
               </tbody>
             </table>
           </div>
-          <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 12, padding: '20px 24px', marginTop: 24, textAlign: 'center' }}>
-            <p style={{ fontSize: 15, fontWeight: 700, color: '#92400e', margin: '0 0 4px 0' }}>
-              A 50,000-member church on SecureGive pays $20,000/month in transaction fees alone.
-            </p>
-            <p style={{ fontSize: 14, color: '#a16207', margin: 0 }}>
-              Solomon AI: one flat price. No transaction fees.* <span style={{ fontSize: 12 }}>*Until we launch Solomon Pay in 2026.</span>
-            </p>
+
+          {/* Honest note about giving */}
+          <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: '24px 28px', marginTop: 24, display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+            <DollarSign style={{ width: 20, height: 20, color: S.gold, flexShrink: 0, marginTop: 2 }} />
+            <div>
+              <p style={{ fontSize: 14, fontWeight: 700, color: S.textDark, margin: '0 0 6px 0' }}>
+                What about giving?
+              </p>
+              <p style={{ fontSize: 14, color: S.textGray, lineHeight: 1.6, margin: 0 }}>
+                Today, Solomon AI works alongside your church's current giving provider &mdash; Pushpay, SecureGive, Tithe.ly, or whoever you trust.
+                We're building <strong style={{ color: S.textDark }}>Solomon Pay</strong>, our own giving platform with the lowest transaction fees in the industry. It launches later this year. <Link to="/demo" style={{ color: S.blue, fontWeight: 600, textDecoration: 'none' }}>Request a demo</Link> to learn more.
+              </p>
+            </div>
+          </div>
+
+          {/* Why switch card */}
+          <div className="lp-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginTop: 24 }}>
+            {[
+              { num: '1', title: 'One platform, not six', body: 'Stop paying for check-in, giving, groups, events, and sermons separately. Solomon AI replaces them all.' },
+              { num: '2', title: 'Built for 2026, not 2006', body: 'AI assistant, geofencing, real-time analytics, cafe ordering. Features your current tools will never build.' },
+              { num: '3', title: 'Your brand, not ours', body: 'Planning Center gives your members "Church Center." Solomon AI gives your members your church\'s app.' },
+            ].map(card => (
+              <div key={card.num} style={{ background: S.white, borderRadius: 12, padding: '24px', border: `1px solid ${S.border}` }}>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: S.blue, marginBottom: 12 }}>{card.num}</div>
+                <h4 style={{ fontSize: 15, fontWeight: 700, color: S.textDark, margin: '0 0 6px 0' }}>{card.title}</h4>
+                <p style={{ fontSize: 13, color: S.textGray, lineHeight: 1.6, margin: 0 }}>{card.body}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
