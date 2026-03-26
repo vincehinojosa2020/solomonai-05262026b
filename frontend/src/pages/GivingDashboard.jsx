@@ -100,7 +100,10 @@ export default function GivingDashboard() {
 
   const fetchIntegrations = async () => {
     try {
-      const res = await fetch(`${API_URL}/admin/giving/integrations`);
+      const token = localStorage.getItem('session_token');
+      const res = await fetch(`${API_URL}/admin/giving/integrations`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      });
       if (res.ok) {
         const data = await res.json();
         setIntegrations(data);
@@ -113,9 +116,10 @@ export default function GivingDashboard() {
   const handleConnectProcessor = async (processor) => {
     setConnectingProcessor(processor);
     try {
+      const token = localStorage.getItem('session_token');
       const res = await fetch(`${API_URL}/admin/giving/integrations/connect`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
         body: JSON.stringify({ processor }),
       });
       if (res.ok) {
@@ -132,9 +136,10 @@ export default function GivingDashboard() {
   const handleDisconnectProcessor = async (processor) => {
     setConnectingProcessor(processor);
     try {
+      const token = localStorage.getItem('session_token');
       const res = await fetch(`${API_URL}/admin/giving/integrations/disconnect`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
         body: JSON.stringify({ processor }),
       });
       if (res.ok) {

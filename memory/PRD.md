@@ -12,53 +12,65 @@ Build a church management SaaS platform (Solomon AI) to replace Planning Center.
 ## Core Architecture
 - **Backend**: FastAPI monolith (`server.py`) with MongoDB
 - **Frontend**: React + Tailwind + Shadcn/UI
-- **Multi-Tenant**: Organizations → Campuses (tenants) → Members
+- **Multi-Tenant**: Organizations -> Campuses (tenants) -> Members
 - **Billing Model**: 1 Account = Multiple Campuses (per-org billing)
 
-## Completed Features (as of March 2026)
+## Completed Features
 
 ### Phase A — Frontend Pages (DONE)
 - `/pricing` — Pricing page
 - `/services` — Services management
 - `/households` — Household management
-- `/portal/directory` — Member directory
+- `/portal/directory` — Member directory (25+ seeded profiles with search)
 - `/portal/volunteer` — Volunteer portal
 
 ### Solomon Academy — LMS (DONE)
 - Course builder: Modules, Lessons (Video/Text/Quiz/Download)
 - Admin: `/admin/courses` with editors
 - Portal: `/portal/courses` with lesson viewer
-- Collections: courses, course_modules, course_lessons, course_enrollments, course_lesson_progress
-- Seeded "Abundant Next Steps" course
 
-### Pre-Demo Features A–F (DONE — March 26, 2026)
-- **A. Campus Switcher "All Campuses"**: Aggregate view in dashboard with campus breakdown KPIs
-- **B. Platform God Mode Visual Upgrade**: Enhanced header, 6 KPI cards, Org→Campus hierarchy with billing notes
-- **C. Manual Kids Check-In**: Blue [+ Manual Check-In] button with search/classroom modal
-- **D. Cafe Enterprise Redesign**: Stripe/Notion-style pure white enterprise aesthetic, no emojis
-- **E. CSV Member Import**: 4-step wizard (Upload → Map Columns → Preview → Import)
-- **F. Communications Page**: Compose (Email/SMS), Sent, Scheduled, Templates, Segments tabs
+### Pre-Demo Features A-F (DONE — March 26, 2026)
+- **A. Campus Switcher "All Campuses"**: Aggregate view in dashboard
+- **B. Platform God Mode Visual Upgrade**: Enhanced header, 6 KPI cards
+- **C. Manual Kids Check-In**: Blue [+ Manual Check-In] button
+- **D. Cafe Enterprise Redesign**: Stripe/Notion-style aesthetic
+- **E. CSV Member Import**: 4-step wizard
+- **F. Communications Page**: Compose, Sent, Scheduled, Templates, Segments
 
-### Backend APIs Added
-- `POST /api/admin/members/import/parse` — Parse CSV, return headers + preview
-- `POST /api/admin/members/import/execute` — Execute import with column mapping
-- `GET /api/admin/dashboard/aggregate` — Aggregate stats across all campuses
-- `POST /api/admin/communications/send` — Send email/SMS (Twilio-ready stub)
-- `GET /api/admin/communications/list` — List sent/scheduled communications
+### Public Pages (DONE — March 26, 2026)
+- `/` — Marketing Landing Page (Stripe meets Linear aesthetic)
+- `/login` — Login with "Your church. Elevated." tagline
+- `/signup` — Church Onboarding Wizard
+- `/demo` — Demo Request Page
+
+### War Room Mission Control (DONE)
+- `/war-room` — Dark navy dashboard with real-time KPIs
+
+### Quality Improvements (DONE — March 26, 2026)
+- **7C: Member Directory Seed**: 25+ realistic member profiles with names, groups, search
+- **7D: Solomon Chat Context**: Live church data injected (members, events, announcements, groups)
+- **7E: Attendance Streaks**: Shannon & Jacob seeded with 12-week consecutive streaks, 3 badges
+
+### Giving Platform Scaffold (DONE — March 26, 2026)
+- Admin Giving Integrations UI with Solomon Pay, Pushpay, SecureGive cards
+- Backend endpoints: GET/POST connect/disconnect processors (MOCKED)
+- Seed data: Solomon Pay set as default active processor
 
 ## Mocked Integrations
-- **Stripe/Pushpay** — Payment processing (MOCKED)
+- **Stripe/Pushpay/SecureGive** — Payment processing (MOCKED, scaffolded for future)
 - **Twilio** — Communications send (STUBBED, records saved to DB)
 
 ## Test Reports
 - Iteration 47: Phase A (PASSED)
 - Iteration 48: Solomon Academy (PASSED)
-- Iteration 49: Demo Features A–F (PASSED — 100% backend, 100% frontend)
+- Iteration 49: Demo Features A-F (PASSED — 100%)
+- Iteration 50: Landing, Signup, Demo, War Room (PASSED — 100%)
+- Iteration 51: Quality Improvements 7C/7D/7E + Giving Integrations (PASSED — 100% backend, 80% frontend)
 
 ## Tech Stack
 - FastAPI + MongoDB (backend)
 - React + Tailwind + Shadcn/UI (frontend)
-- react-markdown (text lesson rendering)
+- Anthropic Claude (Solomon Chat via Emergent LLM Key)
 
 ## Credentials
 - Platform Admin: admin@solomonai.us / Demo2026!
