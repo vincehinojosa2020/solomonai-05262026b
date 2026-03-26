@@ -1,68 +1,58 @@
 <analysis>**original_problem_statement**: 
-The user wants to finalize the Solomon AI MVP to replace Planning Center. The initial mandate was to build Phase A Frontend features (Services, Volunteers, Households, Directory, Pricing). Following that, the user requested the native integration of a Learning Management System called Solomon Academy. Finally, the user requested 6 critical, high-priority features to be built for a high-stakes demo (for a 50,000-member church) happening in 7 hours.
+The user is finalizing the Solomon AI MVP to replace Planning Center. The demo was pushed to tomorrow, initiating a FULL DAY BUILD SESSION to elevate the app to production-grade quality. Key requirements include:
+1. Public Marketing Landing Page () with Stripe/Notion aesthetics.
+2. Login Page Tagline/Footer updates.
+3. Church Signup Wizard ().
+4. Demo Request Page ().
+5. War Room Upgrade (Mission control, dark navy aesthetic with realistic seed data).
+6. 6 Pre-Demo Features (Campus Switcher, Platform God Mode, Manual Kids Check-In, Cafe Enterprise Redesign, CSV Member Import, Communications UI).
+7. Quality Improvements (Rate limits, War Room Seed, Member Directory Seed, Solomon Chat Context, Attendance Streaks).
+8. Deployment/Technical Stability Fixes.
+9. Fix Executive Reports 403 error for Church Admin.
 
 **PRODUCT REQUIREMENTS**:
-- **Phase A**: UIs for Services, Volunteers, Households, Directory, Pricing.
-- **Solomon Academy**: Native LMS replacing Thinkific. Course builder (Modules, Lessons: Video/Text/Quiz/Download), member enrollment, and progress tracking.
-- **Demo Features (P0)**: 
-  A. Campus Switcher All Campuses aggregate view
-  B. Platform God Mode visual upgrade
-  C. Manual Kids Check-In (admin-only, no QR)
-  D. Cafe Enterprise Redesign (Stripe-style, pure white, no emojis)
-  E. CSV Member Import (4-step wizard)
-  F. Communications page (Twilio-ready stub)
+- High-stakes SaaS platform presentation. Every pixel should feel intentional, no emoji spam, no generic clipart. 
+- Fast response times (<500ms for lists, <1000ms dashboard).
+- Solomon Pay waitlist integration.
 
 **User's preferred language**: English
 *(Instructing next agent: You MUST respond in English)*
 
 **what currently exists?** 
-A stable, feature-complete multi-tenant SaaS application. Phase A frontend pages and Solomon Academy (LMS) have been fully built, tested, and seeded with an Abundant Next Steps course. The portal header UI overlap bug has been fixed. The app is healthy. The agent just received the massive ULTIMATE PRE-DEMO PROMPT and was gathering context to build the 6 required features.
+A stable, feature-complete multi-tenant SaaS application. The 6 critical demo features were built and verified via the testing agent (100% pass). Deployment blockers caused by MongoDB Atlas timeouts were resolved by fixing connection pool settings and making startup scripts asynchronous. The Public Landing Page, Signup, Demo pages, and the upgraded Dark Navy War Room are built and fully verified via testing agent iteration 50. The Executive Reports 403 bug has been resolved. 
 
 **Last working item**: 
-    - Last item agent was working: Gathering file context (, , ) to begin implementing the 6 pre-demo features requested by the user. The agent was just about to add the new endpoints (, etc.).
+    - Last item agent was working: The agent was implementing Section 7 Quality Improvements, specifically looking at  to seed **Attendance Streaks (7E)** for demo accounts (Shannon and Jacob) so that the gamification UI looks realistic during the demo. 
     - Status: IN PROGRESS
     - Agent Testing Done: N
-    - Which testing method agent to use?: Frontend/Backend testing agent after the batch of demo features is complete, plus manual curl/screenshot checks.
+    - Which testing method agent to use?: backend testing agent or self-test via curl/python.
     - User Testing Done: N
 
 **All Pending/In progress Issue list**: 
-  Issue 1: Urgent Pre-Demo Feature Implementation
-     - Attempted fixes: Agent mapped out the file architecture but hasn't written the code yet.
-     - Next debug checklist: Refer to the user's ULTIMATE PRE-DEMO PROMPT and implement features A through F sequentially or in parallel (Backend APIs first, then Frontend UIs).
-     - Why fix this issue and what will be achieved with the fix? It is an absolute requirement for a live demo to a major prospective client happening in < 7 hours.
-     - Status: IN PROGRESS
-     - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? Both.
+  (No active blocking bugs, but remaining requirements from the prompt are listed as Tasks below)
 
 **In progress Task List**: 
-  Task 1 (P0): Backend APIs for Demo Features
-     - Where to resume: . Add , update  logic, add , enhance .
-     - What will be achieved with this? Unblocks the frontend features for the demo.
+  Task 1 (P0): Seed Attendance Streaks (7E)
+     - Where to resume:  around line  (inside the  or demo generation functions).
+     - What will be achieved with this? Gives the demo accounts (Shannon, Jacob) realistic streaks (e.g., current streak 8, best 12) rather than just 1, making the feature look utilized. Need to insert historical check-in DB records.
      - Status: IN PROGRESS
      - Should Test frontend/backend/both after fix? Backend.
 
-  Task 2 (P0): Feature A - Campus Switcher Aggregate View
-     - Where to resume:  (lines 370-405). Add All Campuses to the dropdown and build the aggregate KPI dashboard.
+  Task 2 (P0): Solomon Chat Context Injection (7D)
+     - Where to resume:  (specifically the  endpoint).
+     - What will be achieved with this? Inject live church data (Church name, next 3 events, latest 2 announcements, week's service plan, user's name/groups) into the LLM system prompt so Ask Solomon gives factual answers during the demo.
      - Status: NOT STARTED
+     - Should Test frontend/backend/both after fix? Backend (curl) + Frontend UI chat test.
 
-  Task 3 (P0): Feature B - Platform God Mode Visual Upgrade
-     - Where to resume: . Upgrade header, KPI row, and church table to show Org -> Campus breakdown and billing notes.
+  Task 3 (P0): Member Directory Seed (7C)
+     - Where to resume:  (demo seeding scripts).
+     - What will be achieved with this? The  endpoint needs to show 20-30 real-looking member profiles so it isn't empty during the demo.
      - Status: NOT STARTED
+     - Should Test frontend/backend/both after fix? Both.
 
-  Task 4 (P0): Feature C - Manual Kids Check-In UI
-     - Where to resume: . Add a [+ Manual Check-In] button/modal and a row-level [Check Out] button.
-     - Status: NOT STARTED
-
-  Task 5 (P0): Feature D - Cafe Enterprise Redesign
-     - Where to resume: . Remove all warm colors/emojis. Apply a pure white, Stripe/Notion-like enterprise aesthetic.
-     - Status: NOT STARTED
-
-  Task 6 (P0): Feature E - CSV Member Import UI
-     - Where to resume:  page. Build the 4-step import wizard (Upload, Map Columns, Preview, Importing).
-     - Status: NOT STARTED
-
-  Task 7 (P0): Feature F - Communications UI
-     - Where to resume: New  page. Build the Compose, Sent, Scheduled, and Templates views.
+  Task 4 (P0): Final QA Pass (Section 10)
+     - Where to resume: Refer to the FINAL QA checklist in the prompt.
+     - What will be achieved with this? Ensures everything specified by the user is actively working without regression before concluding the full day build.
      - Status: NOT STARTED
 
 **Upcoming and Future Tasks**
@@ -72,22 +62,24 @@ A stable, feature-complete multi-tenant SaaS application. Phase A frontend pages
     Future Tasks (Post-Demo Backlog):
     - P2: Excel (.xlsx) support for Member Import (currently focusing on CSV).
     - P2: PDF Certificate generation for Solomon Academy.
-    - P2: File uploads for Download-type lessons in Academy.
     - P2: Real Stripe/Pushpay integration.
+    - P2: Real Twilio SMS integration.
 
 **Completed work in this session**
-- Phase A Frontend Pages: , , , ,  (DONE)
-- Solomon Academy Backend APIs & 5 new Collections (DONE)
-- Solomon Academy Admin UI:  and editors (DONE)
-- Solomon Academy Portal UI:  and lesson viewer (DONE)
-- Portal Header UI overlap bug fix in  and  (DONE)
-- Deployment Health Check (DONE - Passed)
+- MongoDB deployment timeouts fixed (pool size adjusted,  used for startup seeds) (DONE)
+- N+1 DB Queries fixed in  and  (DONE)
+- 6 Demo Features: Campus Switcher, Platform God Mode, Manual Kids Check-In, Cafe Redesign, CSV Member Import, Communications UI (DONE)
+- Public Marketing Landing Page  (DONE)
+- Login Page updates & Church Signup Wizard  (DONE)
+- Demo Request Page  (DONE)
+- War Room Mission Control Upgrade  (DONE)
+- Executive reports 403 error fixed ( changed to ) (DONE)
 
 **Earlier issues found/mentioned but not fixed**
 - None.
 
 **Known issue recurrence from previous fork**
-  - Issue recurrence in previous fork: None active.
+  - Issue recurrence in previous fork: None.
   - Recurrence count: 0
   - Status: RESOLVED
 
@@ -95,63 +87,65 @@ A stable, feature-complete multi-tenant SaaS application. Phase A frontend pages
 
 
 **Key Technical Concepts**
-- **Solomon Academy:** Native LMS built with 4 lesson types (Video embeds, Markdown text, JSON Quiz, URL Download).
-- **Multi-Tenant / Pricing Model:** Organizations can have multiple campuses (tenants). Billing is per Organization (1 account, N campuses). This hierarchy MUST be clearly displayed in the God Mode view.
+- **Multi-Tenant System:** Organizations (1 account) -> Campuses (N tenants). God Mode shows Org level.
+- **FastAPI Startup:** Startup events that interact with Atlas MongoDB MUST be non-blocking () or it will trigger health check timeouts in production deployments.
+- **Password Hashing:**  is used across the app, NOT .
 
 **key DB schema**
-  - Newly added collections: , , , , .
-  - Hierarchy:  ->  (tenants) ->  (users).
+  -  ->  (tenants) ->  (users).
+  - Newly added usage:  (for Solomon Pay capture), .
 
 **changes in tech stack**
-  - Added  to frontend for rendering text lessons.
+  - Reverted an accidental  usage to  to align with the rest of the application and avoid missing dependency crashes.
 
 **All files of reference**
   - 
   - 
   - 
   - 
-  - 
 
 **Areas that need refactoring**:
-  - : Over 15,500 lines. Refactor to a Modular Monolith (extracting routers) is planned but *STRICTLY DEFERRED* until after the upcoming demo. Build the 6 demo features directly into .
+  - : Over 15,800 lines. Refactor to a Modular Monolith is planned but *STRICTLY DEFERRED* until after the upcoming demo. 
 
 **key api endpoints**
-  -  (Contains all data needed for God Mode and Aggregate Campus views)
-  - Pending to build: , , .
+  - 
+  - 
+  - 
+  - 
 
 **Critical Info for New Agent**
-  - **DO NOT REFACTOR **. The user explicitly ordered to build the 6 demo features directly into the monolith to save time.
-  - You have **< 7 hours** simulated time for a massive 50,000 member church demo. Prioritize strictly matching the user's UI/UX requests in the ULTIMATE PRE-DEMO PROMPT (Message 198 & 212).
-  - The Cafe redesign (Feature D) must look like a clean Enterprise app (Stripe/Notion), NOT a playful food delivery app. Pure white backgrounds, no emojis.
-  - The pricing model is 1 Account = Multiple Campuses. Ensure this is visually obvious in the Platform God Mode and Campus Switcher views.
+  - **Do NOT refactor  yet.** Stick to making targeted additions to fulfill the last few Quality Improvements (Sections 7C, 7D, 7E). 
+  - Ensure any new backend endpoints are placed **BEFORE** the  declaration near the bottom of , otherwise they will return 404s.
+  - The design standard for the public-facing pages and War Room is extremely high (Stripe meets Linear). Retain the dark navy (), clean borders, and premium typography.
 
 **documents and test reports created in this job**
   -  (Updated)
-  -  (Phase A)
-  -  (Solomon Academy)
+  -  (Created)
+  -  (100% pass for 6 Demo Features)
+  -  (100% pass for Landing Page, Signup, Demo, War Room)
 
 **Last 10 User Messages and any pending HUMAN messages** 
- - *Message:* User requested to fix Portal Header UI overlapping text. -> *Fixed.*
- - *Message:* User requested Deployment Agent health check. -> *Passed.*
- - *Message:* User provided the ULTIMATE PRE-DEMO PROMPT asking for a feasibility check on 6 urgent features (A-F). -> *Agent analyzed and confirmed feasibility.*
- - *Message:* User gave the FINAL GO: GO — BUILD ALL 6 ITEMS... Demo in 7 hours. -> *Agent started analyzing files to build the backend endpoints. Context limit reached.*
+ - *Message:* User reported deployment failures with MongoDB Atlas timeout logs. -> *Fixed by Agent (adjusted Mongo pool size, made startup seeding async, fixed N+1 queries).*
+ - *Message:* User submitted the FULL DAY BUILD SESSION prompt demanding a public landing page, login updates, signup wizard, demo page, war room upgrade, and quality improvements. -> *Agent built and tested UI elements, fixed report permissions.*
+ - *Message:* User confirmed yes, go! to proceed with execution. -> *Agent built out the pages, tested them successfully, and began work on Section 7 (Quality Improvements).*
 
 **Project Health Check:**
-  - Status: Healthy, deploying successfully, but critically pending the 6 demo features.
+  - Status: Healthy. Health check endpoint returns 200 in ~240ms. Deployment issues resolved.
 
 **3rd Party Integrations**
+  • Anthropic Claude (Ask Solomon) — *uses Emergent LLM Key*
   • Stripe/Pushpay — *Mocked*
-  • Twilio (Communications) — *Stubbed/Mocked for this demo*
+  • Twilio (Communications) — *Mocked*
 
 **Testing status**
-  - Testing agent used after significant changes: YES (Iterations 47 & 48 passed 100%).
-  - Troubleshoot agent used after agent stuck in loop: NO.
+  - Testing agent used after significant changes: YES (Iterations 49 & 50 passed).
+  - Troubleshoot agent used after agent stuck in loop: NO (Deployment agent used for logs).
   - Known regressions: None.
 
 **Credentials to test flow:**
   - Platform Admin:  / 
-  - Church Admin (Multi-Campus):  / 
+  - Church Admin:  / 
   - Church Admin:  / 
 
 **What agent forgot to execute**
-  - The agent did not forget, but ran out of context exactly as they were preparing to write the backend endpoints for the 6 demo features (Kids check-in, Member import, Communications). The next agent must immediately begin implementing Features A-F from the user's prompt.</analysis>
+  - The agent was doing great but ran out of context right as they were about to fulfill requirements **7C, 7D, and 7E** (seeding Attendance Streaks, seeding Member Directory, and injecting context into Solomon Chat). The next agent must finish these 3 items and do the final QA checklist.</analysis>

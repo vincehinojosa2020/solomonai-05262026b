@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { 
   DollarSign, Plus, TrendingUp, RefreshCw, CreditCard, 
-  Banknote, Building2, FileText, Bitcoin, ChevronLeft, ChevronRight
+  Banknote, Building2, FileText, Bitcoin, ChevronLeft, ChevronRight,
+  Link2, Unlink, CheckCircle2, Circle, Loader2, Settings2, Zap
 } from 'lucide-react';
 import { 
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer
@@ -12,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { API_URL, formatCurrency, formatDate } from '@/lib/utils';
 import EnterDonationPanel from '@/components/modals/EnterDonationPanel';
 import DonationCheckout from '@/components/modals/DonationCheckout';
+import { toast } from 'sonner';
 
 const StatCard = ({ title, value, subtitle, icon: Icon }) => (
   <div className="stat-card">
@@ -47,6 +49,8 @@ export default function GivingDashboard() {
   const [showStripeCheckout, setShowStripeCheckout] = useState(false);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [integrations, setIntegrations] = useState(null);
+  const [connectingProcessor, setConnectingProcessor] = useState(null);
   const perPage = 20;
 
   useEffect(() => {
@@ -57,6 +61,7 @@ export default function GivingDashboard() {
 
   useEffect(() => {
     fetchGivingData();
+    fetchIntegrations();
   }, [page]);
 
   const fetchGivingData = async () => {
@@ -91,6 +96,56 @@ export default function GivingDashboard() {
   const handleDonationAdded = () => {
     setShowDonationPanel(false);
     fetchGivingData();
+  };
+
+  const fetchIntegrations = async () => {
+    try {
+      const res = await fetch(`${API_URL}/admin/giving/integrations`);
+      if (res.ok) {
+        const data = await res.json();
+        setIntegrations(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch giving integrations:', err);
+    }
+  };
+
+  const handleConnectProcessor = async (processor) => {
+    setConnectingProcessor(processor);
+    try {
+      const res = await fetch(`${API_URL}/admin/giving/integrations/connect`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ processor }),
+      });
+      if (res.ok) {
+        toast.success(`${processor.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} connected successfully`);
+        await fetchIntegrations();
+      }
+    } catch (err) {
+      toast.error('Failed to connect processor');
+    } finally {
+      setConnectingProcessor(null);
+    }
+  };
+
+  const handleDisconnectProcessor = async (processor) => {
+    setConnectingProcessor(processor);
+    try {
+      const res = await fetch(`${API_URL}/admin/giving/integrations/disconnect`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ processor }),
+      });
+      if (res.ok) {
+        toast.success('Processor disconnected');
+        await fetchIntegrations();
+      }
+    } catch (err) {
+      toast.error('Failed to disconnect');
+    } finally {
+      setConnectingProcessor(null);
+    }
   };
 
   const methodData = stats?.by_method 
@@ -166,6 +221,76 @@ export default function GivingDashboard() {
           subtitle="Pending deposit"
           icon={FileText}
         />
+      </div>
+
+      {/* Giving Platform Integrations */}
+      <div className="bento-card" data-testid="giving-integrations-section">
+        <div className="card-header" style={{ marginBottom: '16px' }}>
+          <div className="flex items-center gap-2">
+            <Settings2 className="w-4 h-4 text-slate-500" />
+            <h3 className="card-title">Giving Platform</h3>
+          </div>
+          <span className="text-xs text-slate-400">
+            {integrations?.active_processor 
+              ? <span className="flex items-center gap-1"><CheckCircle2 className="w-3 h-3 text-emerald-500" /> Connected</span>
+              : <span className="flex items-center gap-1"><Circle className="w-3 h-3 text-slate-300" /> No processor active</span>
+            }
+          </span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {integrations && Object.entries(integrations.processors || {}).map(([key, proc]) => {
+            const isActive = integrations.active_processor === key;
+            const isConnecting = connectingProcessor === key;
+            return (
+              <div
+                key={key}
+                className="relative rounded-lg border p-4 transition-all"
+                style={{
+                  borderColor: isActive ? '#10b981' : '#e2e8f0',
+                  background: isActive ? '#f0fdf4' : '#fafafa',
+                }}
+                data-testid={`processor-${key}`}
+              >
+                {isActive && (
+                  <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    ACTIVE
+                  </div>
+                )}
+                <div className="flex items-center gap-2 mb-2">
+                  {key === 'solomon_pay' && <Zap className="w-4 h-4 text-blue-600" />}
+                  {key === 'pushpay' && <CreditCard className="w-4 h-4 text-green-600" />}
+                  {key === 'securegive' && <Building2 className="w-4 h-4 text-purple-600" />}
+                  <span className="font-semibold text-sm text-slate-800">{proc.label || key}</span>
+                </div>
+                <p className="text-xs text-slate-500 mb-3 leading-relaxed">{proc.description}</p>
+                {isActive ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-xs"
+                    onClick={() => handleDisconnectProcessor(key)}
+                    disabled={isConnecting}
+                    data-testid={`disconnect-${key}`}
+                  >
+                    {isConnecting ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Unlink className="w-3 h-3 mr-1" />}
+                    Disconnect
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    className="w-full text-xs"
+                    onClick={() => handleConnectProcessor(key)}
+                    disabled={isConnecting}
+                    data-testid={`connect-${key}`}
+                  >
+                    {isConnecting ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Link2 className="w-3 h-3 mr-1" />}
+                    Connect
+                  </Button>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Giving Options */}

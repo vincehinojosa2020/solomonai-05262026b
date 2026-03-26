@@ -8,7 +8,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://church-platform-5.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://solomon-demo-mvp.preview.emergentagent.com')
 
 # Test credentials
 ADMIN_EMAIL = "shannonnieman1030@gmail.com"

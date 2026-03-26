@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://church-platform-5.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://solomon-demo-mvp.preview.emergentagent.com')
 
 # Test session token for authenticated requests
 TEST_SESSION_TOKEN = "test_session_1771463210214"
@@ -22,7 +22,7 @@ class TestStripePayments:
             json={
                 "package_id": "tithe_50",
                 "fund_id": "general",
-                "origin_url": "https://church-platform-5.preview.emergentagent.com",
+                "origin_url": "https://solomon-demo-mvp.preview.emergentagent.com",
                 "recurring": False,
                 "donor_name": "Test Donor",
                 "donor_email": "test@example.com"
@@ -52,7 +52,7 @@ class TestStripePayments:
                 "package_id": "custom",
                 "custom_amount": 75.00,
                 "fund_id": "general",
-                "origin_url": "https://church-platform-5.preview.emergentagent.com",
+                "origin_url": "https://solomon-demo-mvp.preview.emergentagent.com",
                 "recurring": False
             },
             headers={"Content-Type": "application/json"}
@@ -72,7 +72,7 @@ class TestStripePayments:
                 "package_id": "custom",
                 "custom_amount": 0.50,  # Less than $1 minimum
                 "fund_id": "general",
-                "origin_url": "https://church-platform-5.preview.emergentagent.com"
+                "origin_url": "https://solomon-demo-mvp.preview.emergentagent.com"
             },
             headers={"Content-Type": "application/json"}
         )
@@ -88,7 +88,7 @@ class TestStripePayments:
             json={
                 "package_id": "invalid_package",
                 "fund_id": "general",
-                "origin_url": "https://church-platform-5.preview.emergentagent.com"
+                "origin_url": "https://solomon-demo-mvp.preview.emergentagent.com"
             },
             headers={"Content-Type": "application/json"}
         )
@@ -105,7 +105,7 @@ class TestStripePayments:
             json={
                 "package_id": "tithe_25",
                 "fund_id": "general",
-                "origin_url": "https://church-platform-5.preview.emergentagent.com"
+                "origin_url": "https://solomon-demo-mvp.preview.emergentagent.com"
             },
             headers={"Content-Type": "application/json"}
         )

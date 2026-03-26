@@ -8815,7 +8815,7 @@ async def solomon_chat(request: Request, payload: SolomonChatRequest):
             raise HTTPException(status_code=500, detail="Solomon AI is not configured")
         
         # Get church context
-        church_context = await get_church_context()
+        church_context = await get_church_context(user)
         
         # Build system prompt with context
         full_system_prompt = f"{SOLOMON_SYSTEM_PROMPT}\n\n{church_context}"
@@ -11139,12 +11139,12 @@ async def get_audit_log(
 
 @api_router.get("/admin/reports/kids/history")
 async def admin_report_kids_history(request: Request, start_date: str = None, end_date: str = None):
-    user = await require_permission(request, "admin.reports")
+    user = await require_permission(request, "admin.reports.view")
     return await report_kids_history(start_date, end_date)
 
 @api_router.get("/admin/reports/giving/summary")
 async def admin_report_giving_summary(request: Request, start_date: str = None, end_date: str = None):
-    user = await require_permission(request, "admin.reports")
+    user = await require_permission(request, "admin.reports.view")
     if not start_date: start_date = "2020-01-01"
     if not end_date: end_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     funds = await report_giving_by_fund(start_date, end_date)
@@ -11154,18 +11154,18 @@ async def admin_report_giving_summary(request: Request, start_date: str = None, 
 
 @api_router.get("/admin/reports/attendance/summary")
 async def admin_report_attendance_summary(request: Request, start_date: str = None, end_date: str = None):
-    user = await require_permission(request, "admin.reports")
+    user = await require_permission(request, "admin.reports.view")
     return await report_attendance(start_date, end_date)
 
 @api_router.get("/admin/reports/executive-summary")
 async def admin_report_executive_summary(request: Request):
-    user = await require_permission(request, "admin.reports")
+    user = await require_permission(request, "admin.reports.view")
     return await report_executive_summary()
 
 @api_router.post("/admin/reports/export")
 async def admin_export_report(request: Request, payload: dict):
     """Export any report as CSV or PDF."""
-    user = await require_permission(request, "admin.reports")
+    user = await require_permission(request, "admin.reports.view")
     tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
     report_type = payload.get("report_type", "executive")
     fmt = payload.get("format", "csv")
@@ -11472,16 +11472,19 @@ async def get_member_directory(request: Request, search: str = None, group: str 
     tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
 
     query = {"tenant_id": tenant_id}
-    members = await db.people.find(query, {"_id": 0, "name": 1, "email": 1, "phone": 1, "membership_status": 1, "groups": 1, "directory_visible": 1, "share_email": 1, "share_phone": 1, "user_id": 1}).to_list(2000)
+    members = await db.people.find(query, {"_id": 0, "name": 1, "first_name": 1, "last_name": 1, "email": 1, "phone": 1, "membership_status": 1, "groups": 1, "directory_visible": 1, "share_email": 1, "share_phone": 1, "user_id": 1}).to_list(2000)
 
     directory = []
     for m in members:
         visible = m.get("directory_visible", True)
         if not visible:
             continue
+        display_name = m.get("name", "") or f"{m.get('first_name', '')} {m.get('last_name', '')}".strip()
+        if not display_name:
+            continue
         entry = {
-            "name": m.get("name", ""),
-            "avatar_initials": "".join(w[0].upper() for w in (m.get("name", "?")).split()[:2]),
+            "name": display_name,
+            "avatar_initials": "".join(w[0].upper() for w in display_name.split()[:2]),
             "groups": m.get("groups", []),
             "membership_status": m.get("membership_status", "visitor"),
         }
@@ -15806,6 +15809,193 @@ async def register_church(payload: dict):
             "role": "church_admin", "tenant_id": tenant_id, "church_name": church_name, "is_first_login": True}
 
 
+# ============== GIVING INTEGRATIONS (Scaffolding for Pushpay / SecureGive / Solomon Pay) ==============
+
+@api_router.get("/admin/giving/integrations")
+async def get_giving_integrations(request: Request):
+    """Get giving processor integration status for current church."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    config = await db.giving_integrations.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    if not config:
+        config = {
+            "tenant_id": tenant_id,
+            "active_processor": None,
+            "processors": {
+                "solomon_pay": {"enabled": False, "status": "not_connected", "label": "Solomon Pay", "description": "Native giving powered by Solomon AI. Lowest fees, seamless integration."},
+                "pushpay": {"enabled": False, "status": "not_connected", "label": "Pushpay", "description": "Connect your existing Pushpay account for seamless giving sync."},
+                "securegive": {"enabled": False, "status": "not_connected", "label": "SecureGive", "description": "Integrate with SecureGive for church giving management."},
+            },
+        }
+    return config
+
+@api_router.post("/admin/giving/integrations/connect")
+async def connect_giving_processor(request: Request):
+    """Connect a giving processor (mocked for demo)."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    body = await request.json()
+    processor = body.get("processor")
+    if processor not in ("solomon_pay", "pushpay", "securegive"):
+        raise HTTPException(status_code=400, detail="Invalid processor. Choose: solomon_pay, pushpay, securegive")
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    # Mark the selected processor as active, deactivate others
+    update_set = {
+        "tenant_id": tenant_id,
+        "active_processor": processor,
+        f"processors.{processor}.enabled": True,
+        f"processors.{processor}.status": "active",
+        f"processors.{processor}.connected_at": now_iso,
+        f"processors.{processor}.connected_by": user.get("name", ""),
+        "updated_at": now_iso,
+    }
+    # Deactivate other processors
+    for p in ("solomon_pay", "pushpay", "securegive"):
+        if p != processor:
+            update_set[f"processors.{p}.enabled"] = False
+            update_set[f"processors.{p}.status"] = "not_connected"
+
+    await db.giving_integrations.update_one(
+        {"tenant_id": tenant_id},
+        {"$set": update_set, "$setOnInsert": {"created_at": now_iso}},
+        upsert=True
+    )
+    return {"success": True, "active_processor": processor, "message": f"{processor.replace('_', ' ').title()} connected successfully"}
+
+@api_router.post("/admin/giving/integrations/disconnect")
+async def disconnect_giving_processor(request: Request):
+    """Disconnect the active giving processor."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    body = await request.json()
+    processor = body.get("processor")
+    now_iso = datetime.now(timezone.utc).isoformat()
+    await db.giving_integrations.update_one(
+        {"tenant_id": tenant_id},
+        {"$set": {
+            f"processors.{processor}.enabled": False,
+            f"processors.{processor}.status": "not_connected",
+            "active_processor": None,
+            "updated_at": now_iso,
+        }}
+    )
+    return {"success": True, "message": f"{processor.replace('_', ' ').title()} disconnected"}
+
+
+# ============== DEMO QUALITY DATA SEED ==============
+
+async def seed_demo_quality_data():
+    """Seed quality demo data: attendance streaks (7E), member directory (7C), giving integrations."""
+    tenant_id = DEFAULT_TENANT_ID
+    now_iso = datetime.now(timezone.utc).isoformat()
+    today = datetime.now(timezone.utc).date()
+
+    # === 7E: Attendance Streaks for Shannon & Jacob (12 consecutive Sundays) ===
+    days_since_sunday = (today.weekday() + 1) % 7
+    most_recent_sunday = today - timedelta(days=days_since_sunday)
+
+    for user_id in ["shannon_nieman_001", "jacob_pacheco_001"]:
+        checkin_ids = []
+        for week in range(12):
+            sunday = most_recent_sunday - timedelta(weeks=week)
+            checkin_id = f"chk_streak_{user_id}_{week:02d}"
+            checkin_ids.append(checkin_id)
+            await db.member_checkins.update_one(
+                {"id": checkin_id, "tenant_id": tenant_id},
+                {"$set": {
+                    "id": checkin_id,
+                    "tenant_id": tenant_id,
+                    "user_id": user_id,
+                    "service_id": None,
+                    "check_in_type": "in_person",
+                    "service_date": sunday.isoformat(),
+                    "check_in_time": f"{sunday.isoformat()}T09:30:00+00:00",
+                }},
+                upsert=True
+            )
+        await db.member_checkins.delete_many({
+            "tenant_id": tenant_id,
+            "user_id": user_id,
+            "id": {"$nin": checkin_ids}
+        })
+    logger.info("[SEED] Attendance streaks seeded for Shannon & Jacob (12-week streaks)")
+
+    # === 7C: Member Directory Seed (25 realistic profiles) ===
+    existing_dir = await db.people.count_documents({"tenant_id": tenant_id, "id": {"$regex": "^dir_member_"}})
+    if existing_dir < 25:
+        directory_members = [
+            {"first": "Sarah", "last": "Mitchell", "phone": "(704) 555-0112", "status": "member", "groups": ["Worship Team", "Women's Ministry"]},
+            {"first": "David", "last": "Chen", "phone": "(704) 555-0198", "status": "member", "groups": ["Men's Ministry", "Small Group Leaders"]},
+            {"first": "Rachel", "last": "Thompson", "phone": "(704) 555-0234", "status": "member", "groups": ["Children's Ministry", "Hospitality"]},
+            {"first": "Marcus", "last": "Williams", "phone": "(704) 555-0301", "status": "member", "groups": ["Worship Team", "Young Adults"]},
+            {"first": "Emily", "last": "Rodriguez", "phone": "(704) 555-0356", "status": "member", "groups": ["Prayer Team", "Outreach"]},
+            {"first": "Jonathan", "last": "Baker", "phone": "(704) 555-0412", "status": "member", "groups": ["Ushers", "Men's Ministry"]},
+            {"first": "Grace", "last": "Kim", "phone": "(704) 555-0478", "status": "member", "groups": ["Worship Team", "Korean Ministry"]},
+            {"first": "Michael", "last": "Foster", "phone": "(704) 555-0534", "status": "member", "groups": ["Deacons", "Finance Team"]},
+            {"first": "Ashley", "last": "Martinez", "phone": "(704) 555-0590", "status": "member", "groups": ["Women's Ministry", "Small Groups"]},
+            {"first": "Brandon", "last": "Taylor", "phone": "(704) 555-0645", "status": "member", "groups": ["A/V Team", "Young Adults"]},
+            {"first": "Megan", "last": "Anderson", "phone": "(704) 555-0701", "status": "member", "groups": ["Children's Ministry", "Women's Bible Study"]},
+            {"first": "Tyler", "last": "Moore", "phone": "(704) 555-0756", "status": "member", "groups": ["Security Team", "Men's Breakfast"]},
+            {"first": "Jasmine", "last": "Harris", "phone": "(704) 555-0812", "status": "member", "groups": ["Hospitality", "Missions"]},
+            {"first": "Andrew", "last": "Jackson", "phone": "(704) 555-0867", "status": "member", "groups": ["Worship Team", "College Ministry"]},
+            {"first": "Lauren", "last": "Clark", "phone": "(704) 555-0923", "status": "member", "groups": ["Prayer Team", "Nursery"]},
+            {"first": "Daniel", "last": "Lewis", "phone": "(704) 555-0978", "status": "member", "groups": ["Ushers", "Parking Team"]},
+            {"first": "Christina", "last": "Walker", "phone": "(704) 555-1034", "status": "member", "groups": ["Women's Ministry", "Counseling"]},
+            {"first": "Joshua", "last": "Robinson", "phone": "(704) 555-1089", "status": "member", "groups": ["Youth Ministry", "Sports Ministry"]},
+            {"first": "Samantha", "last": "Young", "phone": "(704) 555-1145", "status": "member", "groups": ["Worship Team", "Creative Arts"]},
+            {"first": "Kevin", "last": "Hernandez", "phone": "(704) 555-1200", "status": "member", "groups": ["Spanish Ministry", "Outreach"]},
+            {"first": "Natalie", "last": "King", "phone": "(704) 555-1256", "status": "visitor", "groups": []},
+            {"first": "Ryan", "last": "Scott", "phone": "(704) 555-1312", "status": "visitor", "groups": []},
+            {"first": "Olivia", "last": "Green", "phone": "(704) 555-1367", "status": "member", "groups": ["Women's Ministry", "Food Pantry"]},
+            {"first": "Chris", "last": "Adams", "phone": "(704) 555-1423", "status": "member", "groups": ["Deacons", "Building Committee"]},
+            {"first": "Hannah", "last": "Nelson", "phone": "(704) 555-1478", "status": "regular", "groups": ["Young Adults", "Small Groups"]},
+        ]
+        for i, m in enumerate(directory_members):
+            full_name = f"{m['first']} {m['last']}"
+            person_doc = {
+                "id": f"dir_member_{i:03d}",
+                "tenant_id": tenant_id,
+                "user_id": f"dir_user_{i:03d}",
+                "first_name": m["first"],
+                "last_name": m["last"],
+                "name": full_name,
+                "email": f"{m['first'].lower()}.{m['last'].lower()}@abundant.church",
+                "phone": m.get("phone", ""),
+                "mobile_phone": m.get("phone", ""),
+                "membership_status": m["status"],
+                "groups": m.get("groups", []),
+                "directory_visible": True,
+                "share_email": True,
+                "share_phone": True,
+                "photo_url": f"https://api.dicebear.com/7.x/avataaars/svg?seed=dir{i}",
+                "created_at": now_iso,
+            }
+            await db.people.update_one(
+                {"id": person_doc["id"], "tenant_id": tenant_id},
+                {"$set": person_doc},
+                upsert=True
+            )
+        logger.info("[SEED] 25 member directory profiles seeded")
+
+    # === Giving Integrations Config Seed ===
+    await db.giving_integrations.update_one(
+        {"tenant_id": tenant_id},
+        {"$set": {
+            "tenant_id": tenant_id,
+            "active_processor": "solomon_pay",
+            "processors": {
+                "solomon_pay": {"enabled": True, "status": "active", "label": "Solomon Pay", "description": "Native giving powered by Solomon AI", "connected_at": now_iso},
+                "pushpay": {"enabled": False, "status": "not_connected", "label": "Pushpay", "description": "Connect your existing Pushpay account"},
+                "securegive": {"enabled": False, "status": "not_connected", "label": "SecureGive", "description": "Integrate with SecureGive"},
+            },
+            "updated_at": now_iso,
+        }, "$setOnInsert": {"created_at": now_iso}},
+        upsert=True
+    )
+    logger.info("[SEED] Giving integrations config seeded")
+
+
 app.include_router(api_router)
 
 # ============== EXTRACTED ROUTE MODULES ==============
@@ -15872,7 +16062,8 @@ async def startup_ensure_mobile_seed_data():
                 {"$set": {"id": str(uuid.uuid4()), "user_id": "f1d0f1d8-de66-4fc0-a8c7-8f81f679ce22", "team_id": "kids-checkin-team", "tenant_id": "abundant-east-001", "role_title": "Team Lead", "assigned_at": datetime.now(timezone.utc).isoformat(), "assigned_by": "system"}},
                 upsert=True
             )
-            logger.info("Mobile demo accounts, volunteer teams, and indexes ensured")
+            await seed_demo_quality_data()
+            logger.info("Mobile demo accounts, volunteer teams, quality data, and indexes ensured")
         except Exception as exc:
             logger.error(f"Failed to ensure startup seed data: {exc}")
     asyncio.create_task(_seed())
