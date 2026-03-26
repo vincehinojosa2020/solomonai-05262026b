@@ -38,7 +38,7 @@ Build a church management SaaS platform (Solomon AI) to replace Planning Center.
 - **F. Communications Page**: Compose, Sent, Scheduled, Templates, Segments
 
 ### Public Pages (DONE — March 26, 2026)
-- `/` — Marketing Landing Page (Stripe meets Linear aesthetic)
+- `/` — Marketing Landing Page (clean white, Frank Luntz copy)
 - `/login` — Login with "Your church. Elevated." tagline
 - `/signup` — Church Onboarding Wizard
 - `/demo` — Demo Request Page
@@ -47,33 +47,41 @@ Build a church management SaaS platform (Solomon AI) to replace Planning Center.
 - `/war-room` — Dark navy dashboard with real-time KPIs
 
 ### Quality Improvements (DONE — March 26, 2026)
-- **7C: Member Directory Seed**: 25+ realistic member profiles with names, groups, search
-- **7D: Solomon Chat Context**: Live church data injected (members, events, announcements, groups)
-- **7E: Attendance Streaks**: Shannon & Jacob seeded with 12-week consecutive streaks, 3 badges
+- **7C: Member Directory Seed**: 25+ realistic member profiles
+- **7D: Solomon Chat Context**: Live church data injected
+- **7E: Attendance Streaks**: Shannon & Jacob with 12-week streaks
 
 ### Giving Platform Scaffold (DONE — March 26, 2026)
-- Admin Giving Integrations UI with Solomon Pay, Pushpay, SecureGive cards
-- Backend endpoints: GET/POST connect/disconnect processors (MOCKED)
-- Seed data: Solomon Pay set as default active processor
+- Admin UI with Solomon Pay, Pushpay, SecureGive cards
+- Backend: GET/POST connect/disconnect processors (MOCKED)
+
+### Landing Page Refinements (DONE — March 26, 2026)
+- Clean white hero: "Your Church. One App. Zero Compromise."
+- 3 stats only: 64,500 Members / $151M+ Given / 140+ Small Groups
+- Frank Luntz copy on all sections
+- Mobile responsive layout
+- Nav: Pricing | Watch Demo | Login
+- Footer: "Built on Google Cloud Platform · Powered by Anthropic"
+
+## Final QA Status
+- **Iteration 52**: 100% pass (20/20 backend, all frontend pages verified)
+- **Deployment Check**: PASS - No blockers
 
 ## Mocked Integrations
-- **Stripe/Pushpay/SecureGive** — Payment processing (MOCKED, scaffolded for future)
-- **Twilio** — Communications send (STUBBED, records saved to DB)
-
-## Test Reports
-- Iteration 47: Phase A (PASSED)
-- Iteration 48: Solomon Academy (PASSED)
-- Iteration 49: Demo Features A-F (PASSED — 100%)
-- Iteration 50: Landing, Signup, Demo, War Room (PASSED — 100%)
-- Iteration 51: Quality Improvements 7C/7D/7E + Giving Integrations (PASSED — 100% backend, 80% frontend)
-
-## Tech Stack
-- FastAPI + MongoDB (backend)
-- React + Tailwind + Shadcn/UI (frontend)
-- Anthropic Claude (Solomon Chat via Emergent LLM Key)
+- Stripe/Pushpay/SecureGive — Payment processing (MOCKED)
+- Twilio — Communications send (STUBBED)
 
 ## Credentials
 - Platform Admin: admin@solomonai.us / Demo2026!
-- Church Admin (Multi-Campus): shannonnieman1030@gmail.com / Demo2026!
+- Church Admin: shannonnieman1030@gmail.com / Demo2026!
 - Church Admin: jacobpacheco@abundanteast.com / Demo2026!
 - Church Member: member@abundant.church / Demo2026!
+
+## Post-Demo Backlog
+- P1: Modular monolith refactor of server.py
+- P1: Real Pushpay/SecureGive API integration
+- P2: Excel (.xlsx) Member Import
+- P2: PDF Certificate generation
+- P2: Real Stripe integration for Solomon Pay
+- P2: Real Twilio SMS integration
+- P2: N+1 query optimization in courses.py
