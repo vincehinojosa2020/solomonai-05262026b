@@ -299,7 +299,7 @@ export default function LandingPage() {
           {/* FAQ */}
           <div style={{ maxWidth: 700, margin: '60px auto 0', textAlign: 'left' }}>
             {[
-              { q: 'Do you charge per campus?', a: "No. One account covers all your campuses. Abundant Church's 3 campuses: one bill." },
+              { q: 'Do you charge per campus?', a: "No. One account covers all your campuses. Three campuses, five campuses, ten campuses: one bill." },
               { q: 'Are there transaction fees on giving?', a: 'Currently we process through Stripe at standard rates. In 2026 we launch Solomon Pay — our own payment processor at lower rates than SecureGive, Pushpay, or Venmo.' },
               { q: 'How long does onboarding take?', a: 'Week 1: we import your member list from your current system (Excel, CSV, or Planning Center export). Week 2: staff training. Week 3: you\'re live.' },
             ].map(faq => (
