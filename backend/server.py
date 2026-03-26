@@ -3643,13 +3643,21 @@ async def get_member_events(request: Request):
         {"_id": 0}
     ).sort("event_date", 1).limit(50).to_list(50)
     
-    # Enrich with waitlist count
+    # Enrich with waitlist count (batched)
     enriched = []
+    event_ids_with_capacity = [e["id"] for e in events if e.get("capacity")]
+    waitlist_map = {}
+    if event_ids_with_capacity:
+        pipeline = [
+            {"$match": {"event_id": {"$in": event_ids_with_capacity}, "status": "waitlisted"}},
+            {"$group": {"_id": "$event_id", "count": {"$sum": 1}}}
+        ]
+        wl_results = await db.event_registrations.aggregate(pipeline).to_list(len(event_ids_with_capacity))
+        waitlist_map = {wc["_id"]: wc["count"] for wc in wl_results}
     for e in events:
         event_data = serialize_doc(e)
         if e.get("capacity"):
-            wl_count = await db.event_registrations.count_documents({"event_id": e["id"], "status": "waitlisted"})
-            event_data["waitlist_count"] = wl_count
+            event_data["waitlist_count"] = waitlist_map.get(e["id"], 0)
         enriched.append(event_data)
     
     return enriched
@@ -3666,11 +3674,15 @@ async def get_available_groups(request: Request):
         {"_id": 0}
     ).to_list(100)
     
-    # Enrich with leader info
+    # Enrich with leader info (batched)
+    leader_ids = [g.get("leader_id") for g in groups if g.get("leader_id")]
+    leaders_map = {}
+    if leader_ids:
+        leaders_list = await db.people.find({"id": {"$in": leader_ids}}, {"_id": 0}).to_list(len(leader_ids))
+        leaders_map = {l["id"]: l for l in leaders_list}
     for g in groups:
         if g.get("leader_id"):
-            leader = await db.people.find_one({"id": g["leader_id"]}, {"_id": 0})
-            g["leader"] = serialize_doc(leader) if leader else None
+            g["leader"] = serialize_doc(leaders_map.get(g["leader_id"]))
     
     return [serialize_doc(g) for g in groups]
 
