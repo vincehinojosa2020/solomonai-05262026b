@@ -1,140 +1,157 @@
-<analysis>**original_problem_statement:**
-The user's goal is to finalize the Solomon AI MVP to serve as a complete Planning Center replacement. The mandate includes Phase A: Planning Center Competitor Features (Services, Volunteer Scheduling, Households, Directory, Public Pricing Page, Church Branding Settings). 
-*Recent Shift:* The user prioritized building a public Landing Page, configuring Apple App Site Association (AASA) for mobile app deployment, building Platform Admin user management tools, and setting up Multi-Campus views. Most critically, the user reported a major bug where core accounts cannot log in on the production deployment, completely blocking their launch.
+<analysis>**original_problem_statement**: 
+The user wants to finalize the Solomon AI MVP to replace Planning Center. The initial mandate was to build Phase A Frontend features (Services, Volunteers, Households, Directory, Pricing). Following that, the user requested the native integration of a Learning Management System called Solomon Academy. Finally, the user requested 6 critical, high-priority features to be built for a high-stakes demo (for a 50,000-member church) happening in 7 hours.
 
-**PRODUCT REQUIREMENTS:**
-- **Phase A (Pending Frontend):** Services (), Volunteers (), Households (), Directory (), Pricing (), Branding ().
-- **Multi-Campus:** Allow high-level admins (e.g., Lead Pastors) to toggle between multiple campuses (e.g., Abundant East, West, Downtown) using  and .
-- **Admin/Member Toggle:** Lyft-style dual-mode where admins can toggle their view to experience the app as a standard member.
-- **Platform Management:** Ability for Platform Admins to create users and promote members to admins across all tenants.
+**PRODUCT REQUIREMENTS**:
+- **Phase A**: UIs for Services, Volunteers, Households, Directory, Pricing.
+- **Solomon Academy**: Native LMS replacing Thinkific. Course builder (Modules, Lessons: Video/Text/Quiz/Download), member enrollment, and progress tracking.
+- **Demo Features (P0)**: 
+  A. Campus Switcher All Campuses aggregate view
+  B. Platform God Mode visual upgrade
+  C. Manual Kids Check-In (admin-only, no QR)
+  D. Cafe Enterprise Redesign (Stripe-style, pure white, no emojis)
+  E. CSV Member Import (4-step wizard)
+  F. Communications page (Twilio-ready stub)
 
 **User's preferred language**: English
-*(Note for next agent: Always respond in English)*
+*(Instructing next agent: You MUST respond in English)*
 
 **what currently exists?** 
-A highly stable, feature-complete multi-tenant SaaS church management platform. Recently added features include a public landing page (), a support page (), an Apple AASA file for iOS universal links, a multi-campus switcher dropdown, and Platform Dashboard user management. However, the production environment is currently experiencing a critical authentication blockage.
+A stable, feature-complete multi-tenant SaaS application. Phase A frontend pages and Solomon Academy (LMS) have been fully built, tested, and seeded with an Abundant Next Steps course. The portal header UI overlap bug has been fixed. The app is healthy. The agent just received the massive ULTIMATE PRE-DEMO PROMPT and was gathering context to build the 6 required features.
 
 **Last working item**: 
-    - Last item agent was working: Debugging a critical production authentication failure. The agent updated the  endpoint to append detailed diagnostic data directly into the HTTP 401  string (e.g., [User not found], [Hash mismatch]) so the user can deploy and report back exactly where the prod DB is failing.
-    - Status: USER VERIFICATION PENDING
-    - Agent Testing Done: Y (Works perfectly in Preview environment)
-    - Which testing method agent to use?: curl / backend testing for auth endpoints.
-    - User Testing Done: N (Waiting for user to trigger the login error on their live deployment and share the results).
+    - Last item agent was working: Gathering file context (, , ) to begin implementing the 6 pre-demo features requested by the user. The agent was just about to add the new endpoints (, etc.).
+    - Status: IN PROGRESS
+    - Agent Testing Done: N
+    - Which testing method agent to use?: Frontend/Backend testing agent after the batch of demo features is complete, plus manual curl/screenshot checks.
+    - User Testing Done: N
 
 **All Pending/In progress Issue list**: 
-  Issue 1 (P0): Production Authentication Failure
-     - Attempted fixes: The startup seed script  was failing silently on prod due to a MongoDB  on . Fixed the script to handle upserts/updates atomically. Verified bcrypt hash generation matches . Added a  endpoint.
-     - Next debug checklist: 
-        1. Ask user for the exact error message they see on the production login screen (the modified backend now sends detailed reasons inside the 401 error).
-        2. Check   logic against prod DB state.
-     - Why fix this issue and what will be achieved with the fix? It is a hard blocker for the user's App Store submission and real-world demo.
-     - Status: BLOCKED (Waiting for user feedback from prod deployment)
-     - Is recurring issue? Y (Discrepancy between Preview DB and Prod DB state)
-     - Should Test frontend/backend/both after fix? Backend.
+  Issue 1: Urgent Pre-Demo Feature Implementation
+     - Attempted fixes: Agent mapped out the file architecture but hasn't written the code yet.
+     - Next debug checklist: Refer to the user's ULTIMATE PRE-DEMO PROMPT and implement features A through F sequentially or in parallel (Backend APIs first, then Frontend UIs).
+     - Why fix this issue and what will be achieved with the fix? It is an absolute requirement for a live demo to a major prospective client happening in < 7 hours.
+     - Status: IN PROGRESS
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? Both.
 
 **In progress Task List**: 
-  Task 1 (P1): Frontend Implementation of Phase A
-     - Where to resume: Create React pages for ,  (Admin),  (Admin), , and Branding settings.
-     - What will be achieved with this? Fulfills the user's initial requirement to match Planning Center's core strengths.
-     - Status: NOT STARTED (Backend routes exist, frontend was delayed due to the critical auth bug).
-     - Should Test frontend/backend/both after fix? Both.
+  Task 1 (P0): Backend APIs for Demo Features
+     - Where to resume: . Add , update  logic, add , enhance .
+     - What will be achieved with this? Unblocks the frontend features for the demo.
+     - Status: IN PROGRESS
+     - Should Test frontend/backend/both after fix? Backend.
+
+  Task 2 (P0): Feature A - Campus Switcher Aggregate View
+     - Where to resume:  (lines 370-405). Add All Campuses to the dropdown and build the aggregate KPI dashboard.
+     - Status: NOT STARTED
+
+  Task 3 (P0): Feature B - Platform God Mode Visual Upgrade
+     - Where to resume: . Upgrade header, KPI row, and church table to show Org -> Campus breakdown and billing notes.
+     - Status: NOT STARTED
+
+  Task 4 (P0): Feature C - Manual Kids Check-In UI
+     - Where to resume: . Add a [+ Manual Check-In] button/modal and a row-level [Check Out] button.
+     - Status: NOT STARTED
+
+  Task 5 (P0): Feature D - Cafe Enterprise Redesign
+     - Where to resume: . Remove all warm colors/emojis. Apply a pure white, Stripe/Notion-like enterprise aesthetic.
+     - Status: NOT STARTED
+
+  Task 6 (P0): Feature E - CSV Member Import UI
+     - Where to resume:  page. Build the 4-step import wizard (Upload, Map Columns, Preview, Importing).
+     - Status: NOT STARTED
+
+  Task 7 (P0): Feature F - Communications UI
+     - Where to resume: New  page. Build the Compose, Sent, Scheduled, and Templates views.
+     - Status: NOT STARTED
 
 **Upcoming and Future Tasks**
     Upcoming Tasks:
-    - P1: Complete the Phase A frontend UIs (Pricing, Services, Households, Directory, Branding).
-    - P1: Test the enhanced Ask Solomon chat context injection.
+    - P1: Modular monolith refactor of  (extract domains into routers). *Note: The user explicitly commanded to SKIP this for now until after the demo.*
     
-    Future Tasks (Post-MVP Backlog):
-    - P2: Real Stripe/Pushpay integration (currently mocked).
-    - P2: Push notifications with real VAPID keys.
-    - P2:  modular refactor (currently ~15,400 lines).
-    - P2: React Native mobile app development.
+    Future Tasks (Post-Demo Backlog):
+    - P2: Excel (.xlsx) support for Member Import (currently focusing on CSV).
+    - P2: PDF Certificate generation for Solomon Academy.
+    - P2: File uploads for Download-type lessons in Academy.
+    - P2: Real Stripe/Pushpay integration.
 
 **Completed work in this session**
-- Multi-Campus Switcher UI in  and backend support (DONE)
-- Lyft-style Admin/Member view toggle fixed for members with admin claims (DONE)
-- Public Landing Page () and Support Page () (DONE)
-- Removed PWA Install prompt (DONE)
-- Apple App Site Association (AASA) file configured with real Apple Team ID/Bundle ID (DONE)
-- Platform Dashboard: Create User and Promote to Admin functionality (DONE)
-- Startup DB Seed script refactored to safely handle  and persist core demo accounts (DONE)
+- Phase A Frontend Pages: , , , ,  (DONE)
+- Solomon Academy Backend APIs & 5 new Collections (DONE)
+- Solomon Academy Admin UI:  and editors (DONE)
+- Solomon Academy Portal UI:  and lesson viewer (DONE)
+- Portal Header UI overlap bug fix in  and  (DONE)
+- Deployment Health Check (DONE - Passed)
 
 **Earlier issues found/mentioned but not fixed**
-- Prod DB vs Preview DB mismatch. The agent relies on startup scripts to sync them, but edge cases in Prod DB schemas (unique indexes) have caused silent failures.
+- None.
 
 **Known issue recurrence from previous fork**
-  - Issue recurrence in previous fork: Works in preview, broken in prod (Specifically related to routing in previous fork, and DB state in current fork).
-  - Recurrence count: 2
-  - Status: IN PROGRESS
-  - Note: Always remind the user to press the Deploy button in the Emergent Dashboard to sync changes. Prod relies heavily on the  events in .
+  - Issue recurrence in previous fork: None active.
+  - Recurrence count: 0
+  - Status: RESOLVED
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Universal Multi-Campus:** Tenants are linked via . Users have .
-- **Lyft Dual Mode:** Handled via  to bypass route guards.
-- **Startup DB Seeding:**  uses  to force-inject required accounts on every deployment.
+- **Solomon Academy:** Native LMS built with 4 lesson types (Video embeds, Markdown text, JSON Quiz, URL Download).
+- **Multi-Tenant / Pricing Model:** Organizations can have multiple campuses (tenants). Billing is per Organization (1 account, N campuses). This hierarchy MUST be clearly displayed in the God Mode view.
 
 **key DB schema**
-  - : 
-  - *Note:  collection has unique indexes on  and .*
+  - Newly added collections: , , , , .
+  - Hierarchy:  ->  (tenants) ->  (users).
 
 **changes in tech stack**
-  - None
+  - Added  to frontend for rendering text lessons.
 
 **All files of reference**
-  - : Auth logic, DB seeding logic, APIs.
-  - : Public routes added.
-  - : Campus switcher, Role toggle.
-  - : User management UI.
-  - : iOS configuration.
+  - 
+  - 
+  - 
+  - 
+  - 
 
 **Areas that need refactoring**:
-  - : Over 15,400 lines. Refactor postponed until MVP web launch is complete.
+  - : Over 15,500 lines. Refactor to a Modular Monolith (extracting routers) is planned but *STRICTLY DEFERRED* until after the upcoming demo. Build the 6 demo features directly into .
 
 **key api endpoints**
-  - : Heavily modified with diagnostic error messages.
-  - : New diagnostic endpoint to check hash validity.
-  - : Onboarding endpoints.
+  -  (Contains all data needed for God Mode and Aggregate Campus views)
+  - Pending to build: , , .
 
 **Critical Info for New Agent**
-  - **DO NOT TOUCH the password hashing logic** without extreme caution. The user is highly frustrated by a production login bug. 
-  - The login endpoint  currently has debug strings appended to the  detail. Wait for the user to tell you what error the UI throws (e.g., [Hash mismatch]).
-  - The seeded accounts are:
-    1.  /  (Platform Admin)
-    2.  /  (Lead Pastor, Multi-campus)
-    3.  /  (Pastoral Staff, Multi-campus)
+  - **DO NOT REFACTOR **. The user explicitly ordered to build the 6 demo features directly into the monolith to save time.
+  - You have **< 7 hours** simulated time for a massive 50,000 member church demo. Prioritize strictly matching the user's UI/UX requests in the ULTIMATE PRE-DEMO PROMPT (Message 198 & 212).
+  - The Cafe redesign (Feature D) must look like a clean Enterprise app (Stripe/Notion), NOT a playful food delivery app. Pure white backgrounds, no emojis.
+  - The pricing model is 1 Account = Multiple Campuses. Ensure this is visually obvious in the Platform God Mode and Campus Switcher views.
 
 **documents and test reports created in this job**
-  - 
-  - 
+  -  (Updated)
+  -  (Phase A)
+  -  (Solomon Academy)
 
 **Last 10 User Messages and any pending HUMAN messages** 
- - *Message:* User requested  platform account and requested fix for Shannon/Jacob permissions. -> *Completed.*
- - *Message:* User requested Platform Dashboard user creation/promotion tools. -> *Completed.*
- - *Message:* User complained they cannot log in to ANY accounts after redeploying. -> *Agent investigated and found  in the startup seed script. Fixed and verified.*
- - *Message:* User complained they *still* cannot sign into . -> *Agent verified it works in preview and told user to Deploy.*
- - *Message:* User provided a massive, frantic prompt demanding a complete overhaul of the auth endpoint, believing password hashing is broken on Prod. -> *Status: IN PROGRESS. Agent verified hashes are perfectly fine, added diagnostic endpoints, and appended detailed tracing into the 401 error payload so the user can deploy and report the exact failure point.*
+ - *Message:* User requested to fix Portal Header UI overlapping text. -> *Fixed.*
+ - *Message:* User requested Deployment Agent health check. -> *Passed.*
+ - *Message:* User provided the ULTIMATE PRE-DEMO PROMPT asking for a feasibility check on 6 urgent features (A-F). -> *Agent analyzed and confirmed feasibility.*
+ - *Message:* User gave the FINAL GO: GO — BUILD ALL 6 ITEMS... Demo in 7 hours. -> *Agent started analyzing files to build the backend endpoints. Context limit reached.*
 
 **Project Health Check:**
-  Broken: Production Authentication (Preview works 100%).
-  Mocked: Payment Processors (Stripe, Pushpay).
+  - Status: Healthy, deploying successfully, but critically pending the 6 demo features.
 
 **3rd Party Integrations**
-  • Anthropic Claude (Ask Solomon) — *uses Emergent LLM Key*
   • Stripe/Pushpay — *Mocked*
+  • Twilio (Communications) — *Stubbed/Mocked for this demo*
 
 **Testing status**
-  - Testing agent used after significant changes: YES (Iteration 46 passed 100%).
+  - Testing agent used after significant changes: YES (Iterations 47 & 48 passed 100%).
   - Troubleshoot agent used after agent stuck in loop: NO.
-  - Test files created: .
-  - Known regressions: Production environment authentication.
+  - Known regressions: None.
 
 **Credentials to test flow:**
   - Platform Admin:  / 
-  - Church Admin:  / 
+  - Church Admin (Multi-Campus):  / 
   - Church Admin:  / 
 
 **What agent forgot to execute**
-  - Due to the critical P0 authentication bug raised by the user in the final prompts, the actual Phase A frontend development (Pricing page, Services UI, Households UI) was entirely sidelined. It remains pending.</analysis>
+  - The agent did not forget, but ran out of context exactly as they were preparing to write the backend endpoints for the 6 demo features (Kids check-in, Member import, Communications). The next agent must immediately begin implementing Features A-F from the user's prompt.</analysis>

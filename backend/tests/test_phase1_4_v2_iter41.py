@@ -16,7 +16,7 @@ import uuid
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://church-planning.preview.emergentagent.com"
+    BASE_URL = "https://church-platform-5.preview.emergentagent.com"
 
 # Test credentials
 PLATFORM_ADMIN = {"email": "admin@solomon.ai", "password": "Demo2026!"}

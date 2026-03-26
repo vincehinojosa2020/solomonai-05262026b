@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://church-planning.preview.emergentagent.com/api
+https://church-platform-5.preview.emergentagent.com/api
 ```
 
 ### Authentication

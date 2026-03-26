@@ -6,7 +6,7 @@ import asyncio
 import aiohttp
 import json
 
-BASE_URL = "https://church-planning.preview.emergentagent.com/api"
+BASE_URL = "https://church-platform-5.preview.emergentagent.com/api"
 
 async def investigate_data():
     """Get detailed data from key endpoints"""
