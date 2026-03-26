@@ -59,8 +59,9 @@ Build a church management SaaS platform (Solomon AI) to replace Planning Center.
 - Clean white hero: "Your Church. One App. Zero Compromise."
 - 3 stats only: 64,500 Members / $151M+ Given / 140+ Small Groups
 - Frank Luntz copy on all sections
-- Mobile responsive layout
-- Nav: Pricing | Watch Demo | Login
+- Mobile responsive with hamburger menu nav
+- OG preview tile for gorgeous iMessage/SMS link sharing
+- Nav: Pricing | Watch Demo | Login (hamburger on mobile)
 - Footer: "Built on Google Cloud Platform · Powered by Anthropic"
 
 ## Final QA Status

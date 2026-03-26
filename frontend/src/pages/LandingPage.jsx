@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Check, X, Tv, Baby, Heart, Users, Calendar, Zap, Play, DollarSign } from 'lucide-react';
+import { ArrowRight, Check, X, Tv, Baby, Heart, Users, Calendar, Zap, Play, DollarSign, Menu } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -15,6 +15,7 @@ export default function LandingPage() {
   const [waitlistEmail, setWaitlistEmail] = useState('');
   const [waitlistChurch, setWaitlistChurch] = useState('');
   const [waitlistSent, setWaitlistSent] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const submitWaitlist = async () => {
     if (!waitlistEmail) return;
@@ -32,9 +33,8 @@ export default function LandingPage() {
     <div style={{ background: S.white, color: S.textDark, fontFamily: "'Inter',-apple-system,BlinkMacSystemFont,sans-serif" }} data-testid="landing-page">
       <style>{`
         @media (max-width: 768px) {
-          .lp-nav-links { gap: 10px !important; }
-          .lp-nav-links a { font-size: 12px !important; }
-          .lp-nav-links .nav-btn { padding: 6px 14px !important; font-size: 12px !important; }
+          .lp-nav-desktop { display: none !important; }
+          .lp-nav-mobile-toggle { display: flex !important; }
           .lp-grid-3 { grid-template-columns: 1fr !important; }
           .lp-grid-4 { grid-template-columns: 1fr !important; }
           .lp-stats-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 16px !important; }
@@ -48,6 +48,10 @@ export default function LandingPage() {
           .lp-waitlist-row input, .lp-waitlist-row button { width: 100% !important; }
           .lp-pricing-grid { grid-template-columns: 1fr !important; max-width: 400px !important; margin-left: auto !important; margin-right: auto !important; }
         }
+        @media (min-width: 769px) {
+          .lp-nav-mobile-toggle { display: none !important; }
+          .lp-mobile-menu { display: none !important; }
+        }
         @media (max-width: 480px) {
           .lp-stats-grid { grid-template-columns: 1fr !important; }
         }
@@ -55,19 +59,42 @@ export default function LandingPage() {
 
       {/* ── NAV ── */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: 'rgba(15,23,42,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }} data-testid="landing-header">
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: 6 }} data-testid="landing-logo">
             <span style={{ fontSize: 18, fontWeight: 200, letterSpacing: 6, color: '#fff' }}>SOLOMON</span>
             <span style={{ fontSize: 18, fontWeight: 700, color: S.blue }}>AI</span>
           </Link>
-          <div className="lp-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {/* Desktop nav */}
+          <div className="lp-nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
             <Link to="/pricing" style={{ fontSize: 14, fontWeight: 500, color: '#cbd5e1', textDecoration: 'none' }} data-testid="nav-pricing">Pricing</Link>
             <Link to="/demo" style={{ fontSize: 14, fontWeight: 500, color: '#cbd5e1', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }} data-testid="nav-watch-demo">
               <Play style={{ width: 13, height: 13 }} /> Watch Demo
             </Link>
-            <Link to="/login" className="nav-btn" style={{ padding: '8px 20px', fontSize: 14, fontWeight: 600, color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, textDecoration: 'none' }} data-testid="landing-login-btn">Login</Link>
+            <Link to="/login" style={{ padding: '8px 20px', fontSize: 14, fontWeight: 600, color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, textDecoration: 'none' }} data-testid="landing-login-btn">Login</Link>
           </div>
+          {/* Mobile hamburger */}
+          <button
+            className="lp-nav-mobile-toggle"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            style={{ display: 'none', alignItems: 'center', justifyContent: 'center', background: 'none', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, padding: 8, cursor: 'pointer', color: '#fff' }}
+            data-testid="mobile-menu-toggle"
+            aria-label="Menu"
+          >
+            <Menu style={{ width: 20, height: 20 }} />
+          </button>
         </div>
+        {/* Mobile dropdown */}
+        {mobileMenuOpen && (
+          <div className="lp-mobile-menu" style={{ background: 'rgba(15,23,42,0.98)', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '16px 24px' }} data-testid="mobile-menu">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: 15, fontWeight: 500, color: '#cbd5e1', textDecoration: 'none', padding: '8px 0' }}>Pricing</Link>
+              <Link to="/demo" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: 15, fontWeight: 500, color: '#cbd5e1', textDecoration: 'none', padding: '8px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Play style={{ width: 14, height: 14 }} /> Watch Demo
+              </Link>
+              <Link to="/login" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: 15, fontWeight: 600, color: '#fff', textDecoration: 'none', padding: '10px 0', borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 4 }}>Login</Link>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* ── HERO ── */}
