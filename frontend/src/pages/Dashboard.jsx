@@ -249,7 +249,7 @@ export default function Dashboard() {
               </div>
             </div>
             <button
-              onClick={() => { localStorage.removeItem('campus_mode'); setAggregateMode(false); }}
+              onClick={() => { localStorage.removeItem('campus_mode'); window.dispatchEvent(new Event('storage')); setAggregateMode(false); }}
               className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded text-sm font-medium transition-colors"
               data-testid="exit-aggregate-btn"
             >

@@ -389,6 +389,7 @@ export default function AppShell() {
                     <DropdownMenuItem
                       onClick={() => {
                         localStorage.setItem('campus_mode', 'all');
+                        window.dispatchEvent(new Event('storage'));
                         navigate('/dashboard');
                       }}
                       className={`flex items-center gap-2 ${localStorage.getItem('campus_mode') === 'all' ? 'bg-purple-50 text-purple-700' : ''}`}
@@ -406,6 +407,7 @@ export default function AppShell() {
                           key={campus.id}
                           onClick={() => {
                             localStorage.removeItem('campus_mode');
+                            window.dispatchEvent(new Event('storage'));
                             if (!isActive) switchCampus(campus.id);
                           }}
                           className={`flex items-center gap-2 ${isActive ? 'bg-blue-50 text-blue-700' : ''}`}
