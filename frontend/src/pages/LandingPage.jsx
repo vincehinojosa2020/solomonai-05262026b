@@ -218,7 +218,6 @@ export default function LandingPage() {
                   ['AI Church Assistant', true, false],
                   ['Geofence Check-in', true, false],
                   ['Real-time War Room', true, false],
-                  ['Your Brand, Your App', true, false],
                   ['Multi-campus (1 bill)', true, false],
                   ['Flat Monthly Price', true, false],
                 ].map(([feature, sol, pc], i) => (
@@ -251,7 +250,7 @@ export default function LandingPage() {
             {[
               { num: '1', title: 'One platform, not six', body: 'Stop paying for check-in, giving, groups, events, and sermons separately. Solomon AI replaces them all.' },
               { num: '2', title: 'Built for 2026, not 2006', body: 'AI assistant, geofencing, real-time analytics, cafe ordering. Features your current tools will never build.' },
-              { num: '3', title: 'Your brand, not ours', body: 'Planning Center gives your members "Church Center." Solomon AI gives your members your church\'s app.' },
+              { num: '3', title: 'One bill, every campus', body: 'Planning Center charges per module per campus. Solomon AI covers every feature, every campus, one price.' },
             ].map(card => (
               <div key={card.num} style={{ background: S.white, borderRadius: 12, padding: '24px', border: `1px solid ${S.border}` }}>
                 <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: S.blue, marginBottom: 12 }}>{card.num}</div>
