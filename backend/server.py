@@ -47,15 +47,17 @@ SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(
     mongo_url,
-    serverSelectionTimeoutMS=30000,  # 30 seconds for server selection
-    connectTimeoutMS=30000,           # 30 seconds to establish connection
-    socketTimeoutMS=60000,            # 60 seconds for socket operations
-    maxPoolSize=50,                   # Connection pool size
-    minPoolSize=10,                   # Minimum connections to maintain
-    maxIdleTimeMS=45000,              # Close idle connections after 45 seconds
-    retryWrites=True,                 # Enable retryable writes
-    retryReads=True,                  # Enable retryable reads
-    w='majority'                      # Write concern for durability
+    serverSelectionTimeoutMS=45000,
+    connectTimeoutMS=45000,
+    socketTimeoutMS=60000,
+    maxPoolSize=10,
+    minPoolSize=0,
+    maxIdleTimeMS=60000,
+    retryWrites=True,
+    retryReads=True,
+    w='majority',
+    heartbeatFrequencyMS=30000,
+    appname='solomon-ai',
 )
 db = client[os.environ['DB_NAME']]
 
@@ -15680,38 +15682,37 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_ensure_mobile_seed_data():
-    try:
-        await ensure_mobile_demo_accounts()
-        await seed_vol_data()
-        await seed_academy_course()
-        # Create TTL index for idempotency keys (24hr expiry)
+    import asyncio
+    async def _seed():
         try:
-            await db.idempotency_keys.create_index("created_at", expireAfterSeconds=86400)
-        except Exception:
-            pass  # Index already exists
-        # Session TTL - drop conflicting index first if needed
-        try:
-            await db.user_sessions.create_index("expires_at", expireAfterSeconds=0)
-        except Exception:
-            pass
-        # Seed volunteer team for Abundant East
-        existing_team = await db.volunteer_teams.find_one({"id": "kids-checkin-team", "tenant_id": "abundant-east-001"})
-        if not existing_team:
-            await db.volunteer_teams.insert_one({
-                "id": "kids-checkin-team", "tenant_id": "abundant-east-001",
-                "team_name": "Kids Check-In Team", "ministry": "Children's Ministry",
-                "description": "Ensuring every child is safe and accounted for every Sunday.",
-                "created_at": datetime.now(timezone.utc).isoformat(), "created_by": "system"
-            })
-        # Assign Aivy to Kids Check-In Team
-        await db.volunteer_assignments.update_one(
-            {"user_id": "f1d0f1d8-de66-4fc0-a8c7-8f81f679ce22", "team_id": "kids-checkin-team", "tenant_id": "abundant-east-001"},
-            {"$set": {"id": str(uuid.uuid4()), "user_id": "f1d0f1d8-de66-4fc0-a8c7-8f81f679ce22", "team_id": "kids-checkin-team", "tenant_id": "abundant-east-001", "role_title": "Team Lead", "assigned_at": datetime.now(timezone.utc).isoformat(), "assigned_by": "system"}},
-            upsert=True
-        )
-        logger.info("Mobile demo accounts, volunteer teams, and indexes ensured")
-    except Exception as exc:
-        logger.error(f"Failed to ensure startup seed data: {exc}")
+            await ensure_mobile_demo_accounts()
+            await seed_vol_data()
+            await seed_academy_course()
+            try:
+                await db.idempotency_keys.create_index("created_at", expireAfterSeconds=86400)
+            except Exception:
+                pass  # Index already exists
+            try:
+                await db.user_sessions.create_index("expires_at", expireAfterSeconds=0)
+            except Exception:
+                pass
+            existing_team = await db.volunteer_teams.find_one({"id": "kids-checkin-team", "tenant_id": "abundant-east-001"})
+            if not existing_team:
+                await db.volunteer_teams.insert_one({
+                    "id": "kids-checkin-team", "tenant_id": "abundant-east-001",
+                    "team_name": "Kids Check-In Team", "ministry": "Children's Ministry",
+                    "description": "Ensuring every child is safe and accounted for every Sunday.",
+                    "created_at": datetime.now(timezone.utc).isoformat(), "created_by": "system"
+                })
+            await db.volunteer_assignments.update_one(
+                {"user_id": "f1d0f1d8-de66-4fc0-a8c7-8f81f679ce22", "team_id": "kids-checkin-team", "tenant_id": "abundant-east-001"},
+                {"$set": {"id": str(uuid.uuid4()), "user_id": "f1d0f1d8-de66-4fc0-a8c7-8f81f679ce22", "team_id": "kids-checkin-team", "tenant_id": "abundant-east-001", "role_title": "Team Lead", "assigned_at": datetime.now(timezone.utc).isoformat(), "assigned_by": "system"}},
+                upsert=True
+            )
+            logger.info("Mobile demo accounts, volunteer teams, and indexes ensured")
+        except Exception as exc:
+            logger.error(f"Failed to ensure startup seed data: {exc}")
+    asyncio.create_task(_seed())
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
