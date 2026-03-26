@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   Search, Filter, Download, Plus, ChevronLeft, ChevronRight,
-  MoreHorizontal, Mail, UserPlus, Trash2, Check
+  MoreHorizontal, Mail, UserPlus, Trash2, Check, Upload
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -133,9 +133,9 @@ export default function PeopleList({ type = 'people' }) {
           <p className="page-subtitle">Manage your church members and visitors</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="h-9" data-testid="import-btn">
-            <Download className="w-4 h-4 mr-2" />
-            Import
+          <Button variant="outline" className="h-9" onClick={() => navigate('/admin/members/import')} data-testid="import-btn">
+            <Upload className="w-4 h-4 mr-2" />
+            Import CSV
           </Button>
           <Button className="h-9 btn-primary" onClick={() => setShowAddModal(true)} data-testid="add-person-btn">
             <Plus className="w-4 h-4 mr-2" />

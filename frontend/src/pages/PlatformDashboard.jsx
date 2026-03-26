@@ -264,83 +264,64 @@ export default function PlatformDashboard() {
 
   return (
     <div className="platform-dashboard" data-testid="platform-dashboard">
-      {/* Header */}
-      <div className="platform-header">
+      {/* Header - Enhanced God Mode */}
+      <div className="platform-header" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', color: 'white', padding: '28px 32px', borderRadius: 12, marginBottom: 24 }}>
         <div>
-          <h1 className="platform-title">
-            <Globe className="w-8 h-8 text-purple-500" />
-            Platform Admin
-          </h1>
-          <p className="platform-subtitle">Manage all churches on Solomon AI</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 10, background: 'rgba(168,85,247,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Globe className="w-6 h-6" style={{ color: '#a855f7' }} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.02em', margin: 0, color: 'white' }}>
+                Solomon AI Platform
+              </h1>
+              <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>God Mode &middot; Full platform oversight</p>
+            </div>
+          </div>
         </div>
-        <div className="platform-header-actions">
-          <button className="btn-primary" onClick={() => setShowOnboarding(true)} data-testid="add-church-btn">
+        <div className="platform-header-actions" style={{ display: 'flex', gap: 8 }}>
+          <button className="btn-primary" onClick={() => setShowCreateUser(true)} style={{ background: '#a855f7', border: 'none', padding: '10px 16px', borderRadius: 8, color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }} data-testid="create-user-btn-header">
+            <UserPlus className="w-4 h-4" />
+            Create User
+          </button>
+          <button className="btn-primary" onClick={() => setShowOnboarding(true)} style={{ background: 'white', border: 'none', padding: '10px 16px', borderRadius: 8, color: '#0f172a', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }} data-testid="add-church-btn">
             <Building2 className="w-4 h-4" />
             Add Church
           </button>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="platform-stats-grid">
-        <div className="platform-stat-card purple">
-          <div className="platform-stat-icon">
-            <Building2 className="w-6 h-6" />
-          </div>
-          <div className="platform-stat-content">
-            <span className="platform-stat-value">{stats.totalChurches}</span>
-            <span className="platform-stat-label">Total Churches</span>
-          </div>
+      {/* KPI Row - Enhanced */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, marginBottom: 24 }}>
+        <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: '16px 20px' }}>
+          <p style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Churches</p>
+          <p style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>{stats.totalChurches}</p>
+          <p style={{ fontSize: 12, color: '#22c55e', fontWeight: 500 }}>{stats.activeChurches} active</p>
         </div>
-        
-        <div className="platform-stat-card green">
-          <div className="platform-stat-icon">
-            <CheckCircle className="w-6 h-6" />
-          </div>
-          <div className="platform-stat-content">
-            <span className="platform-stat-value">{stats.activeChurches}</span>
-            <span className="platform-stat-label">Active Subscriptions</span>
-          </div>
+        <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: '16px 20px' }}>
+          <p style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Members</p>
+          <p style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>{stats.totalMembers.toLocaleString()}</p>
+          <p style={{ fontSize: 12, color: '#3b82f6', fontWeight: 500 }}>+{stats.recentSignups} this week</p>
         </div>
-        
-        <div className="platform-stat-card blue">
-          <div className="platform-stat-icon">
-            <Users className="w-6 h-6" />
-          </div>
-          <div className="platform-stat-content">
-            <span className="platform-stat-value">{stats.totalMembers.toLocaleString()}</span>
-            <span className="platform-stat-label">Total Members</span>
-          </div>
+        <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: '16px 20px' }}>
+          <p style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Platform GMV</p>
+          <p style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>{formatCurrency(stats.totalDonationsThisMonth)}</p>
+          <p style={{ fontSize: 12, color: '#64748b', fontWeight: 500 }}>Month to date</p>
         </div>
-        
-        <div className="platform-stat-card gold">
-          <div className="platform-stat-icon">
-            <DollarSign className="w-6 h-6" />
-          </div>
-          <div className="platform-stat-content">
-            <span className="platform-stat-value">{formatCurrency(stats.totalDonationsThisMonth)}</span>
-            <span className="platform-stat-label">Platform GMV (MTD)</span>
-          </div>
+        <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: '16px 20px' }}>
+          <p style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>MRR</p>
+          <p style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>{formatCurrency(stats.totalMrr)}</p>
+          <p style={{ fontSize: 12, color: '#22c55e', fontWeight: 500 }}>Recurring</p>
         </div>
-
-        <div className="platform-stat-card teal">
-          <div className="platform-stat-icon">
-            <TrendingUp className="w-6 h-6" />
-          </div>
-          <div className="platform-stat-content">
-            <span className="platform-stat-value">{formatCurrency(stats.totalMrr)}</span>
-            <span className="platform-stat-label">Monthly Recurring Revenue</span>
-          </div>
+        <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: '16px 20px' }}>
+          <p style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ARR</p>
+          <p style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>{formatCurrency(stats.totalArr)}</p>
+          <p style={{ fontSize: 12, color: '#a855f7', fontWeight: 500 }}>Annual run rate</p>
         </div>
-
-        <div className="platform-stat-card pink">
-          <div className="platform-stat-icon">
-            <Heart className="w-6 h-6" />
-          </div>
-          <div className="platform-stat-content">
-            <span className="platform-stat-value">{formatCurrency(stats.totalArr)}</span>
-            <span className="platform-stat-label">Annual Run Rate</span>
-          </div>
+        <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: '16px 20px' }}>
+          <p style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Organizations</p>
+          <p style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>{organizations.length}</p>
+          <p style={{ fontSize: 12, color: '#64748b', fontWeight: 500 }}>Multi-campus</p>
         </div>
       </div>
 
@@ -721,51 +702,66 @@ export default function PlatformDashboard() {
         <div className="platform-section">
           <div className="platform-section-header">
             <h2>Multi-Campus Organizations</h2>
-            <p className="section-description">Churches operating multiple campuses as separate tenants</p>
+            <p className="section-description">Billing: 1 Account = Multiple Campuses. Each org gets one invoice.</p>
           </div>
           {organizations.length === 0 ? (
             <div className="no-results-card">
               <Layers className="w-8 h-8 text-gray-400" />
               <p>No multi-campus organizations yet.</p>
-              <p className="text-sm text-gray-500">When churches add multiple campuses, they'll appear here for comparison.</p>
             </div>
           ) : (
-            <div className="org-cards-grid">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {organizations.map((org) => (
                 <div
                   key={org.organization_id}
-                  className="org-card"
-                  onClick={() => setSelectedOrg(org.organization_id)}
+                  style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}
                   data-testid={`org-card-${org.organization_id}`}
                 >
-                  <div className="org-card-header">
-                    <h3>{org.organization_name}</h3>
-                    <span className="org-campus-count">{org.campuses.length} campuses</span>
+                  {/* Org Header */}
+                  <div style={{ padding: '20px 24px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0f172a', margin: '0 0 4px 0' }}>{org.organization_name}</h3>
+                      <div style={{ display: 'flex', gap: 16, fontSize: 13, color: '#64748b' }}>
+                        <span><strong>{org.campuses.length}</strong> campuses</span>
+                        <span><strong>{org.total_members.toLocaleString()}</strong> total members</span>
+                        <span><strong>{formatCurrency(org.total_mrr)}</strong> MRR</span>
+                        <span style={{ color: '#a855f7', fontWeight: 600 }}>1 billing account</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setSelectedOrg(org.organization_id)}
+                      style={{ padding: '8px 16px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 13, fontWeight: 600, color: '#334155', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                    >
+                      Compare <ChevronRight className="w-4 h-4" />
+                    </button>
                   </div>
-                  <div className="org-card-stats">
-                    <div className="org-stat">
-                      <Users className="w-4 h-4" />
-                      <span>{org.total_members.toLocaleString()} members</span>
-                    </div>
-                    <div className="org-stat">
-                      <DollarSign className="w-4 h-4" />
-                      <span>{formatCurrency(org.total_mrr)} MRR</span>
-                    </div>
-                    <div className="org-stat">
-                      <TrendingUp className="w-4 h-4" />
-                      <span>{formatCurrency(org.total_mtd_giving)} /mo giving</span>
-                    </div>
-                  </div>
-                  <div className="org-campuses-list">
-                    {org.campuses.map((c) => (
-                      <div key={c.tenant_id} className="org-campus-pill">
-                        <MapPin className="w-3 h-3" /> {c.name}
+                  {/* Campus Rows */}
+                  <div>
+                    {org.campuses.map((c, idx) => (
+                      <div
+                        key={c.tenant_id}
+                        style={{
+                          display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
+                          padding: '12px 24px', fontSize: 13, alignItems: 'center',
+                          borderBottom: idx < org.campuses.length - 1 ? '1px solid #f1f5f9' : 'none',
+                          background: idx % 2 === 0 ? '#fff' : '#fafbfc'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <MapPin style={{ width: 14, height: 14, color: '#3b82f6' }} />
+                          <span style={{ fontWeight: 600, color: '#1e293b' }}>{c.name}</span>
+                        </div>
+                        <span style={{ color: '#64748b' }}>{c.member_count?.toLocaleString() || 0} members</span>
+                        <span style={{ color: '#64748b' }}>{formatCurrency(c.mrr || 0)} MRR</span>
+                        <span style={{ color: '#64748b' }}>{formatCurrency(c.mtd_giving || 0)} MTD</span>
+                        <button
+                          onClick={() => viewAsChurchAdmin({ id: c.tenant_id, name: c.name })}
+                          style={{ padding: '4px 12px', background: 'none', border: '1px solid #e2e8f0', borderRadius: 6, fontSize: 12, color: '#3b82f6', cursor: 'pointer', fontWeight: 500, justifySelf: 'end' }}
+                        >
+                          View
+                        </button>
                       </div>
                     ))}
-                  </div>
-                  <div className="org-card-footer">
-                    <span>View Comparison</span>
-                    <ChevronRight className="w-4 h-4" />
                   </div>
                 </div>
               ))}

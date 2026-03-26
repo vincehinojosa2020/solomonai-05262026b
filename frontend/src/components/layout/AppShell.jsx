@@ -376,7 +376,7 @@ export default function AppShell() {
                     >
                       <MapPin className="w-3 h-3 text-blue-600" />
                       <span className="text-xs font-semibold text-slate-700">
-                        {campusSwitching ? 'Switching...' : (user.active_tenant_name || tenant?.name || user.tenant_name || 'Campus')}
+                        {campusSwitching ? 'Switching...' : localStorage.getItem('campus_mode') === 'all' ? 'All Campuses' : (user.active_tenant_name || tenant?.name || user.tenant_name || 'Campus')}
                       </span>
                       <ChevronDown className="w-3 h-3 text-slate-400" />
                     </button>
@@ -386,12 +386,28 @@ export default function AppShell() {
                       {user.organization_name || 'Your Campuses'}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => {
+                        localStorage.setItem('campus_mode', 'all');
+                        navigate('/dashboard');
+                      }}
+                      className={`flex items-center gap-2 ${localStorage.getItem('campus_mode') === 'all' ? 'bg-purple-50 text-purple-700' : ''}`}
+                      data-testid="campus-option-all"
+                    >
+                      <Globe className="w-3.5 h-3.5 text-purple-600" />
+                      <span className="flex-1 text-sm font-semibold">All Campuses</span>
+                      {localStorage.getItem('campus_mode') === 'all' && <Check className="w-3.5 h-3.5 text-purple-600" />}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     {user.accessible_campuses.map((campus) => {
-                      const isActive = (user.active_tenant_id || user.tenant_id) === campus.id;
+                      const isActive = localStorage.getItem('campus_mode') !== 'all' && (user.active_tenant_id || user.tenant_id) === campus.id;
                       return (
                         <DropdownMenuItem 
                           key={campus.id}
-                          onClick={() => !isActive && switchCampus(campus.id)}
+                          onClick={() => {
+                            localStorage.removeItem('campus_mode');
+                            if (!isActive) switchCampus(campus.id);
+                          }}
                           className={`flex items-center gap-2 ${isActive ? 'bg-blue-50 text-blue-700' : ''}`}
                           data-testid={`campus-option-${campus.id}`}
                         >

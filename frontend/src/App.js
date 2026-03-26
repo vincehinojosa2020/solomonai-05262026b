@@ -61,6 +61,7 @@ import PortalDirectory from "@/pages/portal/PortalDirectory";
 import AdminCourseList from "@/pages/admin/AdminCourseList";
 import AdminCourseEditor from "@/pages/admin/AdminCourseEditor";
 import AdminCourseMembers from "@/pages/admin/AdminCourseMembers";
+import CSVMemberImport from "@/pages/admin/CSVMemberImport";
 import PortalCourses from "@/pages/portal/PortalCourses";
 import PortalCourseDetail from "@/pages/portal/PortalCourseDetail";
 import PortalLessonViewer from "@/pages/portal/PortalLessonViewer";
@@ -124,6 +125,7 @@ function AppRouter() {
         <Route path="/admin/courses" element={<AdminCourseList />} />
         <Route path="/admin/courses/:id/edit" element={<AdminCourseEditor />} />
         <Route path="/admin/courses/:id/members" element={<AdminCourseMembers />} />
+        <Route path="/admin/members/import" element={<CSVMemberImport />} />
       </Route>
       
       {/* Member Portal routes */}

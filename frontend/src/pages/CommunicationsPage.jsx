@@ -1,34 +1,38 @@
 import { useState, useEffect } from 'react';
-import { Mail, Plus, Send, FileText, Users, Clock, MessageSquare } from 'lucide-react';
+import { Mail, Send, FileText, Users, Clock, MessageSquare, Plus, Search, ChevronRight, Loader2, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { API_URL, formatDate } from '@/lib/utils';
-import SMSComposer from '@/components/modals/SMSComposer';
+import { toast } from 'sonner';
 
 export default function CommunicationsPage() {
   const [communications, setCommunications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('compose');
-  const [showSMSComposer, setShowSMSComposer] = useState(false);
+  const [sending, setSending] = useState(false);
   const [composeData, setComposeData] = useState({
     subject: '',
-    body_html: '',
-    recipients: [],
+    body: '',
+    channel: 'email',
+    recipient_type: 'all',
+    scheduled_at: '',
   });
 
-  useEffect(() => {
-    fetchCommunications();
-  }, []);
+  useEffect(() => { fetchCommunications(); }, []);
 
   const fetchCommunications = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/communications`);
-      const data = await response.json();
-      setCommunications(data);
+      const token = localStorage.getItem('session_token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      const response = await fetch(`${API_URL}/admin/communications/list`, { headers });
+      if (response.ok) {
+        const data = await response.json();
+        setCommunications(data.communications || []);
+      }
     } catch (error) {
       console.error('Failed to fetch communications:', error);
     } finally {
@@ -36,21 +40,63 @@ export default function CommunicationsPage() {
     }
   };
 
+  const handleSend = async () => {
+    if (!composeData.subject || !composeData.body) {
+      toast.error('Subject and body are required');
+      return;
+    }
+    setSending(true);
+    try {
+      const token = localStorage.getItem('session_token');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res = await fetch(`${API_URL}/admin/communications/send`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(composeData),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(data.message || 'Communication sent!');
+        setComposeData({ subject: '', body: '', channel: 'email', recipient_type: 'all', scheduled_at: '' });
+        fetchCommunications();
+        setActiveTab('sent');
+      } else {
+        const err = await res.json();
+        toast.error(err.detail || 'Failed to send');
+      }
+    } catch {
+      toast.error('Failed to send communication');
+    } finally {
+      setSending(false);
+    }
+  };
+
   const templates = [
-    { id: 1, name: 'Welcome Email', description: 'Send to new visitors' },
-    { id: 2, name: 'Prayer Request Follow-up', description: 'Pastoral care response' },
-    { id: 3, name: 'Event Invitation', description: 'Promote upcoming events' },
-    { id: 4, name: 'Giving Statement', description: 'Annual contribution summary' },
+    { id: 1, name: 'Welcome Email', description: 'Send to new visitors', subject: 'Welcome to {church_name}!', body: 'Hi {first_name},\n\nWe are so glad you visited! We hope you felt at home with us.' },
+    { id: 2, name: 'Prayer Request Follow-up', description: 'Pastoral care response', subject: 'Your Prayer Request', body: 'Hi {first_name},\n\nWe received your prayer request and our pastoral team is praying for you.' },
+    { id: 3, name: 'Event Invitation', description: 'Promote upcoming events', subject: 'You are Invited!', body: 'Hi {first_name},\n\nWe have an exciting event coming up and we would love for you to join us!' },
+    { id: 4, name: 'Giving Statement', description: 'Annual contribution summary', subject: 'Your {year} Giving Statement', body: 'Hi {first_name},\n\nThank you for your generous giving this year. Attached is your contribution statement.' },
+    { id: 5, name: 'Volunteer Appreciation', description: 'Thank your team', subject: 'Thank You, Volunteer!', body: 'Hi {first_name},\n\nYour service makes such a difference. Thank you for giving your time!' },
   ];
 
   const segments = [
-    { id: 1, name: 'All Active Members', count: 4287 },
-    { id: 2, name: 'New This Month', count: 127 },
-    { id: 3, name: 'Inactive 90+ Days', count: 47 },
-    { id: 4, name: 'Group Leaders', count: 84 },
-    { id: 5, name: 'Recurring Givers', count: 30 },
-    { id: 6, name: 'Upcoming Birthdays', count: 156 },
+    { id: 1, name: 'All Active Members', count: 4287, icon: Users },
+    { id: 2, name: 'New This Month', count: 127, icon: Plus },
+    { id: 3, name: 'Inactive 90+ Days', count: 47, icon: Clock },
+    { id: 4, name: 'Group Leaders', count: 84, icon: Users },
+    { id: 5, name: 'Recurring Givers', count: 30, icon: Users },
+    { id: 6, name: 'Upcoming Birthdays', count: 156, icon: Calendar },
   ];
+
+  const sentComms = communications.filter(c => c.status === 'sent');
+  const scheduledComms = communications.filter(c => c.status === 'scheduled');
+
+  const loadTemplate = (tpl) => {
+    setComposeData(prev => ({ ...prev, subject: tpl.subject, body: tpl.body }));
+    setActiveTab('compose');
+    toast.success(`Template "${tpl.name}" loaded`);
+  };
 
   return (
     <div className="space-y-4" data-testid="communications-page">
@@ -58,113 +104,157 @@ export default function CommunicationsPage() {
       <div className="page-header">
         <div>
           <h1 className="page-title">Communications</h1>
-          <p className="page-subtitle">Email and SMS messaging</p>
+          <p className="page-subtitle">Email, SMS, and messaging hub</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => setShowSMSComposer(true)} className="btn-secondary" data-testid="sms-btn">
-            <MessageSquare className="w-4 h-4 mr-1" />
-            Send SMS
-          </Button>
-          <Button className="btn-primary" data-testid="compose-email-btn">
+          <Button className="btn-primary" onClick={() => setActiveTab('compose')} data-testid="compose-email-btn">
             <Mail className="w-4 h-4 mr-1" />
-            New Email
+            Compose
           </Button>
+        </div>
+      </div>
+
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="bg-white border border-slate-200 p-4 rounded-lg">
+          <p className="text-2xl font-mono font-bold text-slate-900">{sentComms.length}</p>
+          <p className="text-xs text-slate-500 font-medium mt-1">Sent This Month</p>
+        </div>
+        <div className="bg-white border border-slate-200 p-4 rounded-lg">
+          <p className="text-2xl font-mono font-bold text-slate-900">{scheduledComms.length}</p>
+          <p className="text-xs text-slate-500 font-medium mt-1">Scheduled</p>
+        </div>
+        <div className="bg-white border border-slate-200 p-4 rounded-lg">
+          <p className="text-2xl font-mono font-bold text-slate-900">{templates.length}</p>
+          <p className="text-xs text-slate-500 font-medium mt-1">Templates</p>
+        </div>
+        <div className="bg-white border border-slate-200 p-4 rounded-lg">
+          <p className="text-2xl font-mono font-bold text-slate-900">{segments.length}</p>
+          <p className="text-xs text-slate-500 font-medium mt-1">Segments</p>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-white border border-slate-200 p-1">
           <TabsTrigger value="compose" data-testid="tab-compose">Compose</TabsTrigger>
-          <TabsTrigger value="sent" data-testid="tab-sent">Sent</TabsTrigger>
-          <TabsTrigger value="sms" data-testid="tab-sms">SMS</TabsTrigger>
+          <TabsTrigger value="sent" data-testid="tab-sent">Sent ({sentComms.length})</TabsTrigger>
+          <TabsTrigger value="scheduled" data-testid="tab-scheduled">Scheduled ({scheduledComms.length})</TabsTrigger>
           <TabsTrigger value="templates" data-testid="tab-templates">Templates</TabsTrigger>
           <TabsTrigger value="segments" data-testid="tab-segments">Segments</TabsTrigger>
         </TabsList>
 
         {/* Compose Tab */}
         <TabsContent value="compose" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Compose Form */}
-            <div className="bg-white border border-slate-200 p-4 space-y-4">
-              <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">New Email</h3>
-              
-              <div className="form-group">
-                <Label className="form-label">To</Label>
-                <Input 
-                  placeholder="Search members, groups, or select a segment..." 
-                  className="form-input"
-                  data-testid="recipients-input"
-                />
-                <p className="text-xs text-slate-400 mt-1">
-                  Start typing to search, or select from segments →
-                </p>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-2 bg-white border border-slate-200 p-5 rounded-lg space-y-4">
+              <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">New Message</h3>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setComposeData(p => ({ ...p, channel: 'email' }))}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${composeData.channel === 'email' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'}`}
+                  data-testid="channel-email"
+                >
+                  <Mail className="w-3.5 h-3.5" /> Email
+                </button>
+                <button
+                  onClick={() => setComposeData(p => ({ ...p, channel: 'sms' }))}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${composeData.channel === 'sms' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'}`}
+                  data-testid="channel-sms"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" /> SMS
+                </button>
               </div>
 
-              <div className="form-group">
-                <Label className="form-label">Subject</Label>
-                <Input 
-                  placeholder="Enter email subject..."
-                  className="form-input"
+              <div className="space-y-1">
+                <Label className="text-xs font-semibold text-slate-600 uppercase">Recipients</Label>
+                <select
+                  value={composeData.recipient_type}
+                  onChange={(e) => setComposeData(p => ({ ...p, recipient_type: e.target.value }))}
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-md"
+                  data-testid="recipients-select"
+                >
+                  <option value="all">All Active Members</option>
+                  <option value="new">New This Month</option>
+                  <option value="leaders">Group Leaders</option>
+                  <option value="givers">Recurring Givers</option>
+                  <option value="inactive">Inactive 90+ Days</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <Label className="text-xs font-semibold text-slate-600 uppercase">Subject</Label>
+                <Input
+                  placeholder="Enter subject..."
                   value={composeData.subject}
-                  onChange={(e) => setComposeData({ ...composeData, subject: e.target.value })}
+                  onChange={(e) => setComposeData(p => ({ ...p, subject: e.target.value }))}
                   data-testid="subject-input"
                 />
               </div>
 
-              <div className="form-group">
-                <Label className="form-label">Message</Label>
-                <Textarea 
+              <div className="space-y-1">
+                <Label className="text-xs font-semibold text-slate-600 uppercase">Message</Label>
+                <Textarea
                   placeholder="Write your message... Use {first_name} for personalization."
-                  className="form-input min-h-[160px] resize-none"
-                  value={composeData.body_html}
-                  onChange={(e) => setComposeData({ ...composeData, body_html: e.target.value })}
+                  className="min-h-[180px] resize-none"
+                  value={composeData.body}
+                  onChange={(e) => setComposeData(p => ({ ...p, body: e.target.value }))}
                   data-testid="body-input"
                 />
-                <p className="text-xs text-slate-400 mt-1">
-                  Merge fields: {'{first_name}'}, {'{last_name}'}, {'{giving_ytd}'}
-                </p>
+                <p className="text-xs text-slate-400">Merge fields: {'{first_name}'}, {'{last_name}'}, {'{church_name}'}</p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <Button variant="outline" className="btn-secondary" data-testid="save-draft-btn">Save Draft</Button>
-                <Button variant="outline" className="btn-secondary" data-testid="preview-btn">Preview</Button>
-                <Button className="btn-primary" data-testid="send-btn">
-                  <Send className="w-4 h-4 mr-1" />
-                  Send Now
+              <div className="space-y-1">
+                <Label className="text-xs font-semibold text-slate-600 uppercase">Schedule (Optional)</Label>
+                <Input
+                  type="datetime-local"
+                  value={composeData.scheduled_at}
+                  onChange={(e) => setComposeData(p => ({ ...p, scheduled_at: e.target.value }))}
+                  data-testid="schedule-input"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <Button
+                  onClick={handleSend}
+                  disabled={sending}
+                  className="btn-primary"
+                  data-testid="send-btn"
+                >
+                  {sending ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Send className="w-4 h-4 mr-1" />}
+                  {composeData.scheduled_at ? 'Schedule' : 'Send Now'}
                 </Button>
               </div>
             </div>
 
-            {/* Quick Segments */}
+            {/* Quick Templates sidebar */}
             <div className="space-y-4">
-              <div className="bg-white border border-slate-200 p-4">
-                <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-3">Quick Send Segments</h3>
-                <div className="space-y-1">
-                  {segments.map((segment) => (
+              <div className="bg-white border border-slate-200 p-4 rounded-lg">
+                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Quick Templates</h3>
+                <div className="space-y-1.5">
+                  {templates.slice(0, 4).map((tpl) => (
                     <button
-                      key={segment.id}
-                      className="w-full p-2.5 text-left border border-slate-200 hover:border-blue-300 hover:bg-slate-50 transition-colors"
-                      data-testid={`segment-${segment.id}`}
+                      key={tpl.id}
+                      onClick={() => loadTemplate(tpl)}
+                      className="w-full p-2.5 text-left border border-slate-200 rounded-md hover:border-slate-300 hover:bg-slate-50 transition-colors"
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-slate-700">{segment.name}</span>
-                        <span className="text-xs text-slate-500 font-mono">{segment.count.toLocaleString()}</span>
-                      </div>
+                      <p className="text-sm font-medium text-slate-700">{tpl.name}</p>
+                      <p className="text-xs text-slate-500">{tpl.description}</p>
                     </button>
                   ))}
                 </div>
               </div>
-
-              <div className="bg-white border border-slate-200 p-4">
-                <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-3">Quick Templates</h3>
-                <div className="space-y-1">
-                  {templates.slice(0, 3).map((template) => (
+              <div className="bg-white border border-slate-200 p-4 rounded-lg">
+                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Quick Segments</h3>
+                <div className="space-y-1.5">
+                  {segments.slice(0, 4).map((seg) => (
                     <button
-                      key={template.id}
-                      className="w-full p-2.5 text-left border border-slate-200 hover:border-blue-300 hover:bg-slate-50 transition-colors"
+                      key={seg.id}
+                      onClick={() => { setComposeData(p => ({ ...p, recipient_type: seg.name.toLowerCase().replace(/\s+/g, '_') })); }}
+                      className="w-full p-2.5 text-left border border-slate-200 rounded-md hover:border-slate-300 hover:bg-slate-50 transition-colors flex items-center justify-between"
                     >
-                      <p className="text-sm font-medium text-slate-700">{template.name}</p>
-                      <p className="text-xs text-slate-500">{template.description}</p>
+                      <span className="text-sm font-medium text-slate-700">{seg.name}</span>
+                      <span className="text-xs font-mono text-slate-500">{seg.count.toLocaleString()}</span>
                     </button>
                   ))}
                 </div>
@@ -175,44 +265,38 @@ export default function CommunicationsPage() {
 
         {/* Sent Tab */}
         <TabsContent value="sent">
-          <div className="data-table-container">
-            <table className="data-table">
-              <thead>
+          <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
-                  <th>Subject</th>
-                  <th>Status</th>
-                  <th>Recipients</th>
-                  <th>Sent</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Subject</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Channel</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Recipients</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Sent By</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Sent At</th>
                 </tr>
               </thead>
               <tbody>
-                {loading ? (
+                {sentComms.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="text-center py-8 text-slate-400">
-                      Loading...
-                    </td>
-                  </tr>
-                ) : communications.filter(c => c.status !== 'template').length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="text-center py-12 text-slate-400">
-                      No emails sent yet
+                    <td colSpan={5} className="text-center py-12 text-slate-400">
+                      <Mail className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                      <p className="text-sm">No messages sent yet</p>
                     </td>
                   </tr>
                 ) : (
-                  communications.filter(c => c.status !== 'template').map((comm) => (
-                    <tr key={comm.id}>
-                      <td className="font-medium text-slate-700">{comm.subject}</td>
-                      <td>
-                        <span className={`badge ${
-                          comm.status === 'sent' ? 'badge-active' :
-                          comm.status === 'draft' ? 'badge-pending' :
-                          'badge-inactive'
-                        }`}>
-                          {comm.status.charAt(0).toUpperCase() + comm.status.slice(1)}
+                  sentComms.map((comm) => (
+                    <tr key={comm.id} className="border-b border-slate-100 hover:bg-slate-50" data-testid={`sent-row-${comm.id}`}>
+                      <td className="px-4 py-3 font-medium text-slate-700">{comm.subject || '(No subject)'}</td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${comm.channel === 'sms' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700'}`}>
+                          {comm.channel === 'sms' ? <MessageSquare className="w-3 h-3" /> : <Mail className="w-3 h-3" />}
+                          {comm.channel?.toUpperCase() || 'EMAIL'}
                         </span>
                       </td>
-                      <td className="font-mono text-sm">{comm.recipient_count}</td>
-                      <td className="text-slate-500">{comm.sent_at ? formatDate(comm.sent_at) : '—'}</td>
+                      <td className="px-4 py-3 text-slate-500">{comm.recipient_type || 'All'}</td>
+                      <td className="px-4 py-3 text-slate-500">{comm.sent_by || '--'}</td>
+                      <td className="px-4 py-3 text-slate-500">{comm.sent_at ? new Date(comm.sent_at).toLocaleString() : '--'}</td>
                     </tr>
                   ))
                 )}
@@ -221,70 +305,61 @@ export default function CommunicationsPage() {
           </div>
         </TabsContent>
 
-        {/* SMS Tab */}
-        <TabsContent value="sms">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* SMS Stats */}
-            <div className="bg-white border border-slate-200 p-4">
-              <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">SMS Overview</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-3 bg-slate-50 border border-slate-200">
-                  <p className="text-2xl font-mono font-semibold text-slate-900">0</p>
-                  <p className="text-xs text-slate-500">Messages Sent (MTD)</p>
-                </div>
-                <div className="p-3 bg-slate-50 border border-slate-200">
-                  <p className="text-2xl font-mono font-semibold text-slate-900">98%</p>
-                  <p className="text-xs text-slate-500">Delivery Rate</p>
-                </div>
-                <div className="p-3 bg-slate-50 border border-slate-200">
-                  <p className="text-2xl font-mono font-semibold text-slate-900">4</p>
-                  <p className="text-xs text-slate-500">Templates</p>
-                </div>
-                <div className="p-3 bg-slate-50 border border-slate-200">
-                  <p className="text-2xl font-mono font-semibold text-slate-900">$0.00</p>
-                  <p className="text-xs text-slate-500">Cost (MTD)</p>
-                </div>
-              </div>
-              
-              <Button 
-                onClick={() => setShowSMSComposer(true)} 
-                className="btn-primary w-full mt-4"
-              >
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Compose SMS
-              </Button>
-            </div>
-
-            {/* Recent SMS */}
-            <div className="bg-white border border-slate-200 p-4">
-              <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">Recent SMS Activity</h3>
-              <div className="text-center py-12 text-slate-400">
-                <MessageSquare className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                <p className="text-sm">No SMS messages sent yet</p>
-                <p className="text-xs mt-1">Configure Twilio to enable SMS</p>
-              </div>
-            </div>
+        {/* Scheduled Tab */}
+        <TabsContent value="scheduled" data-testid="scheduled-tab">
+          <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Subject</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Channel</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Recipients</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Scheduled For</th>
+                </tr>
+              </thead>
+              <tbody>
+                {scheduledComms.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="text-center py-12 text-slate-400">
+                      <Clock className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                      <p className="text-sm">No scheduled messages</p>
+                      <p className="text-xs mt-1">Use the compose tab to schedule future messages</p>
+                    </td>
+                  </tr>
+                ) : (
+                  scheduledComms.map((comm) => (
+                    <tr key={comm.id} className="border-b border-slate-100 hover:bg-slate-50" data-testid={`scheduled-row-${comm.id}`}>
+                      <td className="px-4 py-3 font-medium text-slate-700">{comm.subject || '(No subject)'}</td>
+                      <td className="px-4 py-3">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-amber-50 text-amber-700">
+                          <Clock className="w-3 h-3" /> Scheduled
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-slate-500">{comm.recipient_type || 'All'}</td>
+                      <td className="px-4 py-3 text-slate-500">{comm.scheduled_at ? new Date(comm.scheduled_at).toLocaleString() : '--'}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </TabsContent>
 
         {/* Templates Tab */}
         <TabsContent value="templates">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            {templates.map((template) => (
-              <div 
-                key={template.id}
-                className="bg-white border border-slate-200 p-4 hover:border-blue-300 transition-colors"
-              >
-                <FileText className="w-6 h-6 text-blue-500 mb-2" />
-                <h3 className="text-sm font-semibold text-slate-700">{template.name}</h3>
-                <p className="text-xs text-slate-500 mt-1">{template.description}</p>
-                <Button variant="outline" size="sm" className="mt-3 btn-secondary text-xs">
-                  Use Template
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {templates.map((tpl) => (
+              <div key={tpl.id} className="bg-white border border-slate-200 p-5 rounded-lg hover:border-slate-300 transition-colors">
+                <FileText className="w-5 h-5 text-slate-400 mb-3" />
+                <h3 className="text-sm font-semibold text-slate-800">{tpl.name}</h3>
+                <p className="text-xs text-slate-500 mt-1 mb-3">{tpl.description}</p>
+                <Button variant="outline" size="sm" onClick={() => loadTemplate(tpl)} className="text-xs">
+                  Use Template <ChevronRight className="w-3 h-3 ml-1" />
                 </Button>
               </div>
             ))}
-            <button className="border border-dashed border-slate-300 p-4 hover:border-slate-400 transition-colors text-center">
-              <Plus className="w-6 h-6 text-slate-400 mx-auto mb-2" />
+            <button className="border border-dashed border-slate-300 p-5 rounded-lg hover:border-slate-400 transition-colors text-center">
+              <Plus className="w-5 h-5 text-slate-400 mx-auto mb-2" />
               <p className="text-xs font-medium text-slate-600">Create Template</p>
             </button>
           </div>
@@ -292,40 +367,29 @@ export default function CommunicationsPage() {
 
         {/* Segments Tab */}
         <TabsContent value="segments">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            {segments.map((segment) => (
-              <div 
-                key={segment.id}
-                className="bg-white border border-slate-200 p-4 hover:border-blue-300 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <Users className="w-5 h-5 text-blue-500" />
-                  <span className="text-xl font-mono font-semibold text-slate-900">
-                    {segment.count.toLocaleString()}
-                  </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {segments.map((seg) => (
+              <div key={seg.id} className="bg-white border border-slate-200 p-5 rounded-lg hover:border-slate-300 transition-colors">
+                <div className="flex items-center justify-between mb-3">
+                  <seg.icon className="w-5 h-5 text-slate-400" />
+                  <span className="text-xl font-mono font-bold text-slate-900">{seg.count.toLocaleString()}</span>
                 </div>
-                <h3 className="text-sm font-semibold text-slate-700">{segment.name}</h3>
+                <h3 className="text-sm font-semibold text-slate-800">{seg.name}</h3>
                 <div className="flex items-center gap-2 mt-3">
-                  <Button variant="outline" size="sm" className="btn-secondary text-xs flex-1">View</Button>
-                  <Button size="sm" className="btn-primary text-xs flex-1">
-                    <Mail className="w-3 h-3 mr-1" />
-                    Email
+                  <Button variant="outline" size="sm" className="text-xs flex-1">View</Button>
+                  <Button
+                    size="sm"
+                    className="btn-primary text-xs flex-1"
+                    onClick={() => { setComposeData(p => ({ ...p, recipient_type: seg.name })); setActiveTab('compose'); }}
+                  >
+                    <Mail className="w-3 h-3 mr-1" /> Email
                   </Button>
                 </div>
               </div>
             ))}
-            <button className="border border-dashed border-slate-300 p-4 hover:border-slate-400 transition-colors text-center">
-              <Plus className="w-6 h-6 text-slate-400 mx-auto mb-2" />
-              <p className="text-xs font-medium text-slate-600">Create Segment</p>
-            </button>
           </div>
         </TabsContent>
       </Tabs>
-
-      {/* SMS Composer Modal */}
-      {showSMSComposer && (
-        <SMSComposer onClose={() => setShowSMSComposer(false)} />
-      )}
     </div>
   );
 }

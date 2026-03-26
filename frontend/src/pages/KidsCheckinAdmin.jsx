@@ -60,10 +60,13 @@ export default function KidsCheckinAdmin() {
   const [lastCheckinCount, setLastCheckinCount] = useState(0);
   const [newCheckinAlert, setNewCheckinAlert] = useState(false);
   const [scannerActive, setScannerActive] = useState(false);
-  const [checkoutMode, setCheckoutMode] = useState('choose'); // choose | scan | manual
+  const [checkoutMode, setCheckoutMode] = useState('choose');
   const [scanResult, setScanResult] = useState(null);
   const scannerRef = useRef(null);
   const html5QrCodeRef = useRef(null);
+  const [showManualCheckin, setShowManualCheckin] = useState(false);
+  const [manualSearch, setManualSearch] = useState('');
+  const [manualClassroom, setManualClassroom] = useState('Sunday School');
   
   // New family registration form
   const [newFamily, setNewFamily] = useState({
@@ -187,7 +190,7 @@ export default function KidsCheckinAdmin() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         
-        body: JSON.stringify({ classroom: 'Sunday School' })
+        body: JSON.stringify({ classroom: manualClassroom || 'Sunday School' })
       });
       
       if (res.ok) {
@@ -199,6 +202,8 @@ export default function KidsCheckinAdmin() {
           </div>,
           { duration: 8000 }
         );
+        setShowManualCheckin(false);
+        setManualSearch('');
         fetchData();
       } else {
         const error = await res.json();
@@ -385,6 +390,15 @@ export default function KidsCheckinAdmin() {
           </div>
         </div>
         <div className="kca-header-right">
+          <button 
+            className="kca-register-btn"
+            onClick={() => setShowManualCheckin(true)}
+            data-testid="manual-checkin-btn"
+            style={{ background: '#3b82f6', borderColor: '#3b82f6' }}
+          >
+            <UserCheck className="w-5 h-5" />
+            + Manual Check-In
+          </button>
           <button 
             className="kca-register-btn"
             onClick={() => setShowRegisterFamily(true)}
@@ -842,6 +856,112 @@ export default function KidsCheckinAdmin() {
                   <CheckCircle2 className="w-5 h-5" />
                   Confirm Checkout
                 </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+        
+        
+        {/* Manual Check-In Modal */}
+        {showManualCheckin && (
+          <motion.div
+            className="kca-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowManualCheckin(false)}
+          >
+            <motion.div
+              className="kca-modal kca-register-modal"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              data-testid="manual-checkin-modal"
+            >
+              <div className="kca-modal-icon" style={{ background: '#eff6ff' }}>
+                <UserCheck className="w-10 h-10" style={{ color: '#3b82f6' }} />
+              </div>
+              <h2>Manual Check-In</h2>
+              <p className="kca-modal-subtitle">Search for a child and check them in directly</p>
+              
+              <div style={{ marginTop: 16 }}>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                  <input
+                    type="text"
+                    placeholder="Search child or parent name..."
+                    value={manualSearch}
+                    onChange={(e) => setManualSearch(e.target.value)}
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: 10, border: '2px solid #e2e8f0', fontSize: 14 }}
+                    data-testid="manual-checkin-search"
+                  />
+                  <select
+                    value={manualClassroom}
+                    onChange={(e) => setManualClassroom(e.target.value)}
+                    style={{ padding: '10px 14px', borderRadius: 10, border: '2px solid #e2e8f0', fontSize: 14 }}
+                    data-testid="manual-checkin-classroom"
+                  >
+                    <option>Sunday School</option>
+                    <option>Nursery</option>
+                    <option>Preschool</option>
+                    <option>Elementary</option>
+                    <option>Youth Room</option>
+                  </select>
+                </div>
+                
+                <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+                  {allKids.filter(kid => 
+                    !checkins.some(c => c.child_id === kid.id) &&
+                    (kid.name?.toLowerCase().includes(manualSearch.toLowerCase()) ||
+                     kid.parent_name?.toLowerCase().includes(manualSearch.toLowerCase()))
+                  ).map(kid => {
+                    const avatarStyle = getAvatarStyle(kid.name);
+                    return (
+                      <div key={kid.id} style={{
+                        display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px',
+                        borderRadius: 10, border: '1px solid #e2e8f0', marginBottom: 8,
+                        background: '#f8fafc'
+                      }} data-testid={`manual-kid-${kid.id}`}>
+                        <div style={{
+                          width: 40, height: 40, borderRadius: '50%', display: 'flex',
+                          alignItems: 'center', justifyContent: 'center', color: 'white',
+                          fontWeight: 700, fontSize: 16, background: avatarStyle.bg
+                        }}>
+                          {kid.name?.charAt(0)}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 600, fontSize: 14, color: '#1e293b' }}>{kid.name}</div>
+                          <div style={{ fontSize: 12, color: '#64748b' }}>{kid.parent_name} &middot; {formatAge(kid.birthdate)}</div>
+                        </div>
+                        <button
+                          onClick={() => handleDirectCheckin(kid)}
+                          style={{
+                            padding: '8px 16px', background: '#3b82f6', color: 'white',
+                            border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                          }}
+                          data-testid={`manual-checkin-kid-${kid.id}`}
+                        >
+                          <UserCheck style={{ width: 16, height: 16 }} />
+                          Check In
+                        </button>
+                      </div>
+                    );
+                  })}
+                  {allKids.filter(kid => 
+                    !checkins.some(c => c.child_id === kid.id) &&
+                    (kid.name?.toLowerCase().includes(manualSearch.toLowerCase()) ||
+                     kid.parent_name?.toLowerCase().includes(manualSearch.toLowerCase()))
+                  ).length === 0 && (
+                    <div style={{ textAlign: 'center', padding: 24, color: '#94a3b8' }}>
+                      No available children found
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className="kca-modal-actions" style={{ marginTop: 16 }}>
+                <button className="kca-modal-cancel" onClick={() => setShowManualCheckin(false)}>Close</button>
               </div>
             </motion.div>
           </motion.div>

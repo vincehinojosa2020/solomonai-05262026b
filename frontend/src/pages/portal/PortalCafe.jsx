@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Coffee, Search, Plus, Minus, X, ArrowRight, Clock } from 'lucide-react';
+import { Search, Plus, Minus, X, ArrowRight, Clock, ShoppingCart, MapPin, ChevronRight } from 'lucide-react';
 import { useOutletContext } from 'react-router-dom';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -37,7 +37,7 @@ export default function PortalCafe() {
   const [cartItems, setCartItems] = useState([]);
   const [pickupTime, setPickupTime] = useState('');
   const [orderNotes, setOrderNotes] = useState('');
-  const [offeringAmount, setOfferingAmount] = useState(0); // New: Offering amount
+  const [offeringAmount, setOfferingAmount] = useState(0);
 
   useEffect(() => {
     const fetchCafe = async () => {
@@ -65,9 +65,7 @@ export default function PortalCafe() {
 
   const categories = useMemo(() => {
     const set = new Set(['All']);
-    items.forEach((item) => {
-      if (item.category) set.add(item.category);
-    });
+    items.forEach((item) => { if (item.category) set.add(item.category); });
     return Array.from(set);
   }, [items]);
 
@@ -95,7 +93,7 @@ export default function PortalCafe() {
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const orderTotal = cartTotal + offeringAmount; // Total including offering
+  const orderTotal = cartTotal + offeringAmount;
 
   const addToCart = (item) => {
     setCartItems((prev) => {
@@ -117,250 +115,334 @@ export default function PortalCafe() {
   };
 
   const placeOrder = async () => {
-    if (!pickupTime) {
-      toast.error('Select a pickup time');
-      return;
-    }
-    if (cartItems.length === 0) {
-      toast.error('Your cart is empty');
-      return;
-    }
+    if (!pickupTime) { toast.error('Select a pickup time'); return; }
+    if (cartItems.length === 0) { toast.error('Your cart is empty'); return; }
     try {
       const res = await fetch(`${API_URL}/portal/cafe/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        
         body: JSON.stringify({
           pickup_time: pickupTime,
           notes: orderNotes,
           items: cartItems.map((item) => ({
-            item_id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            image_url: item.image_url,
+            item_id: item.id, name: item.name, price: item.price,
+            quantity: item.quantity, image_url: item.image_url,
           }))
         })
       });
       if (res.ok) {
-        toast.success('Cafe order placed!');
-        setCartItems([]);
-        setCartOpen(false);
-        setPickupTime('');
-        setOrderNotes('');
+        toast.success('Order placed successfully');
+        setCartItems([]); setCartOpen(false); setPickupTime(''); setOrderNotes('');
       } else {
         toast.error('Unable to place order');
       }
-    } catch (error) {
-      toast.error('Unable to place order');
-    }
+    } catch { toast.error('Unable to place order'); }
   };
 
   return (
-    <div className="portal-cafe" data-testid="portal-cafe-page">
-      <div className="portal-cafe-header">
-        <div>
-          <span className="portal-tag">Abundant Cafe</span>
-          <h1>Order Coffee for Sunday</h1>
-          <p>Skip the line and schedule pickup before service starts.</p>
-          {settings && (
-            <div className="portal-cafe-info" data-testid="cafe-info">
-              <span><Clock className="w-4 h-4" /> {settings.pickup_start} - {settings.pickup_end}</span>
-              <span>{settings.location || 'Lobby pickup counter'}</span>
-            </div>
-          )}
+    <div style={{ maxWidth: 960, margin: '0 auto', padding: '32px 20px' }} data-testid="portal-cafe-page">
+      {/* Header */}
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6b7280', marginBottom: 4 }}>Church Cafe</p>
+            <h1 style={{ fontSize: 28, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em', margin: 0 }} data-testid="cafe-title">
+              Pre-order for Sunday
+            </h1>
+            <p style={{ fontSize: 14, color: '#6b7280', marginTop: 4, lineHeight: 1.5 }}>
+              Skip the line. Schedule your pickup before service.
+            </p>
+          </div>
+          <button
+            onClick={() => setCartOpen(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px',
+              background: '#111827', color: 'white', border: 'none', borderRadius: 8,
+              fontSize: 14, fontWeight: 600, cursor: 'pointer', position: 'relative'
+            }}
+            data-testid="cafe-cart-button"
+          >
+            <ShoppingCart style={{ width: 16, height: 16 }} />
+            Cart
+            {cartCount > 0 && (
+              <span style={{
+                position: 'absolute', top: -6, right: -6, width: 20, height: 20,
+                background: '#3b82f6', borderRadius: '50%', fontSize: 11, fontWeight: 700,
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>{cartCount}</span>
+            )}
+          </button>
         </div>
-        <button className="portal-cafe-cart-btn" onClick={() => setCartOpen(true)} data-testid="cafe-cart-button">
-          <Coffee className="w-4 h-4" /> Cart ({cartCount})
-        </button>
+        {settings && (
+          <div style={{ display: 'flex', gap: 16, marginTop: 12 }} data-testid="cafe-info">
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#6b7280' }}>
+              <Clock style={{ width: 14, height: 14 }} /> {settings.pickup_start} - {settings.pickup_end}
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#6b7280' }}>
+              <MapPin style={{ width: 14, height: 14 }} /> {settings.location || 'Lobby pickup counter'}
+            </span>
+          </div>
+        )}
       </div>
 
       {settings && settings.is_active === false && (
-        <div className="portal-cafe-closed" data-testid="cafe-closed">Cafe ordering is currently paused.</div>
+        <div style={{ padding: '16px 20px', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 8, fontSize: 14, color: '#92400e', marginBottom: 24 }} data-testid="cafe-closed">
+          Cafe ordering is currently paused.
+        </div>
       )}
 
-      <div className="portal-cafe-controls">
-        <div className="portal-cafe-search">
-          <Search className="w-4 h-4" />
+      {/* Search & Categories */}
+      <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
+        <div style={{ position: 'relative', flex: '1 1 240px' }}>
+          <Search style={{ width: 16, height: 16, position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
           <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search menu"
+            placeholder="Search menu..."
+            style={{
+              width: '100%', padding: '10px 12px 10px 36px', border: '1px solid #e5e7eb',
+              borderRadius: 8, fontSize: 14, color: '#111827', background: '#ffffff',
+              outline: 'none'
+            }}
             data-testid="cafe-search-input"
           />
         </div>
-        <div className="portal-cafe-categories" data-testid="cafe-categories">
-          {categories.map((category) => (
+        <div style={{ display: 'flex', gap: 4 }} data-testid="cafe-categories">
+          {categories.map((cat) => (
             <button
-              key={category}
-              className={`portal-cafe-category ${activeCategory === category ? 'active' : ''}`}
-              onClick={() => setActiveCategory(category)}
-              data-testid={`cafe-category-${category.toLowerCase().replace(/\s+/g, '-')}`}
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              style={{
+                padding: '8px 16px', borderRadius: 6, border: '1px solid',
+                borderColor: activeCategory === cat ? '#111827' : '#e5e7eb',
+                background: activeCategory === cat ? '#111827' : '#ffffff',
+                color: activeCategory === cat ? '#ffffff' : '#374151',
+                fontSize: 13, fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s'
+              }}
+              data-testid={`cafe-category-${cat.toLowerCase().replace(/\s+/g, '-')}`}
             >
-              {category}
+              {cat}
             </button>
           ))}
         </div>
       </div>
 
+      {/* Items Grid */}
       {loading ? (
-        <div className="portal-cafe-empty" data-testid="cafe-loading">Loading menu...
-        </div>
+        <div style={{ textAlign: 'center', padding: 60, color: '#9ca3af' }} data-testid="cafe-loading">Loading menu...</div>
       ) : filteredItems.length === 0 ? (
-        <div className="portal-cafe-empty" data-testid="cafe-empty">No cafe items available yet.</div>
+        <div style={{ textAlign: 'center', padding: 60, color: '#9ca3af' }} data-testid="cafe-empty">No items available.</div>
       ) : (
-        <div className="portal-cafe-grid" data-testid="cafe-grid">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }} data-testid="cafe-grid">
           {filteredItems.map((item) => (
-            <div key={item.id} className="portal-cafe-card" data-testid={`cafe-item-${item.id}`}>
-              <div className="portal-cafe-image">
-                <img src={item.image_url || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80'} alt={item.name} />
-                {item.is_featured && <span className="portal-cafe-badge">Featured</span>}
+            <div
+              key={item.id}
+              style={{
+                border: '1px solid #e5e7eb', borderRadius: 10, overflow: 'hidden',
+                background: '#ffffff', transition: 'box-shadow 0.2s'
+              }}
+              data-testid={`cafe-item-${item.id}`}
+            >
+              <div style={{ height: 160, overflow: 'hidden', position: 'relative' }}>
+                <img
+                  src={item.image_url || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80'}
+                  alt={item.name}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                {item.is_featured && (
+                  <span style={{
+                    position: 'absolute', top: 10, left: 10, padding: '4px 10px',
+                    background: '#111827', color: '#fff', borderRadius: 4,
+                    fontSize: 11, fontWeight: 600, letterSpacing: '0.04em'
+                  }}>FEATURED</span>
+                )}
               </div>
-              <div className="portal-cafe-body">
-                <h3>{item.name}</h3>
-                <p>{item.description || 'Cafe favorite'}
+              <div style={{ padding: 16 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 600, color: '#111827', margin: '0 0 4px 0' }}>{item.name}</h3>
+                <p style={{ fontSize: 13, color: '#6b7280', margin: '0 0 12px 0', lineHeight: 1.4 }}>
+                  {item.description || 'A cafe favorite'}
                 </p>
-                <div className="portal-cafe-meta">
-                  <span>{formatCurrency(item.price || 0)}</span>
-                  <span>{item.category || 'General'}</span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>{formatCurrency(item.price || 0)}</span>
+                  <button
+                    onClick={() => addToCart(item)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px',
+                      background: '#111827', color: '#fff', border: 'none', borderRadius: 6,
+                      fontSize: 13, fontWeight: 600, cursor: 'pointer'
+                    }}
+                    data-testid={`cafe-add-${item.id}`}
+                  >
+                    Add <ArrowRight style={{ width: 14, height: 14 }} />
+                  </button>
                 </div>
-                <button
-                  className="portal-cafe-add"
-                  onClick={() => addToCart(item)}
-                  data-testid={`cafe-add-${item.id}`}
-                >
-                  Add to order
-                  <ArrowRight className="w-4 h-4" />
-                </button>
               </div>
             </div>
           ))}
         </div>
       )}
 
+      {/* Cart Sidebar */}
       {cartOpen && (
-        <div className="portal-cafe-cart" data-testid="cafe-cart">
-          <div className="portal-cafe-cart-header">
-            <h3>Your Cafe Order</h3>
-            <button onClick={() => setCartOpen(false)} data-testid="cafe-cart-close">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          {cartItems.length === 0 ? (
-            <div className="portal-cafe-empty" data-testid="cafe-cart-empty">Your cart is empty.</div>
-          ) : (
-            <div className="portal-cafe-cart-items">
-              {cartItems.map((item) => (
-                <div key={item.id} className="portal-cafe-cart-item" data-testid={`cafe-cart-item-${item.id}`}>
-                  <img src={item.image_url || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80'} alt={item.name} />
-                  <div>
-                    <strong>{item.name}</strong>
-                    <span>{formatCurrency(item.price)}</span>
-                  </div>
-                  <div className="portal-cafe-qty">
-                    <button onClick={() => updateQuantity(item.id, -1)} data-testid={`cafe-qty-minus-${item.id}`}>
-                      <Minus className="w-3 h-3" />
-                    </button>
-                    <span>{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, 1)} data-testid={`cafe-qty-plus-${item.id}`}>
-                      <Plus className="w-3 h-3" />
-                    </button>
-                  </div>
+        <>
+          <div
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 50 }}
+            onClick={() => setCartOpen(false)}
+          />
+          <div
+            style={{
+              position: 'fixed', top: 0, right: 0, bottom: 0, width: 420, maxWidth: '100vw',
+              background: '#ffffff', zIndex: 51, display: 'flex', flexDirection: 'column',
+              boxShadow: '-4px 0 24px rgba(0,0,0,0.08)'
+            }}
+            data-testid="cafe-cart"
+          >
+            {/* Cart Header */}
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111827', margin: 0 }}>Your Order</h3>
+              <button onClick={() => setCartOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }} data-testid="cafe-cart-close">
+                <X style={{ width: 20, height: 20 }} />
+              </button>
+            </div>
+
+            {/* Cart Items */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
+              {cartItems.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: 40, color: '#9ca3af' }} data-testid="cafe-cart-empty">
+                  <ShoppingCart style={{ width: 32, height: 32, margin: '0 auto 12px', opacity: 0.4 }} />
+                  <p style={{ fontSize: 14 }}>Your cart is empty</p>
                 </div>
-              ))}
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {cartItems.map((item) => (
+                    <div key={item.id} style={{
+                      display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0',
+                      borderBottom: '1px solid #f3f4f6'
+                    }} data-testid={`cafe-cart-item-${item.id}`}>
+                      <img
+                        src={item.image_url || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80'}
+                        alt={item.name}
+                        style={{ width: 56, height: 56, borderRadius: 8, objectFit: 'cover' }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: 0 }}>{item.name}</p>
+                        <p style={{ fontSize: 13, color: '#6b7280', margin: 0 }}>{formatCurrency(item.price)}</p>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f3f4f6', borderRadius: 6, padding: '4px 8px' }}>
+                        <button onClick={() => updateQuantity(item.id, -1)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#374151', padding: 2 }} data-testid={`cafe-qty-minus-${item.id}`}>
+                          <Minus style={{ width: 14, height: 14 }} />
+                        </button>
+                        <span style={{ fontSize: 14, fontWeight: 600, minWidth: 20, textAlign: 'center' }}>{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.id, 1)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#374151', padding: 2 }} data-testid={`cafe-qty-plus-${item.id}`}>
+                          <Plus style={{ width: 14, height: 14 }} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-          <div className="portal-cafe-pickup">
-            <label htmlFor="pickup-time">Pickup time</label>
-            <select
-              id="pickup-time"
-              value={pickupTime}
-              onChange={(e) => setPickupTime(e.target.value)}
-              data-testid="cafe-pickup-select"
-            >
-              <option value="">Select a pickup time</option>
-              {pickupSlots.map((slot) => (
-                <option key={slot} value={slot}>{slot}</option>
-              ))}
-            </select>
-          </div>
-          <div className="portal-cafe-notes">
-            <label htmlFor="cafe-notes">Order notes</label>
-            <textarea
-              id="cafe-notes"
-              value={orderNotes}
-              onChange={(e) => setOrderNotes(e.target.value)}
-              placeholder="Any special instructions?"
-              rows={2}
-              data-testid="cafe-notes-input"
-            />
-          </div>
 
-          {/* Giving Moment - "While You're Here" */}
-          <div className="portal-cafe-offering" data-testid="cafe-giving-nudge">
-            <div className="offering-header">
-              <span className="offering-label">While You're Here</span>
-              <span className="offering-subtitle">Would you like to add a gift to your church?</span>
-            </div>
-            <div className="offering-amounts">
-              {[5, 10, 20, 100].map((amount) => (
-                <button
-                  key={amount}
-                  className={`offering-btn ${offeringAmount === amount ? 'active' : ''}`}
-                  onClick={() => setOfferingAmount(offeringAmount === amount ? 0 : amount)}
-                  data-testid={`cafe-offering-${amount}`}
+            {/* Cart Footer */}
+            <div style={{ padding: '20px 24px', borderTop: '1px solid #e5e7eb', background: '#f9fafb' }}>
+              {/* Pickup Time */}
+              <div style={{ marginBottom: 12 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Pickup Time
+                </label>
+                <select
+                  value={pickupTime}
+                  onChange={(e) => setPickupTime(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: 6, fontSize: 14, background: '#fff' }}
+                  data-testid="cafe-pickup-select"
                 >
-                  ${amount}
-                </button>
-              ))}
-              <button
-                className={`offering-btn custom ${offeringAmount > 0 && ![5, 10, 20, 100].includes(offeringAmount) ? 'active' : ''}`}
-                onClick={() => {
-                  const custom = prompt('Enter custom gift amount:');
-                  if (custom && !isNaN(parseFloat(custom))) {
-                    setOfferingAmount(parseFloat(custom));
-                  }
-                }}
-                data-testid="cafe-offering-custom"
-              >
-                Custom
-              </button>
-              <button
-                className={`offering-btn skip ${offeringAmount === 0 ? 'active' : ''}`}
-                onClick={() => setOfferingAmount(0)}
-                data-testid="cafe-offering-skip"
-              >
-                Skip
-              </button>
-            </div>
-            {offeringAmount > 0 && (
-              <div className="offering-selected">
-                <span>Gift to Church: {formatCurrency(offeringAmount)}</span>
-                <button onClick={() => setOfferingAmount(0)} className="offering-remove">Remove</button>
+                  <option value="">Select time...</option>
+                  {pickupSlots.map((slot) => (<option key={slot} value={slot}>{slot}</option>))}
+                </select>
               </div>
-            )}
-          </div>
 
-          <div className="portal-cafe-cart-footer">
-            <div className="cart-subtotal">
-              <span>Order Subtotal</span>
-              <span>{formatCurrency(cartTotal)}</span>
-            </div>
-            {offeringAmount > 0 && (
-              <div className="cart-offering">
-                <span>Gift to Church</span>
-                <span>{formatCurrency(offeringAmount)}</span>
+              {/* Notes */}
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Notes
+                </label>
+                <textarea
+                  value={orderNotes}
+                  onChange={(e) => setOrderNotes(e.target.value)}
+                  placeholder="Special instructions..."
+                  rows={2}
+                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: 6, fontSize: 14, resize: 'none', background: '#fff' }}
+                  data-testid="cafe-notes-input"
+                />
               </div>
-            )}
-            <div className="cart-total">
-              <span>Total</span>
-              <strong data-testid="cafe-cart-total">{formatCurrency(orderTotal)}</strong>
+
+              {/* Giving Section */}
+              <div style={{ padding: '14px 16px', background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, marginBottom: 16 }} data-testid="cafe-giving-nudge">
+                <p style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Add a gift</p>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {[5, 10, 20, 50].map((amount) => (
+                    <button
+                      key={amount}
+                      onClick={() => setOfferingAmount(offeringAmount === amount ? 0 : amount)}
+                      style={{
+                        padding: '6px 14px', borderRadius: 6, fontSize: 13, fontWeight: 600,
+                        border: '1px solid', cursor: 'pointer',
+                        borderColor: offeringAmount === amount ? '#111827' : '#e5e7eb',
+                        background: offeringAmount === amount ? '#111827' : '#fff',
+                        color: offeringAmount === amount ? '#fff' : '#374151'
+                      }}
+                      data-testid={`cafe-offering-${amount}`}
+                    >
+                      ${amount}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setOfferingAmount(0)}
+                    style={{
+                      padding: '6px 14px', borderRadius: 6, fontSize: 13, fontWeight: 500,
+                      border: '1px solid #e5e7eb', cursor: 'pointer',
+                      background: offeringAmount === 0 ? '#f3f4f6' : '#fff',
+                      color: '#6b7280'
+                    }}
+                    data-testid="cafe-offering-skip"
+                  >
+                    Skip
+                  </button>
+                </div>
+              </div>
+
+              {/* Totals */}
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: '#6b7280', marginBottom: 4 }}>
+                  <span>Subtotal</span>
+                  <span>{formatCurrency(cartTotal)}</span>
+                </div>
+                {offeringAmount > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: '#6b7280', marginBottom: 4 }}>
+                    <span>Gift to Church</span>
+                    <span>{formatCurrency(offeringAmount)}</span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 16, fontWeight: 700, color: '#111827', paddingTop: 8, borderTop: '1px solid #e5e7eb' }}>
+                  <span>Total</span>
+                  <span data-testid="cafe-cart-total">{formatCurrency(orderTotal)}</span>
+                </div>
+              </div>
+
+              <button
+                onClick={placeOrder}
+                style={{
+                  width: '100%', padding: '14px 0', background: '#111827', color: '#ffffff',
+                  border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 700,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
+                }}
+                data-testid="cafe-checkout-btn"
+              >
+                Place Order <ChevronRight style={{ width: 16, height: 16 }} />
+              </button>
             </div>
-            <button className="portal-cafe-checkout" onClick={placeOrder} data-testid="cafe-checkout-btn">
-              {offeringAmount > 0 ? 'Place Order & Give' : 'Place Order'}
-            </button>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

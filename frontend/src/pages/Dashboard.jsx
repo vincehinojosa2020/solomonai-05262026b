@@ -4,7 +4,7 @@ import { usePolling } from '@/hooks/usePolling';
 import { 
   Users, UsersRound, Calendar, DollarSign, TrendingUp, 
   ArrowUpRight, ArrowDownRight, RefreshCw, Video, ExternalLink, 
-  CalendarCheck, AlertCircle, ShieldCheck, CircleAlert, CircleCheckBig
+  CalendarCheck, AlertCircle, ShieldCheck, CircleAlert, CircleCheckBig, Globe
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, 
@@ -104,6 +104,8 @@ export default function Dashboard() {
   const [launchHealth, setLaunchHealth] = useState(null);
   const [launchHealthLoading, setLaunchHealthLoading] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [aggregateMode, setAggregateMode] = useState(localStorage.getItem('campus_mode') === 'all');
+  const [aggregateData, setAggregateData] = useState(null);
 
   // Redirect platform admins to their dashboard
   useEffect(() => {
@@ -111,6 +113,26 @@ export default function Dashboard() {
       navigate('/platform', { replace: true });
     }
   }, [user, navigate]);
+
+  // Detect aggregate mode changes
+  useEffect(() => {
+    const checkMode = () => setAggregateMode(localStorage.getItem('campus_mode') === 'all');
+    checkMode();
+    window.addEventListener('storage', checkMode);
+    return () => window.removeEventListener('storage', checkMode);
+  }, []);
+
+  // Fetch aggregate data when in aggregate mode
+  useEffect(() => {
+    if (aggregateMode) {
+      const token = localStorage.getItem('session_token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      fetch(`${API_URL}/admin/dashboard/aggregate`, { headers })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => d && setAggregateData(d))
+        .catch(() => {});
+    }
+  }, [aggregateMode]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -214,6 +236,59 @@ export default function Dashboard() {
           </p>
         </div>
       </div>
+
+      {/* Aggregate Campus Banner */}
+      {aggregateMode && aggregateData && (
+        <div className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white p-5 rounded-lg" data-testid="aggregate-banner">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Globe className="w-6 h-6" />
+              <div>
+                <h2 className="text-lg font-bold">All Campuses Overview</h2>
+                <p className="text-purple-200 text-sm">{aggregateData.campus_count} campuses combined</p>
+              </div>
+            </div>
+            <button
+              onClick={() => { localStorage.removeItem('campus_mode'); setAggregateMode(false); }}
+              className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded text-sm font-medium transition-colors"
+              data-testid="exit-aggregate-btn"
+            >
+              Exit Aggregate View
+            </button>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="bg-white/10 rounded-lg p-3">
+              <p className="text-purple-200 text-xs font-medium">Total Members</p>
+              <p className="text-2xl font-bold">{(aggregateData.total_members || 0).toLocaleString()}</p>
+            </div>
+            <div className="bg-white/10 rounded-lg p-3">
+              <p className="text-purple-200 text-xs font-medium">Active Groups</p>
+              <p className="text-2xl font-bold">{aggregateData.total_groups || 0}</p>
+            </div>
+            <div className="bg-white/10 rounded-lg p-3">
+              <p className="text-purple-200 text-xs font-medium">Kids Checked In</p>
+              <p className="text-2xl font-bold">{aggregateData.total_kids_today || 0}</p>
+            </div>
+            <div className="bg-white/10 rounded-lg p-3">
+              <p className="text-purple-200 text-xs font-medium">MTD Giving</p>
+              <p className="text-2xl font-bold">{formatCurrency(aggregateData.total_giving_mtd || 0)}</p>
+            </div>
+          </div>
+          {aggregateData.campuses && aggregateData.campuses.length > 0 && (
+            <div className="mt-4 border-t border-white/20 pt-3">
+              <p className="text-xs font-semibold text-purple-200 mb-2">CAMPUS BREAKDOWN</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                {aggregateData.campuses.map(c => (
+                  <div key={c.id} className="flex items-center justify-between bg-white/10 rounded px-3 py-2 text-sm">
+                    <span className="font-medium">{c.name}</span>
+                    <span className="text-purple-200">{c.members.toLocaleString()} members</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* System Banner - Online Service */}
       <div className="system-banner" data-testid="system-banner">

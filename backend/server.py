@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Query, Request, Response, Cookie, UploadFile, File
+from fastapi import FastAPI, APIRouter, HTTPException, Query, Request, Response, Cookie, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -6992,6 +6992,239 @@ async def get_users_by_role(request: Request):
         rt = u.get("role_title") or ROLE_TEMPLATES.get(u.get("role", "member"), {}).get("role_title", "Member")
         grouped.setdefault(rt, []).append({"user_id": u.get("user_id"), "name": u.get("name"), "email": u.get("email"), "role": u.get("role"), "role_title": rt, "permissions": get_permissions_for_user(u)})
     return grouped
+
+
+# ============== CSV MEMBER IMPORT ==============
+
+@api_router.post("/admin/members/import/parse")
+async def parse_csv_for_import(request: Request, file: UploadFile = File(...)):
+    """Parse uploaded CSV and return headers + preview rows for column mapping."""
+    user = await get_current_admin_user(request)
+    import csv as _csv
+    import io as _io
+
+    content = await file.read()
+    try:
+        text = content.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        text = content.decode("latin-1")
+
+    reader = _csv.DictReader(_io.StringIO(text))
+    headers = reader.fieldnames or []
+    if not headers:
+        raise HTTPException(status_code=400, detail="CSV file has no headers")
+
+    preview_rows = []
+    for i, row in enumerate(reader):
+        if i >= 5:
+            break
+        preview_rows.append(dict(row))
+
+    # Count total rows
+    text_reader = _csv.DictReader(_io.StringIO(text))
+    total_rows = sum(1 for _ in text_reader)
+
+    return {
+        "headers": headers,
+        "preview": preview_rows,
+        "total_rows": total_rows,
+        "system_fields": [
+            {"key": "first_name", "label": "First Name", "required": True},
+            {"key": "last_name", "label": "Last Name", "required": True},
+            {"key": "email", "label": "Email", "required": False},
+            {"key": "mobile_phone", "label": "Phone", "required": False},
+            {"key": "gender", "label": "Gender", "required": False},
+            {"key": "date_of_birth", "label": "Date of Birth", "required": False},
+            {"key": "membership_status", "label": "Membership Status", "required": False},
+            {"key": "campus", "label": "Campus", "required": False},
+            {"key": "notes", "label": "Notes", "required": False},
+        ]
+    }
+
+@api_router.post("/admin/members/import/execute")
+async def execute_csv_import(request: Request, file: UploadFile = File(...), mapping: str = Form("{}")):
+    """Execute CSV import with provided column mapping."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    import csv as _csv
+    import io as _io
+    import json as _json
+
+    try:
+        col_map = _json.loads(mapping)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid mapping JSON")
+
+    content = await file.read()
+    try:
+        text = content.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        text = content.decode("latin-1")
+
+    reader = _csv.DictReader(_io.StringIO(text))
+    imported = 0
+    skipped = 0
+    errors = []
+
+    for i, row in enumerate(reader):
+        try:
+            first_name = row.get(col_map.get("first_name", ""), "").strip()
+            last_name = row.get(col_map.get("last_name", ""), "").strip()
+            email = row.get(col_map.get("email", ""), "").strip()
+
+            if not first_name and not last_name:
+                skipped += 1
+                continue
+
+            # Check duplicate by email if provided
+            if email:
+                existing = await db.people.find_one({"email": email, "tenant_id": tenant_id})
+                if existing:
+                    skipped += 1
+                    continue
+
+            person_id = str(uuid.uuid4())
+            person_doc = {
+                "id": person_id,
+                "tenant_id": tenant_id,
+                "first_name": first_name,
+                "last_name": last_name,
+                "email": email or None,
+                "mobile_phone": row.get(col_map.get("mobile_phone", ""), "").strip() or None,
+                "gender": row.get(col_map.get("gender", ""), "").strip() or None,
+                "date_of_birth": row.get(col_map.get("date_of_birth", ""), "").strip() or None,
+                "membership_status": row.get(col_map.get("membership_status", ""), "").strip() or "visitor",
+                "campus": row.get(col_map.get("campus", ""), "").strip() or None,
+                "notes": row.get(col_map.get("notes", ""), "").strip() or None,
+                "engagement_score": 0,
+                "ytd_giving": 0.0,
+                "lifetime_giving": 0.0,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            }
+
+            await db.people.insert_one(person_doc)
+            imported += 1
+        except Exception as exc:
+            errors.append({"row": i + 2, "error": str(exc)})
+
+    # Log activity
+    await db.activity_log.insert_one({
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "action": "csv_import",
+        "description": f"CSV Import: {imported} members imported, {skipped} skipped by {user.get('name', 'Admin')}",
+        "entity_type": "import",
+        "entity_id": str(uuid.uuid4()),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+
+    return {
+        "imported": imported,
+        "skipped": skipped,
+        "errors": errors[:10],
+        "total_processed": imported + skipped + len(errors)
+    }
+
+# ============== AGGREGATE CAMPUS DASHBOARD ==============
+
+@api_router.get("/admin/dashboard/aggregate")
+async def get_aggregate_dashboard(request: Request):
+    """Return aggregate stats across all accessible campuses for multi-campus admins."""
+    user = await get_current_admin_user(request)
+    accessible = user.get("accessible_campuses") or []
+    campus_ids = [c.get("id") for c in accessible if c.get("id")]
+
+    if not campus_ids:
+        campus_ids = [user.get("tenant_id") or DEFAULT_TENANT_ID]
+
+    total_members = 0
+    total_groups = 0
+    total_kids_today = 0
+    total_giving_mtd = 0
+    campus_breakdown = []
+
+    for cid in campus_ids:
+        members = await db.users.count_documents({"tenant_id": cid, "role": "member"})
+        groups = await db.groups.count_documents({"tenant_id": cid, "is_active": True})
+        kids = await db.checkins.count_documents({"tenant_id": cid, "status": "checked_in"})
+
+        cached = await db.dashboard_stats_cache.find_one({"tenant_id": cid}, {"_id": 0})
+        mtd_giving = cached.get("mtd_giving", 0) if cached else 0
+
+        tenant_doc = await db.tenants.find_one({"id": cid}, {"_id": 0, "name": 1})
+        campus_name = tenant_doc.get("name", cid) if tenant_doc else cid
+
+        total_members += members
+        total_groups += groups
+        total_kids_today += kids
+        total_giving_mtd += mtd_giving
+
+        campus_breakdown.append({
+            "id": cid,
+            "name": campus_name,
+            "members": members,
+            "groups": groups,
+            "kids_checked_in": kids,
+            "mtd_giving": mtd_giving,
+        })
+
+    return {
+        "total_members": total_members,
+        "total_groups": total_groups,
+        "total_kids_today": total_kids_today,
+        "total_giving_mtd": total_giving_mtd,
+        "campuses": campus_breakdown,
+        "campus_count": len(campus_ids),
+    }
+
+# ============== COMMUNICATIONS ENHANCED ==============
+
+@api_router.post("/admin/communications/send")
+async def send_communication(request: Request, payload: dict):
+    """Send email/SMS communication (Twilio-ready stub)."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    channel = payload.get("channel", "email")
+    subject = payload.get("subject", "")
+    body = payload.get("body", "")
+    recipient_type = payload.get("recipient_type", "all")
+    scheduled_at = payload.get("scheduled_at")
+
+    comm_id = str(uuid.uuid4())
+    doc = {
+        "id": comm_id,
+        "tenant_id": tenant_id,
+        "channel": channel,
+        "subject": subject,
+        "body": body,
+        "recipient_type": recipient_type,
+        "status": "scheduled" if scheduled_at else "sent",
+        "scheduled_at": scheduled_at,
+        "sent_at": None if scheduled_at else datetime.now(timezone.utc).isoformat(),
+        "sent_by": user.get("name", "Admin"),
+        "sent_by_id": user.get("user_id"),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+    await db.communications.insert_one(doc)
+    doc.pop("_id", None)
+
+    return {"message": f"Communication {'scheduled' if scheduled_at else 'sent'} successfully", "communication": doc}
+
+@api_router.get("/admin/communications/list")
+async def list_communications(request: Request, status: str = None, limit: int = 50):
+    """List sent/scheduled communications."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    query = {"tenant_id": tenant_id}
+    if status:
+        query["status"] = status
+
+    docs = await db.communications.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    return {"communications": docs}
+
 
 @api_router.get("/admin/members/{user_id}/permissions")
 async def get_member_permissions(request: Request, user_id: str):
