@@ -1,5 +1,17 @@
 # Solomon AI — Changelog
 
+## March 26, 2026 (Landing Page Refinements)
+
+### Landing Page — Targeted Copy & Design Updates
+- Hero reverted to clean white background with centered "Your Church. One App. Zero Compromise."
+- Stats bar reduced to exactly 3 stats: 64,500 Members Engaged, $151M+ Given in 2026, 140+ Active Small Groups
+- All live data widgets, church count, kids/cafe stats removed from public page
+- Feature cards rewritten with Frank Luntz-standard copy (Give, Watch, Check-In, Groups, Events, Ask Solomon)
+- CTA section: "The future of your church starts with one decision."
+- Nav updated: Pricing | Watch Demo | Login
+- "Join Waitlist" button fixed (padding, whitespace: nowrap)
+- Footer credit: "Built on Google Cloud Platform · Powered by Anthropic"
+
 ## March 26, 2026 (Fork Session - Quality Improvements)
 
 ### 7E: Attendance Streaks Seed
