@@ -17,4 +17,4 @@
 - Password: Demo2026!
 
 ## API URL
-- Preview: https://solomon-demo-2.preview.emergentagent.com
+- Preview: https://phase3-preview-2.preview.emergentagent.com

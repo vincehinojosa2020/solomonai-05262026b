@@ -38,6 +38,7 @@ const navItems = [
   ]},
   { section: 'MINISTRY', items: [
     { name: 'Services', path: '/services', icon: Music },
+    { name: 'Song Library', path: '/songs', icon: Music },
     { name: 'Volunteers', path: '/volunteers', icon: HandHeart },
     { name: 'Courses', path: '/admin/courses', icon: GraduationCap },
     { name: 'Groups', path: '/admin/groups', icon: UsersRound },

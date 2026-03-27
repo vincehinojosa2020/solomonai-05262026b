@@ -68,6 +68,8 @@ import WorkflowsPage from "@/pages/WorkflowsPage";
 import FormsPage from "@/pages/FormsPage";
 import DuplicatesPage from "@/pages/DuplicatesPage";
 import SmartListsPage from "@/pages/SmartListsPage";
+import SongLibraryPage from "@/pages/SongLibraryPage";
+import MusicStandPage from "@/pages/MusicStandPage";
 import PortalCourses from "@/pages/portal/PortalCourses";
 import PortalCourseDetail from "@/pages/portal/PortalCourseDetail";
 import PortalLessonViewer from "@/pages/portal/PortalLessonViewer";
@@ -138,7 +140,9 @@ function AppRouter() {
         <Route path="/forms" element={<FormsPage />} />
         <Route path="/people/duplicates" element={<DuplicatesPage />} />
         <Route path="/smart-lists" element={<SmartListsPage />} />
+        <Route path="/songs" element={<SongLibraryPage />} />
       </Route>
+      <Route path="/music-stand/:planId" element={<MusicStandPage />} />
       
       {/* Member Portal routes */}
       <Route path="/portal" element={<PortalLayout />}>

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, Link } from 'react-router-dom';
 import {
   Music, Plus, Calendar, Clock, Users, ChevronDown, ChevronUp,
-  GripVertical, Trash2, Edit2, Save, ListMusic, Mic2, BookOpen
+  GripVertical, Trash2, Edit2, Save, ListMusic, Mic2, BookOpen,
+  Copy, Bookmark, ExternalLink
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,11 +42,20 @@ export default function ServicesPage() {
   const [newPlan, setNewPlan] = useState({ title: '', date: '', service_type: 'sunday_morning' });
   const [editingItem, setEditingItem] = useState(null);
   const [itemForm, setItemForm] = useState({ title: '', type: 'song', duration: '', notes: '', leader: '' });
+  const [templates, setTemplates] = useState([]);
+  const [showTemplates, setShowTemplates] = useState(false);
 
   const token = localStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
-  useEffect(() => { fetchPlans(); }, []);
+  useEffect(() => { fetchPlans(); fetchTemplates(); }, []);
+
+  const fetchTemplates = async () => {
+    try {
+      const res = await fetch(`${API_URL}/admin/services/templates`, { headers: authHeaders });
+      if (res.ok) { const d = await res.json(); setTemplates(d.templates || []); }
+    } catch {}
+  };
 
   const fetchPlans = async () => {
     try {
@@ -122,6 +132,37 @@ export default function ServicesPage() {
     } catch (err) { toast.error('Failed to update status'); }
   };
 
+  const saveAsTemplate = async (plan) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/services/templates`, {
+        method: 'POST', headers: authHeaders,
+        body: JSON.stringify({ name: plan.title, items: plan.items || [], service_type: plan.service_type })
+      });
+      if (res.ok) { toast.success('Saved as template'); fetchTemplates(); }
+    } catch { toast.error('Failed to save template'); }
+  };
+
+  const duplicatePlan = async (planId) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/services/plans/${planId}/duplicate`, {
+        method: 'POST', headers: authHeaders, body: JSON.stringify({})
+      });
+      if (res.ok) { toast.success('Plan duplicated'); fetchPlans(); }
+    } catch { toast.error('Failed to duplicate'); }
+  };
+
+  const createFromTemplate = async (templateId) => {
+    const date = prompt('Service date (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
+    if (!date) return;
+    try {
+      const res = await fetch(`${API_URL}/admin/services/plans/from-template`, {
+        method: 'POST', headers: authHeaders,
+        body: JSON.stringify({ template_id: templateId, date })
+      });
+      if (res.ok) { toast.success('Plan created from template'); setShowTemplates(false); fetchPlans(); }
+    } catch { toast.error('Failed to create from template'); }
+  };
+
   const getItemIcon = (type) => {
     const found = ITEM_TYPES.find(t => t.value === type);
     return found ? found.icon : ListMusic;
@@ -149,10 +190,17 @@ export default function ServicesPage() {
           <h1 className="page-title">Services</h1>
           <p className="page-subtitle">Plan worship services, assign teams, and build your run-of-show</p>
         </div>
-        <Button className="btn-primary" onClick={() => setShowCreate(true)} data-testid="create-service-plan-btn">
-          <Plus className="w-4 h-4 mr-2" />
-          New Service Plan
-        </Button>
+        <div className="flex gap-2">
+          {templates.length > 0 && (
+            <Button variant="outline" onClick={() => setShowTemplates(true)} data-testid="from-template-btn">
+              <Bookmark className="w-4 h-4 mr-2" /> From Template
+            </Button>
+          )}
+          <Button className="btn-primary" onClick={() => setShowCreate(true)} data-testid="create-service-plan-btn">
+            <Plus className="w-4 h-4 mr-2" />
+            New Service Plan
+          </Button>
+        </div>
       </div>
 
       {/* Plans List */}
@@ -219,6 +267,18 @@ export default function ServicesPage() {
                           {s}
                         </Button>
                       ))}
+                      <div style={{ borderLeft: '1px solid #e5e7eb', height: 20, margin: '0 4px' }} />
+                      <Button size="sm" variant="outline" onClick={() => duplicatePlan(plan.id)} title="Duplicate plan" data-testid={`duplicate-plan-${plan.id}`}>
+                        <Copy className="w-3.5 h-3.5 mr-1" /> Duplicate
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => saveAsTemplate(plan)} title="Save as template" data-testid={`save-template-${plan.id}`}>
+                        <Bookmark className="w-3.5 h-3.5 mr-1" /> Save Template
+                      </Button>
+                      <Link to={`/music-stand/${plan.id}`} target="_blank" style={{ textDecoration: 'none' }}>
+                        <Button size="sm" variant="outline" title="Open Music Stand" data-testid={`music-stand-${plan.id}`}>
+                          <ExternalLink className="w-3.5 h-3.5 mr-1" /> Music Stand
+                        </Button>
+                      </Link>
                     </div>
 
                     {/* Items List */}
