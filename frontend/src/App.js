@@ -63,6 +63,11 @@ import AdminCourseList from "@/pages/admin/AdminCourseList";
 import AdminCourseEditor from "@/pages/admin/AdminCourseEditor";
 import AdminCourseMembers from "@/pages/admin/AdminCourseMembers";
 import CSVMemberImport from "@/pages/admin/CSVMemberImport";
+import CalendarApprovals from "@/pages/CalendarApprovals";
+import WorkflowsPage from "@/pages/WorkflowsPage";
+import FormsPage from "@/pages/FormsPage";
+import DuplicatesPage from "@/pages/DuplicatesPage";
+import SmartListsPage from "@/pages/SmartListsPage";
 import PortalCourses from "@/pages/portal/PortalCourses";
 import PortalCourseDetail from "@/pages/portal/PortalCourseDetail";
 import PortalLessonViewer from "@/pages/portal/PortalLessonViewer";
@@ -128,6 +133,11 @@ function AppRouter() {
         <Route path="/admin/courses/:id/edit" element={<AdminCourseEditor />} />
         <Route path="/admin/courses/:id/members" element={<AdminCourseMembers />} />
         <Route path="/admin/members/import" element={<CSVMemberImport />} />
+        <Route path="/calendar/approvals" element={<CalendarApprovals />} />
+        <Route path="/workflows" element={<WorkflowsPage />} />
+        <Route path="/forms" element={<FormsPage />} />
+        <Route path="/people/duplicates" element={<DuplicatesPage />} />
+        <Route path="/smart-lists" element={<SmartListsPage />} />
       </Route>
       
       {/* Member Portal routes */}

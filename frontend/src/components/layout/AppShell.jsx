@@ -5,7 +5,7 @@ import {
   CheckSquare, DollarSign, Mail, BarChart3, Settings, 
   Building2, Search, Bell, ChevronLeft, Menu, Command,
   LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, MessageSquare, Coffee, Code, Baby, Zap, Shield,
-  ChevronDown, MapPin, Check, Music, HandHeart
+  ChevronDown, MapPin, Check, Music, HandHeart, GitBranch, FileText, ListFilter, Merge
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -29,6 +29,10 @@ const navItems = [
   { section: 'PEOPLE', items: [
     { name: 'Members', path: '/people', icon: Users },
     { name: 'Households', path: '/households', icon: Home },
+    { name: 'Workflows', path: '/workflows', icon: GitBranch },
+    { name: 'Forms', path: '/forms', icon: FileText },
+    { name: 'Smart Lists', path: '/smart-lists', icon: ListFilter },
+    { name: 'Duplicates', path: '/people/duplicates', icon: Merge },
     { name: 'Meetings', path: '/meetings', icon: Calendar },
     { name: 'Notes', path: '/notes', icon: MessageSquare },
   ]},
@@ -38,6 +42,7 @@ const navItems = [
     { name: 'Courses', path: '/admin/courses', icon: GraduationCap },
     { name: 'Groups', path: '/admin/groups', icon: UsersRound },
     { name: 'Events', path: '/admin/events', icon: Calendar },
+    { name: 'Approvals', path: '/calendar/approvals', icon: CheckSquare },
     { name: 'Kids Check-in', path: '/kids-checkin', icon: Baby },
     { name: 'Attendance', path: '/attendance', icon: CheckSquare },
   ]},

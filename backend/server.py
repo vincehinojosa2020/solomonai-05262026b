@@ -8714,6 +8714,589 @@ async def delete_event(request: Request, event_id: str):
     
     return {"message": "Event deleted successfully"}
 
+
+# ============== PHASE 2: CALENDAR APPROVALS ==============
+
+class RoomBookingRequest(BaseModel):
+    event_name: str
+    description: Optional[str] = None
+    event_date: str
+    start_time: str
+    end_time: str
+    room_id: str
+    room_name: Optional[str] = None
+    campus_id: Optional[str] = None
+    requested_by: Optional[str] = None
+    notes: Optional[str] = None
+    recurrence: Optional[str] = None
+
+class ApprovalDecision(BaseModel):
+    decision: str  # "approved" or "rejected"
+    notes: Optional[str] = None
+
+@api_router.post("/admin/calendar/booking-requests")
+async def create_booking_request(request: Request, payload: RoomBookingRequest):
+    """Create a room booking request that needs approval"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    booking = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "event_name": payload.event_name,
+        "description": payload.description,
+        "event_date": payload.event_date,
+        "start_time": payload.start_time,
+        "end_time": payload.end_time,
+        "room_id": payload.room_id,
+        "room_name": payload.room_name or "Main Room",
+        "campus_id": payload.campus_id,
+        "requested_by": user.get("name", "Unknown"),
+        "requested_by_id": user.get("user_id"),
+        "notes": payload.notes,
+        "status": "pending",
+        "conflicts": [],
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    # Check for conflicts
+    conflicts = await db.booking_requests.find({
+        "tenant_id": tenant_id,
+        "room_id": payload.room_id,
+        "event_date": payload.event_date,
+        "status": {"$in": ["pending", "approved"]},
+    }, {"_id": 0}).to_list(100)
+    conflict_list = []
+    for existing in conflicts:
+        if (payload.start_time < existing.get("end_time", "24:00") and
+            payload.end_time > existing.get("start_time", "00:00")):
+            conflict_list.append({
+                "id": existing["id"],
+                "event_name": existing["event_name"],
+                "start_time": existing["start_time"],
+                "end_time": existing["end_time"],
+                "status": existing["status"]
+            })
+    booking["conflicts"] = conflict_list
+    booking["has_conflicts"] = len(conflict_list) > 0
+    await db.booking_requests.insert_one(booking)
+    return {
+        "id": booking["id"],
+        "status": "pending",
+        "has_conflicts": booking["has_conflicts"],
+        "conflicts": conflict_list,
+        "message": "Booking request submitted for approval" + (" (conflicts detected)" if conflict_list else "")
+    }
+
+@api_router.get("/admin/calendar/approvals")
+async def get_calendar_approvals(request: Request, status: Optional[str] = None, campus_id: Optional[str] = None):
+    """Get room booking requests pending approval"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    query = {"tenant_id": tenant_id}
+    if status:
+        query["status"] = status
+    if campus_id:
+        query["campus_id"] = campus_id
+    bookings = await db.booking_requests.find(query, {"_id": 0}).sort("created_at", -1).to_list(200)
+    counts = {
+        "pending": await db.booking_requests.count_documents({"tenant_id": tenant_id, "status": "pending"}),
+        "approved": await db.booking_requests.count_documents({"tenant_id": tenant_id, "status": "approved"}),
+        "rejected": await db.booking_requests.count_documents({"tenant_id": tenant_id, "status": "rejected"}),
+    }
+    return {"bookings": bookings, "counts": counts}
+
+@api_router.post("/admin/calendar/approvals/{booking_id}")
+async def decide_booking(request: Request, booking_id: str, payload: ApprovalDecision):
+    """Approve or reject a booking request"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    if payload.decision not in ["approved", "rejected"]:
+        raise HTTPException(status_code=400, detail="Decision must be 'approved' or 'rejected'")
+    result = await db.booking_requests.update_one(
+        {"id": booking_id, "tenant_id": tenant_id},
+        {"$set": {
+            "status": payload.decision,
+            "decided_by": user.get("name", "Admin"),
+            "decided_at": datetime.now(timezone.utc).isoformat(),
+            "decision_notes": payload.notes,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Booking request not found")
+    if payload.decision == "approved":
+        booking = await db.booking_requests.find_one({"id": booking_id}, {"_id": 0})
+        if booking:
+            event = {
+                "id": str(uuid.uuid4()),
+                "tenant_id": tenant_id,
+                "name": booking["event_name"],
+                "description": booking.get("description", ""),
+                "event_date": booking["event_date"],
+                "start_time": booking.get("start_time"),
+                "end_time": booking.get("end_time"),
+                "location": booking.get("room_name", ""),
+                "room_id": booking.get("room_id"),
+                "capacity": 100,
+                "is_public": True,
+                "requires_registration": False,
+                "registration_count": 0,
+                "booking_id": booking_id,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.events.insert_one(event)
+    return {"message": f"Booking {payload.decision}", "status": payload.decision}
+
+@api_router.post("/admin/calendar/approvals/bulk")
+async def bulk_decide_bookings(request: Request, payload: dict):
+    """Bulk approve or reject multiple booking requests"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    booking_ids = payload.get("booking_ids", [])
+    decision = payload.get("decision", "")
+    if decision not in ["approved", "rejected"]:
+        raise HTTPException(status_code=400, detail="Decision must be 'approved' or 'rejected'")
+    updated = 0
+    for bid in booking_ids:
+        r = await db.booking_requests.update_one(
+            {"id": bid, "tenant_id": tenant_id, "status": "pending"},
+            {"$set": {
+                "status": decision,
+                "decided_by": user.get("name", "Admin"),
+                "decided_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        if r.modified_count > 0:
+            updated += 1
+            if decision == "approved":
+                bk = await db.booking_requests.find_one({"id": bid}, {"_id": 0})
+                if bk:
+                    await db.events.insert_one({
+                        "id": str(uuid.uuid4()), "tenant_id": tenant_id,
+                        "name": bk["event_name"], "description": bk.get("description", ""),
+                        "event_date": bk["event_date"], "start_time": bk.get("start_time"),
+                        "end_time": bk.get("end_time"), "location": bk.get("room_name", ""),
+                        "room_id": bk.get("room_id"), "capacity": 100,
+                        "is_public": True, "requires_registration": False,
+                        "registration_count": 0, "booking_id": bid,
+                        "created_at": datetime.now(timezone.utc).isoformat()
+                    })
+    return {"message": f"{updated} bookings {decision}", "updated": updated}
+
+@api_router.get("/admin/calendar/conflicts")
+async def get_calendar_conflicts(request: Request, date: Optional[str] = None):
+    """Detect room booking conflicts"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    query = {"tenant_id": tenant_id, "status": {"$in": ["pending", "approved"]}}
+    if date:
+        query["event_date"] = date
+    bookings = await db.booking_requests.find(query, {"_id": 0}).to_list(500)
+    conflicts = []
+    for i, a in enumerate(bookings):
+        for b in bookings[i+1:]:
+            if (a["room_id"] == b["room_id"] and a["event_date"] == b["event_date"] and
+                a["start_time"] < b.get("end_time", "24:00") and
+                a["end_time"] > b.get("start_time", "00:00")):
+                conflicts.append({
+                    "room_id": a["room_id"],
+                    "room_name": a.get("room_name", ""),
+                    "date": a["event_date"],
+                    "booking_a": {"id": a["id"], "event_name": a["event_name"], "start_time": a["start_time"], "end_time": a["end_time"], "status": a["status"]},
+                    "booking_b": {"id": b["id"], "event_name": b["event_name"], "start_time": b["start_time"], "end_time": b["end_time"], "status": b["status"]},
+                })
+    return {"conflicts": conflicts, "total": len(conflicts)}
+
+@api_router.get("/admin/calendar/rooms")
+async def get_rooms(request: Request):
+    """Get available rooms for the tenant"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    rooms = await db.rooms.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(100)
+    if not rooms:
+        default_rooms = [
+            {"id": "sanctuary", "name": "Sanctuary", "capacity": 500, "campus": "Main Campus"},
+            {"id": "fellowship-hall", "name": "Fellowship Hall", "capacity": 200, "campus": "Main Campus"},
+            {"id": "room-101", "name": "Room 101", "capacity": 30, "campus": "Main Campus"},
+            {"id": "room-102", "name": "Room 102", "capacity": 30, "campus": "Main Campus"},
+            {"id": "room-103", "name": "Room 103", "capacity": 25, "campus": "Main Campus"},
+            {"id": "youth-room", "name": "Youth Room", "capacity": 75, "campus": "Main Campus"},
+            {"id": "nursery", "name": "Nursery", "capacity": 20, "campus": "Main Campus"},
+            {"id": "conference-room", "name": "Conference Room", "capacity": 12, "campus": "Main Campus"},
+            {"id": "gym", "name": "Gymnasium", "capacity": 300, "campus": "Main Campus"},
+            {"id": "outdoor-pavilion", "name": "Outdoor Pavilion", "capacity": 150, "campus": "Main Campus"},
+        ]
+        for r in default_rooms:
+            r["tenant_id"] = tenant_id
+        await db.rooms.insert_many(default_rooms)
+        rooms = default_rooms
+    return {"rooms": [{k: v for k, v in r.items() if k not in ["_id", "tenant_id"]} for r in rooms]}
+
+# ============== PHASE 2: PEOPLE WORKFLOWS ==============
+
+class WorkflowCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    trigger: Optional[str] = "manual"
+    steps: Optional[List[Dict[str, Any]]] = None
+
+class FormCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    fields: Optional[List[Dict[str, Any]]] = None
+    is_public: bool = True
+    auto_create_profile: bool = False
+    redirect_url: Optional[str] = None
+
+@api_router.get("/admin/workflows")
+async def get_workflows(request: Request):
+    """List all workflows"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    workflows = await db.workflows.find({"tenant_id": tenant_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return {"workflows": workflows}
+
+@api_router.post("/admin/workflows")
+async def create_workflow(request: Request, payload: WorkflowCreate):
+    """Create a new workflow"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    wf = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "name": payload.name,
+        "description": payload.description,
+        "trigger": payload.trigger,
+        "is_active": True,
+        "steps": payload.steps or [
+            {"id": str(uuid.uuid4()), "order": 1, "type": "task", "title": "Step 1", "description": "", "assignee": None, "due_days": 1},
+        ],
+        "enrolled_count": 0,
+        "completed_count": 0,
+        "created_by": user.get("name", "Admin"),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.workflows.insert_one(wf)
+    return {"workflow": {k: v for k, v in wf.items() if k != "_id"}}
+
+@api_router.put("/admin/workflows/{workflow_id}")
+async def update_workflow(request: Request, workflow_id: str, payload: dict):
+    """Update a workflow"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    allowed = ["name", "description", "trigger", "steps", "is_active"]
+    updates = {k: v for k, v in payload.items() if k in allowed}
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.workflows.update_one(
+        {"id": workflow_id, "tenant_id": tenant_id}, {"$set": updates}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+    return {"message": "Workflow updated"}
+
+@api_router.delete("/admin/workflows/{workflow_id}")
+async def delete_workflow(request: Request, workflow_id: str):
+    """Delete a workflow"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    result = await db.workflows.delete_one({"id": workflow_id, "tenant_id": tenant_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+    return {"message": "Workflow deleted"}
+
+@api_router.post("/admin/workflows/{workflow_id}/enroll")
+async def enroll_in_workflow(request: Request, workflow_id: str, payload: dict):
+    """Enroll people in a workflow"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    person_ids = payload.get("person_ids", [])
+    wf = await db.workflows.find_one({"id": workflow_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not wf:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+    enrolled = 0
+    for pid in person_ids:
+        existing = await db.workflow_enrollments.find_one({"workflow_id": workflow_id, "person_id": pid, "status": "active"})
+        if existing:
+            continue
+        enrollment = {
+            "id": str(uuid.uuid4()),
+            "tenant_id": tenant_id,
+            "workflow_id": workflow_id,
+            "workflow_name": wf["name"],
+            "person_id": pid,
+            "status": "active",
+            "current_step": 0,
+            "step_statuses": {s["id"]: "pending" for s in wf.get("steps", [])},
+            "enrolled_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.workflow_enrollments.insert_one(enrollment)
+        enrolled += 1
+    await db.workflows.update_one({"id": workflow_id}, {"$inc": {"enrolled_count": enrolled}})
+    return {"message": f"{enrolled} people enrolled", "enrolled": enrolled}
+
+@api_router.get("/admin/workflows/{workflow_id}/enrollments")
+async def get_workflow_enrollments(request: Request, workflow_id: str):
+    """Get enrollments for a workflow"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    enrollments = await db.workflow_enrollments.find(
+        {"workflow_id": workflow_id, "tenant_id": tenant_id}, {"_id": 0}
+    ).to_list(500)
+    for e in enrollments:
+        person = await db.users.find_one({"user_id": e["person_id"]}, {"_id": 0, "name": 1, "email": 1})
+        if person:
+            e["person_name"] = person.get("name", "")
+            e["person_email"] = person.get("email", "")
+    return {"enrollments": enrollments}
+
+# ============== PHASE 2: FORM BUILDER ==============
+
+@api_router.get("/admin/forms")
+async def get_forms(request: Request):
+    """List all forms"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    forms = await db.custom_forms.find({"tenant_id": tenant_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return {"forms": forms}
+
+@api_router.post("/admin/forms")
+async def create_form(request: Request, payload: FormCreate):
+    """Create a new form"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    form = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "name": payload.name,
+        "description": payload.description,
+        "fields": payload.fields or [
+            {"id": str(uuid.uuid4()), "type": "text", "label": "First Name", "required": True},
+            {"id": str(uuid.uuid4()), "type": "text", "label": "Last Name", "required": True},
+            {"id": str(uuid.uuid4()), "type": "email", "label": "Email", "required": True},
+        ],
+        "is_public": payload.is_public,
+        "auto_create_profile": payload.auto_create_profile,
+        "redirect_url": payload.redirect_url,
+        "submission_count": 0,
+        "is_active": True,
+        "created_by": user.get("name", "Admin"),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.custom_forms.insert_one(form)
+    return {"form": {k: v for k, v in form.items() if k != "_id"}}
+
+@api_router.put("/admin/forms/{form_id}")
+async def update_form(request: Request, form_id: str, payload: dict):
+    """Update a form"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    allowed = ["name", "description", "fields", "is_public", "auto_create_profile", "redirect_url", "is_active"]
+    updates = {k: v for k, v in payload.items() if k in allowed}
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.custom_forms.update_one({"id": form_id, "tenant_id": tenant_id}, {"$set": updates})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Form not found")
+    return {"message": "Form updated"}
+
+@api_router.delete("/admin/forms/{form_id}")
+async def delete_form(request: Request, form_id: str):
+    """Delete a form"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    result = await db.custom_forms.delete_one({"id": form_id, "tenant_id": tenant_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Form not found")
+    return {"message": "Form deleted"}
+
+@api_router.get("/forms/{form_id}/public")
+async def get_public_form(form_id: str):
+    """Get a public form for submission (no auth required)"""
+    form = await db.custom_forms.find_one({"id": form_id, "is_public": True, "is_active": True}, {"_id": 0})
+    if not form:
+        raise HTTPException(status_code=404, detail="Form not found or not available")
+    return {"form": {k: v for k, v in form.items() if k not in ["tenant_id"]}}
+
+@api_router.post("/forms/{form_id}/submit")
+async def submit_form(form_id: str, payload: dict):
+    """Submit a public form (no auth required)"""
+    form = await db.custom_forms.find_one({"id": form_id, "is_active": True}, {"_id": 0})
+    if not form:
+        raise HTTPException(status_code=404, detail="Form not found")
+    submission = {
+        "id": str(uuid.uuid4()),
+        "form_id": form_id,
+        "form_name": form["name"],
+        "tenant_id": form["tenant_id"],
+        "data": payload.get("data", {}),
+        "submitted_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.form_submissions.insert_one(submission)
+    await db.custom_forms.update_one({"id": form_id}, {"$inc": {"submission_count": 1}})
+    if form.get("auto_create_profile"):
+        data = payload.get("data", {})
+        email = data.get("email") or data.get("Email")
+        if email:
+            existing = await db.users.find_one({"email": email, "tenant_id": form["tenant_id"]})
+            if not existing:
+                new_member = {
+                    "user_id": str(uuid.uuid4()),
+                    "tenant_id": form["tenant_id"],
+                    "email": email,
+                    "name": f"{data.get('first_name', data.get('First Name', ''))} {data.get('last_name', data.get('Last Name', ''))}".strip(),
+                    "role": "member",
+                    "membership_status": "visitor",
+                    "phone": data.get("phone", data.get("Phone", "")),
+                    "source": f"form:{form['name']}",
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+                await db.users.insert_one(new_member)
+    return {"message": "Form submitted successfully", "submission_id": submission["id"]}
+
+@api_router.get("/admin/forms/{form_id}/submissions")
+async def get_form_submissions(request: Request, form_id: str):
+    """Get submissions for a form"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    subs = await db.form_submissions.find(
+        {"form_id": form_id, "tenant_id": tenant_id}, {"_id": 0}
+    ).sort("submitted_at", -1).to_list(500)
+    return {"submissions": subs}
+
+# ============== PHASE 2: DUPLICATE DETECTION & MERGE ==============
+
+@api_router.get("/admin/people/duplicates")
+async def detect_duplicates(request: Request):
+    """Detect potential duplicate members"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    members = await db.users.find(
+        {"tenant_id": tenant_id, "role": {"$in": ["member", "visitor"]}},
+        {"_id": 0, "user_id": 1, "name": 1, "email": 1, "phone": 1, "membership_status": 1}
+    ).to_list(5000)
+    duplicates = []
+    seen = set()
+    for i, a in enumerate(members):
+        for b in members[i+1:]:
+            pair_key = tuple(sorted([a["user_id"], b["user_id"]]))
+            if pair_key in seen:
+                continue
+            score = 0
+            a_name = (a.get("name") or "").lower().strip()
+            b_name = (b.get("name") or "").lower().strip()
+            if a_name and b_name and a_name == b_name:
+                score += 50
+            elif a_name and b_name:
+                a_parts = set(a_name.split())
+                b_parts = set(b_name.split())
+                overlap = a_parts & b_parts
+                if len(overlap) >= 1 and (len(overlap) / max(len(a_parts), len(b_parts))) >= 0.5:
+                    score += 30
+            a_email = (a.get("email") or "").lower().strip()
+            b_email = (b.get("email") or "").lower().strip()
+            if a_email and b_email and a_email == b_email:
+                score += 40
+            a_phone = (a.get("phone") or "").replace("-", "").replace(" ", "").replace("(", "").replace(")", "")
+            b_phone = (b.get("phone") or "").replace("-", "").replace(" ", "").replace("(", "").replace(")", "")
+            if a_phone and b_phone and len(a_phone) >= 7 and a_phone[-7:] == b_phone[-7:]:
+                score += 30
+            if score >= 40:
+                seen.add(pair_key)
+                duplicates.append({
+                    "person_a": a,
+                    "person_b": b,
+                    "score": min(score, 100),
+                    "reasons": []
+                })
+    duplicates.sort(key=lambda x: x["score"], reverse=True)
+    return {"duplicates": duplicates[:50], "total": len(duplicates)}
+
+@api_router.post("/admin/people/merge")
+async def merge_people(request: Request, payload: dict):
+    """Merge two duplicate member profiles"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    keep_id = payload.get("keep_id")
+    merge_id = payload.get("merge_id")
+    if not keep_id or not merge_id:
+        raise HTTPException(status_code=400, detail="keep_id and merge_id required")
+    keep = await db.users.find_one({"user_id": keep_id, "tenant_id": tenant_id})
+    merge = await db.users.find_one({"user_id": merge_id, "tenant_id": tenant_id})
+    if not keep or not merge:
+        raise HTTPException(status_code=404, detail="One or both profiles not found")
+    merge_fields = {}
+    for field in ["phone", "address", "city", "state", "zip", "birthday", "gender", "notes"]:
+        if not keep.get(field) and merge.get(field):
+            merge_fields[field] = merge[field]
+    if merge_fields:
+        await db.users.update_one({"user_id": keep_id}, {"$set": merge_fields})
+    await db.donations.update_many({"person_id": merge_id}, {"$set": {"person_id": keep_id}})
+    await db.event_registrations.update_many({"user_id": merge_id}, {"$set": {"user_id": keep_id}})
+    await db.group_members.update_many({"person_id": merge_id}, {"$set": {"person_id": keep_id}})
+    await db.workflow_enrollments.update_many({"person_id": merge_id}, {"$set": {"person_id": keep_id}})
+    await db.users.delete_one({"user_id": merge_id, "tenant_id": tenant_id})
+    return {"message": f"Profiles merged. Kept {keep.get('name', keep_id)}.", "kept_id": keep_id}
+
+# ============== PHASE 2: SMART LISTS ==============
+
+@api_router.get("/admin/smart-lists")
+async def get_smart_lists(request: Request):
+    """Get saved smart lists"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    lists = await db.smart_lists.find({"tenant_id": tenant_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return {"lists": lists}
+
+@api_router.post("/admin/smart-lists")
+async def create_smart_list(request: Request, payload: dict):
+    """Create a smart list with filter rules"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    sl = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "name": payload.get("name", "Untitled List"),
+        "description": payload.get("description", ""),
+        "rules": payload.get("rules", []),
+        "is_smart": True,
+        "created_by": user.get("name", "Admin"),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.smart_lists.insert_one(sl)
+    return {"list": {k: v for k, v in sl.items() if k != "_id"}}
+
+@api_router.post("/admin/smart-lists/{list_id}/run")
+async def run_smart_list(request: Request, list_id: str):
+    """Execute a smart list and return matching members"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    sl = await db.smart_lists.find_one({"id": list_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not sl:
+        raise HTTPException(status_code=404, detail="Smart list not found")
+    query = {"tenant_id": tenant_id, "role": {"$in": ["member", "visitor"]}}
+    for rule in sl.get("rules", []):
+        field = rule.get("field")
+        op = rule.get("operator")
+        value = rule.get("value")
+        if not field or not op:
+            continue
+        if op == "equals":
+            query[field] = value
+        elif op == "contains":
+            query[field] = {"$regex": value, "$options": "i"}
+        elif op == "not_equals":
+            query[field] = {"$ne": value}
+        elif op == "exists":
+            query[field] = {"$exists": True, "$ne": ""}
+        elif op == "not_exists":
+            query[f"${field}"] = {"$exists": False}
+    members = await db.users.find(query, {"_id": 0, "user_id": 1, "name": 1, "email": 1, "phone": 1, "membership_status": 1}).to_list(1000)
+    return {"members": members, "count": len(members), "list_name": sl["name"]}
+
+
 @api_router.post("/portal/events/{event_id}/register")
 async def register_for_event(request: Request, event_id: str):
     """Member registers for an event"""
