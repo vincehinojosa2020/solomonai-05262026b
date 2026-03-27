@@ -1,0 +1,7719 @@
+# Planning Center University - Full Transcripts
+
+**Total videos: 173 | Transcripts found: 173 | Missing: 0**
+
+---
+
+
+# Calendar
+
+## Calendar Overview (1:12)
+
+Hi. I'm Emily, and your sixty second intro to planning center calendar starts right now. Calendar is all about getting your whole schedule into one place. So you can make sure that everyone and everything are on the same page. The place where you're watching this video is what we call the admin side of calendar. This is where all timely scenes work gets done, where you book rooms and resources and coordinate all of your event details.
+
+Once you create your events here, you can share them with your church from the church center app, a kiosk in the lobby, or embed a calendar on your website. Now let's talk big picture for a second. Calendar is just one part of the planning center universe. Just like you can use calendar to manage your schedule and facilities, we've got a range of products designed for the different areas of ministry in your church.
+
+And when you get those products working together, all sorts of things are possible. But let's not get too far ahead of ourselves. For now, come on in, take a look around and make yourself at home. As you explore, if you ever have any questions, click the question mark in the top right corner of the screen.
+
+From there, you can check out our help docs or get in touch with our support team. We're so glad you're here and we can't wait to see what you do with the place.
+
+---
+
+## Approvals - Conflicts and Requests (2:23)
+
+You'll use Calendar's approval page to quickly review event requests, prioritize what's pending, and keep decisions moving.
+
+From the events tab, if you have any approvals that need your attention, you'll see a golden yellow circle at the top of the approvals tab. So let's click it and see what I have coming up.
+
+As a conflict resolver, you'll see the conflict section over here on the left. Conflicts happen when multiple events have requested the same room or resources during overlapping times. Rather than just rejecting the overlapping event, we leave this important decision up to you.
+
+You can even filter the conflicts by campus.
+
+Any of the events that have your campus tag on it, you can select it, and voila. Now you can focus on the campus that needs your attention.
+
+I'm gonna go ahead and deselect that.
+
+Now to manage, click resolve. From here, select who gets to use the room or resource. Sometimes you may even get to share this room, but maybe there's a funeral happening at this time which takes priority.
+
+We keep this flexible so you can make meaningful connections and decisions that work best for your organization.
+
+Any reason you type in here will be emailed to the rejected event owner, keeping everyone in the know.
+
+Next, I wanna show you event requests. These are any events requested through an event request form that you're an approver for.
+
+Select the title to be taken directly to the event where you can view more event details, including the form's response, or select approve approve event, which will approve the event right away.
+
+The last thing on this page is booking requests. These are requests for any rooms or resources that you're an approver of. Again, you can select the title to be taken directly to the event. You can view more details by selecting the questions or the drop down arrow here, and you can even approve the item right away by selecting this approve item button. And that's how to keep decisions moving with Calendar's approval page.
+
+---
+
+## Sharing Events with Your Congregation on Church Center (7:12)
+
+You have successfully created or imported your events into Planning Center calendar, and now it's time to share them with the world or at least to Church Center.
+
+Jumping back to the events page, we'll see at the top right, we have the Church Center options. It's indicating that these events or that the calendar page has not yet been published to church center, and we wanna update that and change that by clicking on the update settings.
+
+This will take us to the publishing page for calendar where all we have to do is click publish. And now all of our events are publicly available on Church Center. However, they're not quite easily accessible yet, and we're gonna update that by going to the customize tab in publishing.
+
+We'll find a calendar and click the plus button right next to calendar. And let's go ahead and move this up in the menu right under giving, save and publish. And now calendar is being displayed as a menu option on church center.
+
+Here in calendar, we'll see that we now have the option to not just update the settings, but we also have the option to view the events on church center.
+
+This will take us to a beautiful gallery view of all of the events that are published, should display the event image. When we click on an event, it'll open up the events and show us the details about the events. We've also have the month view, which is your traditional month view, which you would expect of any calendar. And then the list view, which is more of an agenda. It'll show every single event coming up in your calendar.
+
+You'll notice that, we have the option to filter by campus or to filter down by category. The campus filter will automatically be added as you apply the campus filters to your events.
+
+However, the categories aren't automatically updated and we need to go ahead and update and add categories to church center.
+
+To do that, we'll come back to the events page on, on the admin side of calendar. Click on the settings icon, which is going to redirect us to the templates. I'm sorry. It's gonna redirect us to the tag this page.
+
+On this page, we now have the option to enable and disable a church center category. It is as easy as clicking on a grayed out church center icon, clicking on it, and when it is full of color, it is now being displayed as a filterable option on church center.
+
+We've got a couple more options for your church center calendar view. Clicking on church center and update settings now gives us this settings model which allows us to select which views are going to be available on church center.
+
+A good use case for not enabling the gallery view is that you don't have event images. So it's don't want to display the gallery view, so we could go ahead and disable that. You can set a default which is the one that you want to be loaded when someone first clicks on the calendar view. And by default, the list view is always going to be selected. It is as it is going to be the default on the mobile device whenever the month view is selected as the default.
+
+You can apply those changes and those changes will be made to church center.
+
+The last thing we wanna cover regarding sharing events is what if you wanna share your events outside of Church Center, and we've got you covered in this situation. There are three different ways we can share events by clicking on the share to iCal feed, kiosk, or embed icon on the events page.
+
+Before we click on that button, I want to make a note that the events that are currently being displayed on the calendar are the events that are going to be included in the iCal feed and the kiosk.
+
+To demonstrate this, we were we will apply a filter of any event that is published in Church Center.
+
+When we click on this share to iCal feed button, only the events that we are currently seeing are going to be the events that are included in your iCal feed or your kiosk. The iCal feed is going to be used whenever you wanna share the events to your personal calendar or maybe even a shared calendar that's shared to your staff.
+
+The kiosk is more of a display that can be added to a TV or display in your lobby that will show the events that are happening today, the time they're happening, and the rooms where those events are happening.
+
+Finally, we have the embed code. This is what we will use if we wanna add the events from planning center calendar onto our website.
+
+We have the month view, the list view, or the gallery view. You can select which filters will be applied when you embed the code into your website.
+
+Jumping back to the filters that we applied earlier, the filters applied to the events are not the same filters that are applied to the embed code. The embed code will use the filters on this model, and is separate from the filters on the calendar.
+
+We could decide if we wanna include the filter bar, and we will copy this code and go ahead and embed it on whatever website builder you are using for your church's website.
+
+Finally, there's one last thing we wanna show on how we can share events at calendar. And that is once again in publishing.
+
+In publishing, we have the option to add blocks or content blocks to your either homepage or a custom, page on church center. And the easiest way we do that is we jump in here. We have the basic blocks, but we want the planning standard content blocks where we can add events directly from calendar into your church center homepage.
+
+Just like that, those events are now going to be displayed on your homepage. And a couple of options over here on how you want it formatted and how you wanted what events you want to filter and displayed on this page. But that is the last option on how we can include upcoming published events onto a home page or a custom page in church center. And just like that, you are now you are now ready to share all of your planning center events anywhere you'd like.
+
+---
+
+## Creating an Event (13:27)
+
+In this video, I get to show you how to create an event in Calendar. So let's dive in. I'm in Calendar on the events tab. If you're a calendar creator or a calendar admin, you'll see a new event button up here where you can select that to create a new event, or you can create an event by selecting the date itself. Here, you'll see this plus new button. Now since I know I have an event coming up, a ladies brunch, and I know which date, I'm gonna just select the date, directly by clicking here.
+
+And now I'm going to set up the event name here. Like I said, we've got a women's brunch coming up, so I'm just gonna go ahead and add that there.
+
+Now this drop down option here is where you can select the event owner. I'm the event owner in this case, but if you were creating an event for someone else and needed somebody else to own it, you can select their names from this option here. Alright? Now I can edit, customize the date from here.
+
+I've already selected which date it's gonna be, so I'm gonna move on to the time here. And since this is a women's brunch, I'm going to select ten AM here, and it is from ten AM to twelve thirty. Now if I wanted to create a multi day event, you know, a day an event that spans across multiple days, I would just give it a different end date than it started. So for example here, I could say this women's brunch is gonna be a three day brunch. We're gonna really party, and I can select an end date there. Alright? But for this event, it is just a one day, couple hour event there, so I'm gonna stick with that date.
+
+I can also give it a recurring pattern. Okay? So I can select, you know, one of these options here, or I can create a custom recurring pattern.
+
+Let's say this event recurs on the fourth and the first Friday of every month, and now I can select whether or not it ends. This is extremely helpful because you can set up the event, and then if you set up an end date, you don't have to remember to come back and delete it once the event is over. You can just set that up from the very beginning just by following these steps here. Alright?
+
+Now you can also create all day events as well. So maybe you have like a conference or something, and it's just the whole day. You could select this all day. Alright?
+
+So now, here is the option where you could add an event template. Since I'm creating an event that doesn't repeat often, I'm gonna select no template, but here's where you could select from maybe templates that you've created for events that happen often, like a worship service or a children's ministry event. Templates are, they give you the option to set up, like, rooms, resources, things that you use often, so that way when you select the template, it just automatically applies to your event. It's super handy.
+
+Be sure and check out some of those other resources we have on how to create event templates.
+
+Now you'll notice this public description box. This is where you can add important information about the event, you know, information that your congregants are gonna wanna know about so that it gets them excited for the event and they wanna come to it.
+
+These public descriptions will show up on the iCal feed, so, like, any of your shared calendars, kiosks, and then also you have the option to share it on Church Center as well. I've already created a description. I just copied and pasted it in right there.
+
+And now here are the locations. The locations you see in this drop down, all come from the campuses that you have set up in your accounts already. So I can select from the campuses, and this one is gonna be at our San Diego campus. So I'm gonna select that.
+
+You can also do custom. So if it's at a location, maybe it's off-site or it's not at one of your campuses, you can select custom, and then you can add the address and all of the information from there. Okay? So I'm gonna select our San Diego campus.
+
+And now last but not least on this page is our tags. These tags in red are tags that I've set up as required. So this is really helpful, especially if you have campus tags. You can have, campus tags as required or anything else that's really important to the management and organization of your events, you can make sure they're required so nobody forgets.
+
+Alright. So we're gonna say that this is a women's department, and we're gonna do a special event there. So those are all my required tags. Alright.
+
+And this, I almost forgot. This is our church center visibility. So right now, I've got this event unpublished, which means nobody can access it on church center. But I can select published, which would add it to the Church Center calendar right away, or featured, which adds a little star on the event, and it puts it at the very top, highlighting it so that people see it.
+
+Your congregate members see it, and they get excited for the special events that you have coming up. Alright? I'm gonna keep this unpublished for right now, but in a little while, I'm gonna show you how you can edit that later. Okay?
+
+So from here, you can either select this blue save button, which would just save the event as, you know, we've got shown here. Or if I wanna add rooms and resources, which I do, I'm gonna select more options here. K?
+
+Alright. From here, it's just telling us our event is unsaved right now because we're gonna add rooms and resources to it. Alright? So I'm gonna go ahead and select this browse option here where it's gonna show me all of my different folders, and from there, I can select the room. I'm gonna go ahead and click front lawn because this is a brunch, and we wanna do it outside. And then I'm gonna select some resources here. So, again, I'm in my San Diego campus folder, and we're gonna do some rolling trash cans because we need some trash cans for brunch.
+
+Alright. And now you'll notice I can save for this and future date, which means I'm gonna apply these rooms and resources to this date and all of the future dates in the recurring pattern. Okay? So we're gonna go ahead and do that. This is just showing me the changes that I'm applying to the event, and I'm gonna go ahead and create event down here.
+
+Alright. Now I've got my front lawn, and I've got my rolling trash cans. You'll notice here that it is yellow, and it's in a pending state. And that's because I still have to have an approval group. The San Diego facility's approval group still needs to approve this resource before the event is fully approved. So you're gonna see that yellow pending state until, your approval group approves that room or resource for you. Okay?
+
+So now let's say I wanna make an update to this event. You know what? It's supposed to rain this weekend, so I need to make sure that we can reserve a room inside our campus, because we don't want soggy breakfast.
+
+So to do that, I can select this blue edit button up here, and now you'll notice I can update just this date, or I can update this date and future. Since I just wanna move it inside for this coming weekend, I'm gonna select just this date.
+
+And now I have the option I can remove the front lawn for this date, and I can just select an indoor room. Again, just for this date, we're gonna select children's building. I'm gonna do b one hundred, and now we're inside here. Alright.
+
+But while we're at it, I'm gonna add additional information. Okay? Now remember, I'm just editing this specific date here, but I wanted to point out our setup and teardown times. These are default times that you can add to your event, which is really helpful, especially for, like, a women's brunch or something where you do have a setup times.
+
+This will ensure that that room is fully reserved for the time you need to set up, and you'll notice by default, it's already adding, you know, an hour before my event. I can edit that, though, by selecting the time here, and then, you know, I can select a different date, or I can click on different times here. And, again, these are my setup times. I can also add a teardown time.
+
+You know, it takes a little bit to tear down after an event like that. And you'll notice again by default, it's an hour after.
+
+Now let's say I wanna add a custom time. Maybe you're setting up a conference and you have breakout sessions. You can add custom times for that by selecting this add custom time button up here, and now you'll see I can create a time. Let's just do, oops, breakout one.
+
+Okay? And I can, again, come in here and edit the times and apply. Okay? And now you'll notice these little icons.
+
+Like, what do these icons mean?
+
+These icons indicate whether or not you're sharing this time with shared calendars or your kiosk. So kiosks are maybe, those digital displays you have on campus so that when people are in your campus, they can see the the events happening that day. You can even choose to share the rooms that those events are being held. Again, this is the kiosk icon and then your shared calendars, which are, like, your iCal feeds and, anything like iCal feeds, embeds, church center, those types of things. Okay? So those are those. Now I'm not probably gonna wanna share my setup and my teardown time there, so I'm gonna keep those shared calendar icons off, but I am gonna share my breakout session and the overall event time here.
+
+Alright. And last but not least, we do have this task option. So maybe you wanna add a task list.
+
+You can do that right from this area here. You can learn a little bit more about that in our other videos and resources about connections, but I wanted to highlight that really quick. Alright. I'm gonna go ahead and save for this date.
+
+It's showing me all the changes, which is really helpful overview of just, you know, okay. It was this, but now it's this. And now we're confirming, yes. We wanna make those changes by selecting this blue button here.
+
+Alright. So now that we've got our event, we've got our times, we've got our rooms, we've got our resources, I could even change the name of this event. Let's say we'll do, you know, and, kiddos. Maybe kiddos are involved in this one, but only this date, not for all the dates. You'll notice as soon as I changed that, this little modal popped up, and it's allowing me to change the title for just this date, or I can change it for all the dates as well. So it's super handy and it gives you so much power to customize, you know, event in a recurrent pattern. So I'm gonna go ahead and just save for this date.
+
+Alright. The last thing I wanna show you here is the settings tab. Alright? So we're gonna jump on over here to the settings tab, and you'll notice that that summary that I added at the very beginning of this video is included right here automatically and then also in our description.
+
+Now the description is what you see on Church Center, and then the summary is what shows up on your iCal feeds and your embeds and your kiosks as well. Okay? So you can, update it, edit it here, and then you can also change visibility. So now that my event is over, I've got it all created, I can choose to publish it or even feature it.
+
+You know, this is a really great event, and I want all of the women in my congregation to attend and see it and be excited about it. You can also change the event owner from here. You can add event managers. So maybe this is a, you know, kind of a large event and you have multiple people, that need to help manage it.
+
+This is where you can add other names and other people. Now event managers have the same permission level as an event owner, so it just kinda gives that extra layer of eyes on this event and help. Right? Because when you're creating the event, lots of hands, a lot of times are involved.
+
+Okay? And now you can also add an event image as well from here. So you can click and drag an event image that you already have, or you can choose an event image, you know, from one of our free photos here.
+
+Alright. You can see that there's a bunch of different options you can choose from. So this is just an extra way that you can really customize this event and make it stand out so that people are excited and, they really wanna take a look at what you have to offer and what's coming up so they can join too. Alright? So that's how you can create an event in Calendar.
+
+---
+
+## Event Activity, Files, and Settings (7:01)
+
+Alright. Let's talk about some of the supporting things that go into planning your event. So, we're in this event right now, the open basketball league for my church.
+
+You can see it's for the youth department. It's a special kind of event. It's at our Atlanta campus. And here are all the things we have set up for it.
+
+So this is this all has to do with Thursday, October twenty third. We could go to a different date and we could pick a different schedule and different rooms and resources if we wanted to, But that's information that belongs to that specific instance, that date of that event. But there's other information that belongs to like the top level. Right?
+
+Like, there's some things that are true of open basketball league. Right? Like these tags, these are the same across every single instance of this event. Right?
+
+The other things that are consistent across the whole event are these other four tabs here. We're just looking at the overview. But if we go to activity here, it's gonna give us some information about people who've edited this event and things that have changed about this event. So we can come down here and we can see that some of the settings have changed.
+
+We can see that bookings have conflicts that need to be addressed and who, requested that booking. And this is really cool, especially for long standing events that have been around for a really long time. If you're looking for something specific, we have this filter and the activity over here. So you can just say, just wanna see comments.
+
+Right? And then it's gonna show you any comments that people have. You could say, oh, I just wanna see changes to the schedule. You can see who did that and when it happened.
+
+And really, that's the same for any of these things, changes to the settings. So this is a great way to stay on top of things. And if something changes in your event, you can back out and go, wait a minute. Who changed that?
+
+So I can go talk to them and see what's going on.
+
+Also, you can just leave comments right here and then you can, other people who hop in can respond to your comments about this event in particular. Alright. Then we're gonna go to the files tab. So again, like I said, this applies to every instance of this event.
+
+You can upload files that are important to this event so that anytime you're looking at the event, you can find these files without having to link out to like a Google Drive or somewhere else like they're just right here. So for the basketball league, we have a couple of PDFs here. We've got the league rules and the parent pledge. If you just click on one of these, it's gonna download it and then you'll be able to print it out, do whatever you need to do.
+
+This is really great for like PowerPoint presentations or for imagery or anything like that that you're gonna reuse a lot when you're, you know, putting this event on like recurring events. So, it's super simple. All you do is you click add file, you choose a file, you pick in a a file, you call it whatever you want, You say the description is whatever it is, and then you create it, and boom. Now anybody who has access to this event can download that file that you just uploaded.
+
+If you wanna get rid of something, you just click delete.
+
+Pretty straightforward stuff. Okay. So, again, that's things that are all high level. Right? Let's talk about settings.
+
+So, everything here applies to every instance of this event as well. Right? These are things like who the event owner is and who the event managers are. There's an important distinction between these two things.
+
+Every event has to have an event Owner. One person has to be in charge of this event, the point person of the event. The way I've always been told that is if everybody's watching the kids, then nobody's watching the kids. Right?
+
+You're like, oh, somebody else has got it. No. We wanna make sure there's at least one person who's in charge of But if there are other people they're collaborating with, you can add them as event managers. And what that does is that gives them the same permissions as the event owner for this event.
+
+So that's event owner and managers. Then we have summary and notes. So these sound very similar. Right?
+
+But the summary is what you're gonna see when you're looking at this event in calendar. Like when you're in your calendar view and you hit a preview of an event, it's gonna show you the summary right here. So this is internal. This is really just for you and the other administrators inside of calendar.
+
+The notes here are internal, but they are specific to this page right here. So this is things like if you wanna include, vendor contact information, if you wanna include specific times or notes for other people on staff who are pulling this event off, this is where you would put that kind of information. We also have this registration URL right here.
+
+This is, if you are ever publicly sharing this, event either on iCal feed or on Church Center or whatever, it's possible to populate a registration link which someone can click and it will just take them to another page. This is really cool because right now, look, we have a custom link in here. We put in just whatever we wanted, But We can click add a sign up, We can click add a sign up and it will just give us the ability to link to any registration sign up that already exists in planning center registrations. So this is super cool.
+
+If we had a basketball thing, we did, but we don't right now. So what we're gonna do is we're just gonna say Christmas concert. Boom. There you go.
+
+So now you just click that and any changes to this get updated here. If you wanna remove it and then add a custom URL, it's just as simple as that. You just say whatever it is, Google dot com.
+
+There you go. So, we can add a registration URL. That is very important for anything that has a sign up associated with it. Anything that you need to collect payment or it's ticketed or something like that, you're gonna always wanna populate this registration URL right here.
+
+Okay. And then down here, have our church center section. So church center is the public facing side of planning center. Planning center, like calendar, is the administrative side.
+
+But Church Center is where your congregation interacts with, with all of your events. So this is what it's gonna look like to them on Church Center. Like, this is the imagery that's gonna show up on top. This is the description that's gonna show up in Church Center.
+
+And the cool thing, this is different from the summary because you're actually able to, like add rich text, you can make things bold or italicized, you can add links, you can include images, whatever you need to do. This is like your public promotion page for this event in particular. And then, you can choose to have it be featured, published or unpublished. Unpublished means this is just a private event or a a internal event that's just gonna live on your calendar for planning purposes.
+
+Published means it's going to be available to your congregation to see. And then featured means it's actually gonna hit the top of the list in in in terms of where all your events are showing up on Church Center. So, let me give you a look at what that is gonna look like here. We'll say view on church center.
+
+And see there's the image we picked. There's the description we picked. Here's the schedule and the location, all the things. And if we go back to all events, this is what your congregation would see. These are all the events that are happening at your church that are published to Church Center. But you'll see the little star here is gonna show the featured ones right here at the top.
+
+So now you know all the things you need to know to plan your events, upload files, look through your activity and find out where things changed. And then also the settings you need to change to promote this event to your congregation.
+
+---
+
+## Event Connections (4:20)
+
+Using event connections in Calendar, you can manage the entire life cycle of your event, and I'm gonna show you how. Alright. I'm in Calendar on the events tab. The first step is selecting the event you wanna manage. So I've got an upcoming worship night right here. Go ahead and select your event, and then click on the view event button.
+
+You'll notice here a bunch of tabs. In this video, we're gonna be focusing on just the connections tab, which event owners and event administrators can access. So go ahead and click on the Connections tab, and from here, you'll see a row of widgets. We've got task lists, weekend services, which has already been connected to my services. We've got registrations, check ins, and groups, which all give me a high level overview of all of the different components of my event.
+
+To connect one of the widgets, you can either connect it using the button directly on the widgets, or you can come up here and click on the new connection button.
+
+When I select the new connection button, I can choose which product I wanna connect.
+
+From there, I can select the item. So I'm gonna go ahead and connect my check ins event to my special events here and click save.
+
+And now you'll notice all of those details right here, and one click on the event title will take me directly to that product where I can make updates as needed.
+
+So now I wanna talk about one of the most powerful connections, which is the connection between registrations and calendar. I'm gonna go ahead and click on the connect a sign up button right here.
+
+From here, you can either choose an existing sign up or you can create a sign up right from this widget.
+
+So I'm gonna get show you here if I select create sign up, it's going to automatically create a sign up with the event name and details.
+
+I'm gonna select create sign up here.
+
+And now, all I need to do is add payment information, you know, configurations, questions, any of those, but all of the details was already created for me from that calendar event.
+
+Now, to get back into the calendar event, I can select this little icon up here, and then click my event in calendar.
+
+From there, we'll select the connections tab so that we can continue working on our widgets.
+
+Next, you can also connect task lists, which is really great, especially when you have a bunch of things that you need to do to prepare for the event. Maybe you want to have a list to remind you to set up the room or order supplies. Well, you can connect that. Here, I've got this worship night one right here. I'm gonna select, click save, and you can keep track of the progress of your to dos right here from the connections tab. It's really cool.
+
+Last but not least, you can even promote this event to groups.
+
+The first thing you need to do is make sure that your your groups are connected. So I'm gonna select connect a group.
+
+And from this drop down, you can select a single group or multiple groups.
+
+I'll just select a few here. You'll see them right in this window. I'm gonna go ahead and select save.
+
+And now once your groups are connected, you'll see the option, this little toggle here next to each of these groups, to promote the event in the group. Just like that. It's super handy. Once you do this, it will add a read only version of your event in the group's event list, as well as Church Center if your church is using Church Center.
+
+And that's it. That's how you can manage and oversee the entire life cycle of your event using event connections.
+
+---
+
+## Event Request Forms (9:41)
+
+Now let's take a look at calendar forms. These are forms that could be used by members in your church or people outside of your church, like a school or sports organization wanting to request facility usage.
+
+Forms are used to gather all of the information, stay in constant communication with that person, and approve or reject that event request form. From the forms page, we have the option to add a new form, filter by closed archived open forms. For every single form, we could see the number of pending request. We can see what the form is going to look like. So if we click on that, it would take us to the form that the person submitting the form would actually see and fill out.
+
+When we open it in existing form, we'll be redirected to the request page. We'll see a list of all of the event requests that have been submitted for this form.
+
+Really what these are, they're events inside of the calendar waiting to be approved. As a matter of fact, it looks exactly like an event because it is an event and we're able to do anything we would do with any other events in calendar. Could change the name, the date, add tags, upload files, make connections, update the settings. There's really two big differences in this event. The first is when we publish it, it will not be displayed in Church Center until that event has been approved. When it is rejected, the event is then deleted from the calendar.
+
+The second big thing is that we'll see this, item right here that lets us know that this is any event request form that was created from a form and not from with inside of calendar.
+
+We can click on the view form submission, and this is going to redirect us to the activity page where we'll see what the person filled out for the for every single question in that form.
+
+Let's go ahead and jump back into the form itself and we'll take a look at the fields tab. Here's where we're going to edit the form. We can add basic fields that's going to be your regular four fields that you would expect of any form editor. For example, check boxes, drop downs, etcetera. You can click and drag any of these into the form and answer the question or what question you wanted to ask, the description, and then the options.
+
+You also have the option to add conditional logic. So when someone answers a specific way to a question, then ask or don't ask this question. I'll give you an example of that here in a moment. What makes the event request form different than other forms and even planning center people forms is that we have the option to add room resources and template fields.
+
+When we add a template field, we will have the room and resource options disabled, and when we add the room or resource field into the form, the event template will be disabled. So you could either use the templates or the room and resources in a single form. We'll go ahead and click and drag one of these fields in here. So we now have the rooms option where we can then browse through our rooms and select the rooms that we want our person that's fill out the form to be able to select from.
+
+So in this case, we'll select three different rooms and we'll add a question. I'll do q one and the description is not required and we'll allow multiple selections. So the person can select two or three or multiple of these rooms. We'll go ahead and save that.
+
+That is what that looks like. It's also updated on the church center form that the person is going to fill out.
+
+What makes the this form really powerful is when we combine the basic fields using conditional logic and the rooms and resources because then we can say a question like, do you need AV support? And if they answer yes, we get a conditional field to the resource saying when they say yes to this question, these are the resources that are available in this room.
+
+That really allows you to have some flexibility especially on multi campus forms or, rooms where have their specific resources that are available only in that room.
+
+We'll jump over to the automations tab. From this tab, you can create almost any automation that is available. Two of my favorite automations to create are at a task or create a or added the person to the workflow. I'll create I'll click on the create automation. We have the option to trigger the automation when the event request form is submitted or when it is approved.
+
+We'll go ahead and go home. This is one of my favorite ones. We'll do a task item. We would name it here and we'll say, hey, in this person's, in this person's inbox, we want them to have a task that they need to do once it is approved. A good example of that could be a marketing director who needs to create all the promotional material, graphics, and video for this event. That way they know that fifteen days after the event is approved, you have a task to complete to have all the deliverables for everything we need to promote this event.
+
+We'll jump over to the last tab on the form, and that is the settings tab. Got a couple of settings here. The first one is going to be the default owner. So whenever someone submits the form, this person will be the owner of that form, which tags we want to be automatically added to the events when it is created. This is a newer feature just released earlier this year that we can select which calendar we wanted to be a part of.
+
+The reply the custom reply email option. When someone fills out the form, this is what is going to be emailed to them. The content of this email will be sent to them as a thank you for submitting this form. You can expect x y and z.
+
+We got the approval group. This is which approval group is going to be approving or rejecting the eval request form.
+
+The status of the form, is it open, close, or archive? And then we have the sharing options where we can copy the URL and we can either post that on a website, on a form, or even just email it to a person. You could click this to view the form. And then the share to groups, this is going to allow us to share this form to a group that's gonna be available when someone creates a event in a group. They can also request and fill out this form to request rooms and resources inside of calendar.
+
+The last thing I want to look at in the form itself is the process of approving the events request.
+
+We'll open up this event and we'll see that it is pending. We have the option to reject the events or approve the event, but the approve button is disabled.
+
+So what that means is that there's an action that needs to be taken before me as the person in the approval group can approve it. And that is I need to apply the rooms and resources that were requested to this event. So I'll go in here. I'll click apply and edit.
+
+I'll say, hey, that looks good or hey, let's make a couple of changes. We really need two handheld mics. We'll save this date. Yes. Make the changes. And now you'll see that I now have the option to approve or reject the event.
+
+One of the things that I see quite often is people asking, well, what if we need to make changes or we need to communicate with the person that is creating the submitted the form. For example, let's say we don't have the gym available, but the multipurpose room is available. I would go over to the activity page and I would ask Zeke if we could do this in the multipurpose room.
+
+And I'm not gonna type out the whole answer, but you get the idea. But instead of doing it as an internal comment, I'm gonna go ahead and do it as an email. So I will send this as an email. So now whatever content I put there is going to be emailed to whoever filled out the form. It's going to be logged as an internal comment. So anyone who is a part of the group, sorry. Anyone who's a part of this event will be able to see what was sent to that person.
+
+When that person replies to that email email, it'll also be logged here as a comment. So now we know that Matt responded and said, hey. Multipurpose room works for me. We're good to go.
+
+Then I know that we're gonna change this over here to the multipurpose room and save those changes once we have all the changes made. And I typically suggest that the process that we follow is, in general, have all of the rooms and resources approved. Once those are approved, we can then make the informed decision to approve or reject the event. If a room or resource isn't able to be approved or it's rejected and we aren't able to move things around or use different resources or different rooms or reject it.
+
+But if we're able to approve everything, we go ahead and approve the events and whatever comment we want to be sent along with the approval email.
+
+Yeah.
+
+And we'll go ahead and approve this event. That person will receive that approval email, and this is no longer an event request pending event. It is now a regular event inside of our calendar.
+
+---
+
+## Event Templates (1:52)
+
+So you've got some events that are set up the same way every single time? That's where event templates come in handy. Organization administrators can create templates to help speed up the event creation process, and here's how.
+
+From the events tab, select the settings gear on the right.
+
+Now click the event templates option. From here, you can either choose to edit an existing template, or you can create a new one. Let's create a new one by selecting the plus new template button up here on the right. Now give your template a name.
+
+Now add your template description.
+
+Where does this description show up, you might be wondering? It's only visible when you select a template to help you identify which type of event it's good for.
+
+Now set up which calendar this belongs to.
+
+Add any tags this event might use and a location. You'll notice your campuses are already an option, and these come from the account settings. But you can even create a custom location, which is really handy if you have a location you meet at often, but it's not a campus. Think a favorite coffee shop.
+
+Now add any rooms or resources this event this type of event might use.
+
+You can even add a task list template. Not a task list, but a template. So that way, when you import your template into the event, your task lists are already right there ready for you to dig in.
+
+And that's how you can speed up event setup process by using event templates.
+
+---
+
+## Importing Events Into Calendar (5:00)
+
+Let's talk about importing events into calendar. What that means is you've got events somewhere else, some other system you're using. You wanna take them from there, put them in here. There's two main reasons why you might wanna do that.
+
+One is if you're it's your first time. If you're just adopting calendar as an organization, you're totally blank like this org here where you have nothing going on. You wanna take whatever other system you're using like Google Calendar, Outlook, or some other church management system, export those events from there, drop them into calendar. The other reason you would wanna do this is if you are already using calendar, you've already got a bunch of stuff in here, but different ministries and departments or campuses at your church are using their own calendaring system.
+
+You want everything in calendar. You wanna take everything and have it in one central place so that all your staff events, your maintenance, your outreach events, missions, every like everything at your church is all in one place. And then you can filter down using tags and stuff to to see the different things you wanna see. So let's talk about just getting those events into calendar.
+
+So this right here is our blank state. If this is blank, if you have no events inside of calendar, this is what you're gonna see. There's a button right here where you can create a new event or you can import from iCal. So this word iCal right here, this is the file type that like Google Calendar or Outlook uses to like generate a a file that has all of your events inside of it.
+
+So you could click this, but another place to find the same button if you already have events in calendar is this gear up here. This is what I like to call our set it and forget it, pages. Like these are things you probably only do once or twice ever inside of calendar and importing events is one of those things. So let's click this.
+
+It's gonna take us to this page right here. You'll see this is blank. We have no imports yet. But if I click import events and then I select the iCal file from my computer or ICS is another way to say iCal. So I'm gonna grab this.
+
+And from here, like, to get this file, all you really have to do is just Google, how do I get an export from Google Calendar? How do I get an export from Outlook? There's a lot of different tools out there to do that kind of thing, but they make it very easy for you. I can't go through every single one of them. But once you get this file, it's actually super easy. We're just gonna click next right here.
+
+Alright. So when these events come in, all those events that you're importing, they have to have an owner and they have to have a church center visibility setting. So we're just gonna pick me as the event owner. You can change all of this later after everything's imported. Church center visibility is can your congregation see these events on your church website or not? I would strongly encourage you to keep this as unpublished.
+
+If you're just feeling confident in these events, go ahead and publish them. Go for it. But I I would say, first time we should keep them unpublished. Make sure that all the information is correct before we reveal it to the congregation. And then down here, it's just a little nicety, like you can add a tag and you can say, hey, all the events that I'm importing are from a specific ministry. Like, let's say these are all from my adult ministry.
+
+So this way when the events come in, they already have tags associated with them to help you stay organized which is great. One thing that I would also recommend especially if you already have a lot of events on your calendar is to make a very specific tag for, new imports.
+
+So now on your calendar, if you apply this tag, you can filter to just the newly imported events and then you can go through and check every single one of them, make sure all the information's correct. So, this looks good to me. We're gonna click submit.
+
+And what it's doing is it's grabbing all those events and it's importing them. You can actually close this and it will still continue to work.
+
+You can see it spinning right here. And then this page, the import events page that we're on, it's gonna have a list of all of the imports that you've done. It's gonna say whether it was successful or not because sometimes they'll fail if there's a problem with the file. And there's a way to fix those things.
+
+You can reach out to our support team. You can Google the error that you get and try and figure out how to fix it. But that also tells you who imported it, when they imported it, and the name of the file itself. So once this is all said and done, you'll be able to go back to your events page and there will be events on it.
+
+Now, I don't exactly know where all the events are inside of that file that I uploaded, but I guarantee they're in here somewhere. But let me go to another church. I'm gonna swap to a different organization up here.
+
+If you go to Centreville here, which is another one of our test organizations, and I go back to the import events tab, you'll see you can see all of your past imports. So if you happen to import some events and it's a duplicate of another one that came in, you can actually delete those things. There's a button that allows you to delete a whole, set of events that are associated with an import here. It'll say who deleted it.
+
+It'll say when it was deleted, that it was deleted. So now you can stay on top of things and make sure that all the things that you're uploading into calendar importing and exporting from your other systems are exactly where they need to be. Alright. Now that all your events are in here, go and get to calendaring.
+
+---
+
+## Managing Multiple Events (4:31)
+
+Here's how to use Calendar's powerful built in filtering and view features to prioritize the events that need your attention.
+
+From the events tab, select filter from here.
+
+The first thing you'll notice is calendars. We've got our calendars set up by ministry, which are clearly color coded over here in my view. But most of the time, I just need to see the events that I'm in charge of, and I can easily do that by selecting my calendar's ministry or my ministry's calendar.
+
+Next, you can filter your events by those that are synced with events and groups or registrations.
+
+You can even even filter your events by those that have come through from the event request forms.
+
+Down here, you can filter your events by owner, manager, approver, by approval status. These are events that have rooms or resources that are approved, declined, or pending.
+
+You can filter by specific event owners or even church center status. Maybe you wanna see events that are featured or published or unpublished. You can do that with this filter.
+
+And the last thing here is you can filter by connections. These are those events that have been connected to events in the other event products in Planning Center.
+
+From here, this search bar here allows you to search for events with that are using specific rooms or resources. For example, I can select sanctuary and see all of the events that are using the sanctuary, which is super helpful.
+
+And last but not least on this filter bar is tags. One of the things that's super powerful about tags is that I can select one here, and I can either choose from the search bar by scrolling up. I can either choose to view events with that tag or view events that don't have that tag at all by selecting none. Super powerful feature, and there's lots of different ways that you can filter your events from all of these in the bar here.
+
+Alright. I'm gonna go ahead and clear the filters that I have set up by selecting this x button here.
+
+And now I'm gonna show you that you can filter your calendar by calendar color or approval status. And, again, these are all events that have rooms or resources, that are either pending, declined, or approved. Okay? The last thing I wanna show you on this page is our times view, which is found next to the month and year.
+
+Public times will show you all of the events that are shared on Church Center or your shared calendars, and then the full schedule includes setup and teardown as well as unpublished times.
+
+Okay. So right now, we're viewing events on the month view grid. But when you're planning further out or have a lot of events that you're managing, the table view is a great option for that. And you can get to there by selecting month here.
+
+A quick tip. From this view, your recurring events will only show you the next recurrence pattern, and that's to help keep everything clear so you have a high level overview of all of the different types of events that you have going on at your church without cluttering with multiple of the same.
+
+Okay. One of the really powerful features of our table view is that you can bulk edit multiple events at once by selecting the pencil icon from here.
+
+Now you'll notice I can update multiple events, event owner, church center visibility. I can select which calendar these events belong to, add tags, or even remove them. It's such a quick way to get a bunch of things done with multiple events at once.
+
+From here, you can select how many events you wanna see on this page at once, and you can even choose which columns are visible. I really like this connection column because it shows me just from this one view which events are connected to the other events in the other event products.
+
+You can use the text filter to search for events with specific keywords, so that's really helpful too.
+
+And that's how you can use the power of filters and views to focus on the events that need your attention now.
+
+---
+
+## Organizing Events with Tags (9:25)
+
+Let's talk about tags in Planning Center Calendar. Tags are probably one of the most important features in all of Calendar and they're very easy to overlook. So I'm actually really glad you're here. Hopefully, you're putting all of the events at your church inside of calendar.
+
+And when I say all of the events, I'm talking about not just the public stuff like classes and worship services and outreach events. I'm also talking about the internal stuff like staff meetings, cleanings, maintenance, that type of stuff. When you do, you start to get a calendar that starts to look like this where things are just kinda muddy. There's a lot going on.
+
+And it would be really nice if I could just filter all these other things out that are not important right now and just find the events that I'm personally responsible for or looking for. Tags are the way to do that. So, first what I'm gonna do is I'm kinda giving you a walk through like a use case of how you would use tags. Then we're gonna talk about how to set the tags up.
+
+And then at the end, I'm gonna give you some pro tips on, some some cool other things that tags can do. So, let's just say, hey, I'm in a multi campus church. We got a lot of stuff going on. I've even got two events with the same name right here.
+
+That's really confusing. Why do they have the same name? Well, it's because if I click, it's gonna bring up the preview. You'll see this women of the word.
+
+This is our Carlsbad campus. And whenever you see these colorful little buddies right here, that's a tag. That's that's indicative of tag information. And this shows up in a lot of places in calendar.
+
+So when it's colorful, it's a tag. So this one is at our Carlsbad campus. I'm gonna click on this one. This one's at North Campus.
+
+Okay. I'm the Carlsbad guy. I don't care about North Campus stuff right now. I need to get all that stuff off of my calendar.
+
+So I'm gonna go up here to the filter bar. I'm gonna click filter. That's gonna show all my filtering options. Again, we're gonna go to the colorful section down here and I'm just gonna click Carlsbad.
+
+And what that's gonna do is it's gonna apply the filter and filter out everything that is not Carlsbad. So the next time I come down here, you'll see I just have this one right now. Campus Carlsbad. There you go.
+
+That's it. And then when I'm going to create a new event, so if I come up here and I click on new event, you can say this is my demo event and it's awesome.
+
+And then you'll see I have the ability to add tags to the event. Now you can see right here, this is ministry. It's in red right here and that's because this is a required tag. So every time I create a new event, I have to select a ministry that it's a part of or I can't save.
+
+So I'm just gonna go and click, let's say this is a care event because I'm caring for you guys right now as you're watching this video. And then I'm gonna hit save. Boom. That event got created with a tag.
+
+So that's how you apply a tag. You can apply tags to existing events too. You can filter using the filter bar. But let's talk about setting up these tags.
+
+Okay? So next time you're in calendar, come over to this little settings gear here. Click on this and you're gonna see a bunch of different stuff. These are what I like to call our set it and forget it pages right here.
+
+You're not gonna do any of these things very often. You might come in and set these up once, twice, and then never again for a year or two. So tags are very much that way. You're gonna create tags that everyone in your organization can use to stay organized.
+
+And unless you're adding a new ministry or a new campus or something, you're probably not gonna come back to this page very often. So you see I have a bunch of different stuff here already. I've got campus, event type, individual tags, ministry. So these are what you would call tag groups.
+
+Each one of these is a different group and then within it are the individual tags.
+
+So I would recommend that when you're thinking about setting up tags, think about how your your organization is structured. Are you a multi campus church? Okay. You're gonna need campuses.
+
+Absolutely. Then think about, are the different types of events you put on because tags are used both internally and externally. So think about how your congregation thinks about your church. When somebody comes to your church and they're like, I wanna know what classes you offer.
+
+I wanna know what sports you offer. Do you guys do like youth league sports or karate or something? Like, do you do like when are your worship services? Right?
+
+Think about how your congregation thinks about it and make event types for those things. And then think about how your staff thinks about it. What are the different departments that are inside of your organization? Right?
+
+Outreach, singles, young, youth, married, all that kind of stuff. Create tags for those things as well. So now you've got different ways to filter and find the different events that you're looking for and to share those events with your congregation. So let's talk about campus specifically real quick.
+
+Campus is a special one because if you have set up, multi campuses, multiple campuses inside of planning center in the account section already, we will just make these tags for you and keep them in sync. If you change the name, if you add one or remove one, they'll automatically get added to this group right here. So that one just we do that one for you. You get that one for free.
+
+All the other ones are custom. And you can create a new tag group by just clicking new tag group up here. And then you can start adding tags to it. You can call it whatever you want to.
+
+I recommend event type and ministry but like that you don't have to do that. Do whatever you wanna do. I also have this individual tags over here. These are just tags that aren't in a group and they're for like one off things like, hey, we offer offer childcare.
+
+Hey, you need to pay to attend this event. So that those kinds of people who need that information, like if I'm the person responsible for childcare, I can just use the filter to filter this tag and find those events very quickly. So be thinking about that kind of stuff when you're setting up your tags here.
+
+And then again, if you're using church center, if you're familiar with church center, this little like blue and green icon with the little white house on it, that's our church center icon. And that's the congregant facing side of planning center where you share information with your congregation. So what you can do is you can go through and actually turn on or off this, church center toggle. And what that's gonna do is just like I was able to filter through all of the different tags on the administrative side on in calendar here, your congregation will also be able to filter through those different tags in church center. So, I actually have church center pulled up right here for this org. So I'm gonna tab over to that.
+
+Alright. So this is what church center page and calendar looks like. And as you can see, I've got campuses and categories right here. So if I wanna filter to just my let's see.
+
+Carlsbad campus and then just the classes. Boom. It's gonna reflect exactly what is inside of calendar right now. And this is a way that your congregation is interacting with tags.
+
+So let me pop back over to calendar.
+
+And only the ones that are available, only the ones you enable are available on, calendar. Like you probably don't want people to filter down to funerals or weddings. Right? So you can just turn those off and use them internally and not have to worry about using them publicly.
+
+Okay. One other thing and probably the most important thing about tags right here is the ability to make them required. So remember back when I created the event and I had to pick a ministry? That's because see this little asterisk right here?
+
+Ministry is required. When I click this, required. Right? So, if you are a multi campus church, you absolutely should make the campus tag group required.
+
+So we're gonna edit that, click that, save. Now every time someone creates an event, it's always gonna have a campus and a ministry associated with it every single time so that your calendar stays organized always, which is the best. Okay. So now we know kinda how to use the filter in both the staff side and the congregant side.
+
+We know how to create tags and tag groups and enable, disable them for church center, and then require, require tag groups. The final thing I wanna show you is just a couple tips and tricks that you can do inside of calendar with tags. So let's go back to the events page here.
+
+Okay. The first one is that we have really cool things you can do with the tag filters. So like for example, if I go Carlsbad right here and I go classes, it's gonna filter down my view to just those things. But then check this out.
+
+There's like a little drop down I can click. And if I wanna say like, hey, actually, I wanna see all the events that are anywhere but Carlsbad. Right? It'll say not Carlsbad and it'll show anything that does not have the Carlsbad tag associated with it, Which would be like this.
+
+Right? This is the event that's at the other campus.
+
+So that's pretty cool. But another thing that is super useful is if you go through and you make a bunch of required tag groups, what's gonna happen sometimes possibly if you've already got an account that you're using. Let me go over to table view here. If you're not familiar, there's a different view for events in calendar. You can look at it like a month or you can look at it like a listing of events.
+
+So you can see right here, we made campus required. Right? Well, the demo event that I created, campus wasn't required when I made it. So now it's missing this tag. So what you can do, we're gonna go back to our filter and you can just pick any campus you want to.
+
+But then what we're gonna do is we're gonna use the drop down right here and we're gonna say none. And that's gonna filter and only show me events that have no campus tag on them at all, which is great because now I can just hop into the demo event here and I can fix that like that.
+
+So that's tags. That's how you edit them. That's how you create them. That's how you share them with your congregation. So get out there and get organized.
+
+---
+
+## People - Permissions and Approval Groups (7:59)
+
+Hi there. Today, we're gonna look at the people tab within our calendar product. So the people tab in calendar is right here. That's a little bit different than our people product.
+
+We're not going over there today. We're gonna stay in calendar and look at all the things we can do from this people tab. So the first thing that we're gonna look at is how to add somebody to this people tab. So say that somebody in your your church needs access and permissions to Planning Center calendar, but they don't exist in your database yet.
+
+We wanna add them. So we can click add person, and then we can type in their name. So we need to add Mike Smith, and it's with an e, actually. So we're gonna create a new person for Mike.
+
+So by doing this, we are also creating a profile for Mike in our people database as well. So he'll live in calendar, and he'll also have a profile in people. So let's add his email.
+
+Alright. We're gonna save that.
+
+And then we're gonna be taken to this page where we get to select what kind of permissions does Mike need. So this page is really helpful because it gives you a great overview of what the different permissions are in calendar.
+
+So for events, rooms, resources, and people, people can be a viewer or an editor. So those names kind of say what they mean, but let's take a closer look. So if he's an event viewer, that means that he can view events, but he can't create, edit, or delete events. But if we were to make him an event creator, that would mean that he could create new events, request rooms and resources, and edit the events that he owns.
+
+But he couldn't make any changes to any other events. If we wanted Mike to have more access, we would make him an event administrator. So that means that he could create, delete, edit any event within calendar. So this is a permission that we want to make sure that we're using carefully.
+
+Not everybody in your account needs to be an event administrator. So we're gonna leave Mike as an event administrator though because he's trustworthy. We want him to be able to see and edit all of the events in calendar.
+
+So if someone is a room viewer or a resource viewer, that means that they can view all of your rooms and resources, but they can't make any changes to them. If you wanted them to make changes, you would make them a room editor, and that would mean that they could edit your rooms and your resources.
+
+Same for this last one down here, a people viewer. This just means that Mike could see all the people that currently have access to calendar. But if we were making him a people editor, that would mean that he could change people's permissions within calendar. So that's also one that you kinda wanna keep a close eye on. Not everybody in your account should be a people editor. We wanna kinda keep that locked down as much as we can.
+
+So then we could hit save, and then we're taken to Mike's page in calendar. So if you look at it, it looks a little empty. Right? He doesn't have any upcoming events, but that's because he just got added. I'm sure that Mike's schedule will fill up really quickly.
+
+So from this page, this is where Mike would be able to see any of his upcoming events or manage anything that he needed to.
+
+So that's how you would add a totally new person to calendar and give them permissions.
+
+So let's take a look at what it looks like to add somebody that's already in your database. So we are going to add Ashley Howard.
+
+So right here, can start typing in her name, then you'll see that her profile will pop up because she already exists in our planning center database. So I would just have to click on Ashley, and then it's I'm gonna see the same page that I saw earlier. So I can select what kind of permissions that she needs. So we can look right here and just confirm, yep, I want her to be a viewer in all of these areas, and then we're gonna hit save.
+
+Similarly, it's gonna drop us on her page. Again, not a lot of upcoming events for Ashley yet, but that's okay. It's gonna happen. We promise.
+
+Alright. So let's take a look at the other thing that lives on this people page is our approval groups. So approval groups are really important in calendar. So now that we've added the right people to calendar that need the permissions, now we want to make sure that they're in the right approval groups.
+
+So approval groups are so important to getting the most out of calendar. So we're gonna want our approval groups to reflect the structure of your church. They're gonna look different for everyone that's using Calendar. As you can see here, ours are kinda separated by campus right now.
+
+We have a facilities approval group for our Atlanta campus, and we have a tech group for our Atlanta campus.
+
+But we're going to look at what what can approval groups do. So really the goal behind approval groups is to make sure that all the people that are responsible for the things in this group can say yes or no to using these things. So they're kind of like the hierarchy of who gets to use what. So the people that are seeing these approvals come through get to decide those things.
+
+So anytime somebody needs a room or the resource, you're gonna want to make sure that we're notifying the people that need to say yes or no. So if someone's like, can we use this camera? We need somebody to help us run this video thing. You'd want an approval group for that.
+
+So let's take a look at what that could look like. So let's create an audio visual approval group. So up here, we'll select to create new approval group, and we're gonna just call it audio visual.
+
+And from this page, we can start adding people to this approval group. So we actually we have a couple people that we need to add. So we actually we wanna add Mike, and we actually wanna add Ashley too. We wanna add Mike and Ashley. So those are the two people that we need in this group right now. So we're gonna hit create. Awesome.
+
+And then if we scroll down right here, you can see our audio visual group is right here, and you can see the two members are Ashley and Mike. But what we're missing now is what rooms and resources are they responsible for? So we can go down here, and then we can add these rooms. So if we wanna browse for our rooms, this audio visual group is for the Atlanta campus as well, and they are in charge of anything that is going to be happening in the gym. Gym is gonna need a little bit more audio visual help to get those things set up. So that's a room that we want them to be responsible for, and then let's add a resource.
+
+Let's see what resources we have. We're gonna go to the Atlanta campus again.
+
+And for this one, they are responsible for the projector, definitely, and then they are also responsible for the mobile video gear. We definitely wanna make sure that Ashley and Mike have a handle on that for all of our events that are happening in the gym. So we're gonna add both of those, and then we're good to go. Those now exist over there. So when someone's in an approval group and somebody requests either the HD projector or the mobile video gear, both Ashley and Mike will get a notification about that so they can make a decision on whether or not the event can use one of these resources.
+
+So that is how approval groups work in Planning Center. We definitely encourage you to set these up and add the right people to them so that you can most effectively manage your rooms and your resources.
+
+Alright. So that was the people tab in calendar. We looked at people, we looked at approval groups, and we learned a bunch.
+
+---
+
+## Setting Up Rooms and Resources (9:27)
+
+Let's talk about rooms and resources because this is where calendar starts doing some of the heavy lifting for you. I usually talk about rooms and resources together because they work exactly almost exactly the same. Today, we're focus on rooms as everything we we will learn here will apply directly to resources as well. Rooms are incredibly important in calendar. They're not just about knowing which rooms you need for an event. It's also about preventing double bookings. It helps us control the approvals, communicate setup needs to our facility team, and it helps us stay organized as our church continues to grow.
+
+One of the things that I wanna say upfront is that we don't actually need rooms at all. You can use calendar completely for free, unlimited events. You can have unlimited resources. You could share your events to your calendar or your, website.
+
+And if all you need is a central admin calendar for your church, calendar is the right tool for you. But but once you start to reach the point where space matters, where multiple ministries are competing for the same room, this is where rooms becomes a game changer. And before we create any type of room, I want us to talk about organization. We can use folders to make sure that it reflects the way our buildings are set up or our organization is set up.
+
+So if you have a multi campus and you have multiple campus, you could start out by creating a folder for each one of your campuses.
+
+I'll go ahead and do that right now. I'll come over and click new folder and I will create our Carlsbad campus. Create that. And even within this folder, we can go ahead and create additional folders.
+
+Let's say we have multiple buildings. I'll come in here and I'll create building number two. Oh, I cannot spell today. Building two.
+
+And we'll go ahead and create that. And it looks actually created a room. It's not what I wanted to do. So let's go ahead and delete this room.
+
+And this is how you would delete a room. And I'll come back here to new, create a folder. Now we'll do the building two inside of our campus folder. And now we have that.
+
+We can go back to the campus folder and see what's in there. We can go back to rooms and see all the primary folders inside of the rooms.
+
+And let's go back into campuses, building two. And actually, I want to change this to building one because how can you have a building two? Well, you don't have a building one yet. So just like that, we will update the name of the building.
+
+Now we're at the point where we can create a room. To create a a room, we could click create new room. Maybe you haven't created any in this folder or at the top right, new room. And we'll go ahead and name this, not that.
+
+Let's name it fellowship hall. We'll select an approval group that we created earlier. We'll do facilities, and we'll create this room.
+
+From here, we've got a couple of options that we can do in the room, add a description.
+
+We can see that the facilities team is the approval group, and we can either remove it or add additional approval groups to this room.
+
+We can add questions. Questions are going to be similar to a basic form that you need to have specific information about this event and what they need in this room. So we could go ahead and add a question and do this is what we're do. Will there be food?
+
+And we'll do this a yes, no, make it required. Basic form building tools that you will see across any form builder. Add that to the questions. So now anytime anyone adds this room to an event, they're going to be required to answer this question.
+
+Then we've got over here on the left side, a mini calendar that shows everywhere this room has been used. So we'll see a little dot on underneath the number if this room is being used on a specific date. When you click on that date, those events will expand and we'll see those details and see everywhere this room is being used throughout the calendar. Now let's take a look at this setting right here in the middle.
+
+It's the room setups. And this is where we start to save some time in the long run when we set when we create these room setups. Let's say you have a classroom that you you need to set up. You've got different ways you can set it up.
+
+Do you gotta arrange the desk or not have any desk at all? And you wanna be able to communicate that to your facilities team and everyone that's involved in this event. So here, we'll create a new setup.
+
+We'll add a name. We'll call this one Dodge Bomb.
+
+We'll add a description.
+
+No.
+
+Things fun and games.
+
+There we go. We have the option to upload a diagram. This could be a diagram that you hand draw. You create a different software, or even have chat GBT or some AI model create a mock up of what the room will look like. Or you can actually set up the room, take a picture of it, and upload it. So whoever is setting it up knows exactly what this setup is going to look like.
+
+Then we'll have the suggested resources. Here, we will go through the resources that we have already created and say, hey. For this type of event or this setup of this room, we really suggest you having thirty chairs. And this diagram is gonna show you how to set them up. And that way when you are having the an event that requires this room with this exact same setup, instead of having to recreate it, you just select the setup that is needed when you're adding the room to the event. We'll go ahead and add this room setup.
+
+And there we go. If we were to have an event a picture there, it will show up there. As matter of fact, let's go back in there. We'll edit it, and we'll choose an image that we're going to add.
+
+Open and save it. And now we see that we have that diagram displayed there. Now the cool thing about rooms and room setup is that a lot of the times we have a classroom. We have multiple classrooms and we need to to set up the exact same way.
+
+So we have classroom one, classroom two, classroom three, and we need the exact same setup for all of the four classrooms. And instead of coming in here and creating a brand new setup for every single room, we can do what's called a shared setup or shared room setup. And to do that, we'll just jump over to the rooms page.
+
+So right here, we've got the option to create a new room setup or we can just edit an existing one. What we do that when we do that, it's gonna open up. We could change the name of it. We can add a description about what this room setup is about.
+
+And then we can add rooms resources in a diagram. Same that we would in a in a room setup, but now this one's going to be an actual shared one. So we come in and we'll go ahead and go back into our Carlsbad campus building one, creating new room, and we'll call this one classroom one.
+
+We'll have the admin be the approval group, and we can select the shared room set up here, classroom. Or when we create it, we can also come over here and link it to a shared setup.
+
+Classroom is the one that I want. And there we go without having to recreate this shared room setup multiple times. I was able to create it once and share it to multiple rooms in our, in our setup.
+
+That is the basics on rooms. I wanna jump over to resources for just a few moments. Almost everything that we talked about when it comes to rooms to this point is the same in resources. You have your folder structure where you could organize your resources according to different folders. Many times you have multiple campuses or multiple buildings. You'll see the same folder set up in rooms as in resources.
+
+When we're in the resource, there's a couple of key differences and there's really two main differences in the resources. And that is going to be number one, the detailed area.
+
+In the resources, we have the shared rooms.
+
+Resources does not have that that feature. Instead, we have details where we can add an expiration date or a serial serial number. Those are particularly popular with vehicles or resources that need to be maintenance like a projector or some type of light bulb around the campus, a lighting fixture. And then the second main difference that we have is the quantity where resources has quantities and rooms does not have quantities.
+
+Rees rooms has one room and resources, can have multiple chairs or multiple tables of any resource that you may need. You can have multiple of those at any place. But other than that, everything else is pretty much the same with the approval groups, questions, mini calendar description. And that is essentially how rooms and resources works and how you can create and edit these resources.
+
+---
+
+## Managing Registrations and Groups Feeds (3:58)
+
+Let's talk about feeds inside of calendar. Feeds allows us to create an event in groups or a sign up and registration and feed those into planning center calendar where we can then add the rooms, resources, go through the regular approval process that we would have for any other event in calendar, but it allows us to start that process in a different product. Let's jump into calendar and see what that looks like.
+
+From the calendar page, the events page, we can select on the filter and we'll see that we've already enabled the registrations feed for this account. We could disable them and it'll filter in and out those events that have a registrations feed. To manage or add a a feed, we can click on the manage button. If we don't have any feeds enabled yet, we could come up and click on the settings icon, go down to the feeds page. And if it's not enabled, it would look something like this. And like the registrations fee that is enabled, you'll have these settings that we can modify and update.
+
+Let's go ahead and enable the groups feed.
+
+When we do this, we are going to be given a list of multiple different feeds. And the reason why we do that is because every single group type in every single group type is able to be its own feed in planning center calendar allowing us to decide which events we want to bring over from groups whether it's a specific group type, all group types, that really gives us that flexibility. We are going to work with the small groups feed.
+
+These settings, it is important to remember that these are universal settings. So what I the settings that we enable here are how all of the events from groups are going to be enabled. So by default, I will be the event order for every event imported into calendar from this feed. Whatever calendar we select, it's going to be at these events are all going to be added to that calendar. And the visibility on Church Center, if it's published or or unpublished, all of the events from this feed are going to have this same setting. Same with the tags, we'll go ahead and add a couple of tags here.
+
+Finally, we will click on the enable toggle to enable this feed.
+
+When we do that, it starts to go to the process of enabling that feed and bringing in all of those events from small group type.
+
+We are going to jump over into the events page as soon as this finishes loading. There we go. Let's jump into the events page. And now we can see that we've got that group's feed enabled.
+
+We can expand it and see all of the group types that we enabled for the group's feed, manage it. And really what I wanna show you is how we can know that this is a groups or registrations feed. I'm gonna search any event that I created earlier. Cool feed.
+
+There it is. Cool feed. I'm gonna open up one of these events. And when I open it up, we're going to notice that there's this little indicator right here with the groups icon saying certain settings in this in this event cannot be updated here.
+
+And what that is saying is because the event in groups is the source of truth, certain fields like the name and the dates cannot be updated inside of calendar, and we can go ahead and update those in the group event. Clicking on the view in groups will redirect us to that event in groups where we can make some of those changes. But the big thing to remember here is when you're looking at event and you're saying, why can't I edit this this field? It's because it was created as a group's feed by this icon that indicates that it's a group's feed, and we can jump back over to group and make those changes.
+
+And just like that, that is all we need to know on how we can add and modify feeds inside of calendar and identify those events inside of calendar when you have the events open.
+
+---
+
+
+# Services
+
+## Services Overview (1:10)
+
+Hi. I'm Emily, and your sixty second intro to Planning Center Services starts right now. Services is all about planning and scheduling. It's where you can build your weekly services, organize your teams, and find the right place and time for people to serve from across all of your ministries.
+
+Start with a service type. Which is just what it says, a type of service that you can have at your church. Now inside of a service type, you can set up the teams that serve, start building plans, and get all of your volunteers scheduled.
+
+Now let's talk big picture for a second. Services is just one part of the plan center universe. Just like you can use services to plan and schedule your teams, we've got a range of products designed for the different areas of ministry a church. And when you get those products working together, all sorts of things are possible.
+
+But let's not get too far ahead of ourselves. For now, come on in, take a look around, and make yourself at home. As you explore, if you have any questions, click the question mark in the top right hand corner of the screen. From there, you can check out our help docs or get in touch with our support team.
+
+We're so glad you're here and we can't wait to see what you do with the place.
+
+---
+
+## Adding People to Services (3:22)
+
+Let's talk about adding people to your services account. Now services is designed for all of your volunteers no matter which ministry they serve in and your leaders. So let's go to the people index and see what that looks like. Now from here I can see all of the volunteers at my church.
+
+I can also filter based on the team or positions they're serving in, any tags associated with their profile, important dates such as when their profile was created and block out dates, and also filtered based on their permissions. That way I always know who has which permissions and if I need to downgrade or upgrade anyone's. Now let's go ahead and add a profile here to this account. We're gonna go ahead and hit add a person.
+
+We're gonna go ahead and add Ashley Martin.
+
+We're gonna create that brand new profile.
+
+Now from here, I have a few different things I can enter. I can enter an email address, phone number, campus designation and so much more. So in this case, we're gonna add an email for Ashley.
+
+And we can add a phone number if we'd like. And we're gonna set that campus designation. In this case, Ashley is part of the San Diego campus.
+
+We can set any additional demographics as well, birth date, marital status, anniversary, medical notes, and if you're adding a teen, any school that they might be attending. This case, let's go ahead and hit save.
+
+Now once we do that, we'll be taken to this brand new permissions model, which will allow you to give them the permissions they need to do the ministry where they're serving. Now we have people and plans, songs, media, and a file access section.
+
+In this case, people and plans, this dictates what they see when they log in. If they can see plans in the future or only the ones that they're scheduled to. Now since Ashley is a volunteer and not a leader, we can either do schedule viewer or viewer. Now, Ashley doesn't necessarily need to see plans scheduled in the future, so we'll leave her set to scheduled viewer.
+
+Now we do have a section for service types. So if Ashley only serves at the San Diego campus, and I would like Ashley to see maybe any plan that's created within children's church, I can do that, or I can get granular and choose additional access to other locations. In that case, I don't want to do that here. But since Ashley does serve on the worship team, I wanna make sure that Ashley has access to our songs index.
+
+So from here, I'm gonna set Ashley as a viewer. This gives Ashley everything she needs to be able to see songs and rehearse even when she's not scheduled. Now media, she doesn't necessarily need access to that, but file access, this is important. Any plan she's scheduled to, yes, I'd like her to access any plan files, song files, yes, definitely, and media files.
+
+We'll go ahead and hit continue, and from here we could send out a welcome email.
+
+Now by default, Center does have a welcome email template, but you can also have your own custom one that you've created as well. We'll go ahead and hit submit, and once we do that, Ashley's profile has been created. I can assign Ashley to any teams from this location, adjust any preferences, add block out dates, and so much more. And that's how you add someone into Planning Center Services.
+
+---
+
+## Adding Songs to Your Services Song Library (6:11)
+
+Let's talk about adding songs to your planning center services account. Now we're gonna jump right over to our songs tab as this is where your library is going to live. Any songs that you and your church do, the different arrangements, but it's also where you're gonna add those songs.
+
+Now, as we begin to add songs, there's a few important distinctions. Planning Center serves as a software provider, not as a content provider, which means any of the song audio files, chord charts, lyrics would come from another location and not from within Planning Center, Which means you might need a subscription for any of those other things to get those contents that you need for your team. In this case, we're gonna start typing in a song. In this case, we're gonna type in Good Grace.
+
+And what's great about this is as we type this in, there are two different databases that you can choose from to add this song. Popular recording searches the multitracks dot com database where you can get the song, the any metadata such as the BPM, maybe even the song sequence, the artist, any of that information would be included. Now if you go to all songs, this searches from the CCLI database and you'll get their metadata as well. It'll be the same song, so if I typed selected Good Grace, it'll add that but only with the metadata CCLI provides.
+
+If I go to popular recordings, it'll add that same song but with the metadata that multitracks provides. In this case, I'm gonna go ahead and select Good Grace from popular recordings.
+
+And we could see already that default key that it comes over in. If you have an integration with multitracks, praise charts or with song select, you can go ahead and select any of the options that are included in your subscription with them. In this case, we'll leave everything kind of unchecked and just show you how to add the song itself. So we'll go ahead and hit submit, and perfect. We could see any of that metadata that's brought over. We could see the length of the song, the BPM, that meter, and the song sequence as well. What's great is even after import, can go ahead and adjust that to your preferred sequence.
+
+Now, we can see Good Grace done by Hillsong United. Maybe there is a different version you like, and that's where arrangements come into play. Arrangement is a different version of the exact same song. So it wouldn't be another song with the same name Good Grace because that would just be a different song.
+
+An arrangement is the same song, just a different variation of it. So in this case, maybe there's an acoustic version, maybe there's a choral arrangement, or maybe just a different artist does Good Grace. So in this case, we could see Sean Curran has a version of it, even Hillsong in France has a version. So you can kinda go ahead and search through that to find the arrangements that you need.
+
+Now let's go ahead and jump back over into songs. And let's just say that you've written your own song. You have an original song and you want to add that to your database. You can go ahead and hit add song.
+
+And in this case, let's just say it's How Great Is The Father's Love and that's the name of your song. We can go ahead and create a new song at the very bottom where it says create a new song, select that and then you can add any of that information. So if you have a default key, in this case let's say it's a d, you wanna upload files from your computer, you can go ahead and select that box as well.
+
+And so if you do have files from your computer and you select that, we'll go ahead and prompt you on the next screen to either maybe link it if it's on YouTube or Vimeo, so if you have a live recording of it or if it exists in one of the integrations, so maybe you've already uploaded it to praise charts, multi tracks or CCLI, or if you have a a link, Google link you want to share with that. But you can also drag and drop any of the files that you did for your song. So if you've already written your own chord charts, you have your own audio file on your computer, you could bring that over. So
+
+in this case, we'll hit done. Soon as we do that, we take you exactly to your song and then you can drag and drop things, you can add additional keys. So if you not only do the song in d, maybe you also do it in maybe c, you can add that, you can add any capo charts if you'd like. So I'll go ahead and hit save and we could see those keys automatically updated.
+
+Now what's great is we also have this option for lyrics and chords. And what this is, it gives you the ability to utilize the technology known as Chord Pro and use a lot of those variables to kind of type in the lyrics and the chord chart. So let's just say that you're gonna go ahead and type in How Great Is Our God as one of the lyrics for your song. You can go ahead and then say, well, this original key's in C, so probably the first chord's gonna be in C, so I'm gonna go ahead and put this in brackets and Planning Center knows exactly where that chord should go.
+
+So if it's C there and then maybe that next one is gonna go ahead and be you know f.
+
+Perfect.
+
+Awesome. So we go ahead and see that and then you can go ahead and go from there and there's a lot of options available for you such as page breaks and additional Chord Pro variables and symbols at your disposal. But you can also choose how you like your formatting for your unique song. So in this case, if you like two column charts, you can do that. You can change your font sizing. All of this available when you are creating your own song.
+
+Now, let's just say you do have a song integration and you want to incorporate that in the planning center because you get your content from that other location. What's great is if you come over to actions within that songs page, you can select song file integrations. And here we have the three song integrations that integrate within Planning Center, are multi tracks, praise charts, and song select. And you can read a little bit more on what each of them offer. And if you integrate with them, when the song exists in your database or when you're adding it, you can go ahead and select on the song, hit add file, select the integration that you want to work with, and import the options that are available with that specific content provider that you might integrate with. And that's how you can go ahead and add songs to your services account.
+
+---
+
+## Using Custom Item Row Colors (2:47)
+
+Let's talk about custom item row colors within a plan in services. Now, when you're adding items to an order of service, you have four different types of items that you can add. Let's check it out. If you hit the add drop down, you can see I can add a plan item, I can add a header, I can add song items, and media items.
+
+Now a header keeps things nice and clean and they already come with a little bit of colorization to them. But you have items, song and media that might feel the same. Now songs do include the key if it's done in a specific key. Medium will have kind of this m indicator, but you might want more to distinguish which is which.
+
+And that's where custom item row colors come in. Now you can manage this from within the service type settings and I'm gonna go to actions from the top right, select settings to get to that area. Now on the bottom left hand side, we see this section for item row colors.
+
+Now headers, I might want to be just a hair darker. I'll go ahead and save that. Songs, I can go ahead and set those. So in this case, I want songs to appear in green. Perfect.
+
+We can make other adjustments. I might want media to be in purple. Awesome. And I'm gonna edit the song placeholder and we're gonna put message.
+
+And anytime we have an item called message, we're gonna go ahead and have that be read. Now you can add as many things as you'd like if you want something for baptisms, if you'd like things for child dedications, you can add those items here, similar to what we did with message. Now we're gonna go back to our plan.
+
+Hit that January eleventh plan, and from here, nothing's updated yet because we need to enable these custom item row colors. And what's great is this is done on a per person basis. So I can go to this menu option and select use custom item row colors. And as you can see, any songs automatically got added to green, any of my media got added to purple, and I also have a message item that has been turned to red. And what's great is this also communicates with the matrix. So if I open the matrix, I can see things from a bird's eye view with those custom item row colors. Let's check it out.
+
+So I wanna go ahead and select the next four plans, hit matrix.
+
+Soon as we go there, we have our order tab and now I can see any of those songs in green, I can see my media in purple, and any of my message items. I can quickly also jump to that by using my target option to see where the message is for each specific order of service.
+
+And that's how you can use custom item row colors within services.
+
+---
+
+## Creating and Adding Items to a Plan (8:35)
+
+Let's talk about adding items to your order of service. Now your order of service is gonna contain every element that happens within your service. Now within Planning Center, there are four types of items you can add, such as a plan item, a header to kinda keep things clean and organized, the songs that you're doing, or any media items such as countdown, bumper video, or those types of things. In this case, let's build out an order of service.
+
+Now if you have a blank order of service, we'll kind of give you a prompt to add your very first item. In this case, let's go ahead and put walk in slides. So as people walk into service, we want them to see slides. So walk in slides.
+
+Now this should happen probably about, you know, maybe ten to fifteen minutes before service, but we'll put the duration for about ten minutes. Now, right here we have a section for when this should happen before, during or after service. This case we want this to happen before service.
+
+Description, so if there's anything we need to indicate that happens there, we can include that there. And down here, we have our item note categories. So if we need to add some notes such as who's responsible for it or any other categories, we can adjust that. And this settings gear will also give us the ability to add or adjust any of these categories.
+
+In this case, I want the tech team to know that they're responsible for making sure this goes off on time. So we'll go ahead and hit tech, and hit enter, and we can see that item added. Now it appears in italics because as I select it, it happens either before or after service. So that's perfect just how we like that.
+
+Now the next thing we'd like to add is our countdown that happens five minutes before service should start. So I can hit that drop down, I can hit item again, it's gonna go ahead and add that next in line, and I'm just gonna call this countdown.
+
+We're gonna say that it is a five minute countdown and it happens before service.
+
+Now what's great is we can see automatically that it adds that in italics as well, but also if I choose to include the time, I can go ahead and set nine AM and eleven, I can see that it's already taken into account the length of time and that this is happening before service. So it auto adjusted our walk in slides to happen at eight forty five. That way at eight fifty five, the countdown which is five minutes long can start so it gets us right to our nine AM start time which is when service begins. Perfect. Now I'd like to add a header to kinda section off when the worship set starts. I can do that from the add drop down, but we have a few other power up tools I wanna show you.
+
+One, you can hover over any position within your order of service and use any of our shortcut keys. Now if you hit the add drop down, we show you those shortcut keys right next to the type of items you can add. So in this case, if I wanted to add a header, I can type in h. So let's try that. I can hover over here, I can hit h and it's gonna add them right in between the walk and slides and countdown. But I really want that to happen after the countdown, so I'll just drag it to that location.
+
+And we'll call this worship.
+
+Perfect.
+
+Now let's add our song set list. I can hit the add drop down, do song, and that will go ahead and pull up all the songs in my database. In this case, I wanna do all my fountains first.
+
+Perfect. I can go ahead and adjust any of these. I can probably indicate who's going to lead that specific song. So in this case, I'll put Aaron's gonna lead that song.
+
+I can add any adjustments for the audio team, maybe there are two people that are leading it, kinda go back and forth from there. I can also adjust the keys for the song that we're doing that. And as you can see as I added that song, any of the files associated with that song in my database automatically get added. So we're gonna go ahead and select that.
+
+Now, I have about three more songs I do. I can go ahead and use the shortcut keys that I showed here.
+
+I can also use our quick add item. That's where this plus is. So I can hit add, and we have some great indicators at the bottom. So I can use s to access our song database, m for media, h for header, but I also can add the length.
+
+So in this case, I wanna add a song, so I'm gonna hit s space, great. So now it's gonna search for the song database, and I'm gonna go ahead and type in oceans. Perfect. Now it automatically added that song there to that view.
+
+Now I'm gonna add a few more, but what I'd like to do is I think I wanna close with oceans, I wanna add two more here. So I'm gonna use the same shortcut keys, but hover in between both songs, hit s, and now I can access that song database. Now it would be much easier if I can add multiple songs. Luckily, can.
+
+Right here, I can select add multiple, and now they're check boxes. And what's great about this is I can search the database either using the search tool up top, or can scroll. So if I wanna do firm foundations and then let's do good good father right after that, it's gonna add two, but what's great, it's gonna add them in the exact order that I checked them.
+
+Boom. All my fountains, firm foundation, good good father, and oceans. Now I would like to add a call to worship in between, so I'm gonna hover between all my fountains, hit I for plan item, just type in call to worship.
+
+In that way, can add a passage of scripture if I want to the description. I wanna make sure I add a length, so two minutes, and I can put whoever is going to be doing that. In this case, Caleb is gonna go ahead and do that. We can just right here, I'll put in Romans five eight, and we know that Caleb will need to read that passage of scripture. Perfect. Now we're gonna go ahead and add an additional header because we want to get to our bumper in our message and if we have baptism. So in this case, I'm gonna go ahead here, add a brand new header, drag it exactly where I want to, and I'm gonna go ahead and call this child dedications slash transition.
+
+Now I go ahead and add an item, in this case I'm gonna call it child dedications, and this should be five minutes. I'm gonna just type in five m, enter, and we could see it automatically knows that it should be five minutes and then add the item child dedications. Perfect. Now I want a bumper video.
+
+There's a few different ways I can do that. I can just type in bumper. Maybe it's a series bumper, so we're in a specific series. So I'll go ahead and type in series bumper.
+
+It should be one minute long.
+
+Now if I have a specific video that's attached, maybe it's a media item, I can click that item, go to media, and go ahead and link any media that is specific already in my account based off of that bumper.
+
+Now I wanna add one more header because we're gonna go right into the message next. So I'm gonna hit h space and just type in message.
+
+Perfect. And now I can actually put the message here. Let's just say the message is twenty five minutes long, twenty five m, enter. Perfect. And we wanna close with one last song, s space. Let's go ahead and close with same God.
+
+Now by default, we do take you to the same key you did it the last time in the service type. In This case we haven't done this song yet, so I'll go ahead and select B. Perfect. Now I have my entire order of service.
+
+Now there are a few things we can do from here. If child dedications only happens during the second service, I can hit this exclude option, that way it only appears for our second service. So if I print out the order of service for my team, they will only see child dedications for that eleven AM service. Now if I'd like to have our order of service items stick out a little bit more, I can use custom item row colors to kinda signify that.
+
+And right now, I don't have those enabled, but let's enable them really quick. We'll go to our settings, and I could say for our songs, I want those to appear in blue. I want our headers to be a little bit darker.
+
+I'd like our media to appear in purple. And anytime we do child dedications, I would like those to appear in yellow.
+
+Perfect. Now I'm gonna return back to my plan that we just created, and we could see it's automatically enabled. And I can adjust any of these items based on what fits my team's needs best. And that's how you can create an order of service within services.
+
+---
+
+## Creating a Service Type (2:48)
+
+Let's talk about creating a service type within your services account. Now a service type is a type of service that happens at your church. Let's go ahead and create one. Now from the add option from the plans page, we're gonna be taken to the service type creation wizard.
+
+Now we have a few different examples for you for the types of service that you may wanna add such as a weekend service, maybe it's a specific day of the week, so Sunday service. If you have any special events, celebrate recovery, things for your youth group or even children's ministry. In this case, I'm gonna create our weekend services service type. So we have two service times that happen, so I'm gonna go ahead and select weekend service.
+
+Now we have a second option here for plans reoccurrence. This means how often do these services happen. In most cases, it's gonna be weekly, but maybe you have a once a month, maybe worship night that happens or different types of things like that. In this case, I'll leave it set to weekly.
+
+Now we're gonna go to our add times section. Now we're gonna ask you what day of the week does this typically happen on. In this case, we'll set Sundays and we can set the time. So our services typically happen at nine and eleven, so I'll go ahead and set nine AM. We'll set the end time to be ten, maybe ten fifteen, and then I'll add a second time.
+
+Now since that second one is at eleven, I'll make those adjustments and we'll set the end time to twelve fifteen.
+
+Perfect. So we have both service times that are added for our weekend service service type. And now we're gonna go go ahead and hit next. And from here we'll have an option to add any commonly named teams. We have a section for music, technical, kids, hospitality and other. Now you can still create other teams later on that are custom to the ministries that you have at your church, but these are just some of the common teams that are listed. In this case, I'm gonna go ahead and select band, audio visual, each of these kids sections.
+
+One for first impressions, and lastly we'll go ahead and do cafe. I'll go ahead and finish that process, and it's gonna create all of these in the background and take me to our very first plan for this service type. And if I would like to adjust some of the teams, I can do that by coming right over to our actions, going to our settings for this service type we just created, hit teams, and make any adjustments from here. So I can add new teams or adjust any of the positions created from the common team section of that service type creation wizard. And that's how you can create a service type within Planning Center.
+
+---
+
+## Creating Teams and Positions (7:11)
+
+Let's talk about creating teams and positions at your church. Now teams and positions are the ministries and volunteer opportunities available for the congregants at your church. So let's jump over to the people index page and go to our teams tab. Now this is where you can see all of the teams that already exist in your account.
+
+You can filter by my teams, all teams, archive teams, or even teams associated with a specific service type. In this case, we're gonna go back to our plans tab and see our different service types. Now teams are service type specific, meaning for each service type, you'll wanna make sure you create the teams that are needed for that type of service. In this case, we're gonna use traditional service as our example.
+
+We're gonna come right over to our settings here, select teams, and from here we'll see any of the teams that are specific to this service. Now I have welcome, cafe, audio visual, band, ushers, and so on and so forth. In this case, I wanna create a security team. And what we're gonna do is we're gonna select add a team, and we give you a few different options to kinda walk you through creating the best type of team for your church.
+
+So in this case, I want to call this a security.
+
+And by default, when you create a brand new team, you're gonna be the leader of that team you're creating. Now you can go ahead and add other people if you'd like, so you can have multiple team leaders. But by default, we wanna make sure your team is not leaderless, so whoever's creating that team is going to be the default first person. But you can remove them and add anyone else if you'd like. Now we have our different types of teams. Rehearsal team, these are the teams that need the rehearsal features such as your media player, songbooks and song files.
+
+Secure team, these are the types of teams that need a clear background check within planning center people in order to serve on this team. In this case, my security team does need to be a secure team, I'll go ahead and select that.
+
+Now split team, this is a type of team where if you have multiple services, multiple service times and need different volunteers for each service time within that team, you would use this. In this case, you do not wanna put in the time within the team name. Otherwise, you're doing this incorrectly. That's why split teams exist. So in this case, I'm going to set this as a split team because we need different security team members for our first service and different ones for our second. Now we're gonna go ahead and create that team.
+
+Perfect. Now if we have other times that exist in the service type, that'll show up in this next screen. In this case, our security team doesn't need to be there for sound check or worship rehearsal just for the service time. So I'll hit submit there, and now we have our team. Now the team, this is the umbrella for the ministry and not necessarily the positions that the team offers. So we're gonna wanna create those positions. In this case, I might have parking lot security, and we can just call it parking lot.
+
+I might have for our kids ministry, so I can type in you know, maybe it's kids zone.
+
+I I might have security that are specific to the auditorium. So in this case, I'll type auditorium.
+
+And maybe I have one for our front entrance.
+
+Perfect. So I have our four different categories and you can get as granular as you'd like. But this is a team that is set up as a split team, so I have different people that serve it for service and second, and the positions that can be scheduled within that team. Now if I wanna make any adjustments, I can do that as far as the team types.
+
+I can also set any other categories. So we have our scheduling gap alerts, where if people are still unconfirmed when I schedule them, I can be notified as a team leader. And we have other options that are available as well. So if they decline, I can have an option to reschedule or find their replacement.
+
+So in this case, I would like to add some members to this team. So we have our auditorium security. I can hit add a person, and this is going to search our database. In this case, I wanna go ahead and type in Aaron Smith.
+
+As I type in Aaron, we can go ahead and see that Aaron has a missing required background check. So we do show any indicators, and because the security team is a secure team, we're going to go ahead and require that information. So in this case, I wanna also go add Daltonburg, and we can see those added. And we can add that for each position.
+
+And what's great is because this is a split team, I can set their preferred times. So I can go ahead and hit edit and adjust and add any additional times from there. I can say how often I would like them to serve. So if it's twice a month, three times a month or as often as needed, we can set those parameters there.
+
+Now I can do that for each specific area. Now let's create one more team. Now in this case, we're gonna come back to the service type, traditional service, see all of the teams present, but we're gonna add one more team. In this specific team, let's go ahead and add an orchestra ensemble.
+
+That's what we're gonna call it, and we're gonna say this is a rehearsal team because they do need access to the media player, song files and the songbook. We don't need it to be a secure team or a split team. Because as a split team, I have multiple services, but it's gonna be the same people that serve at nine that serve at eleven. We're not gonna swap out in between services, it's gonna be the same ensemble. So we'll go ahead and submit that.
+
+And yes, the sound check and worship rehearsal do apply to them, so we'll go ahead and hit both of those check boxes. Now let's create some positions. So I can create anything I'd like here. So if I'd like I can go ahead and have maybe my trumpet section.
+
+I can go ahead and add a trombone.
+
+I can add my flute section.
+
+I can add sax.
+
+And then we can also add a few other things, so we can add our our timpani, we can add a triangle, and we can also have other areas such as like a pit or other instruments that we'd like to add. But in this case, we'll leave these five sections here. Now, from there we can go ahead and add a few different people. In this case, we'll go ahead and add Aaron Stewart to flute.
+
+We'll go ahead and add Matthew for our saxophone, and we'll leave it there. But as you can see, we can also adjust those preferences for how often we would like to have them serve. Now under settings, because we do have a large ensemble, I would like to default our people that are scheduled to confirmed, and then they can adjust things. So I'm gonna turn off notifications. We use our ensemble every week, so this way when I do schedule those teams, they're automatically gonna be set to confirmed, but no prepared notification. And then they can decline from there. And that's how you can create teams within services.
+
+---
+
+## Scheduling Teams with Needed Positions (4:09)
+
+Let's talk about scheduling teams with needed positions. Now we're gonna jump right into it to show you how you can use this at your church. We're gonna go to our April nineteenth plan, and from here I have a few things already filled out like our band and tech have already been filled and some of our other ministries. Now needed positions gives you the ability to communicate to planning center what your ministry needs are for each week.
+
+So we're gonna jump to team actions, select needed positions. Now when we do that, every single ministry within this service type will populate, which is great because now you can say, hey, for each role I need x amount of readers, kids people, and so on and so forth. And as your church grows, you can update this. So planning center will grow with you.
+
+In this case, our nursery team has really been needing more help because we are having a lot more kids in our kids classes, which is a great problem to have. So we have our lead teacher, but we need to add a few more assistants. So I'll go ahead and hit one here.
+
+Actually, let's make that two more. So now we have three assistants and one lead teacher. Perfect. Now that's needed positions, but what's the power behind it?
+
+If I go ahead and select that needed position role, I'm gonna see this drawer open up on the side over here. Now what's so powerful about this is we're gonna show you everybody that's assigned to that nursery ministry, specifically that assistant role, and we're gonna go ahead and order them in what's really the best person for that role. And we order them based on the last time they served or didn't serve. In this case, Stephanie Price is assigned as an assistant but hasn't served before.
+
+Maybe Stephanie is a brand new volunteer, so we really don't want Stephanie to slip through the cracks, so we'll go ahead and schedule Stephanie. And so we can go ahead and hit add one, and perfect. We see Stephanie's been added. Now I'm gonna go ahead and hit need to positions again.
+
+And now Stephanie's no longer on that list up top because she's in right here that position. In fact, she'll be down here.
+
+But I wanna show you some other cool things about this ordering. So now we're gonna show you that next best person which is Simone and then Courtney. We can see that they last served thirty eight weeks ago. Now you can filter this by selecting here and say when's the last time they've served in this position, the team as a whole, so maybe in your kid's ministry, the same people serve in the different roles, so you can go ahead and get granular with that.
+
+Or maybe they serve in more ministries than just yours and you wanna make sure they're not over scheduled. You can change this to last used anywhere to give you more accurate information. In that case, we see that Simone changed from thirty eight weeks to twenty one. So perfect that gives you more clarity.
+
+We could see Courtney served two weeks ago. But also at the bottom, we also separate out those with conflicts. Now we have here this icon here that's in bright red that shows that Steph has a block out date and is out of town. So perfect.
+
+We don't wanna schedule Steph, but because our kids ministry is also a secure team, we also wanna require that our volunteers have background checks. And that's what the shield icon is. We're saying that there's a conflict that Jacqueline has maybe an expired background check. And so maybe they had one before, but it's hit its expiration date.
+
+So we need to order a new one. And so that's what's great about this. We also have Cherie here that it she doesn't have the shield, but she does have the yellow box showing that she's already scheduled to serve in our tech ministry. So now we know, perfect, these are the best available people for that slot.
+
+I can select two, hit add, and now we've filled out those roles. And I'm gonna go ahead and do the same thing for our lead teacher. We can see our conflicts down here, which means perfect. Courtney is the best available person to lead that classroom.
+
+Now you can use those to fill that out, but also what's powerful is if you used auto scheduling as well, it'll compute directly through that. So in this case, I'm gonna go ahead and auto schedule the rest of our needed positions, and we can see they're automatically added based off the best available person that don't have conflicts. And that's how you can schedule your teams with needed positions.
+
+---
+
+## Types of Teams (4:46)
+
+Let's talk about the types of teams in services. Now there are four types of teams in services that gives you the ability to set up your team in the best way so your volunteers have all the things that they need. Now from the people index, there is a teams tab where you can see all of the teams within your account. Now we also have a few different indicators that you can access from this menu sidebar.
+
+In this case, I'm gonna hover over here, this song icon, and we can see this is a rehearsal team indicator. Right here, this is a tag team indicator, a split team indicator, and lastly, a secure team indicator. Now we can access any of these types of teams from the team settings. In this case, we're gonna jump over to our second and third team.
+
+Go to the team settings page, and this is where you can manage those types of teams. Now this rehearse option, this rehearse team, this is needed for any team that might need access to the media player, the songbook, or song files within the account. Now this would be perfect for things like your band, your choir, or even your tech teams. Not every team needs access to the media player or the songbook, but the teams that do, you wanna ensure that they are a rehearsal team.
+
+And so have that check marked. The next type of team is a secure team. Now this is a powerful team type because this requires any volunteer on this team to have a cleared background check before they can be scheduled to any plan in your account. So this is perfect for any children's ministry team, maybe your greeting team or your security team.
+
+Now you might require background checks for all of your teams, in that case you can have this enabled for all teams, but specifically you wanna make sure that your kids ministry teams, your security and greeter teams, that those are enabled. Now how this works is this cross references the people product right here, and to see do they have a clear background check-in your people product, which is the church management side of planning center. You can create a manual background check to clear that if you have an outside, software that you use, or if you use one of the internal integrations, it can work directly there where you can order a background check and those will update.
+
+So that is a secure team. The next team is a split team. Now what this team does, it looks, to see how do you want your people scheduled. If you have more than one service time, for example, a nine o'clock service and an eleven AM service, you might say I need different volunteers to serve at nine AM, different ones to serve at eleven AM.
+
+Now if you just have one service time for your weekend services, then don't use split teams. Split teams is specifically for using different people for this team for this service, different people for that same team for the second service. Another key indicator is if you are adding a time to your team name, don't do that. You should use split teams because split teams will do that automatically for you.
+
+And we call that out. This team uses different people for each of your service times.
+
+And lastly, we have a tag team. Now, this is an older type of team but very powerful. Let's just say you have the same team that serves on Sunday that you do midweek or maybe even for a special service like Celebrate Recovery and those types of things. So it's the same people.
+
+Rather than adding people individually to each team and each service type, you can enable this tag team feature, which means that you will have tags that are required to be assigned to specific positions. So let's just say it's a tech team and you have a sound position. You might have a sound tag that you add to a person's profile, which automatically assigns them to all positions that have that specific sound tag. So in this case, they can be added to three or ten different positions across ten different teams without needing to go individually, just enabling tag teams.
+
+And those would be managed from within that members tab. Now what's awesome about this is we actually prompt you when adding a brand new team for three of those team types. So while you create a team, we call out, does this team need to be a rehearsal team? Does it need to be secure or a split team?
+
+Now if it needs to be a tag team, can create that after the fact. But in most cases, directly assigned teams are gonna be the way to go. But we also prompt you during the team creation process. That way you know that your teams are set up in the best way possible for the needs at your church.
+
+And those are team types in services.
+
+---
+
+## Permissions in Services (8:46)
+
+Let's talk about permissions in services. Now there are five main permission levels and services and they all kind of build upon each other. Now let's talk about this from the point of view of the people index page where you can see all of the people in your services account. Now we have a few different columns, and one of the main ones is permissions highest.
+
+Now if you're not seeing that, you may not have that selected in the menu selector right here. So it's possible that that is unchecked. In this case, we want it check marked, so we can see the different people and the highest permission that they have in services. Now, if they have multiple categories that have the same permission level, we'll list that.
+
+So for example, Alex is a viewer in both the service type level and the media permission level as well. Now, you can go ahead and edit permissions from a person's profile or right here from the media index. In this case, we'll go over to Alex's profile, select those permissions, and we see this modal that populates right here.
+
+Now we wanna talk about those main permission levels, but we wanna talk about the three main categories, which are people and plans, songs, and media. Now these are the different areas you can go ahead and set permissions for based on your volunteers and the roles in which they serve. Now people and plans, this gives permissions to the people index page, which was this page back here. Plans, so that's where you go ahead and schedule your different services and your plans. This is where you also plan your service such as your order and schedule your volunteers.
+
+Our second category is songs. This is the songs index page for your services account. This is where all the songs live, any any files associated with those songs. Media, similar to songs, this is your media library, your media index, where any of those media files such as curriculum, maybe even countdown videos, and those types of things live in your services account. And you can set permissions for each one of them individually. So let's talk about those five main areas.
+
+You have scheduled viewer, viewer, scheduler, editor, and administrator. Now those five main areas are gonna be communicated in the people and plan section, and not necessarily the songs and media. Songs and media have four, people and plans have those five main areas.
+
+Now scheduled viewer, this means you can only view the things that you are scheduled to. It's honestly one of the best permissions you can give to your team. That way they're not overwhelmed with all of the features and things that might be in services that probably don't pertain to them. Now viewer, this allows any of your volunteers to see plans in the future even if they're not scheduled to them.
+
+And when it comes to the people index page, it allows them to see the people that are on their teams or a related team. What's a related team? A related team is managed in the team settings page and it might allow team members to see other people that are on teams they might want to have their information. For example, if you have different kids teams, that might be a good indicator to have a related team.
+
+Or abandoned tech team. You might want band members to see tech teams members information, so they can contact maybe about a rig that they're bringing for rehearsal. Now that's viewer. Scheduler allows people to go ahead and schedule people for the teams that they lead.
+
+That's the important caveat. If you are a scheduler but are not a team leader, you're more so like a glorified viewer. You can go ahead and see all the people but you can't actually schedule or email them. So if you set somebody to scheduler, you really wanna ensure that they are a team leader for those teams that they need to manage.
+
+Now editor, this has a little bit more responsibility to it. As an editor, you can add and remove plans that you've created. You can go ahead and schedule any team in those plans even if you're not a team leader. And so that is an editor.
+
+Now an administrator, an administrator similar to editor can see all of the people in your services account. They can add and remove plans even ones they didn't create. They can also create service types, which are the types of service that happen at your church. Now these permissions should be handled with care and not given out to a lot of people or volunteers.
+
+You wanna keep this very tight because administrators can remove things and even history of things. So I would recommend keeping that as low as possible. A big rule of thumb with permissions is give your team the lowest amount of permissions to do the things that they need to do. And that ensures the safety of your account and the content in there.
+
+Now when you jump over to songs, we mentioned there's four categories, scheduled viewer, viewer, editor and administrator. And the reason why there's four is this is specific to the index page for songs. So if we were to exit this page, we go to the songs index, this is what those permissions apply to. So now if we go back to the people index and select our permission, we can go ahead and see that songs index here, and we can set that permission.
+
+Now schedule viewer, this just means those volunteers will not see that song tab on the mobile app, or they won't see that song tab on the web view as well. So if we set that to scheduled viewer, they'll only see songs in the plans that they're scheduled to. Viewer is also a great permission. So if you have band members that you want them to have only scheduled viewer permission, so only see the plans they're scheduled to in the future, but you'd like them to be able to rehearse during the week, and not have to create a fake plan in the future, set their song permissions to viewer.
+
+That way they could see the songs index page, practice any song even before they're scheduled. Now song editor allows you the ability to go ahead and create new songs or remove songs that you've created. You can also add files to any song within the songs index page for your church. As a songs administrator, you get quite a bit more permissions.
+
+You can add and remove songs, even ones you didn't create. You can add and remove files, but you can also manage songs integration. So if your church integrates with any of our main content providers, you can enable those integrations from the songs integrations page. Now media, very similar, scheduled viewer, viewer, editor and administrator.
+
+As a scheduled viewer, you will not see the media tab on the mobile app or on the web. As a viewer, you will be able to see those tabs, but you won't be able to add or create anything.
+
+As an editor, you can add and remove any media you've created. Now a great example of media you would add might be curriculum, countdown videos, any bumper videos and those types of things. And as an administrator, you can add and remove anything even things you didn't create. Now down here at this bottom section, we have our file attachment access.
+
+Now you might want more granularity about the types of files that people can see. Now we have plan, song and media. Plans are these are the files that you add on a plan on that side hand bar. So this might be where you add curriculum, this might be any policies for your teams that they need to see or even a layout.
+
+And so if you don't want them to see that, you can have that unchecked. Songs here, now this is great out because I'm a songs administrator, but if I went down to viewer and media to viewer, we can see those words go ahead and bolden. Now for songs, these would be files attached to the song. So if I'm scheduled to the plan, I could see the song, but if you want don't want specific individuals to see the files attached to those, you can uncheck it.
+
+That goes the same for media. Now if you have higher permissions like song editor or media editor, we actually gray those out to where you can't uncheck them. And the reason why is, if you're a songs editor, you should be able to add files to a song, which would make it difficult if you couldn't actually see the things that you're adding. So we make it easier for you by making those grayed out.
+
+Now there's two other statuses. One would be archived. So if you no longer serve, maybe you're taking a break in services, you're archived. The other one is inactive in which we automatically archive your profile and services.
+
+And those can be managed from a person's profile. So if you'd like to archive a person, you can go ahead and jump over to their profile. This case we'd go to Abby's, go to action. From here, we can archive or remove their profile or set it inactive in planning center people.
+
+And that is permissions in services.
+
+---
+
+## Tour of Planning Center Services - Web (6:10)
+
+Let's take a quick tour of the web interface for Planning Center services. Now the website also has a mobile app that basically is very similar and there's a separate tour that you can watch for that.
+
+On the website I am here on the My Schedule tab. This is the default tab that you're going to get to and that any of your team members can also see, and this shows what you are scheduled for. That's why it's the home page. So I can see that I have been requested for October twelfth. Here's where I could accept or decline. I can scroll down and see what I've already confirmed, and then here at the top is where I can block out dates ahead of time if I know I'm going to be on vacation or something. I can see any of the messages that have been sent to me, or I can email my team leaders.
+
+Now I'm going to go into some of these other tabs which only the admins, the planners, get to see these other tabs, and we're going to start over at the people tab. This is the tab that shows all of the people that are serving or are team leaders or our team members anywhere in Planning Center Services, so that you can organize them and see how to contact anybody that you need to that's on your team.
+
+We've got the Media tab, which is the library for all of the media: the videos, any scripts, curriculum, documents that you want to use throughout any of your account.
+
+The songs tab is the song library: all the songs you do anywhere at your church. You can have different versions of those songs in different keys, you can upload chord charts and audio files and basically organize it to your heart's content all here on the songs page.
+
+Then those three library tabs all come together on the plans page where you bring them all together into specific service plans. Now those service plans are grouped into what we call a service type, and service types are like the traditional service, contemporary service, the high school service, celebrate recovery, Wednesday night service. All those are the different types of services that you might have people in your congregation come to, and then you organize the plans within them. I click this little triangle to expand, and now I can see what I've planned for the Contemporary Service. So I'm going to go into this November second plan, and now we're going to take a tour of the most popular page in Planning Center, the Plan page.
+
+Now here in the main section is the Order, and this is people that are planning out their worship orders, so we've got the walk in slides, welcome, the different songs, the message, all of those kinds of things are here in the Order, and then over on the left are some of the other sections. So we've got our time section showing that this plan happens at nine o'clock a. M. And eleven a. M. We can also expand over here to see rehearsal times and some other times that we're doing.
+
+Then, especially if you're one of these people that plans the order, you might want to see the teams over here that are being scheduled alongside of the order, and we can see all these people in the band, and we can collapse different teams and see all this kind of stuff, or collapse whole section by clicking on the header for teams.
+
+We also can see files for this plan and notes for this plan. Now if you are not planning the order, can actually switch the whole main section over to teams Instead of just seeing them over there small on the left, you can see them big here in the whole middle of the screen. And here we can see all the teams that are being scheduled across this plan. The ones that I'm responsible for, we've also got these other teams over here like the hospitality team, you can have your security team, parking, children's ministries. You can put all the teams in the one plan and it's by default only going to show you the ones that you care about and hide the other ones away unless you ask for them.
+
+Now the rehearse tab is especially for the people that are doing the music. It's going to by default narrow it down to the songs and make it really easy for you to see any of the chord charts or the media, but my favorite thing here is the media player button and the songbook button. The media player looks at all of the audio or video that is on this plan anywhere and it's going to play this for you so that you can rehearse there. I'm going to close this with this little X button here, and the songbook is going to get any of the chord charts or PDFs and put them all into one packet so that you can download them all at once. Now most of your volunteers are actually going to use the mobile app because it has a great media player in there and you can check that out in our other video on the mobile tour.
+
+Now the last thing I'm going to show you is your own profile page, which also you can see anybody's profile by going to the people page, but to get to your own I'm going to click on my avatar in the top right and I'm going click my profile here.
+
+From my profile page I can see anywhere that I've been scheduled the upcoming plans or I can filter to see other ones.
+
+I can see my scheduling preferences, how often I prefer to be scheduled.
+
+I can see which teams I'm on.
+
+The communication tab shows me any of the messages that I've been sent.
+
+The details tab shows me some extra stuff like if I've been tagged and my activity, and then also at the top of our profile we've got our permissions because every person in your account can have different permissions, so some people can edit songs and some people can't see them at all. Media, People, Plans, permissions all of that is accessible there. And then finally, a big part of services is chatting with your team either from the website or the mobile app, and if you're on the web you can get to your chats right here in the toolbar by clicking on the chat icon.
+
+---
+
+## Tour of Planning Center Services - Mobile (4:25)
+
+Let's take a tour of the services mobile app. This is available on iOS and Android devices. Now the first thing that we're gonna see is the my schedule page, which is where you get taken when you log in, and this is everything about you.
+
+Now here at the top I've got anything that is pending where I can accept or decline these requests and then underneath I'm going to see anything that I've already confirmed for. You can tap any of these and it will take you in to see more of those details.
+
+At the top you have a section to add block out dates if you know you're going to be unavailable in the future or you have the ability to email your team leaders.
+
+Now at the bottom of the screen here is a tab bar Not everybody even sees this. If you are a scheduled viewer at your church, there is no tab bar because all you can get to is this first tab anyway because it's just the things that are for you. But if you're an admin, you might see some of the rest of these tabs. I'm going to go through those quickly.
+
+The People tab shows admins all the people in their account. The Media tab shows you all of the documents and scripts and curriculum and videos that you have available in your account.
+
+The songs tab your entire songs library all the different arrangements and the keys and the files that belong to every single song that you can filter and sort of organize right there.
+
+Then the plans tab which shows you any folders, any service types, and then all of the different dates for the plans that you have scheduled.
+
+Now from here I can tap on a plan to go to the details which is the same thing as tapping on a plan on the my schedule page here. So I'm gonna go into this confirmed October twenty six plan by tapping right there on the date. And this is the plan screen. This is the most popular page where you're going to spend most of your time. You can see the date at the top, you can see if you have been scheduled for anything here, and then you're going to see tabs to let you switch between the different sections of this plan. The first one is order and this is going to show you any of the songs or items that are happening in your service.
+
+Next we've got Teams, which shows you any of the teams that are going to be scheduled at this service.
+
+Times, Notes, and Files.
+
+Now one of my favorite things in this app is the ability to rehearse, and from the files tab or even from the order tab you're going to see this button at the top here which is the play button, and that is going to open the media player that has a lot of different views of how you can rehearse the songs in this plan.
+
+The last thing I'm going show you here is the ability to chat with your team. So if you get chat messages or even when you get accept and decline requests, you will get push notifications if you allow the app to send those to you. And those push notifications might show you, hey you need to accept or decline this request, or they might show you A new chat message is available. That would have a little dot up here in the top on the chat icon, and this is going to show you all of the chats from your church, and you'll be able to go into any chat and see the messages and contribute and participate in that chat.
+
+Now if you're a leader at your church, you can go to the Teams tab and hit the chat button there to start a new chat with your team. And what's great about these chats is it keeps the team members in sync. So if somebody declines for this plan they'll automatically be removed from the chat and if someone new accepts they're added to the chat and can see everything that you've sent to that group of people for that plan.
+
+---
+
+## Setting Up Song Integrations (1:43)
+
+Let's talk about song integrations. Planning Center helps you organize all your songs and it makes it easy for you to get all your songs in there, but we don't actually give you any files. The good news is we hook into some other companies that give you all the files you could ever need. So the first thing you're going to want to do when you get into services is hook up those connections with those companies, either SongSelect or Multitracks or PriceCharts. So from the songs tab, we're going to go over to the actions button, and we're going to click song file integrations.
+
+Here is where you can set all those up. Now I've already hooked up my price charts account. You can hook up SongSelect by clicking setup or MultiTracks. You can also click that, any of the setup buttons in here.
+
+So I'm going do that. It's going to take me over to my MultiTracks login page. I've already signed in. There I skipped that over.
+
+It will ask you to log in and now I can just say, yeah, I want to connect to Planning Center. So I click connect there.
+
+Now my user is linked with Planning Center and I'm going to go back over to my song file integrations and I'm going to refresh the page here. You'll see that I have successfully linked my account to Multitrex and I'll dismiss and this is now enabled. So once you've enabled any of these integrations that you're subscribed to, then when you go to the songs page and add a new song, you will have options to import from any of those sources.
+
+---
+
+## Setting Up Services Types and Plans (3:17)
+
+Your plans are organized into service types. Let's talk about service types and show you how to create them. So on the main plans page, can see some of the service types I already have, contemporary service, liturgical, and there's even folders that have other service types in them for some of the other departments or ministries in my church.
+
+Let's talk about adding one, and we're going to do that by clicking Add over here at the far right of service types.
+
+Now you get an explanation here, it's a different service that happens at your church. So we've got some examples here and you can click these to pre populate the name. I'm going to create this traditional service so I'm just going to click on here, but you can type whatever name you want to in that box.
+
+Now service types have plans that usually happen once a week, but not always. You might have something that happens once a month, every other week, on the weekdays, daily, or just sort of like randomly. I'm going to keep this traditional service at weekly. Next up, we're going to add our times.
+
+Now, this traditional service, I'm going to plan for three weeks from now. I'm not ready to plan and just start my service this coming weekend, so we're going to go on the twenty sixth, and our traditional service happens at eight AM, but it also happens it happens two times. So I'm going to actually add another service time. I don't need to create a whole separate service type for this because it's the same thing just at two times.
+
+So I'm going to go in here and say ten AM and that's going to end at eleven a. M. So now I can click over and add teams. Teams exist inside of your service type, so every service type has its own teams.
+
+You could have the traditional service praise team and the contemporary service praise team. They're two different teams. Now it's telling me only have the teams that I lead. We can have other teams that other people do later.
+
+I just lead the praise team, so I'm going to click that and leave the rest of these out.
+
+When I click finish, it has now made my traditional service service type, and it has made the very first plan for October twenty sixth and put my two different service times in there, and when I'm ready to make new plans, I can click on this plus button. Now I talked about the fact that service types can have two different times. If it's the same thing, it's one service type.
+
+There's another reason sometimes people will split something into two service types and that is if you want to just organize your stuff in a different place than other team leaders. Planning Center is made so that you can put all the teams for traditional service in this one place and it will filter out the ones that are not for you. So it actually is made for you to put all the things for traditional in the same place, But sometimes, some churches decide, you know what, we're going to create a separate service type anyway just for organizational purposes, and that could be you. Hopefully, helps you know when to create a new service type.
+
+---
+
+## Preparing Your Team to Serve (4:21)
+
+Let's talk about setting up your teams because you need to set them up before you can schedule them. I am here on a plans page on the teams tab right here, and I've already got a lot of my teams set up. And once you do, you can get to their settings from this little menu on a team and go to the settings button down here, or you can see all the settings for all the teams in this service type from this team actions menu. I'm going to click manage teams here, and now I can see all the teams for contemporary service, even the ones that I have not even scheduled yet.
+
+Now for worship ministries, there's a couple of things that you're going to do differently for those types of teams. I'm going to click here to add a team, and we're going to add a new team called worship team.
+
+Now the main thing you want to do is check this rehearsal team. If any of the people on this team need to access the chord charts or the music or any of the rehearsal features, you want to turn this on. Planning center make sure that those people see those features and people on other teams that don't need it don't see things that they don't need. So click that rehearsal team, and now we're going to submit and we're taken into the team settings page. This is where I can see all the team members and there are none because I haven't added any yet. I can see team leaders and I have been made as a team leader, and then this is where we can add positions. So I'm going to add a vocalist position to this team, and then I can add a person to this, and I'm going to add Matt.
+
+And now Matt is assigned as one of my vocalists on this team. You can go ahead and add as many different positions as you want, assign all of your people, and that is basically how to set up that one team.
+
+Now let me talk to you about the other sort of specific thing you might want to do for your worship teams. I'm going to go back to all of my teams for the contemporary service by clicking this contemporary service badge here.
+
+Now I'm back to see all my teams for contemporary and first of all you can see some of these columns, this little music, this speaker icon shows that these are the rehearsal teams. I want people on my tech team to be able to get those rehearsal tools too so that they can figure out how to do the lyrics and the slides and the lighting and all that stuff. But there's this other feature called a tag team and I have this set on the choir. You can see this little tag. When I go into the choir, I'm going to switch from the members tab to the settings tab and you're going to see yes, they're a rehearsal team but also they're a tag team. What is a tag team?
+
+This is especially useful for teams that you want to serve in multiple places without having to create the team multiple times. So if you've got a choir that serves on Sunday morning and Sunday night and Wednesday night, you don't want to have to make three choirs.
+
+You make them and you assign them to tags. Now what that does is on the members tab, instead of saying add a person, you say add a tag.
+
+So the alto, all these people who are listed as the altos in the choir have this alto tag on their profile.
+
+What that means is I can have other teams in other places that are also looking at the same exact Alto tag.
+
+Then when I go to Amy Stevens profile and I say put the Alto tag on her, she'll automatically be put in all the different teams that link back to this one tag.
+
+You might also want to do that with a tech team. If you've got a tech team that roams around the church and supports all the different ministries, you don't want to have a whole bunch of different tech teams, you can have one tech team make them a tag team, link all those assignments back to these tags, and you don't have to continually add people to all those different teams each time you have a new person on that team.
+
+---
+
+## Creating Plans and Importing Templates (3:14)
+
+Templates are one of the best ways to save yourself time. If you're not using templates, you are missing out. I promise you. Now you've probably seen templates because when you create a new plan, I'm here on the plans page and I add a plan, it's going to ask you what template you want to apply.
+
+Now a template is just a way for you to do when you do the same thing over and over and over again, you shouldn't. Put it in a template so that Planning Center will do all that work for you. Now when you create this plan, you can have it import any of the templates that you've created. I've got a lot of them here.
+
+This is a little bit much.
+
+But you are not limited to just importing a template at that exact moment. You can import templates anytime you want. So I'm going to go into my templates list.
+
+So from my contemporary service, I'm going to click this gear icon at the top right, and I'm going to go over to templates to manage all my templates.
+
+Now templates basically are almost anything you see inside of a plan can be saved in a template so you can reuse it. So I've got some of my templates that are just about scheduling and I've got another template here that is about some of the items in my service.
+
+Now you can combine these things. You can have a template that has service items and teams and all the rest of the stuff, or you can keep them separate and just apply many of them. Now in this communion template, I've got three service order items because when we do communion, we have this three minute setup, we do a song that's around four minutes, and then we do a prayer. And so when I'm doing communion, I just want this stuff to be imported.
+
+So I'm going to go to a plan here. I'm going go to my plans tab, and I'm going to go to this December twenty eighth plan, and I want to do communion at the end of the service. Now this plan is already created, but that doesn't matter. I can go, and when I want to add something to my plan, I can import a template, and I can do this over and over and over again if I want to.
+
+So I'm going to go here and I'm going to choose that communion template, and I'm going to import it into this plan, and I'm going to click submit.
+
+Now when you import a template, it takes everything in that template and copies it into this plan. So now at the bottom of this plan, I've got all those communion items. Now I'm emphasizing the word copy because the items in this plan are not linked back to that template. If I go in and change that template, it's not going to change this plan because I already imported those things into this plan. Now this was importing items, but like I mentioned, you can have teams inside of your template. And this will allow if you've got lots of different teams being scheduled in a plan, I can go and import my template, and then someone else can come and import their template so that you're not doing the same things over and over again.
+
+---
+
+## Schedule from the Matrix (7:30)
+
+Planning Center has a special feature to help you do your long term planning and it is called the matrix. Now right here I'm in plan view and plan view is just showing me one plan, but the matrix view shows me many plans.
+
+At the top of the plan view I've got this matrix button that I'm going to click and it's now going to show me different plans in different columns. So everything I was just looking at, the October twenty sixth plan, is in this first column, but now I can see the November second plan in the next column, and my future plans also as their own columns.
+
+Now, this matrix has all the different sections in those plans available to me. I can see my titles, I can see my times here, and these are in sections, and these section headings can be clicked to expand or collapse those sections if you wanna just temporarily get them out of your way. I've got the order here.
+
+I can collapse that, and then I've got my teams, and there's a lot of teams there, and then I've got even my plan notes down here. Now I said you can expand and collapse these teams to get them out of your way, but look how much space all these teams are taking. There is a way to permanently remove these from your view of the matrix rather than just collapse them temporarily and that is from settings. The matrix settings gear is at the top left. I'm going to click that and I'm going to edit my sections from the sections tab.
+
+Here are representations of all the things over here, and I'm going to scroll down to my teams. I'm going to scroll over in this list and let you see this at the same time. Notice all these teams are here. I can uncheck them but kind of a shortcut is I just teams I lead. It's only going to select those and you see they got removed out of there, but let's say, you know what, I don't want to see the tech team in this matrix and I don't want to see the choir this matrix either. Those rows are now completely removed from my view of the matrix.
+
+Now other things you can do in this sections settings over here in the order, you can say, hey, I don't want to see headers in my order or I do want to see row colors if those are something that you have set up.
+
+You can also completely reorder the sections. Let's say I don't want times above the order I want it below, over here in the settings I can just drag it down here and it reorders that in my main matrix view.
+
+Other things you have in settings, templates.
+
+Right now I'm just looking at plans, but if I want to see some of the templates that I use, I can click here and let's just look at this all teams on weeks one and three, my template there, and now I'm going to scroll down to some of my team sections. For this template, I've got some of these people in this template. I can edit the template right here. I could see two templates next to each other to compare how those templates differ or I can use the matrix drag and drop features to drag somebody from a template like Jessica Little on base right over here into the November ninth plan and she is scheduled for that plan automatically.
+
+Now back in my settings, I can choose how many plans I want it to load for me when I load this matrix. I can even say, hey, I don't want it to be just contemporary service. I want to load plans for other services as well. Now the thing to note, anything you do over here in settings is going to be saved automatically every time you come back to this matrix.
+
+If you want to do things just temporarily, don't do them in the settings, do them from other places. Like for instance, if you want to see more plans just right now past November sixteenth, right up here next to my dates, I can click the plus and it will add the next plan there and I can keep clicking that for as many new plans as I have in the future. I can also click on the dates themselves to get even more control over just quick loading of plans and I can quick load things from this service type or from other service types as well. But just remember, anything you do here is just gonna show you right now. If you want it to save every time you do the matrix, do it in settings instead.
+
+Now from that settings, when you apply things, you can actually save multiple versions of the matrix so that you can switch back and forth between different views. So I'm looking at the contemporary service matrix, mine, and I can switch between some other custom matrixes I've made that have their own settings and own plans in them, or I can even go to this kind of specialized one of my schedule. These are just the plans that I am scheduled for and now I can see those plans in a matrix all their own.
+
+Some other great things in the matrix are what are called target mode. So in the order of service, if I hover over, an item here, I can click this little target and it's going to highlight any time that same, item happens across any of those plans. This is great especially when you're planning songs and you may say, how many times are we using this song over these couple of weeks? It will highlight it so you can see it all the time. You can do the same thing for people. So I can highlight Steven, click the target, and it's going to show me every time he's used. Now if he were scheduled in other positions, those would all highlight so I could see everywhere that Steven is being scheduled, and then I can click exit target view up here as well.
+
+Now since the matrix is meant for long term planning, this is often the best place for you to email your people. When you go to schedule a month, two months at a time, you can start putting your schedule together and let's say I put all these weeks together and I finally get to November sixteenth and I go to fill this needed position, it's like, oh no, everybody has conflicts. I sure wish that I had put Marshall on this week so that I could put somebody else in whenever he didn't have a conflict. You can move everything around. Once you get all of that set up, then you go up here to email and you say, I want to email everybody, let's just say just in the band for right now, for all ten of these plans and it will send them one email for all ten plans rather than like spamming them with ten different emails for every individual plan.
+
+The last thing that is great about the matrix is using auto scheduling in it. You can do this in a plan, but it's even more powerful in the matrix. Up here in the top right, we've got our auto schedule feature and let's say I want to auto schedule the band. I will submit this. It's going to go through all of these needed positions and if there's anybody that is available, doesn't have any conflicts, it's going to fill that in across all of these plans, show me what it looks like, and then I can undo it or make little changes, and then I can see, hey, a couple of these, there's nobody available. I've got some extra work to do.
+
+---
+
+## Planning Your Service (7:37)
+
+Let's plan your order of service. So we're going to click add your first item here within the order tab and this is going to pull out this drawer over from the side and it's highlighted here. So I'm going to put walk in slides and go and say this is a twenty minute item. Now walk in slides are actually before the service not during, so I'm changing this to before and that actually changes.
+
+Tells it to not include that twenty minutes and how long the service is. So you can look right now, the length of the service is actually still zero because this is happening before the service even starts. So I'm going to click the x here and the easiest way to add new items to the service is from this add button right here. I can click on anything or I can even drag to add them to the service, but what I'm going to show you is a faster way to do this and that is this blue plus icon to quick add items.
+
+So I'm going to click this and it adds an empty row for me and I'm going to look at these little shortcut keys down here. Look at this h space for header. Do want to add a header, so I'm going to type H space. Oh, I get that little header, so now I'm going to say message and I'm going to hit enter and that adds a message header.
+
+Great. Well now I want to add a thirty minute message and I just typed the timing right there and Planning Center figured out what was the title and what was the timing and it put it all in the right fields. If I click to look at this, you'll see it put thirty minutes in the minute section and message as the title. Let's keep going with some more adding.
+
+I'm going to add a new header, H space worship set and now I want to add a song. We'll look down here, S space is for song, I'm going to type S space and then type this is oh, there we go. I'm getting an inline search. This is Amazing Grace is in my song database.
+
+Hit enter. Oh, it's choosing the key that I last did in the contemporary service. I'm just going to hit enter and it chose B flat, the right arrangement. It imported the timing.
+
+It imported the eleven files and everything is linked right from there. Let's add another song. S space. Let's do what a beautiful name.
+
+There we go. Enter. This time I'm going use my arrow keys and choose a different key. I want the a, wanted an a, so I'm going to hit enter there and I've got a set list put together really fast from using that quick add.
+
+I'm going to hit done on this empty row to remove the empty row and just clean things up a little bit more for myself.
+
+Now when I'm looking at this, you might have noticed when you're clicking inside of any specific item, it opens this drawer over here and you can see all the details like a description if it's linked to a song in your database and I can see there are already some notes in here that I'm leading this with the worship team in the person column. Now you can see all these in here but you can also choose if you want to see some of these notes actually on the main plan page itself and that is from this column chooser. So I'm going to go into this column chooser and I'm going to turn on the person column here and now I can see that right here and I can add pastor Allen as the person who is preaching the message there.
+
+Let's talk about some other ways to add things to the service. So in this menu here, I'm going to click and drag this song. I want to add a new song maybe let's just say up here before the message. I'm going to drop that in and now I can browse my whole song library. Before I did that quick add where I just knew what it was, now I don't know what song I want, I want to sort of look through some of these songs and figure out which one that I want to use. So I can search up here for who you say I am and oh, I don't have this in my library. So what's really nice is I can pick songs from here that already exist or if they're not there, I don't have to go to the songs page to add a new song, I can click new right here.
+
+So here we go, I clicked new, it is searching between our popular recordings and all songs and there's already a popular recording of Who You Say I Am by Hillsong Worship, so I'm going to choose that.
+
+Because it's a popular recording, it knows what the original key is and I'm going to make sure that I have a capo because some of my people would not like the key of G flat without a capo, so we're going to go in there and say capo in E and now if you've set up your song integrations, you can tell it to import charts or files from any of those. You could choose editable text from song select, you can choose just like a pre formatted PDF in one or two columns, if you have integrated with praise charts or multi tracks. I'm just going to for simplicity, I'm to choose rehearsal pack because it gives you everything you want in one little checkbox. So I'm going to hit submit there.
+
+It is creating that in the background who you say I am now is created. It already has files for this lyric files.
+
+The song is linked. It knows the beats per minute and everything there, and now I've got this song added to my set.
+
+In this add panel, you can also add multiple songs at one time.
+
+So you can click at the top here, you'll see add multiple. If you click this, you're going get check boxes where you can bulk select. Now if you forget this is here, notice it also says option click. Well even before there are check boxes, if I hold down option while I click on Canons, it's actually going to put me in bulk select mode there. So option click or click that that add multiple in the top. I can go through here. I can go and choose songs and I can choose which keys they're going to be in and it's knowing which order that I'm choosing them in and once I've put them in there, I can say add three.
+
+It added all those three songs within the correct keys and in the right order to my service order. Now once I have this here because these songs are all linked to my song library where all my files are, it's giving me access to all of those song files but just the ones in these keys and in the arrangements that I've chosen. So for This Is Amazing Grace, I've got eleven files here which include Apple Music and Lyrics. It's whatever files that you have in there. They're now available in this plan because they are coming from your song library.
+
+And the last thing that I'll show here is up in the column chooser. You can also choose to view some of the service times over here to see what time that item is maybe supposed to happen if everything goes according to plan. You can choose to view this in expanded default or condensed view if you really have great eyesight and want to see more on the screen, and you can choose to view any of the song information as well on that service order and plan everything out in the most efficient way possible.
+
+---
+
+## Special Service Item Times (3:56)
+
+If your service happens at multiple times, Planning Center has some features just for you.
+
+So we have at this church a traditional service at eight and a contemporary service at nine and eleven. So all of that is still just part of the contemporary service. We just have two different service times. Now those service times are special in a few ways.
+
+One way is that over on your teams, there is a special type of team called a split team. Split teams allow you to have different people for different service times. So notice here band is just one band. It's not split.
+
+But tech, I've got different people for nine AM and different people for eleven AM because the tech team has been designated as a split team, and you can choose that for each individual team in your service type.
+
+The second special feature is that sometimes in your service order, you might have almost everything is the same at nine and eleven, but there's like one thing that's different. You might think, do I need to create a whole separate plan or service type for that? No. We let you do just little things differently by excluding and including items from one of your times.
+
+So first of all, you're going to want to make sure that in the column chooser, over here at the top right of the plan that you have checked off the check boxes next to your different times. So I have a column for when these things should happen at nine AM and when these things should happen at eleven AM and that's nice to see that they're both ending at, you know, the fifty nine minute mark here. Let's add a baby dedication because that's a frequent thing that you might do in only one service time. So I'm going to go to the add menu, I'm going to drag an item to the spot in my service here right after the announcements and I'm going to type baby dedication and I'm going to say this is five minutes long.
+
+Now notice baby dedication has just been added and it's at the twenty five minute mark in both of these services, but I only I'm going to do this in the eleven AM service.
+
+Well, what I can do is in this item drawer, I can see where it says during all. That means it's this is during all of my times, but it's not. I only want this during the nine AM service, so I'm gonna uncheck eleven AM and now it says during one. You can see in the main service order plan, there's no time in that column and the offering now starts at the twenty five minute mark even though baby dedication starts there in the first service.
+
+Now you can also use a little shortcut, you don't even have to go into this drawer right here in that column, you can click the include or exclude button to change that setting for that thing to happen in that specific time.
+
+Now what if you have baby dedications that are five minutes in your first service and are eight minutes in your second service? Well, what you would do is add baby dedications twice. I would add it as eight minutes five minutes in the first service, and now it's eight minutes in the second service, and Planning Center is calculating the times correctly. This one ends four minutes after the hour, this one ends seven minutes after the hour. What's more is you can now have two separate printouts.
+
+If I go to the top of the plan where the print icon is, I now can choose I only want to print the nine AM times, not the eleven AM times, and when I click submit, I'm going to see that printout and I only get the five minute baby dedications.
+
+---
+
+## Notifying Your Team (5:20)
+
+Communicating with your team well is one of the most important parts of being a good leader, and Planning Center gives you a lot of ways to do that. So after you put your schedule together, and we recommend doing it one month, two months, three months at a time, not just one week, What you want to do is you want to send out those scheduling emails as soon as possible.
+
+Don't wait until you have the service order ready. Send them the emails once you know you want them to set that time aside to be there to serve, and you're going to usually want to do that from the matrix. Inside the matrix, there's an email button and you can email everybody for the whole month or quarter or however long that's going to be.
+
+Because then when you start your week to week planning after you've already sent them the scheduling emails, you can still send them additional emails letting them know, hey, the songs are now up or we made a change in there. And I'm going to show you how to do that. So from within this specific plan, at any time, I can click this email icon up here, and this will shortcut me to sort of like email all of these teams that I'm viewing.
+
+And when I click this, I'm going to see band vocals and tech because those are the ones that were on there, and I'm gonna see it's gonna email twenty four people. So I can click next, and I can go in here and I can choose one of my templates, and I can say my finalized plan. The plan is final. Rehearse away. You can make whatever templates you want to using this edit templates button there, but make sure that you are telling your people when they should log back in because they're not just checking it for fun all the time. Let them know when something new is up there to look at. Now when emails are sent from Planning Center, you'll see in this little yellow box down here, all these emails are going to include what team they're on, what position, and all the times.
+
+It's also going to include plan notes that they are assigned to.
+
+So when you go down here to the bottom of the left hand sidebar where you see notes, I have added a music note that I want to call out. Hey, we're doing it as well with just the piano only, which is different than normal. So I've gone in, I've added a note, and when I'm adding that note, I'm saying this note is assigned to the band, the vocals, the choir, and orchestra.
+
+So when Planning Center emails anybody in the band vocals, choir, orchestra for this plan, it's going to include this note in that email. Not only when you email them, but also when it sends out a reminder email. Now if you have the same people serving every single week or always at the same times, they might not need a reminder. But if your church is somebody who kind of plug and plays with different people based on the week, then you want to email them two months ahead of time and remind them when it's their turn.
+
+So I've got this band rehearsal here. I'm going to click to look at that. This band rehearsal is on Tuesday. It's the first thing of the week for the band.
+
+I have this assigned to everyone in the band and also to just the sound person on the tech team because I want them at the band rehearsal and I'm going to go in and I'm going to say, hey, two days before I want to send a reminder to these people. This reminder is going to remind them that they're at band rehearsal on Tuesday, it's going to have any of those notes down there and it'll be a way to communicate well with them.
+
+Now, the final way to communicate with your people is using chat.
+
+We recommend you have your people install the services mobile app for iOS or Android, and that is a great way for them to interact with any of the chat messages that you send to them. There's a couple of ways to do this. You can click chat up here for all the teams. You could go into a specific team and click chat, or you could go straight over into the chat drawer over here. I'm going to have sort of shortcut this because I want to send a chat just to the band. So I'm going to click here to chat.
+
+It's going to start a chat with the band for October twenty sixth and I can say, all these songs are now available for rehearsal. I can click enter, and that message is now going to get sent as a push notification to any of my people that have that mobile app installed. What's great about Planning Center Chat is that it is up to date with who is on your team. So if someone declines my plan and I have to replace them with somebody else, that declined person gets removed from the chat, the new person gets added to the chat and sees all the history of anything that I've said about this plan to the band, and I can see who's in the chat by going to this little gear icon and seeing all the people participating in that chat and making sure that they've got all the correct and up to date information.
+
+---
+
+## Rehearsal Preparation - Web (3:03)
+
+Your services are planned, and now it's time to rehearse. We've got rehearsal tools built into the web version of services and some other rehearsal tools built into the mobile version. I'm going to show you the web stuff right now. So here on the plans page, I'm looking at the order.
+
+Now, what you might be used to doing is looking at each of these songs, and you're going to see, oh, there's a little eight over here. That means there's eight files. I'm going to click on that so I can see the details and now I can go to all these files and I can access these files one at a time. That's great.
+
+That is absolutely a wonderful way to do it, but there is a better way.
+
+We have an entire view, not the order, not the teams, but an entire view built for rehearsing. This actually filters your plan down to just the songs, and then as you select a song, it's giving you a nice full screen version of all of those song details over there on the right.
+
+So I look at For Me and My House and I can see all of the chord charts, any media audio, and then the lyrics as well. But my favorite thing over here is the quick access to the media player and songbook. So media player is gonna go through all of these songs, find any of the audio or video files, and it's gonna put them into a playlist that you can then use to cycle through everything that you need to learn.
+
+So I'm getting all of those media files here, and sometimes you have multiple media files for one song. Now there's a way for your admin to use limited file visibility to hide these songs that you don't need, but if they don't do that, you can still go in there and say, hey, I don't need to listen to both of these. I just wanna listen to the transposed one and I'm going to uncheck the one I don't wanna hear and that edits your playlist and that also syncs over to our mobile app as well.
+
+Now this media player will just stay on top of everything no matter where you go in planning center services so you can do other things and still leave that playing.
+
+Next to the media player is the songbook. The songbook is very similar. Instead of getting all your audio files, it gets all of your chord charts and all of your PDFs. So when I click songbook, it's gonna say, hey, download a single PDF for any PDFs in this plan.
+
+I wanna have an order of service and just the chord charts, not the capo charts, not lyrics, and anything else. And so you can click accept, it compiles all of those PDF files into one PDF file, and then downloads that to your computer so that you can use that. Now you might use that for yourself, or you might use this as a shortcut if you as the worship leader need to print out, chord sheet packets for other people that are, rehearsing on your team. So those are the rehearsal features on the web.
+
+---
+
+## Rehearsal Preparation - Mobile (3:20)
+
+Hey, Siri. Rehearse.
+
+Planning Center's mobile apps are the best way for you to rehearse your music to be ready to play on Sunday, and our mobile apps on iOS and Android let you do that. I'm gonna give you a tour of this media player and the first thing you're gonna see is our lists tab. This list shows you the playlist for a specific set for the October twenty sixth. Now, a lot of churches will just have one audio file for each song, but sometimes you might have more than one.
+
+Let's look here on Thank You Jesus for the Blood. I've got the original audio and a transposed audio. Well, I personally just wanna hear the transposed one, so I'm just going to swipe on that to skip it. It grays it out and now in my list, it's going to skip over that file.
+
+On the song tab, you're going to see information about whatever song is playing and just a less distracting view because you're focused on that one thing. Now the player controls stay the same no matter which of these tabs you are on, but this is a good place to show you that these player controls also have a looping icon that you can select a specific section of this song so that it will keep playing that over and over until you get it right.
+
+I'm going to turn looping off and go to the lyrics tab. The lyrics tab, if you have if you're this song has text based lyrics, you're going be able to see these right here as you're listening.
+
+The docs tab shows you any of the PDF files that have been uploaded. If you have other PDF lyric files or any of your chord charts here. So even as my song is playing down here, I can click on the chord chart in d flat. It will download that and show me that so I can take a peek at those chords.
+
+And then if you have notes for this song, you would see them here on the notes tab. Now if you swipe down to close the media player while it's playing, you will notice that the mini player is going to stay there in the app no matter which page you navigate to.
+
+This mini player has a scrubber on the top that is green and you can go back and forth on this just by swiping right there without even having to open the full player or you can pause and play as well.
+
+Now, there are a couple of other ways to get into this rehearsal. You don't even have to go into the plan at all. Right here from the My Schedule page, you're going see this little play icon, and you can tap that play, or you can use the voice shortcut, rehearse, that I did at the beginning of this video.
+
+On the home screen, the other way that you can make sure that you're ready for rehearsal is using one of our widgets. There's multiple widgets you can add, and the ones that have songs in them are going to be updated automatically on your screen so that you can notice what songs that you're playing and be ready even without opening the app.
+
+---
+
+## Music Stand (4:55)
+
+Planning Center Music Stand is an add on app that allows you to get all of your chord charts and flip through them to rehearse or to play in your services. Let me show you how it works. So here on any tablet, this is an iPad, but you can use it on Android tablets as well.
+
+It's going to have you log in to your planning center account, and then it's gonna show you any of the plans that you've been scheduled for. You tap one of those, and it loads it in this nice view right here. So here are all the songs we're doing in this set. I can tap on any song and it's gonna split me around into the chord chart view where I can page through all of the chord charts in my set here.
+
+Now you're probably noticing one of the best features of music stand is the ability to annotate and to take notes on here. So I've got my Apple pencil here but you can also just use your finger if you want to. When you tap on the screen, it brings in the toolbar and up here I can go into annotation mode where I've got all these different annotation tools like I can add highlights in there or I can add pen markings. I've got undo there as well.
+
+I can switch over to the text tool if I actually want to type in specific text right there, and when I'm done, I can hit done and it saves that to this file so that my notes on this file are there anytime we do this in the future.
+
+Now because these are saved back to my planning center account, that means these notes are also available to other people in my organization as well. So when I tap on the top center here, I've got some PDF options where I can change which file if there's more than one core chart or I can change whose annotations I'm looking at. So I'm actually gonna flip over to a different song here and I'm gonna go into here and change the annotator from me to Donna and you're gonna see I'm now seeing her notes on this. So you can take notes as a worship leader or as a keyboardist, and then like if somebody comes to play keyboard next week, they can get a head start on their notes by seeing what you have already written.
+
+If you then go and try to edit those notes, it will say, hey, you can't edit somebody else's notes, but you can make them your own notes and copy them or merge them with what you already have, and then you can edit away.
+
+Now we've also got a media player built in here. So when you tap that media player icon, your any uploaded audio is going to be available right there at the bottom, and as you swipe through songs, it's going to switch the audio to the one that goes with that song. So I can hit play here, and I can listen to this as I am looking at the chord charts. Now you can also turn on looping, which I already had turned on for this song so that it just chooses a specific section of this song to play so that I can rehearse it until I get it right.
+
+I'm going to close the media player there and now I'm gonna show you one of my other favorite features of music stand which is wireless page turns. Some of you are playing instruments where it's easy just to swipe with your finger, but you might have your hands full with an instrument there, and if so, we've got some options for you. Using a Bluetooth foot pedal, you can hook that up to your device and anytime you tap on your foot, it's gonna automatically change pages. I don't have a foot pedal here with me but I can show you this in another one of our features which is facial gestures. So what I have here, you see this little smiley face up here, there's like a wink. I have this set up so that if I blink or wink one of my eyes, it's going to turn the pages. Let's see if it works.
+
+So when I wink my right eye, it goes one page to the right, and when I go left, it goes one page to the left. Now careful that you don't go crazy on your eye twitches there because you are not going to want that to happen, but there are sensitivity settings in there to make sure that it is dialed in to your exact wink speed.
+
+Music stand is an add on to your account, and so it you pay for your entire account based on the number of total team members you have in there. So it's either two dollars, five dollars, or a maximum of ten dollars a month, and then everyone in your account uses it. And the benefit of them using it is not only can they share those notes, but you can start sessions. So if I start a session over here, I can start a session and anybody else that is on this plan in my building can join that session, then when I turn my page, it automatically turns their pages. So I can be the one in control, which I like.
+
+---
+
+## Adding Song Arrangements and Files (4:34)
+
+Let's talk about adding songs and then organizing them into arrangements with files in them. So I'm on my main songs tab where I see my whole songs library and I wanna go into a song that I already have Who You Say I Am. I'm going to hit enter right there, puts a little filter on it, there's my song and we're going to go into it. Now in Planning Center, every song can have multiple arrangements, Different versions of that song may be recorded by a different artist or may be done with different instrumentation or by a different ministry.
+
+And so when I'm on this main page, this is the song page, but I've got these arrangements here on the left. So I've got this Hillsong worship arrangement here, and it's showing me in the main section here everything about that specific arrangement of this song, including the length, BPM meter, the song sequence, and then the different files and the different keys that I do this arrangement in. But I'm going to add another one. So over here, we're going to click add, and you can search popular recordings to find popular versions of that song, or you can make your own.
+
+And that's what I want to do right now. I just want to say, hey, sometimes I do like a stripped down acoustic version of this at the end and I want to make an acoustic arrangement of this song. So I'm going to say that this is in the key of d and here I'm going to choose which of my song integrations that I've previously set up I want to import those files from. So I'm going to get the editable chord chart from SongSelect and I think that's basically all I want because then I can edit that and make sure that it's just stripped down to exactly the acoustic version that I want.
+
+So I'm going click submit on this.
+
+It is making a new acoustic arrangement importing from song select and those that song select file is going to show up right there.
+
+So it gave me the lyrics and the chord chart of that and now I also want to upload an audio file. Now I have an audio file on my computer of me doing this song and so I could click this little plus in the files and find it on my computer but if you just know where it is on your computer, you can also just drag and drop it. I'm going to click right here and go back and I'm going to say this is in the key of D so I'm going to upload it to the key of D Now that particular file is uploading to the plan and it'll take it a little bit, but then that will be there available.
+
+There you go.
+
+Okay. Now this is what I recorded it in, and I also sometimes can do a song in multiple keys. So you see, I do it in d, but sometimes I also wanna do it in c. So now we can add a key.
+
+So I'm going to go down here and I'm going to choose the new key that I want, and I'm going to give this key a description. I'm going to call it the mail low key, and I'm going to just click save on that.
+
+Because the song select charts are the editable ones, it automatically transposes those into this new key for me, but I also might want my audio file in C, so I'm going to hover over this. I'm going to click the transpose next to the audio file and I'm going to say from D down to C, that's perfect, transpose. It's going to print, it's preparing it, now it's going to transpose that and in a minute or so that audio file in C is going to show up there for rehearsal. The reason you organize your library like this with songs and arrangements and keys is because this allows you to have all the versions and all the files that you might ever do, but when you go to plan this week's service, you choose the one. You say, this week, this service, I'm doing the acoustic version in the key of c, and for the people that are rehearsing that plan, they only see those files for that specific key, that specific arrangement, and that specific song.
+
+---
+
+## Chord Chart Editor (4:22)
+
+You can transpose audio files and your chord charts to make sure that your team gets them in the key they're gonna play them in.
+
+To transpose audio, first of all, you have to make sure that you've uploaded audio to the system.
+
+And if you have, you can hover over the audio where it is and you can click the transpose option right there and I can say, hey, want to transpose this, it was in D and I want to transpose this to C. You can choose multiple keys if you want, can sort of like rename them, but I'm just going to click transpose. That's going to say, hey, we are transposing this. It's going to take it a minute to five minutes to do that, but then you're going to have that in the same tempo and good enough to rehearse to. There it is.
+
+You can also transpose text chord charts if you want to. Now what's great about this is Planning Center has integrations with, Song Select and Praise Charts and both of those have subscription levels that allow you to get the text based chord charts and import them into Planning Center. So you can use those or you can type them yourself from scratch. Either way, if you import them or if you create them, you're gonna find those in the lyrics and chords section right here.
+
+So these chords are in a format called Chord Pro. It sounds complicated. It's quite easy actually.
+
+Instead of just like typing the chords above whatever lyric it's on, this can cause problems if you change the font size then or the font, then things don't like line up exactly anymore. So instead of doing that, what you could do, you can use Chord Pro and you actually put your chords in square brackets to the left of whatever syllable you want it to appear. So over here on the left hand side, you're going to see where we're typing and over on the right hand side, you're going to see a preview of what your chart is actually going to look like. So you're going to notice here we've got this d five in brackets to the left of the word who, but over on the chord chart, it is appearing above the word who. And what's nice about this is it will automatically add spacing where it needs it if you transpose it into new keys, and it will make sure that everything is laid out really nicely.
+
+So the original key that I've typed it in here is D and I'm also previewing it in the original key but I can preview this in whatever key I want. I can click C and I can see, oh, it's just transposing all of those chords into any key that I choose and we can even transpose that if you will into the Nashville number system here or you can have a version of this that totally strips out the chords completely and just shows you the lyrics. Now when you're in this chord chart editor, sometimes you're typing over here and it's just constantly refreshing on the right and it's like stop, stop. I just leave me in peace for a minute. And if you're typing a lot, you can come over here and you can uncheck this auto refresh, and you'll be able to type as much as you want. And then when you want it to start updating again, you can turn auto refresh back on.
+
+Some other options in here are your formatting. So you can choose that I want this chord chart to be in two columns, and I can choose if I wanted the chords, let's say, in orange, and I can change the font size to something bigger if I want to and I can change the font and I can save all that and you'll be able to see, you know, those are bad choices for this particular example, but you can see how you have a lot of control into how your core charts look And once you set all this up, the great thing is when you're back on your arrangement page, because you have those entered in lyrics and chords, as soon as you add any new key, let's say I add in the key of e flat and I add it with a capo one in d, when I hit save, it's automatically transposing it into e flat and giving me a separate capo version in d.
+
+---
+
+## Using Tags to Filter and Organize Songs (7:33)
+
+There are a ton of ways in Planning Center to organize your songs to make sure that you can find them, filter them, and even put them into multiple libraries. Let's dig in. On the songs page right here, I've got all a hundred and ninety six songs that are in my account and are not archived, and I can click on this filter button here at the top left and get all of the different ways that I can filter this library. So for instance, I can filter by key and I can say just show me my songs in the key of D.
+
+Now I'm down to thirty four songs. I can add some of these other filters, but I'm going to go over to tags and I'm going to add a tag filter of speed and I'm going say, hey, I want to find songs that are fast. So now I'm looking at songs that are in the key of D and that are fast. Now we can also add things into like lyrics where I can type like the word free and now we've got one of those songs that has that in their lyrics.
+
+Once a filter is applied, you can delete it over here or you can actually just click this filter pill and just hit delete on your keyboard or click the little down arrow and change it if you want to. So now I'm seeing songs that are in the key of C.
+
+Now to get something like this, like the speed fast, this is a tag filter and you need to add tags to your song to make sure that that is filterable. I could go into Happy Day for instance and in that song if I just scroll down a little bit, you're going to see the tags that are available and these tags are customizable for you and your church. These are the ones that I've created already but I could have this style tag and say this is, I don't know, rock or whatever it is that you want to however you want to classify your songs. Now I've got multiple tags on this particular arrangement of the song and what's nice is you can have tags that are on the song, which is like, okay, is angels we have heard on high. That is Christmas no matter what. But you might have two versions of that, and you might have a slow version and a fast version. And so you can tag the song with a tag, and you can also have separate arrangement tags.
+
+Now when we're back to this list here, notice that all of my filters are gone.
+
+Now, if you want to have filters that are always applied, you can pin them. So I'm going to go to tags and I'm going to go to type, my type tag, and I'm going to look for worship choruses. These are all of the songs that I have tagged as a worship chorus and I kind of want to make this my default view. So right now, this is going to have to be reset every time unless I click on this little pill and I go to the bottom and I pin it.
+
+Once it's pinned, it turns yellow up here so that I can differentiate between the pinned and unpinned filters and a pinned filter is applied automatically. So when I leave this page and come back, this is already going to be there. Another cool thing about pinned filters is the pins are different for the different pages in your account. So the songs page has its own pins.
+
+If you go into your contemporary service and you browse the songs in the little songs panel over there, let me show you that. If you go into there to the order and we add a song, the same library is here and it gets its own filters. So from over here, I could say, yes, I want this to have a pin of like I do not want the celebrate I don't want the high school songs in here. And once I close this filter, I can say I want this filter to be pinned and this pin is only going to be applied within the contemporary service. But when I go back to my main songs page, I get my other filter that's pinned.
+
+Now, you can use these pins to create multiple libraries. And I sort of already gave you a preview of that because I have a tag in here that we added for ministry. And so you can have one called libraries, but a lot of times people use the different ministries as different libraries. I want a different library of music for just the songs we do in high school and I want a different library of music that we do for the choir. Well you can add a ministry or library tag and then you can say just show me the high school songs there and you could pin that so that you always see your own library.
+
+One final tip in terms of those libraries, add a season tag.
+
+This is a great way to filter out or filter in your seasonal songs like Christmas. Right now, I could say, hey, I am planning regular weeks. I don't want to see any of my seasonal songs, so I could click none right here and now it's filtering out all of my seasonal stuff and I could pin this and say this is the library that I want to see, choruses that are non seasonal. And then when it's Christmas time, I can come in here and just change this to say Christmas but not Easter or patriotic, and now I'm seeing all my worship choruses that are Christmas. I could also delete this and I can see some of those Christmas songs that might not be worship choruses as well, and that is a way to have multiple libraries.
+
+Now, if you're seeing all this tagging and filtering and thinking, Woah, I've got this huge library and none of my stuff is tagged. Well, I've got a solution for you and that is with bulk updating.
+
+I'm going to close this filter sidebar here.
+
+You can apply tags or attributes to tons of songs or arrangements at the same time using this pencil that is the bulk edit tool.
+
+So I'm going to click this and I want to bulk edit arrangements because I want to set the speed on some of my song arrangements.
+
+It's now going to expand all these songs and show the arrangements within the songs. Ten thousand reasons, I've got a lot of arrangements here. So let's say, yep, I know I want these three arrangements and this arrangement up here, I want those to all have the tag of fast. I can now click bulk edit next to these four selected.
+
+I can add tags, remove tags, or I can archive that arrangement completely. So I'm going go in here, add tags to fast, and if it already has a speed, it's going to change it to fast. But now I say update for arrangements.
+
+It's going to prepare that update, and then now those updates are basically applied, and my new tags are set up and my library is ready to filter.
+
+---
+
+## Keyboard Shortcuts (2:47)
+
+Keyboard shortcuts are the fastest way to get around services and they are built into tons of places. Let me show you my favorite ones. So number one is the forward slash key. That's right underneath the question mark. If you hit that from anywhere, it's going to open up this global search where you can search for people, you can search for songs, you can search for teams. Whatever you search for, can find, use the arrows and you can navigate right to that page.
+
+Now depending on what page you're on, it has its own shortcuts. So I'm on the plans page and I'm going to actually hit the question mark key on my keyboard and that is going to bring up all of the keyboard shortcuts that are available on this page and there's a lot. So let me just show you some of them.
+
+If you want to add an item to your service order, hover over something and hit I on your keyboard, brand new item right there. If you want to add a song, s for song and that's going to add a new song. H for header, m for media. You can do let's see.
+
+You can do e to email people. You can do p for print. You can do so many things. One of my favorite ones is actually r for rehearse.
+
+That is going to open up the media player and instantly start you listening to whatever it is in your set list. And the media player has its own shortcut keys. So as you're playing through something on here, you can use the left and right arrow keys and that's going to go five seconds forward or backwards. You can use the up and down arrow keys and that's going to adjust your volume up or down there and you can use the space bar to stop or start the media player.
+
+Another fun shortcut built into this is you can jump directly to a song's arrangement by holding down the option key while you click on this little blue key and it will take you directly into that song arrangement. Now, when you're on the song arrangement page, you can hit the question mark and see what shortcuts are available from here. You've got download, edit, transpose, play, view, delete. Delete is one of the ones you're going to want to take advantage of because this is available almost everywhere throughout services. So if you've got a whole bunch of files here and you're like I don't want to have to click the pencil and delete each one individually, you can hover over a file, type x on your keyboard, and it will give you a shortcut to delete it.
+
+---
+
+## Limit File Visibility (5:53)
+
+If you have a lot of files for each of your songs and you wanna make sure that your people don't get bombarded with a whole bunch of files that aren't meant for them, then you're gonna wanna take advantage of limited file visibility.
+
+Let me show you how it works.
+
+So here I am logged in to Steven's profile and he plays acoustic guitar. And so he's logged in and he's on the rehearse tab inside of a plan and we can see he's got the bass, the guitar, the keys, the original mix, percussion, vocals. He's just playing acoustic guitar. Wouldn't it be nice for him if he didn't have to sort through all of these files?
+
+Well, he can do that if you set it up for him ahead of time.
+
+I'm going to switch over to my other browser where I'm logged in as me and this is set up in a couple of steps. Now it's complicated to set up but once you have it set up once, it runs itself pretty much. So the first thing you're going to do are you're going to go to your service type settings. So for my contemporary service, I do want to limit files. So I'm going to go over here to the gear and I'm going to go to the settings for contemporary service.
+
+And then over here on the left, we've got limited file visibility and it is currently disabled. That means everybody's seeing all the files that they're scheduled for. I want to limit that. So I'm going to enable limited file visibility.
+
+That's step one of three. Now this little configure button is going to give you shortcuts to make sure you do all the right steps. So step one is setting up file tags. So I'm going to click here to go and edit the tags, and this is taking me to you can also get here by going to the songs page and clicking the gear to go to edit tags, but I've got all types of different tags, song, arrangement, media, people, and file tags.
+
+So the first thing you want to do is set up tags for each distinct type of file.
+
+So I have some audio files that are just of the acoustic guitar. So what we have is this rehearsal mix box here tag group, and inside of it, I've got mix acoustic guitar, mix alto, mix baritone, and there's so many options here. So the first thing you want to do is set up the file tags.
+
+The next thing you're going to do is go in to your song and I'm going to click songs and I'm going to go into This Is Amazing Grace and here's where I see all of those files that are attached here. So I've already done this, but I'm going to show you how you would do it. You would hover over any of these files and you would click the pencil to edit and you would make sure that the correct file tag is applied to this file.
+
+Now, you can actually set those tags up so that they are automatically applied. Let me show you that really quickly. When you go back to the songs tab and you go to actions, edit tags, we're back on our files.
+
+I can go in here and when I create this acoustic guitar mix, I'm going to edit this file tag, and I'm going to put text into this auto assign when file name contains.
+
+So what that means is if I upload a file and the file name has the word acoustic in it, it's going to automatically tag it with mix acoustic guitar.
+
+Can notice we've got acoustic acoustic guitar, you might have some other things that you might call those files that you want tagged with this and you can put all of those in here so that it happens automatically for you.
+
+Then when you go into those files, what's nice about this is you can when you drag and drop them or when you upload them, you might have a hard time seeing it, but if the file icon is colored in green, that means it has a tag applied to it. Notice this one is in gray. There are no file tags applied, means this file is going to show for everybody.
+
+But these all have file tags applied to them, which means only the people that are assigned to those tags are going get to see those files.
+
+So the final step, who gets to see these files? Well, we set that up from within your team settings.
+
+I'm going to use I'm going to go to my plans tab, contemporary service, over here to my gear, teams, and I'm going to go into the band.
+
+So I am going to say for the acoustic position, anybody scheduled to acoustic should see mix acoustic guitar. And this is where you choose which of those file tags are showing for people scheduled for this position. So you'd go through each one of these. Bass is going to see mix bass guitar. Drums are going to see mix drums. So once I do that and I enabled this for my service type, if I've done it alright, cross our fingers. When I go here on Steven's profile and I refresh the page, I'm doing right now, Steven only sees the files that are meant for him.
+
+---
+
+## Automations in Services (5:28)
+
+Let's talk about automations within Planning Center. Now automations are a great way for you to perform an action based off of activity somewhere else. So let's see what that looks like. We're gonna go to our registrations product here, where we have several different events and we have our VBS sets coming up.
+
+So I'm just gonna type in VBS in our search and we have an event called VBS dive in that is coming up in July. So I'm gonna go ahead and select that event. And from here, I can see that I have several things that are already set up. But if I come to our selection types, we can see the different types of selections that people can register for when signing up.
+
+So if they would like to sign up their kids for the event, they can use standard. We could see that it's restricted to those that are pre k through sixth grade. But we also have volunteer opportunities for adults. So what we can do is, I really want anybody who signs up to volunteer to automatically be sent a welcome email like saying thank you for volunteering, we're gonna need it, but also have them added to our services product as a volunteer.
+
+That way we can communicate all the things they need to know and times they need to be present. So now that this is all set up, we're gonna jump over to our automations tab.
+
+And from here, we kind of walk you through that process and tell you all about automations that you can automatically perform in action when someone registers for this specific sign up. So let's do that. We're gonna go ahead and create an automation.
+
+And we're gonna say when they choose to sign up as a security person, security volunteer, we want to perform a couple of actions.
+
+Now I can start off with people because it's typically where email templates live. So I can go ahead and say, yes, let's send them an email template. And if you've created any, you can do that. Luckily, have one already for thank you for signing up to serve as a VBS volunteer. And we could say who we'd like that to come from. In this case, we want that to come from the church, so we'll go ahead and create that automation.
+
+Perfect. Now we're gonna go ahead and create another automation, and so anybody who signs up for that same thing, so for security, we want them to automatically be added to services to a specific team.
+
+And we have our special events service type, so let's do that and let's take a look. We do have a VBS team there. Perfect.
+
+Now and we want them to be added to that security position. So if they sign up for the security selection type, we want them added to the security position within our VBS team. So let's create that automation. Perfect.
+
+They are turned on and we can disable them if we ever need to. So that's what's great about these automation. Sometimes you need to make updates so you might pause them for a little bit and go from there. So now let's see what that looks like in practice.
+
+So what I'm gonna go ahead and do is bring up Church Center on our phone, which is a mobile app any congregate can download and your leaders. And so we're gonna go right down to our event for VBS. Perfect. We see that.
+
+And then as I scroll through as somebody who would like to volunteer, I could see the different options that are here for selections that are available to me. So it looks like I would like to volunteer as a security person, so I'll go ahead and hit register right then and there. And what's great, it's gonna populate any questions that are there if you've added them. So in this case, I'm the only one that's gonna sign up for security.
+
+I'm gonna go ahead and hit next. I'm gonna select who this is in my household, it's just for me. So I'll go ahead and go through that process. If I want a t shirt, I can select that.
+
+If I want a preferred age group to work with, I can select that. If there are any disabilities that are preventing me from breakout sessions, no. And then I'm going to go ahead and register. So we see that, we see I've registered for security.
+
+Perfect. That looks great. Now let's go ahead and work on over to our automations. Now what's great about these automations is I can go ahead and select on any of these if I would like to look at the history and we can see, oh, look, it's already processed and run this automation.
+
+So we could see that Alan registered, we could see the time I registered as well, and I registered for security. In fact, if I go right over to our registrations here on this side, I could see that same thing here. I signed up for volunteer, everything is clear. Now let's jump over to services.
+
+Now we're gonna come back to our services product. We have our special events for VBS dive in, but I really wanna look at the teams first. So we're gonna come to our settings, see our teams, and we have our VBS team which is already set up. And look, Alan's automatically been added to that security position just like I wanted that automation.
+
+And that's so important because now if I come to the plan here, I can go ahead and say, you know what, I do need somebody for our VBS team, our security person, and now I can go ahead and schedule Alan for that role. And now Alan knows if I select on his profile, the check-in time he needs to be there and the different dates he needs to be there for VBS because VBS is both on a Friday and Saturday. And so this automation allowed me to send a thank you email to Alan, automatically added him to the services product to the right team so we that way we can communicate effectively. And that's how you can use automations in Planning Center.
+
+---
+
+## Auto-Scheduling (5:08)
+
+Let's talk about auto scheduling and services. Now auto scheduling is a powerful feature that lets you automatically fill the needs that you have week in and week out. Let's see what that looks like in practice. We're gonna go to our March first plan and we could see that we have several different ministries that need to be filled.
+
+Now with auto scheduling, it's gonna look at several different things. So we're gonna go to our team actions and select auto schedule. Now from here I can select the different teams that I wanna auto schedule, but what auto scheduling does, it's gonna filter out people with conflicts, but it's also gonna see when the last time somebody served. Auto schedule always prioritizes the person who hasn't been scheduled in the longest amount of time.
+
+So in this case, I just wanna see what it looks like if I auto schedule the band, my nursery and toddlers. And so I'm gonna go ahead and hit submit and see it work its magic in the background. Now auto scheduling is not going to schedule anybody with a blackout, with a conflict, or maybe that doesn't prefer to serve on that day. So if I don't wanna serve on the first week of the month, then it won't schedule me.
+
+We could see auto scheduling filled in all of these gaps for me. And what's great is I can send out the scheduling email with confidence knowing that there aren't any blockouts or conflicts based on what auto schedule put in. So if I have any hesitation, what I could do is just rerun auto scheduling. So in this case, I'm gonna go to team actions, select auto schedule, and we have this little banner at the bottom that says undo auto scheduling.
+
+Because I just wanted to see what it looked like, I'm gonna go ahead and select that just so it can remove all of that work that I just did. Now what's great is this is pretty instantaneous as well because we remember what you auto scheduled during the session.
+
+Now in this case, the band, I don't really wanna auto schedule because I know the team members that play with others, so I can go ahead and manually fill any of those roles. So if I wanna go ahead and fill in that base role, if I wanna go ahead and fill in the electric, position, I can do those different things. So perfect, I filled in some of those roles. Now I just wanna auto schedule for nursery and toddlers.
+
+And so we're gonna go ahead and select this auto schedule option and we're just going to select nursery and toddlers. Now the reason we're seeing these other teams is because I'm a team leader for those other roles. Now if I select add, we can see the teams I lead and also other teams. Auto scheduling is very smart knowing that, hey, you probably only wanna schedule the teams that you lead and don't accidentally auto schedule another team.
+
+And so that's what's great about this, but you still have the flexibility to only auto schedule the teams that you want to. So I'm gonna go ahead and hit submit and watch auto scheduling do its magic.
+
+And there we go, we could see it just starting to fill each and every one of those roles based on the best person available for that spot. Great. Now I'm done with my March first plan, but I really wanna do this on a larger scale. So what we're gonna do is we're gonna go to the matrix.
+
+In this case, I wanna see the next four weeks worth of plans. So I'm gonna select that matrix option. And what's great is it's gonna go ahead and populate everything based off of those weeks. So I'm gonna go ahead and collapse the order because I don't really need that in the band.
+
+But I do see my nursery and my toddlers. I see who I just auto scheduled but we do have the next four weeks that have yet to be scheduled. So what I'm gonna do is I'm gonna select this magic wand. Why?
+
+Because auto scheduling's a lot like magic because it just fills in those roles for me instead of me doing it one at a time. So I'm gonna hit that auto scheduling tool. We could see all of the teams that I lead right here and we're just gonna focus on our nursery and toddler groups. So in this case, I'm gonna remove any of these additional teams, hit submit, and what's great is we can see it just go directly through each and every role.
+
+Now March first, it's not gonna find anybody because we've already filled each and every one of those positions. But it's gonna go ahead and fill in all of the other gaps. And we can see it right here in that background filling each and every one of those things. So we'll let that go ahead and finish running.
+
+And as I mentioned earlier in this video is you can also undo auto scheduling. So as you send this out, maybe you have new team members that have joined the team and you really want to make sure that they're included. Maybe they hadn't set their preferences yet, maybe they had a block out date or maybe they weren't assigned to the team yet. What's great is I can still go ahead and undo auto scheduling as long as I'm still in this same web session.
+
+So I'm gonna go ahead and select auto scheduling one more time and I can undo all thirty two people that have been auto scheduled. So perfect. We'll go ahead and undo it and we can see it right in live action. Go ahead and undo across the board.
+
+And that's one of the most powerful things about auto scheduling. It always ensures that you have the right people scheduled at the right time and no conflicts or blockouts are considered. So once you do that, you'll be well on your way and that's auto scheduling in services.
+
+---
+
+## Creating a Volunteer Pipeline (9:34)
+
+Let's talk about creating a volunteer pipeline for your church. Now getting your attenders to be a part of the life of the church through engaging in ministry is very vital and important, and we're gonna help you out with that.
+
+Now, from within Planning Center, we're going to hit this product switcher, and go directly to our people product. This is the membership database of Planning Center. This is where you can filter the demographics of your church using lists.
+
+We have workflows for your follow-up processes and systems. We have forms so you can create digital forms, for your congregants, but also we have People, which is our membership database portion of Planning Center. Now in this case, I wanna create a digital form.
+
+That way people can go ahead and sign up to volunteer at our church and join the different teams that we have available. In this case, I'm gonna create a brand new form, and we're gonna call this a volunteer interest form.
+
+And you can call it whatever you like at your church, but make it distinguishable, because this will populate at the very top of the form. Now for any form that you create, we automatically ask for their first name, their last name, and their email address. So this is already standard for all digital forms, that you make available to your congregants. But a good rule of thumb is to keep things as simple as possible for a form.
+
+Try to keep things about a minute or less. Otherwise, if it's too long, your congregants might say, I'll get to that later. The issue with that is later usually never comes, so we want to keep this simple. In this case, we got their first name, last name, and email address.
+
+But we'd also like their phone number, so I'm going go ahead and select their phone number and their birth date so we have their age as well.
+
+Now, because this is specifically for our volunteer interest, we want to know which ministries that they're most interested in serving in. So in this case, I'm going to go ahead and select the workflow fields option for check boxes. That way they can select any of the ministries that they are most interested in serving in. So this question, let's go ahead and ask the question that we'd like to appear in the form. In this case, which ministry are you interested in serving in?
+
+Perfect. Now we can add the different teams that are specific to your church. In this case we'll use three examples. We'll add a band, we'll add kids, and lastly we'll add choir.
+
+Now from here, because I chose check boxes within the workflow field, this kind of gives me a few power up features. Now workflows are where kind of your systems and processes live. This is how you choose to follow-up, so if somebody wants to get baptized, you might have a follow-up process. Somebody wants to serve in a ministry, you might have a process for that as well.
+
+So these workflows are very powerful. In this case, anybody who selects band in the form, I want them to be added to our worship team interest section. So I'm going to select that workflow. We have our kids as well.
+
+I want them to be added to our children's ministry join a serve team workflow. We have our choir. I want them added to our choir interest workflow as well.
+
+Now we have a few options right here, we have required, also you can skip this, but in this case, you can make that required because that's the whole purpose of this form. But what we're gonna do is we'll save this first, and I would like to expand on this. So if we have band and kids, I might want to know do they want to work with a specific grade level, or do they have specific skills on the worship team? So I can add additional check boxes if I'd like. So, for example, I can ask, which age group are you most interested in serving with?
+
+And from here I can go ahead and put like nursery, I can put maybe kinder, maybe first through third, maybe fourth through sixth, and whatever you have, maybe fourth through sixth is preteen, whatever your structure is, you can set that up, and what's great about that is you can add a condition. Now these conditions are great because not everybody needs to see these questions, but you can say, hey, if anybody answered that which ministry you're interested in serving in as maybe kids, then this question can populate.
+
+And you could do the same thing for the band. So you might want to know what, you know, instruments that they play. So in this case, you can hit checkbox as well, and ask which instruments are you interested in playing, or what do you play. So in this case, I might put the different things that are available.
+
+Drums, acoustic, electric, maybe keys, maybe bass. In this case, we'll make sure we fix keys, there we go, we have bass. And then if you have any other instruments that you'd like to add, you can do that as well. And we can set this as a conditional question, so if they, answer the question which ministry are you interested in serving in, and they select band, we'll be sure to ask that question.
+
+Now, this is a great form already, it keeps it simple, it asks a few different questions, but also you might have some other things you want to follow-up with. So for example, these workflows that we've created, by setting band, we know that this is going to go to the worship team interest workflow. And I'll show you what that looks like in just a bit, but in this specific case, after somebody fills out this form, I really want them to receive kind of immediate confirmation that we receive that, and that's where automations kick in. Now with automations, I can set up an automatic automation, so that way they know that we received it, but also that we really want them to serve on the team.
+
+So I'm going to create an automation. In this case, I can say anybody who submits a form, I would like an automatic email sent to them. So we're gonna have this defaulted to people, and right here there is an option for send an email from a template. So any templates that I might have created for like a follow-up, or we thank you for, serving, or wanting to serve, I can choose that specific option.
+
+So in this case, we have an email template for thanks for joining the serve team. I can do that, and I can set who this is coming from. In this case, I want this to come from the church, and then create that automation. So now anybody who fills that out will automatically get this email knowing, they want me to serve.
+
+Now you might be wondering what does this look like for our volunteers and how do we streamline this? At the very top, I mean you have the field section, but I can select view this on church center. That way I understand the entire experience for our volunteers. In this case, can see the name, email, phone number, birth date, and the ministry option.
+
+So I can also test if they select band, yep, the right questions populate. If they select kids, perfect. What if they select both?
+
+Awesome. Exactly how I want it to feel. Now, you can also add a QR code to any of your slides, your social media posts, and those types of things on the very bottom right hand corner by selecting shareable code, and we'll include a downloadable QR code that you can use as you promote this. Now as we come back over here to our form, we've created some workflows. Now the powerful thing about workflows is this is your follow-up process for your volunteer pipeline. This ensures the leaders of those ministries are notified when somebody wants to join those specific teams. So let's jump over to workflows.
+
+And we have our few different interest areas. In this case, let's take a look at our children's ministry join a serve team option. Now we know, if I select on automations, that we can have any follow ups, but if there's an automation to add somebody, to this workflow based off what they do, it would show up here. But steps is really where we want to live, because this is the process that you have for anybody who wants to join your children's ministry.
+
+So you might want to create a follow-up phone call. So anybody who signs up might receive a follow-up phone call from the ministry leader. In this case it would be Will. And if we want to make any adjustments or say what they'd like to include in the phone call, we can put that here.
+
+We can also send them an additional form, maybe it's their history with working with children's ministries, maybe at another church, or anything like that.
+
+The third option you can also do, which we have here, is we want to include a background check-in that process. So you can have as many steps that you'd like that fit your church. Now if you would like to communicate with anybody, what's great about this is I can go ahead and swap over to any of those volunteers that are currently in process, and I can email them right from the workflow and say, thank you so much for being a part of this. We're gonna go ahead and follow-up, or maybe schedule a shadow session. That way you can see what it's like to serve in our kids ministry.
+
+And then lastly, we can add them to our team within services. Now you can create specific automations based on this step, or once they've they've finished this workflow, add them to services. And this is the best way to ensure nobody slips through the cracks and that your processes and systems are followed through using people forms and workflows to ensure you have a safe and secure volunteer pipeline.
+
+---
+
+## My Schedule and Household Scheduling (4:30)
+
+Let's talk about the my schedule page and household scheduling within services. Now this page is packed with features to help you manage your scheduling within services. Let's talk about block out dates. Blockout dates gives you the ability to communicate with your church when you might be unavailable. Now if you have household members within services, you can also create a blockout date on their behalf as well.
+
+My messages will show your communication history within services.
+
+Email my leader lets you email your team leaders for any of the teams that you're a part of.
+
+The sign up sheet section gives you the ability to sign up for upcoming opportunities that your team leader has made available.
+
+Pending shows you any pending scheduling requests that you have yet to accept or decline for. You can also see any important details such as what times are needed for you to fill that role. And then you can accept or decline from either a hover option or by selecting accept or decline. Lastly, you'll see a confirm section which shows your scheduled opportunities that you've already confirmed for. From here you can see the times as well or jump directly to the plan.
+
+Now let's talk about some of these other options. If you have household members that are already in services, you can see their sign up sheets, block out dates, pending requests, and so much more. This case, I'm gonna go ahead and select my household. We have my spouse and also my son who is also a volunteer.
+
+In this case, I can see any of their opportunities, which is outlined with their avatar. I could see pending scheduling requests and anything that they've confirmed for. This case I see both my wife and son have yet to accept scheduling requests. So I'm gonna go ahead and accept for both of these, letting them know that they'll be here.
+
+So we'll go ahead and confirm here and also for myself.
+
+Perfect. Now as soon as I've done that, we can see across the board a confirmed status and the pending category has gone away because we don't have any more pending scheduling requests.
+
+Now from here, I can see with the avatars who is assigned to what. I could still decline if I need to, but I've already confirmed so I don't need to decline. Now there might be sign up opportunities available. Now if I go to my wife's profile, can see, oh, look, she's got new sign ups that are available. Let's go ahead and check them out.
+
+Okay. We have kids, greeters. Well, looks like I'm already serving as a greeter on the eighteenth. It'd be nice to serve with her as well.
+
+So let's go ahead and sign her up for a greeter for that same date. And what's great is from this view, we can see any time conflicts and the teams that are scheduled to that specific role. In this case, I can see that I'm already there. So I'm gonna go ahead and sign my wife up for that opportunity.
+
+And by doing that, that new opportunity is automatically added to January eighteenth, where we can see both of our profile avatars listed there.
+
+Now if we know we're gonna be out of town for an event, anniversary, anything like that, we can create block out dates. Now from here, I'm going to create a block out date for my entire family because we're gonna be unavailable for one of the weekends. In this case, we're gonna go ahead and select the sixteenth. And we're gonna go ahead and put out of town.
+
+Now this is the perfect way to let your leaders know in advance that you are unavailable. That way they don't accidentally schedule you for a week that you won't be there. And on the left hand sidebar, you can see that block out date present there. So if you need to ever edit and manage it, you can just select that block out date. We'll open up that modal to where you can make those adjustments.
+
+Now if you wanna manage your household scheduling, you can select this household permissions option, and that shows you this brand new view. This case you can set your spouse to allow them to manage your schedule or not. Now by default, teens cannot manage households in which they're not an adult of. Now there is this powerful feature where if you have a child that serves in services, you might wanna be in the know when they get an email.
+
+You can go ahead and choose to copy yourself in all emails that are sent to them. This way scheduling requests don't slip through the cracks or any communication that you might need to be in the know about. We can hit submit and you're good to go. And that's the my schedule page and household scheduling within services.
+
+---
+
+## Rehearsal and Other Times (7:16)
+
+Let's talk about times within services. Now times are a great way to communicate with your teams when they should serve, any midweek rehearsals, or report times or call times. Now let's talk about the three different times that are available. Now you have your service time, that is a type of time that you can add.
+
+You have rehearsal, this is another type of time. And in other time, that's another type of time. Now services, pretty self explanatory. Right now I have a nine AM service already, but I would like to add a second service because during our weekend gatherings, we have two services.
+
+Now I can go ahead and add that to that same plan because we have the exact same elements in both services. So in this case, I'm going to add in eleven AM time. Now I'm going to say that this ends at twelve fifteen PM, so it's an hour and fifteen minute service. I can ensure that all the teams that serve this week are assigned there.
+
+Now at the very bottom is an important toggle feature, create this time and future plans. So if this time is consistent week in and week out, I wanna make sure that that is selected. That way I'm not doing this for every single plan in my services account. So everything looks good, I'm going to hit save.
+
+Now we can see that time automatically added on this left hand sidebar. Now I do have a midweek rehearsal that does apply to my band and some of my tech team members. So I'm gonna go ahead and hit add right here.
+
+And because it's a midweek rehearsal, I'm gonna go ahead and select rehearsal as the type of time I'm going to add. Now, I can name it anything I'd like just to make it a little bit clearer, and so in this case, I'm going to call it a midweek rehearsal.
+
+Now, this typically happens Wednesday night for us at seven PM, so I'm going to set this to seven PM, and we're gonna say it ends at eight thirty. Now because it's midweek, I have it the Wednesday before our weekend services, so I'll set that here to Wednesday, we could see that indicator change as well. Now this is an important part, assign teams and positions. This is where I can communicate who should be assigned to this specific midweek rehearsal.
+
+In this case, it is our band, so I can select that. But it's also for our tech team. So there's a few ways I can approach this. I can scroll down and select tech, and that way I can go ahead and see the different positions it applies to, but I can also just type in a position.
+
+In this case, I wanna say that the sound person needs to be there. I could see that position there. And when I do that, I can see perfect, just the sound position is check marked and everything else isn't. But I also would like our lyrics person there, so we can have our confidence monitor available for our band members.
+
+Now what's perfect about times is I can say, you know what, tech needs to be there for midweek, but not every position. So camera, lights, producer, our stage manager and video switcher, they don't need to be there for our midweek rehearsal because we're not live streaming. So I just need our lyrics and sound person there. Awesome.
+
+And I'd also like reminders to go to both teams just so it doesn't slip their minds. Now since the rehearsal does happen in the evening, I can set that reminder for the day of.
+
+Because I do know that the reminder goes out at ten AM. So we're gonna go ahead and set both of them for the day of, and because this is the same week in and week out, I'm going to go ahead and create that time and future plans.
+
+We're gonna go ahead and hit save.
+
+Perfect. Now that's been added. Now I also have the morning of I do have our report times, but also a team huddle. So we're gonna go ahead go ahead and add a pre service huddle. We're gonna set that as an other time because it's just a different time than our service or rehearsals, and we're just gonna call this, pre service huddle.
+
+This is where we go over any important details, maybe even pre service prayer with all of our volunteers. So in this case, I'm going to go ahead and, select some of the different teams. I might have a pre service huddle for my kids teams, different one for my in service teams, things like that. In this case, I'm just gonna do our kids teams. I'll select children's, nursery and toddlers.
+
+Perfect. Now because this is a pre service huddle for both times, I just wanna start off with our eight thirty time or our nine AM time. I typically do our pre service huddle thirty minutes before service, so I'll go ahead and set this to eight thirty AM.
+
+And because it's our huddle, we can say that this is about a five minute huddle, so we'll say eight thirty to eight thirty five.
+
+So we know how long that should last. And because I only want it to apply for those serving at nine, I can go ahead and change this to just those scheduled to the nine AM service. So we'll go ahead and uncheck these.
+
+Perfect.
+
+And this happens week in and week out, so we'll go ahead and create this time and future plans.
+
+Awesome. So we see that pre service huddle there. If I select it, I can see it only applies to my children's ministry teams that serve at the nine AM service, and they need to be at our pre service huddle at eight thirty and it lasts five minutes.
+
+Now I also have a report time. For our teams that serve at nine and eleven, I don't want them showing up there at nine and eleven. I want them there at least thirty to forty five minutes before. So in this case, I'm going to create a report time when they should be there.
+
+You can also call this a call time. In this case, I'm gonna set it to other and we're gonna focus on kids in this case. I'm gonna call this kids report time. I might even get a little bit more granular, I'll say kids teams report time.
+
+I can even say nine AM kids teams report time. So anybody scheduled to the nine AM service, I want them there at eight fifteen. So I'm going to set this to eight fifteen and the end time, I'm going to also set that to eight fifteen. Why?
+
+Because I want them there at eight fifteen sharp. If I put eight fifteen and eight thirty, they might think that this is a time window. I can just show up between eight fifteen and eight thirty. Now I'd like them there at eight fifteen sharp.
+
+Now I'm going to select the teams that this applies to. So both of my kids teams or all three.
+
+And we're going to say that this is for anybody scheduled to the nine AM service, their report time or call time is four eight fifteen. So perfect.
+
+And we're gonna create that in future plans.
+
+And we can see that added right here. Now a great way to test this feature is to go ahead and schedule somebody. So in this case, I see you on different teams that are created. I need to add a brand new needed position. In this case, we'll do it for our nursery.
+
+We'll add one for lead teacher. We're gonna go ahead and schedule somebody into that slot. We're gonna go ahead and schedule Cherie because Cherie is preferred. Now if I select Cherie's profile, I can go ahead and see, great, Sheri is scheduled for the nine AM service, and we can see that she sees both the report time, which is eight fifteen and the pre service huddle at eight thirty. So that is everything that we wanted. Now we can get more granular and add the report times and huddle for the eleven AM service, but this is exactly how you can utilize times to communicate all of the important data for your teams, and that is times in services.
+
+---
+
+## Reminder Emails and Notes (3:31)
+
+Let's talk about reminder emails and plan notes in services. Now reminders are a great way to let your volunteers know when they're assigned to a specific time right as the service approaches. Now in this case, have a few different service times. I'm going to select our nine AM pre service huddle.
+
+This is where we go over things that are important and pray as a team right before service. Now I have three different teams that are assigned to this time, and I want to kind of remind them about this puddle. Now on the right hand side, we can see a reminders section. By default, all reminders are gonna be set to none or no reminder.
+
+Now I can set a reminder to the day of the event all the way up to seven days before that event happens or that time. So in this case, I would like them to be reminded the day before that we have our pre service huddle. Now I'm gonna set this for each specific team.
+
+Now as soon as I do that, I can set that to happen in future plans or just for this plan alone. In this case, I'm going to leave that check mark, that way I don't have to do this week in and week out.
+
+Now I can do that for my service times, my rehearsal, and any of my other times. So in this case, if I wanna select eleven AM, I wanna make sure that my teams are reminded. Now, my band might need a reminder the day before, so I'm gonna set that there. But any any of my other teams, I can go ahead and choose to do up to seven days before.
+
+So in this case, if my tech, they need one two days before because they're pretty on it, but we're gonna set it to two days, band will be one. Our kids teams are pretty good. We don't need to add an additional reminder. They're already getting one for their report time, and then you can kinda go through this.
+
+The important thing is not to set a reminder for every time, because if your volunteers are assigned to multiple times, it'll almost feel like spam, but it's also a great way just to ensure that they're reminded the week of that they're serving. Now what's great about this when it comes to reminders is you can include more than just the times that they're assigned to, and that's where plan notes come into play. Now plan notes, I can go ahead and hit add and I can add a category. These are customizable within the service type settings, And in this case, I can go ahead and set maybe a plan note for our tech team category and I can assign it to any team that I'd like.
+
+So if I want our tech in our band, to receive a note, I can do that. I can leave a note for if there's maybe a security code change or maybe there is specifics for, what they should wear that day. Maybe it is baptism Sunday and they have baptism shirts they need to wear. I can leave that note there.
+
+So in this case, I can call it, you know, baptism Sunday.
+
+Please wear your baptism shirts on stage.
+
+Perfect. Now what's great about this is as soon as I assign a team to these notes, any note that is assigned to a team in this plan will be included within reminder emails. So if I go ahead and set nine AM here and I want a reminder to go out the day before for our band and for our tech, they're not only gonna get reminded about the times that they're assigned to, they're gonna get reminded about this tech note that we've created. And that way it ensures any important information is communicated with your teams based on the reminders that they're assigned to. And that's reminders and plan notes in services.
+
+---
+
+## Scheduling Conflicts (2:47)
+
+Let's talk about scheduling conflicts within services. Now conflict warnings are a great way to help you avoid accidentally scheduling somebody that might not be available or who's already scheduled. Let's see what that looks like. We're gonna come right over to a plan and on this team's page, this is where all of my scheduling happens for all of my ministries. Now I'm gonna select one of my needed positions where somebody has already declined for this week's service.
+
+Now in this case, we're gonna go ahead and open up this drawer for anybody that's assigned to that position. And by default, we automatically already organize those without conflicts and those with conflicts. So let's go through those conflict options. Now you can see there's three different types of conflicts that appear while you're scheduling.
+
+This red box is gonna show you anybody who's blocked out for that specific day. That means they've gone in ahead of time, maybe they received the block out request email, maybe they went in on their own profile, but they wanted to let their ministry leaders know that they were unavailable that day. So in this case, we could see that Anthony is out of town on this specific day. So we know not to schedule Anthony.
+
+Now there's also this orange indicator, and this means not preferred. So for example, Reagan has gone in to his scheduling preferences and let us know that he doesn't want to serve on the first week of the month. Perfect. So we know that Reagan doesn't prefer to serve on this specific week.
+
+And lastly, have Dave where we have this yellow box indicator and this lets us know that Dave is already scheduled to this specific plan. So we'll go over those three again. This red box is gonna show you any blockouts or if a volunteer has already declined for this specific week.
+
+We also have this orange indicator that looks at scheduling preferences. Do they prefer to serve on this week or not prefer? In this case, Reagan prefers not to serve on the first week of the month. And lastly, Dave is already scheduled to this week and we could see Dave is scheduled at the choir.
+
+And since I'm scheduling for drums, that's not the best case. And lastly, we populate the last time somebody served here in this section. We're always gonna put the best person that's available at the top. In this case, Caitlin hasn't served in this position in five weeks, where Asher is scheduled five weeks from today.
+
+That's that plus five, and if we hover, we could see that exact plan where Asher is scheduled. If we go to Caitlin, we can see, okay, yep, March first was the last time Caitlin was scheduled. So Caitlin is the best choice for this specific week. I'm gonna go ahead and hit add one, and as soon as I do that, Caitlin is ready to be sent a scheduling request.
+
+And that is scheduling conflicts within planning center services.
+
+---
+
+## Scheduling Rotations with Templates (7:22)
+
+Let's talk about scheduling templates within services. Now templates are a great way to communicate your volunteer rotation at your church. Let's see what that looks like. From the main plans page, we're gonna see our different service types and I'm going to select the settings gear and jump over to our templates.
+
+Now from here I can see any template that we've created already. You might have some for your needed positions, but in this case we're focused solely on scheduling templates. So we're gonna add a brand new template you're gonna see this populate where you get to name that just to start off. So in this case, we're gonna call this our weekend gathering and we're gonna be do our one and three rotation.
+
+Because typically, we have our volunteer serve week one week on and one week off, that's why we're gonna call it weeks one and three. Perfect. Now nothing's here, we have a blank template because we haven't communicated our needs yet. So we're gonna go ahead and select team actions and select needed positions. Now this is gonna open up every team that's assigned to the service type so you can add those needed positions. Now for this example, instead of doing every single team, I'm just gonna go ahead and do two. We're gonna focus on our band and our nursery.
+
+So here we go, we got one for each role there and for nursery we'll do one as well.
+
+And then hit done. Now these are needed positions. Now I wanna go ahead and fill those based off the people that serve on weeks one and week three.
+
+Now this list that populates in this sidebar is based on the people that are assigned to that specific position. So as your church and your ministry grows, as you begin to add additional volunteers, you'll wanna make sure that they're assigned to that position within the team. That way the next time you update your templates, any of those new volunteers will automatically be visible. So we'll do a couple more here.
+
+And there we've got most of those filled out. We're gonna jump over to our nursery as well and just schedule just a few people here.
+
+And what's great is as your volunteers update maybe their preferences, you can always go ahead and update your templates as well. That way you always have the most accurate data available to you. Now we've updated some of these positions based off of our scheduling rotations. Now we also have a weeks two and four.
+
+So what we can do is we can either duplicate this that way because we already have our needed positions or we can create a new one. In this case, I'm gonna duplicate it and just rename it. So we have this export copy option. I'm going to go ahead and select that and select template.
+
+Now we're gonna go ahead and name it. We're gonna stick with the same naming convention of weekend gathering and just call it two and four rotation. So this case weekend gathering, two and four rotation.
+
+Cool. We'll bring over the band and nursery. And so as soon as we do that, those same people are gonna be scheduled but we want different people because this is our week two and four. So you have a few options, you can go to team actions, you can go ahead and remove each of those teams. This case, I'm just going to hover over each person and we can go ahead and hit our x shortcut.
+
+And when you hit that X shortcut, it's just a quick way to remove the person, from that specific role. So we've done that for our band people and we'll go ahead and just schedule a few people for this rotation. In this case, we got Steven here, jump over to our base, We have Lisa.
+
+We have our drums.
+
+We'll go ahead and do Reagan, and we'll fill out our electric and keys to kind of round out this team.
+
+Now again, this is specific for the people that I want to serve on weeks two and on week four. Great. Now we have our nursery, let's go ahead and take Stephanie out. We'll go ahead and put in Tabitha there.
+
+We'll remove Tabitha from this spot, and we'll go ahead and come over to lead. We'll put Emily. Now, you might be asking why is Tabitha listed in green? Well, Tabitha is in the same household as Reagan and prefers the same time, served in the same plan that Reagan does. And so that's why you see that preferred option, which is great because we communicate that also in templates as well.
+
+So go ahead and select a few other people here and one more person at our nursery eleven AM time. In this case, we'll go ahead and do Bruce.
+
+Now we have our templates set up, our weekend gathering two and four rotation. If I go back one bread crumb, I can go ahead and scroll down and I see down here on this left hand side our weekend gathering one and three, weekend gathering two and four. Now let's go ahead and jump back into our plans.
+
+Now if I wanna go ahead and create a brand new plan, I can say, you know what, the next two weeks that we wanna go ahead and schedule for are seventeenth and twenty fourth. That seventeenth is the third weekend gathering of this month. So I'm gonna go ahead and scroll down and select our weekend gathering one and three, and for May twenty fourth, I'm gonna select two and four. And that way, as I create those, I can go ahead and hit add to, it's automatically gonna bring over those people scheduled in that template and place them in that plan. We could see that automatically that they've been brought over. Now let's go ahead and back up just a little bit.
+
+If you don't wanna create those manually week in and week out, you might be asking yourself, I already have scheduling history in the past. If you go to my May third plan, I have everything already filled out. If you go to my May tenth plan, I have everything filled out. Can't I just copy those?
+
+Well, we have good news for you. Yes, we can. We'll show you what that looks like. We're gonna jump over back to our plans and we're gonna go ahead and select on May third.
+
+Now when we select May third, at the very top there is an actions drop down and we're gonna select export and copy. Now from here, I can go ahead and select that I want to export this plan as a template.
+
+I can go ahead and include all of my teams which is what you really wanna do. That way you have that scheduling history. And then you can just say, you know what, this was May third, so it's our one in three rotation.
+
+Perfect.
+
+Now what we'll go ahead and do is we'll do the same thing for our May tenth plan because that is our second week of the month. And so we'll go ahead and back up here. We'll jump over to our May tenth plan.
+
+And since this is the second weekend of the month, I want this to be our two and four rotation. So I'll hit actions, export and copy, select all of those teams, and say I want this exported as a template and we'll call this two and four rotation.
+
+Awesome. Now as soon as I do that, everything gets copied over. You could see that two and four rotation, everyone is included. Now what we can do from here is create those future plans.
+
+So as soon as I create a plan, I can say, you know what, I wanna add the next five weeks worth of plans. I can say, alright, May thirty first, that's gonna be our two and four rotation. June seventh will be our one and three. June fourteenth will be our two and four.
+
+One and three, and two and four. Perfect. And once I create those plans, everybody who is scheduled in those templates will automatically be carried over. And that's how you can use scheduling templates in service to make your volunteer rotations that much easier.
+
+---
+
+## Scheduling with the Matrix (8:53)
+
+Let's talk about scheduling with the matrix. Now the matrix is a very powerful feature in services designed to help you see kind of everything happening in your account from a bird's eye level view. Let's see what that looks like. Now, in order to access this matrix, there's a few different things to know.
+
+There are four different views that you can have in the matrix. One is your my schedule, one is the folder level matrix view, a service type level view and a custom matrix. I'm gonna show you the my schedule view first. So if I come back here, I can see this my schedule option.
+
+This lets you see all of your upcoming plans. So from here I can see I am scheduled for three upcoming plans and that's what that view is gonna look like. Now let's go back to the plans page. That's one of those views, then you have a folder level matrix which gives you the ability to see upcoming or past plans based on the service types that live in that folder.
+
+Then there is a service type level view, so our contemporary service is a type of service that happens at our church, but I can use the matrix to see all of the upcoming or past plans specific to that service type. And lastly, there's a custom matrix, but we're gonna go ahead and start off before we get to the custom matrix for scheduling, let's schedule from the service type view. So in this case, I'm gonna go ahead and say look, let's look at the last two plans, but also the upcoming two plans as well. So we'll go ahead and select that.
+
+And now we can see November thirtieth, December seventh, December fourteenth, and December twenty first.
+
+Now, what's great about this is I could see everybody scheduled. I can also select our settings gear, go to our sections tab, and if there's things I'm not seeing, I can add them. So for example, I'm not seeing our tech team yet, so I'm gonna go ahead and select that in our children's ministry, hospitality.
+
+Great. So now I can see if you have people that serve in multiple ministries, can see them across the board and now I'm ready to start scheduling. Now, because I primarily do scheduling for teams, I don't need access to all of this additional information like the series art. That's great, I love to know what series that we're in, but for scheduling, I may not need that.
+
+So I'm gonna come back to our layout and we can go ahead and show everything. I can go to a default view or condensed, but if I go to settings here, it's gonna know any of these things that I set. So in this case, I don't need to see the series artwork, I don't need to see the series title. Maybe the plan title, we'll leave that so I still have some context.
+
+And that's good. And what's great is it's gonna remember that for me. So now I can schedule with greater confidence knowing that I only see the things that I need.
+
+Now when I'm scheduling here, there's a few things that are very powerful. These envelope icons let me know that the people scheduled for these upcoming plans don't know their schedule yet. They're kind of in a penciled in state. And so maybe there's still some moving around, but when we're ready to schedule, we can send that email.
+
+But also it gives you an at a glance view, especially if you have volunteers that serve week in and week out or in different ministries. You really don't want people to get burnt out. So a powerful feature is I can hover over a volunteer and this third icon from the left is our target option. And that lets me see where people are scheduled week in and week out.
+
+And in this case, can see Steph is scheduled for both our nine AM and eleven AM service in our kids ministry, both on the seventh and the twenty first. And that might be her preference, that's okay, but it might be something as a team leader I do wanna keep my eye on. So for example, Jordan Smith is scheduled every single week in both services. That might be something as a leader I need to keep an eye out for.
+
+I really don't want Jordan getting burnt out. And so that might mean we need to do some volunteer recruiting or maybe some adjustments on our rotation. So those are some powerful things for you. But also in the matrix, if I select on media positions, I can access the drawer on the right hand side where I can see does anybody have any conflicts, or who's the best person that can serve in this role.
+
+In this case, Eric's the best person because he has yet to serve and is probably a new volunteer. So we'll go ahead and add Eric as this teacher role. Now, one of the most powerful things about the matrix as well is the emailing capability. One thing that you don't wanna inundate your volunteers with is spam.
+
+And so what the matrix gives you the ability to do is send out one email for all four of these plans. So if you have somebody scheduled to multiple weeks, they'll get one email letting them know all of their opportunities where they can serve in. And that way instead of receiving four different emails, they'll receive one email with each of the dates that they're scheduled to serve in. So if I select email here, I can choose the different teams.
+
+By default, it'll populate the teams that I lead here, but if I wanna go ahead and, send out the request to other teams, I can do that as well. I can also break down the time that I want to send. So if I just wanna send the request for the nine AM time, I can do that. Or I can just select which service I want to send that for.
+
+So maybe I'm not ready to do the twenty first yet, that's our big Christmas performance. We might need more volunteers, we might not. So we'll wait to send that one. And so now I see I have nine people here, and I can go ahead and send out that scheduling request, and it's gonna package everything there for me, which is great.
+
+Now, I've sent those out and we're gonna see that kind of run right in the background. These email icons will begin to disappear as those emails are being sent out. But there's another powerful thing. There's still needed positions here.
+
+I can fill them in as needed, but I also have this magic wand up top. And why is that there? Because we have an auto scheduling feature that lets you schedule the best people that are available automatically. It looks to see if there are any conflicts, if there are any block out dates, but also when the last time they served.
+
+And so we'll go ahead and select that option, and we see our tech team still has some roles that need to be filled. So we're gonna go ahead and select our tech team.
+
+Now I'm gonna go ahead and hit submit here. And as I do that, it's gonna go ahead and begin filling in each of those roles automatically for each week. So instead of as a a team leader having to do this one position at a time, one week at a time, I can do this for my entire month worth of scheduling all at one time. And you still have the ability to make adjustments afterward, but this will still give you a great launching off point knowing that, hey, these people don't have conflicts, they don't have blockouts, and they're the best available person because they haven't served in the most recent amount of time.
+
+So we're ensuring that people don't slip through the cracks. But still, you might know that certain people serve better with others, and so you might make those adjustments as you need to from here, and then can adjust from there. But what's also great is you can undo that auto scheduling if you're in that same browser session and haven't refreshed. So in this case, we can remove all twenty five of those people.
+
+Perfect. Now let's talk about scheduling with the custom matrix. Maybe you're in charge of scheduling across service types or for multiple campuses. If you select this drop down, we have a option here for a new custom matrix. I'm gonna select that. In this case, we can call this our all campus scheduling.
+
+Now what's cool about this is I can jump over to our sections here and I can see several different things that I can go ahead enable. I can go to our plans. In this case, I want to add plans from other locations. So I'm gonna hit add.
+
+I can see that, oh, great. We have our San Diego folder. We have our Union City folder. So I'm gonna add our contemporary service.
+
+We have our Kingston folder as well. I'm gonna add our Kingston's contemporary as well. We have our Boone, we wanna do that weekend service. In our City Heights campus, we wanna do that contemporary.
+
+Perfect. And this is pulling things across multiple different folders and locations to be within one specific view.
+
+Now that's exactly what I want. So now I can see if there's hospitality across our different campuses, can do that. But you know what, I really wanna know which campus it's at, so I'm gonna go ahead and open up our settings, go to our sections, and I might wanna have the service type name there just so I can have the context of which is which. So now I see our Kingston here, I see contemporary, and so everything is much clearer now.
+
+So even though they're the same team name, it'll show up in that same line making it easier for me especially if I oversee hospitality for all of our campuses or tech for all of our campuses. I can go ahead and schedule with confidence using this. So you might have volunteers that serve at different campuses and so this makes you aware of where they might be. So the matrix is a powerful way to give you that flexibility to see all the things happening in services.
+
+And that's how you can use the matrix to schedule.
+
+---
+
+## Secure Teams and Background Checks (3:42)
+
+Let's talk about using secure teams and background checks within the services product. Now we're gonna jump right into it. We're going to go to our people index page and select teams.
+
+Now from here we can see the different teams in our services account, and in this case I'm going to select our fourth through sixth grade team. And we're gonna come over to our settings page for this team specifically, and we see our different types of teams that we can set. Now we're gonna focus specifically on our secure team.
+
+Now when you have this enabled, only people who have passed a clear and have a clear background check can be scheduled to a team. That's perfect. That's awesome for our kids ministries, our security teams, and even our greeting team. So I'm gonna go ahead and make sure that this is enabled.
+
+Now not every team might need one, but in this case, this one does. So we're gonna go ahead and make sure that that is enabled there. And now what's great is we see this indicator that lets us know that this team is a secure team. It's also a split team.
+
+But also when we go to our members page, we can see anybody assigned to that team. And we'll give you an indicator if there is someone who is missing a background check. In this case, Eric who is scheduled as a assistant for our fourth through sixth grade class doesn't have a background check on file. Okay.
+
+No worries. What we can go ahead and do is order one. Now in this case, we're gonna go ahead and select on Eric's profile. That takes us directly to his profile from here.
+
+And we can go right to the people product using the product switcher. And from here we can see his profile. Yep. That's right.
+
+There's no background check on file. Now if you have a checker subscription and integrate that with planning center, you can order that. In this case, I'm gonna go ahead and manually add a background check. And you can see there's an option to set up that integration with Checkr from right here, but also if you have any other subscriptions, you can go ahead and see if that is supported through our third party add ons.
+
+Now, you might have a separate provider that you use for background checks to where you're required to manually add those. In that case, you can use this option. Let's do that now. We're gonna go ahead and hit add a manual background check.
+
+You can go ahead and mention when they actually did that and then set an expiration date. Different churches have different policies, some have it need to be renewed every year, some are every two years and so on and so forth. You could set that up in your people settings, but in this case, we'll leave it there and just leave that untouched. But again, you can also set this for a different date.
+
+Now if you have a volunteer that's under the age of eighteen, you have the option of setting the expiration date on their eighteenth birthday. That way if you have minors that volunteer, you can still have that specific secure team logic in place, but also ensure when they do turn eighteen that it's time to order a background check for them. So in this case, I'm just gonna leave this to our organization's policies, create that, and as soon as I do that we can see that background check is now clear. Perfect.
+
+Now let's jump back over to services.
+
+Now from here we're gonna go directly to our people index page, select on teams, and take a look at that team that we've been working with. Now we can see, yep, Eric Pedersen is now all good and ready to go. So now if I go directly to our plan for December twenty first, I can go ahead and select on assistant, and Eric Pedersen is ready to be scheduled.
+
+Perfect. Now I can schedule with confidence knowing that anybody scheduled to our fourth through sixth grade team has a clear background check and we are set and ready for service. And that's how you can use secure teams and background checks within services.
+
+---
+
+## Signup Sheets (5:15)
+
+Let's talk about using sign up sheets within services. Now sign up sheets is a powerful feature that lets you empower your volunteers to sign up for open opportunities. Let's see what that looks like.
+
+We're gonna go right into a plan here and we have a few different teams that are currently set up. We're gonna use our parking lot team as the example. As you can see right here, I have sign ups already enabled for this team. Now what that allows me to do is to reach out to any of the volunteers that are assigned to the parking lot team and let them know, hey, there's some open opportunities.
+
+In this case, since I already have this enabled, I can hit this email icon, select the sign up sheets tab, and send out this request to any of those people that are assigned to that team. That lets them know there are open opportunities that are available and that they can sign up. Now how did we get there? We're gonna go to our team settings page for the parking lot, and from here we can see this nice little option for sign up sheets.
+
+That means anytime you create a new plan and the parking lot team is used, we'll automatically enable those sign up sheets for those volunteers. Now what's great about that is anybody assigned to the parking lot team to these positions will be able to sign up. That's one of the unique things about sign up sheets and services. Only the people assigned to those positions can sign up.
+
+That means in this case for our east entrance, only these four people can sign up for those open slots. If I go to the west entrance, only these three people can sign up for the west entrance. And that goes for any team that has sign up sheets enabled. Now let's go back to the plan.
+
+Now I do have this enabled here, but if I jump over to my next week's plan for January eighteenth, we could see that it's not currently enabled. So if you don't have sign up sheets auto enabled at the team settings page, you'll need to enable this manually. And you can do this from this caret dropdown and selecting enable sign up sheets. And as soon as you see that, you can see that sign ups are enabled across the board for these teams. Now what does this look like for your volunteers? Now I've enabled this for the parking lot team, so we're gonna jump right over to the my schedule page.
+
+Now on every volunteer or leaders my schedule page, you're gonna see things that are specific to you and any teams that you're assigned to. Now at the very top, we give you a nice sign up sheets section where you can see any of the sign up sheets available. If you have household scheduling enabled, you'll see their sign up sheets as well. In this case, I only wanna see my own sign up sheets, so I'll go ahead and uncheck the other people in my household.
+
+Now I'm gonna go ahead and select sign up sheets, and we can see that for the service type weekend gathering, and we could see all of the available opportunities. What's great about this is it's available on mobile as well. So if you have the services mobile app, you'll see the sign up option, and you'll be able to see the exact same thing on both sides. So you can scroll through, see if you have any conflicts.
+
+In this case, January eighteenth, I see a few conflicts. So I can go ahead and select on that and I can see, oh, this conflicts with the position I'm already scheduled for. If I go to the mobile app, I can see the same thing. So if I go ahead and click view conflict, I can see, yep, I am scheduled already for greeter first impressions.
+
+Perfect. So let's go ahead and back up just a little bit. And so as a volunteer, I do wanna go ahead and sign up. So I'm gonna go ahead and select this parking lot option from my phone and I'm gonna select sign up.
+
+Now as soon as I do that, it's gonna go ahead and sign me up for that specific position. So on the web, I'm going to exit out from this modal and as soon as I sign up for that role, we're gonna go ahead and see what that looks like for the volunteer. So I signed up for that east entrance and we could see I'm already confirmed. I can see the times that are required for me, so if I need to be there for anything, it's midweek or anything like that, I can see all of that that pertains to that sign up.
+
+So let's see what that looks like again. We're gonna select it one more time and this is gonna open up all of the opportunities. Now we can see there's a new conflict on January eleventh and that's because I've already signed up for this role. And what's great is anytime you use sign up sheets, you can see all of the conflicts or the things that are required.
+
+So in this case, we have all of the different positions I'm assigned to. I could see that there's conflicts, so I probably don't wanna sign up for them. But on January twenty fifth, I don't have any conflicts. So look, we have our acoustic band, but before I commit to that, I wanna see what's required of me.
+
+So I can see who's scheduled with me, specifically on that date, or I can come back and take a look at any of the time. So if I know I need to be there midweek for a midweek rehearsal, or for sound check, or if there's multiple services that are planned, I can see what is required if I sign up for this position. That way I can sign myself up with confidence. So I'm gonna go ahead and hit sign up, and as soon as I do that we can see that updated and reflected down here on my confirm section.
+
+And that's how you can use sign up sheets within services.
+
+---
+
+## Utilizing Needed Positions and Plan Templates (5:33)
+
+Let's talk about using needed positions and plan templates within your services account. We're gonna jump right into our February fifteenth plan. Now needed positions give you the ability to communicate with services the needs you need filled week in and week out. So in this case, nothing's communicated yet, so let's fix that.
+
+We're gonna go to our team actions menu and select needed positions. Now when we select that every single team that's associated with our weekend gathering service type is going to show up here. So in this case, let's start adding some needed positions. So we know we know for our band we need an acoustic position, bass, we need drums, electric keys, worship leader.
+
+So let's do that. For our tech team, we need one of each. Instead of hitting plus, I can go ahead and highlight and just start tabbing through on my keyboard. Perfect.
+
+Makes things a lot faster. But if you have a position that needs more than one, you can also highlight that number and just type it in. So in this case, we need twenty choir members, one director. For kids, we need definitely one check-in, but our kids team is a split team and that's perfect because we have two different services, but our second service has more kids than our first, so we definitely need a little bit more help.
+
+So we'll put two people for check-in there. We have one lead for each service, but one assistant for first service, we need two for second because there's just that many more kids. So let's do that and reflect that for each of our services.
+
+Perfect. So that filled out.
+
+And hopefully you're doing this right alongside me as you're learning how to use needed positions because this is really gonna pay off for all of your future scheduling as well. So lastly, we'll do some first impressions as well.
+
+We have our greeter guest services. Let's put maybe three greeters for first service and four for second, and we'll kinda go through here. Perfect. That looks great.
+
+Now we're gonna go ahead and hit done, and we can see all of those roles filled out. We have our different times and our different needs based on our different services. That is awesome. Now with needed positions, again, this is your church's needs for this specific service.
+
+So as your church grows, you can adjust these things. Now from here, if I select needed positions, anybody assigned to those roles will populate. I'll see the best available person to schedule there. And this is great because it always gives me the ability to ensure that people don't slip through the cracks, because we're always going to show you the person who hasn't served in the most recent amount of time or maybe not at all.
+
+So maybe it's a new volunteer. But you can also see any conflicts that they have. So in this case, Matt prefers not to serve on the first of the month. So great, we can honor that.
+
+Admitted positions really give you that value, right from there. So now I don't wanna have to do this week in and week out because that kinda seems cumbersome where if I have to add those needed positions every single week. So that's where plan templates come into play here.
+
+Because if this is the same structure I have week in and week out, you can utilize templates to make that a bit easier. So we're gonna go to the actions drop down here, and there's this feature here called export copy. So we're gonna select that. It's gonna open up a brand new modal, and we have a few different options here.
+
+We're going to go ahead and select template and we wanna make sure that each of the teams that we've added are represented here. So we can go ahead and select those. Now if I haven't added any needed positions, nothing will carry over. But in this case, we're gonna title it as well.
+
+And so I want to know that this is our needed positions and I'm going to hit submit. Now as soon as I do that, it's gonna take me to a brand new page that's titled needed positions. And we can see everything that we filled out is represented here on this page. Awesome.
+
+Even down to the times for my two different services. Now, here's how to use that in practice. We have our templates here, and we're gonna go back to our main plans page, and we need to start preparing for next month's scheduling. So we're gonna go ahead and hit add a plan.
+
+Now I'm gonna go ahead and add four new plans, and we can see those needed position templates are present. So I'm gonna go ahead and leave that there, and we're gonna add four brand new plans. Now what's great is it's automatically gonna copy everything from the template and put that right here in this new plan. So we could see this plan is for February twenty second.
+
+Everything has been copied over from our band, media positions, to our tech team, to our choir, even down to our service times and the needs for those services, which is great. Now as your church grows, you'll probably wanna update your templates that you've created. And what's great is you can do that in a few different ways. You can go back a bread crumb to your weekend gathering, which takes you to the settings page, select templates, select needed positions and update from here.
+
+So let's just say, you know what, our kids ministry is really skyrocketing. So our second service really needs four people checking in and our first needs two and we need to add a few more assistants. And what's great is the next time you go ahead and create a plan, let's do that here, it's going to automatically reflect those changes after you create that plan. So here it is, we see, yep, there's four and there's two, and we see three assistants now, and great, we are set up for success.
+
+And that's what's beautiful about templates in needed positions. It's designed to grow with you as your ministry grows. And that's how you can use needed positions and plan templates within services.
+
+---
+
+
+# People
+
+## People Overview (1:10)
+
+Hi. I'm Mackie. And your sixty second intro to Planning Center People starts? No.
+
+People is all about people. We make that joke a lot around here, but it's true. People helps you take care of the details so you can spend more time taking care of your people. It all starts with each individual person's profile.
+
+That's where you can store all their important information, contact info, household, prayer requests, it's also the home for all that person's activity across your Planning Center account. As you add people to your database, you've got powerful tools to connect with them. Workflows, lists, forms, texts, emails, push notifications, but the most powerful thing about people is the way it connects all the other parts of Planning Center. We've got a range of products all designed for different areas of ministry and people is the shared database that links them all together and when you bring everything together it opens up all kinds of possibilities But let's not get too far ahead of ourselves.
+
+For now, come on in, take a look around, and make yourself at home. As you explore, if you ever have any questions click on the question mark in the top right corner of the screen. From there, you can check out our help docs or get in touch with our support team. We're so glad you're here, and we can't wait to see what you do with the place.
+
+---
+
+## How to Import CSV Files (10:49)
+
+Alright, everybody. It's time to talk about importing profiles into Planning Center, into your database. You'll see right here I've got a lot of people in my people table here, but where do all these people come from? When you're moving to Planning Center for the first time, a lot of times you have a spreadsheet that you have all your data in or you're bringing it over from somewhere else.
+
+We have an import tool that makes bringing those profiles into planning center really very simple, so it doesn't have to be this big daunting chore. I'm gonna walk you through step by step how to do that. It's really a very simple process. I'm confident you could do it.
+
+So what we're gonna do is we're gonna start in the people tab in planning center people, and we're gonna go to the settings gear at the top, and we're gonna click import and export CSV. This is the section where we can do imports.
+
+The first thing I want you to know is that we have resources for you for this process. So if you forget everything I said today, no big deal.
+
+Pop over here to this question mark and just type in import. And we've got a couple of different articles to help you. One is called import a CSV file in people that's gonna walk you through the major steps of an import that we're gonna go over today. And then we also have prepare a CSV file for import.
+
+And that's actually where we're gonna start because before you bring your data into Planning Center, it's gotta be in a spreadsheet and we wanna kinda clean up that data. So what we're gonna do is we're actually gonna take a look at this article, prepare a CSV file for import, and then we're gonna take a look at a spreadsheet. So whenever you have a spreadsheet or a CSV file, for those of you who don't know, CSV just stands for comma separated value, which is just a fancy way of saying a spreadsheet. So if you have a spreadsheet, there's a way to export it as a CSV.
+
+We'll do that together. No worries about that. So right here, we have in this article steps that you should do to help clean your data. So for example, we wanna delete any fully blank columns or rows.
+
+We wanna delete any columns that we don't wanna import information. We don't wanna bring into planning center. You'll also see we have field names, which this is just a way of saying that we have, you know, in planning center, we have a concept of first name and you probably have a first name in your spreadsheet somewhere but you want to make sure that the column header in your spreadsheet is actually named first name and that's just gonna make your import a lot easier because then we can auto match it to the right field which is gonna save you a ton of time. So if you can before you import your spreadsheet, pop into this article, make sure walk through the whole thing and clean up your data in your spreadsheet, you will have a much simpler import process.
+
+So for example, let's actually look at a spreadsheet. I'm gonna look right here.
+
+You'll see I have many many fields here that I'm looking at. Each field, even in our article, you'll see that it tells us what kind of data that it's expecting. So some fields, they can just take any text you wanna put in it, such as the address fields. But there are other places where you need to make sure your dates are formatted correctly, or maybe it takes a yes, no, or a y in.
+
+So you need to make sure that you have data in your spreadsheet that matches what planning center is expecting to receive. Otherwise, that that field won't come over as smoothly as you would like. So right here, I've got all my column headers. They match what I've got in planning center in the article.
+
+I've made sure that they all match up here. I've made sure that it's gonna have data that planning center is expecting to see there. I've got addresses. I do have a column that I think we don't use.
+
+I don't believe anybody has a middle name.
+
+Let's just do a quick check. Yep. Nobody in here has a middle name, so I could actually go ahead and just get rid of this column. Let's just go ahead and delete it. Here we go. So that'll help clean things up a little bit.
+
+This is exactly the kind of cleanup that you should do beforehand. So just give it an eyeball. Make sure that you you see data in it that you expect to see. For example, in campus name, I should see the name of a campus, you know, if this said, you know, a date, that's probably not the campus name.
+
+Something got wonky there. Maybe I need to fix it. So just give it a once over and make sure everything is cleaned up. And then from there, we're just gonna export it as a CSV file.
+
+A lot of times you can just pop up and hit file, and usually there's an export to CSV option. This might look a little bit different if you're on a window, but the option or windows, but the option should still be there. So I would export this to a CSV file and then I'm ready to go. So let's pop back into planning center and look at the import page.
+
+So right here, I'm gonna say start import because I'm ready to upload my spreadsheet that I've saved as a CSV file. So I'm gonna hit start import, and then I'm going to find our file here.
+
+There we go. It's uploading and perfect. Okay. So now this is the match fields portion of the import.
+
+So I have, let's see, remote ID matched to remote ID. This is the column that was actually in my spreadsheet, and this is what it's matching it to in planning center. So you wanna go through and you want to verify that you see the right thing. So see, I didn't actually have this column named to the right thing, but it was still able to figure it out.
+
+It knew I meant first name, which is good, but I might have needed to manually adjust that. So I'm gonna keep going. Let's see. Yep.
+
+All of this looks like it matches.
+
+Oh, services user was not used. So these are not used fields. These are things that was actually part of the export, so we don't need to really worry about those. But those things just won't be imported into planning center, and that might be okay for what I'm doing. You don't have to import stuff.
+
+Let's see these, you know, the pager phone number field. I didn't have anybody with a pager so it's just telling me it's not used but if I wanted to match it up to something, I could manually do so by just coming here and finding the right field that I wanted to map it to. So if I had pager in my old system and that's not something we have here, you know, I might be able to match it to other phone number. That might be what I want to do with it.
+
+So you could do some manual matching like that, but I'm just gonna keep moving down And, yeah, you just keep matching up the fields. It'll give you some example data in that field to make sure that it's what you expect it to be. This is a good thing to just kinda go through an audit. You know, in the birthday field, I see dates.
+
+Perfect. That's what I wanted to see in there. You know, in the first name field, I see things that look like first names. That's good.
+
+It's good to kind of go down, just do a quick audit, make sure you see what you expect to see in those fields and that's just gonna help ensure that your import is successful. From here, once I'm confident that I've done my matching, I'm just gonna go through, and I'm actually gonna go to the preview stage. So I'm gonna scroll all the way to the bottom, and I'm gonna say, yep. I feel good about this.
+
+Let's go ahead and preview my import. One quick note is that down here in this box, can actually choose if you want to have empty columns delete existing data. This is because import the importer tool can be used to both create new profiles, which is primarily what we've been talking about, but it can also be used to update existing profiles. So if you're moving over, but you already had some people in planning center because you guys have been using services or check ins for a while, you can still import your data and update existing profiles based on if there's a match with their first and last name.
+
+So this checkbox allows you to have empty fields delete existing data in the profile.
+
+If you're importing people in here for the first time, you probably don't want that so I would just check that box off. Perfect. So we're gonna go ahead and go to preview import.
+
+Here we go. So we're you might have to wait a little bit, you know, depending on how busy things are during the day. You might be kind of waiting in a line, but this one went through pretty quickly.
+
+Let's see here. So we have some example profiles in here. I actually had a lot of these profiles in the database already. So you'll see Tyrone Johnson.
+
+He's got eighteen changes, so I'm gonna go ahead and look at these and make sure they look right to my eyes. We give you lots of places to make sure that the data is correct. So always take advantage of those places. Make sure that there's nothing off.
+
+You'll see right here, I do see things that make sense to me. Membership is member. This all looks normal and like it should be. This is great.
+
+So I'm feeling pretty confident. I might click through a few of these and, again, just kinda do a little audit, make sure the data looks right to you. You'll see I've got sixty seven profiles that are gonna be updated because they were already in my database. It's gonna create fifteen households for me because I used a household ID to group households together.
+
+That's something that's talked about in the prepare your CSV file. There's a whole section for households that if you wanna group people together in this process, you can.
+
+But I can also let's see. I've got eight households that are gonna be updated, and I've got fifty six profiles that are gonna be created brand new. So you can kinda see the lay of the data here. We'll also show you if there's any errors and we'll tell you what's going on. So basically, this is just telling me I've got people in here who are organization administrators and you can't update their profiles with an import because that's a security concern. But if there were other errors, you would see them right here. You'll see permissions errors and things like that in this field.
+
+So from there, once again, once I'm feeling good about the data, I could go ahead and say finish import. It's actually gonna push through these changes for me, and it will update my fields for me. And that's pretty much it. It's not overly, you know, complicated.
+
+If you'll do the work to clean up your CSV file ahead of time, lean on these resources, get things in the state you want them in, and then just use all of those checks through the process to make sure that your data's clean. You'll have an import done, and it's pretty easy overall. And one other thing I want to show you is that if you go right here to the import export, you'll notice I can actually undo an import if it's within a certain timeframe. I think it's two weeks.
+
+So if you're doing an import and it gets in there and you get past all the checks and you were feeling good about it and then you're just like, know what, this is not what I thought it was going to be. I got a field completely in the wrong spot and I got birthdays and anniversary and just something, you know, went sideways and I just missed something. That's okay. It's undoable.
+
+You can actually undo imports, so they're pretty low risk as long as you undo them fairly quickly because you don't wanna let it go a long time and people be updating their data, and then you lose all of that because you undid the import. So do that quickly. You know, make sure that you kind of validate that information quickly, but you can undo an import if you need to while you're in there.
+
+So that's it for imports. Reach out to our support team. If you have any questions about it, we'd be more than happy to help you.
+
+---
+
+## Help People Update Their Profile (7:31)
+
+Hey. Let's talk about two ways that you can help your people update their own profiles, either through Church Center or through a PeopleForm. Let's look at Church Center first. So I have both screens pulled up here.
+
+I've got both my desktop, which is the admin side, and then I have my phone. And I'm gonna click into Chase's profile. I'm logged in as Chase. So I'll click into this profile in the top right, then my profile and settings, and finally, my profile and household.
+
+You're gonna see a lot of stuff here. First, his household. That's great. You can edit your household's information from here, but also you can edit your own information.
+
+So for Chase, he would click on this edit button, and now you can see some of the things that you can edit that are personal information. I've got campus, name, gender, some, you know, stuff like that. I need to add his birth date. So I'm gonna go ahead and click on the birth date place, and then I'm gonna do this and go to ninety one.
+
+Where are you?
+
+Chase.
+
+There you go. So now I've added Chase's birth date, and it's going to be on the profile. I'm just gonna click update.
+
+It's actually gonna ask me to confirm my birth date because birth date matters a lot all over Planning Center, and so you wanna make sure that people's birth dates are right. So we'll click confirm. And then once we click confirm, his birth date's gonna show up here. Now over here on the admin side, you'll see it says no birthday, but that's only because we haven't refreshed the page. So watch right here as I refresh. And now Chase's birthday is in your database just from him updating on Church Center automatically.
+
+Now I wanna look at one other thing here.
+
+Once I click edit again, let's say I go in, there are some things that are locked, like name. You don't really want people to change each other's names or anybody's name after they have their name in your database. That matters for giving and different things like that. But also birth date.
+
+Because birth date touches so many different places, we, by default, keep this locked. However, if you don't want to have this locked and you want people to be able to change it at will, you can do that. So we're gonna go back into the people product over here in the admin side. And to do this, you're gonna click on the people tab and then this gear wheel on the far right and then church center settings.
+
+So church center settings, you'll scroll down on this left hand side for congregant profile permissions. This deals specifically with this page that we're looking at for Chase. So right now, you can see that I can edit Chase's profile picture. I can add a birth date if it's blank, but then it's locked if it's filled in.
+
+So this is the reason why this is locked. If you ever want that unlocked, just come here, click on this little edit pencil. You can change this to can edit or can view only if you don't want them to ever edit it, and then click save. That will change it for everybody who's updating their profiles, and you can do it that way.
+
+There's another thing here, though, that I want to show you, which is custom profile fields. You can add any custom field to be edited or just viewed in Church Center from this space. So let me show you what that means.
+
+Say that I want to add this spiritual gifts assessment. I we've had everybody take it in the church, and so now I wanna show everybody their results on Church Center. What I can do is add a new field, click this tab, and I'm gonna select gifts assessment. I'll select the spiritual gifts that they have, right, that field. And then I only want them to be able to view this. I don't really want them to edit it because you shouldn't be able to edit it after you've taken it. And also, I don't want them to be able to add anything extra if it's blank.
+
+So can view only. I'm gonna click save. Now over on Chase's profile here, you're gonna see at the bottom that we have his spiritual gifts showing. Now, I click edit, it's locked.
+
+I can't edit this and I can't edit baptism date because once I've put something in, then it can't be edited. And I can view my spiritual gifts or Chase's spiritual gifts, but I can't edit those here. This is really handy if you have things that your team wants to know or that people wanna know about themselves that you have on file for them. This is super handy.
+
+Okay. So that's one way that people can update their profiles. But another way that people can update their profiles is totally on the admin side, and that's going to be through forms.
+
+People forms are pretty straightforward. You make a form. You put fields in that you'd like people to fill out, and then you send it to them and they fill it out. So you might need to create a new form, but in this case, we already have one called information update.
+
+I'm gonna click into the fields tab here to show you what we ask for.
+
+You can ask for any of these fields over here. So profile fields is probably where you'll be living for this specifically, but you've got phone number, birth date, address. You've got all these different things. You can add those to this, including household members. Big deal if you want somebody to add people to their household, especially, you know, if you if they don't have the church center app or if you don't want them to do that in the app, you just want them to do it here, you can do that. So we've got those and then all this other information here.
+
+Now this form on Church Center web, which well, actually, sorry. Before we even get to that, how do you share this form? It might be on Church Center web, but how do you get people there? Well, in this settings tab, you're gonna see the option to, over here on the right side, to either copy the link to this form or download a QR code. What's so cool about that is you can put it on slides, you can put this up in your lobby, or you can email that even out to people if you'd like. But either way, you can send these things out to people and let them see it.
+
+So then they would be able to view this on Church Center from that link or that QR code.
+
+But another way that you can do this is over in Church Center app. So let me go back over to my app really quick. I'm gonna click here to this page. Now the app with this custom home page, you can do that if you have a subscription to publishing. You can do what I'm about to show you.
+
+The subscription to publishing to allow this is free. You can get the Church Center app, have a custom home page, and even a customized navigation, which is what we're looking at the bottom here, for free. So do that, and then you can actually add this form, that link to your navigation. There's videos on all of this stuff, but I'm gonna fly through it right now. If we go to the more tab here and then go to update your info, you're going to see down here at the bottom, this is the link to that form. So when I click on that, you're gonna see that it shows up just like how it did in the forms on the people product.
+
+They can fill this out. And then once they click submit, you'll see back in the people product, there will be a submissions tab on this form, and you will see all of their submissions. And also, it's gonna update their profile, both in Church Center and in your database. And that is how you help people update their own profiles.
+
+---
+
+## Adding People to Your Database (5:42)
+
+Hey. Let's talk about all the ways that someone can be added to your database.
+
+The first here is if you are starting out fresh, this is what your dashboards page is gonna look like. There's nobody in here except for you. And so what you'll wanna do is if you're coming from another church management software, you're going to go to this people page, the gear wheel, and then select import and export CSV.
+
+From your other church management software, you'll want to pull the CSV file out that includes all of your data. Then you're going to import it into people, into planning center people.
+
+If you don't have any data from another database management system, then, you won't need to do this. There is a full video also on how to do this. That's not this video. This is just one of the ways that you can get people into your database.
+
+You can go check that video out in our, people channel. Super. So that's one way. But let's say that you don't have that from your church management software.
+
+Well, you can click on people, and then you can actually add a person. So we'll click add person and I'm gonna type in Marvin Smith because that's the first person I wanna add besides myself.
+
+Of course, he's not gonna show up because he there's nobody else in here. So I'll click create a new person and now I can enter all of Marvin's information. So I'll do an email address, and then I'm gonna do his phone number.
+
+And then you can also add campus, gender, marital status, anniversaries, dates, things like that, medical notes. Any of those things that you need, you can do that. Now when you save, then you'll see Marvin's profile right here on this page. Now let's go to see, if we were working with a system that had tons of people already. Like, maybe you've already set up and you just are wondering how else people can be added. Let's go look at that.
+
+Super. So we're here on the people page of a different account, and I wanna show you another, way that you can get people into your product or into your people, product, which is to go to a different product.
+
+So we're gonna head over to groups and I'm gonna click in here really quick.
+
+And let's say that we need to add somebody as a leader to a group or something, we can do that through the groups thing. This is true for all of your products. When When you come over to this people page on any product, you're gonna click add person, and then you can type in whoever you'd like. So I'm gonna type in Stacy Smith.
+
+Stacy is not in our database. I'm gonna click create a new person. Here's why I'm doing this. Because anything that you add in a different product then will show up in the people product.
+
+So once we add Stacy here, we're gonna go back to people and see that she shows up. So I've got Stacy. We're gonna put her phone number in here.
+
+And then, she has this contact information.
+
+Okay.
+
+So now I've added her stuff. I'm gonna save. It may ask me for some different things here. Okay. Perfect.
+
+So I've got her in groups. Now if I go back to the people product from this product switcher, it's gonna show me Stacy's profile back in people. This is important because People is your database and your hub for all of your profiles. Everything that you put into any product, you're gonna see back in People.
+
+Okay. Perfect. There is one more way that people can, actually create a profile themselves, not something that an admin has to do, but a way for them to get connected with you quickly, which is through the Church Center app.
+
+So we're here in Centerville Church's Church Center pages. This is the web version, but the app version looks pretty much the same.
+
+And what you're gonna see here is I'm not logged in currently. So if I click log in, it's gonna ask me for my phone number or my email address. If I click on any of these products where, like, say I wanna give and I'm sitting in church right now, I type in my money, and then I'm gonna sit click continue to give, it's gonna ask me to sign in or to log in immediately.
+
+This I can do either use my email address or my phone number. The same is true for any of these products. You would do that in groups. It also happens with sign ups.
+
+Right? If someone signs up, then, they'll be asked to log in. But another way that's kind of neat is that if you have a form on Church Center, like this info update, this form, if I don't have a profile in your database but I want to be in touch, maybe a connection card or an information update like this, I can fill all this out. And then whenever I click submit, it's actually going to create my profile.
+
+Why is this the way it is? This is because you can connect with guests immediately as soon as they have, filled out a form or done anything that interacts with your church. You're gonna know immediately because they're a new profile in your in your, People product, and then you can reach out to them either, you know, by having them just sending them an email or sending them cookies, whatever you end up doing. So that is all of the different ways that you can have profiles created in your people product.
+
+---
+
+## Navigating the Profile Page (6:57)
+
+Hey. Let's talk through how to navigate the profile page. So we're gonna go to a profile by, we're in people, and then we're gonna go to the people page and search for Chase, my friend.
+
+We'll let that populate and then click on his name here.
+
+And this is his profile. There's a lot going on here, so we're gonna go from left to right and up to down. We're gonna get all of it taken care of. You just, hang tight and follow along. So here's Chase's profile information, his primary contact information at the top. His primary email, his primary phone number. If Chase had more than one, email or phone number down here, the primaries would show up here, and then the others would show up down in this contact information.
+
+Over here on the right hand side you see that we've got membership type, which Chase is a member, the campus, which Chase goes to Atlanta but you could also have this not set or even manage your campuses from here.
+
+Then a background check shield.
+
+If somebody's working with kids or in a ministry where they would need a background check, that will show up here. This does only show up if you're using background checks, but, so if you're not, it's just gonna be like that.
+
+And then finally, the actions drop down. Now this has a lot, so, I'm gonna click on it and there's gonna be a ton. Okay. It wasn't that much.
+
+So first you've got edit profile. That is the same thing as this little pencil right here that you can edit the things that are here. We've got manage permissions. That's gonna let you add, Chase's permissions to either people or another product.
+
+Perform action is going to let you change certain things that maybe you can't do here or send like an email template, different things like that, to this person.
+
+Merge profile lets you merge with another profile, especially if there are duplicates and you need them to be together.
+
+Now these last two, set inactive and delete profile, we suggest you never ever delete a profile unless it is a test profile because those cannot be recovered, and if it's got any historical data on it you might need that someday.
+
+So instead of deleting, we recommend that you inactivate a profile and set them inactive.
+
+So yeah. That's that's kind of the difference here. I would always recommend to set a profile inactive when you're done using it. Okay. That's the actions button. Here on the right side, you've got the a cut household, which you've got Chase and then Chase's wife, Katie, and then their son, Henry.
+
+You can edit that from here, add new people, and just see who's in the family, you know, change who's in the family there. And then down here at the bottom you've got directory status. We do have a video on how to set up and use your directory, but you can see here you can remove them from the directory and also view their profile here. Great.
+
+Let's go over to the left side of the screen.
+
+Of course, we've got profile, which is what we're looking at now, But then if we click on these next ones, we're just gonna go all the way down the list. Activity is going to be any activity that this profile or this person has taken in other products.
+
+You can see here, I have changed Chase's things a couple times here. Chase filled out a form.
+
+He edited his profile with that form, and then you've got a couple different things. Aaron Stewart added his phone number. So you can see all the things that have happened to this profile over time and, also when it was created. You can also click these on and off since Chase doesn't have any other profile, action in these other products. You won't see anything change. But for somebody who has a lot, you can actually, like, turn all of these off, and then if it was just services, then you'd see that stuff. So, yeah, there's that.
+
+Okay. The next, is communication.
+
+Now communication is every email that has been received by this person and also sent by this person. Chase has not sent any messages, but as far as the received messages, we've tried to send Chase three emails and they're all red.
+
+And by red, I mean the color red, not like he read them. So, this means that Chase's email address is not working. You'll want to reach out if you ever see this in someone's profile. You'll want to reach out to that person and say, hey.
+
+Do we have the wrong email address for you? Because nothing is getting to you. And you can also click on these and see some different things there, like what the what the email said, why it failed, and then, just different things there, and when you tried to send it. Okay.
+
+Now workflows.
+
+This is where you can see all of the workflows that this person has been added to as well as you can add them to a workflow here. Chase is interested in volunteering, but we could also add Chase to another workflow and select any of these things. If he was a new believer, different things like that. Super. K.
+
+Awesome.
+
+Now let's go over to notes.
+
+Notes are things that, you can add as an admin or even if they're on a form, someone could fill out a form and add notes to their profile themselves. Usually that's per requests, which you can do that. But we could add a new note here, and we can also filter by category if we've got lots of notes. We could just see certain notes. This one for example, right, that, I met up with Chase and his family on September twenty second, and so, we'll call them next week. These are nice little notes there. You can also delete them from here.
+
+Okay. Last here in this top section is forms. This is any form that Chase has filled out, and if you click on this form, this highlighted form, you'll actually be taken right to the form submission. So you can see Chase added his primary campus, his child, that he is married, and that he's a member.
+
+That way we've got all of Chase's stuff here and, you can just go there from his profile. So we're gonna go back. Awesome. That's all that top information.
+
+The last thing here on this page is custom tabs. This is gonna be all of the things that you've created that are unique to your church. So, contact preferences is great. Actually, Chase just told me that it is okay for him to be contacted by, through Mailchimp, and so I'm going to click yes in here and then save, and now you'll see that that changes here.
+
+And you've got all kinds of different, custom tabs that you can use here. So that is all of the profile page. If you have any questions or you run into a snag, you just let us know. You can click this top, right hand corner, the question mark, and then reach out to our support team.
+
+Thanks.
+
+---
+
+## Creating A Household (3:04)
+
+What's up, everybody? Let's talk about households within people profiles. Now you will see households in planning centers show up a couple different places. Like, you'll see them in check ins and in giving.
+
+There's a couple places they surface, but they're primarily managed in the people product. So anytime you go into a profile, like, I'm looking at Greg's here, you'll see one of two things over here on the right. This is the little household area on the profile, and you'll either see this where I've got, you know, a couple household members. You'll see we've got a couple children in this household.
+
+We can see some key demographic info about them at a glance. We can actually click between these profiles to jump between household members very quickly, or you might pop in a profile and see something a little more like this, where maybe a household hasn't been added yet. So you'll see one of those two things whenever you pop into a profile.
+
+But if you do become aware that somebody does have another member living in their household that needs to be added, like, let's say, Dahlia here has a spouse, you can adjust that right from this section either by hitting this little edit pencil or by clicking the add one now button. So let's add someone to Dahlia's household just to see what that looks like. So right here, I'm just gonna click add a household, and I can either search for someone that already exists. So if we know, you know, maybe her spouse is already in our database somewhere, I could search for them, or I can actually just create a new profile.
+
+So let's say that she is married to Jeremy. You'll see I don't have anybody in my database with that name, but I am gonna go ahead and create a new person. So I click here. I do know gender.
+
+Let's see. He is an adult, so I can put in some quick information right here. Obviously, I have access to even more information. I can collect on his actual profile, but for this space right here, we're trying to find fast information.
+
+So I'm just gonna go ahead and hit create person. So now Jeremy exists in my database. So I've got Dahlia and Jeremy now in this household together. You can select the primary person.
+
+Sometimes the family makes it known, like, hey, if you ever need anybody, please call mom, because she's the one who's really good about answering her phone, Or, you know, just whoever wants to be contacted in the household, you can actually set as the primary within the household at the point where you create it or you go back to edit it. And then that actually surfaces in a couple places in Planning Center. For example, when you pull a people list, you can pull primary household members. So just as an example, that's a place where that would kinda help you out if you had that, you know, kind of intentionally selected there.
+
+But I'm happy with my household here. I can change the household name if I'd like to name it something differently.
+
+And then, you know, I can also add more people if I need to, but for right now, I'm just gonna go ahead and hit save.
+
+There we go. And now I have my household created, and you'll see I can quickly navigate to Jeremy's profile now, add any more information I wanna add, or go back, and view the original profile I was on. So that is adding a household in Planning Center People.
+
+---
+
+## Setting Up Custom Fields (9:08)
+
+Hey. Let's talk about custom fields and why to use them with your planning center account. So we're here in the people product, and we're gonna go over to the people page because first, I wanna start by showing you where these fields live.
+
+Here's our profile chase that we're gonna look at. Now we have built in fields here in the middle of the page, contact information and personal information, but all of your custom fields live over here on the left side.
+
+What is a custom field, though? Well, a custom field is anything that's not there in the middle and that's unique or specific to your church. So maybe you wanna keep track of confirmation dates or baptism dates, or maybe you wanna keep track of gifts assessments. You can do all of that with custom fields.
+
+Now that we know where it is, let's go create a couple, and I'll show you how that works. We're gonna go back to the people page and then to this gear wheel to customize fields.
+
+Super. Up here at the top, you can see that you can add some different answers to some built in fields. So school, membership type, we don't we maybe don't know what you call your visitors, and so maybe if they're guests or newcomers, you can change all of that here by clicking any of these edit pencils.
+
+But under that, you've got custom tabs. Right now, we have a few here that I wanna call out. One is contact preferences. If you're contacting anybody, this is a great way to know how they'd like to be contacted, and then you can use these custom fields in lists or workflows or forms to make sure that you're contacting the right people.
+
+Also, you can use this for different things. Gifts assessment is another one, and then growth track. If you just wanna keep track of where someone is in the process of joining your church or something like that, you can do all that.
+
+But the one I wanna draw attention to for sure, for sure, and we're gonna go create some fields in, is membership info.
+
+So membership info, this is a pretty vague term, but that's because every tab should be like an umbrella. You don't want membership info to be membership date, like you don't want that tab to be that because then all you can put in here is the membership date. Instead, you want it to be this bigger overarching idea that then you can add lots of fields to. So we already have attended foundations class and moving to a new church plant, but I wanna make sure that we've got baptism date in here, and we'll change this type to a date.
+
+I also want to have membership date in here because this is membership information, and we'll change that to a date as well. But then I've got one more where I want to make this a membership oop. Membership covenant.
+
+And the type is going to be a file. So you can actually upload files into these custom fields as well, which is really neat. We're gonna save that. Now I think these things come later.
+
+Really, I'd like baptism date to be at the top, then the membership date, and then the covenant, and I can drag and drop these. Super. You can also drag and drop these over on the far left side if you wanted, like, past database info to be higher, you could do that. You can move all of that around.
+
+Great. So now that I've got this, I wanna look over this collaborators pane. You could let all of your viewers and above, which means anybody who has a permission level and access to people, the product, they could all see this. That would be fine.
+
+But here, we actually have that Derek Brown is the only person who can see this and then all those viewers.
+
+Let's say we want this to be a little more private.
+
+We could have just our managers if we click add collaborator. Just managers, which then would change this to just all your managers. And let's say that we have somebody who's not a manager, but who also takes care of this stuff on Sundays for us. So let's go ahead and add a person, and we'll add Matt Watson.
+
+This guy, he's a great guy. He is gonna take care of all of this information for us, but he's not a manager, so we'll want him to be able to see that. Okay. Super.
+
+That's pretty much that. You can make these private by just removing this completely. So, yeah, you could click on that x, and then you just have these people who can see this.
+
+And that's good for counseling notes, different things like that.
+
+The last thing here is share with check ins. Now I'm not gonna click it on this tab, but you can do that. We have one that's for check ins only. This would be things like our photos allowed of a child.
+
+You can make this available in check ins, and then it can print on their label, which is super cool. And this is also good for, like, camps. If you have cabins, you can have that show up. Campus, all of those things are really important.
+
+Okay. Super. The other thing is is if you wanna add a new tab, you can just click add tab, type in what you want here, and then click enter, and it will create that for you where you can start new fields. Great.
+
+So now that you have all these things, let's go back to Chase's profile, and we're going to look at where what we can do with this now that we've made it. So I'm back here on his profile. I'm gonna click member membership info, and then you can see that he doesn't have any answers for these. But if I know that his baptism date is, you know, back he was baptized a couple years ago and actually in September.
+
+So I can add that to his profile and then click save. Now it's gonna show up on his profile. And then anytime I'm looking for like, say I use a list and I wanna look for people who were baptized in twenty twenty two, that's the way I can do it. I can look for this actual specific piece of information.
+
+Go watch our lists video if you haven't seen it. That'll kind of walk you through how to do some of that kind of thing.
+
+Okay. Last thing here, this is kind of a pro tip. We wanna go into this people tab and go to show which custom fields we want to be able to edit on church center, both the app and the web.
+
+So we're gonna go to the gear wheel and then go to church center settings.
+
+Now this is going to make all of those custom fields available for your congregants to edit themselves. If you want them to be able to update things for themselves and their kids, this is the way. So over here on the left side, you're gonna see congregate profile permissions. We've already got these built in profile fields that show up all the time. They can always edit their profile photo.
+
+They can add their their birth date and their grade if it's blank, but not if it's not blank. If it's already in there, it kinda locks it down. And then we don't show campus and membership type. But let's say we want them to be able to set their campus.
+
+We can actually edit this, change it from hidden to can edit or can add if blank. I think we wanna say can edit because, especially if our church is, like, starting a new church plant or something and somebody's gonna move from their campus to their other campus, to the church plant campus, I want them to be able to let us know that without me having to do it on the admin side. Cool. And I'll show you this in a second how this looks on Church Center.
+
+So they can edit that. And now let's add a field from our membership tab. So we're gonna click add field. We are gonna select the tab, which is membership info.
+
+And then the field that I wanna add is baptism date. Right? Because you're gonna know your baptism date better than I'm gonna know it, and I'm I'm just an admin. You can call me and I can add it, but it's better if you just do it yourself from church center. Right? And easier for everybody.
+
+The congregate permission, we don't want them to be able to view it only. We want to add if blank. Now this will let them add their membership or their baptism date. And then once they add it, that's gonna lock that field down just like a birth date and grade up here. Let's save this.
+
+And now let's go look at what this looks like. So I'm gonna go ahead and go to share well, I'm gonna go to share profile link. This will actually take me to church center to see this profile page.
+
+Alright. Super. So I'm here on my profile page, and you can see my name here, all my personal information, what I've added and not added.
+
+And then down here at the bottom, you can see that I can edit my baptism date. This is a custom field, but because my because we made it available, I can change this. So let's edit this, and it is o four zero seven nineteen ninety seven. That's perfect.
+
+And we're gonna save changes there. Perfect.
+
+So now I've got that on my profile. That's gonna be available to me. I can also see all of my personal information and update both the built in page or the built in fields and also those custom fields. And that is all of custom fields. If you have any questions, reach out to us. Our support team would be glad to help.
+
+---
+
+## Automations in Planning Center (9:51)
+
+Let's talk about automations across Planning Center. So we're here in the people product, and this is where automations originated. We're gonna head into forms. And forms is not the only place you can do automations, but it's the starting point because I wanna talk about why you would use automations. We clicked on our form. Now we're gonna click on the automations tab.
+
+Let's say you're at the end of a whirlwind week of ministry, which is most of them. Right?
+
+You're there, and you're like, oh my gosh. I forgot to send this one email, or I forgot to check-in on that person or do this thing. That's where automations come in. Automations take care of the processes so you can take care of your people. And these are particularly good for things that are repetitive, things that you need to do most of the time but don't need your hand necessarily. So let's look at how to create one. First, I'm gonna click create automation.
+
+And automations are set up in two sections. Right? It's the big idea is triggers and actions. So the trigger is this first section right here. When a person and then the drop down is the trigger. Now for forms, there's only one trigger, so that's really easy. That's why we're here looking at it here.
+
+When a person submits this form, that's the trigger, then the action is what product do you want this action to take place in, and then what action do you want to make happen. So any product that you have access to, you can select here, and then you can select an action. There are different actions for each product. People, as you saw, people actually has the most actions here. You can update fields and update all kinds of profile things. So that's the basic big idea. Trigger and then actions.
+
+The cool thing is this is true across all automations in Planning Center. Anywhere that you'll go and see this, it's gonna look exactly like this. So let's go set up a couple of automations in some different products so that you can see how you might use this. I'm gonna go ahead and go out to the groups product.
+
+Now groups automations happen inside of a group itself. So you'll go to groups, and then you'll click on this group, and you'll find the automations tab.
+
+Here in this group specifically, I'm gonna create an automation, and I have these options. Right? Joins this group, leaves this group, or request to join. These are based on what your permissions are, so you may not have all of these. But for this one, we're gonna say when someone joins this group, I want them to actually be registered for an event that we have going on that pertains to this group. So I'm gonna go ahead and perform an action in registrations where I need that thing to happen, and then I'll select the action register for a simple sign up.
+
+Now I'm gonna just pick random things here, but you would pick the event, and then you would pick their selection type and how many attendees, and then you would send the confirmation email or not if they already know that they're gonna be registered.
+
+Once you've done all of that and you create the automation, every person after the people that are already on here who join this group, they will be added to that registration. So I'll create automation. It's gonna take a second. And then now I've got this right here.
+
+You'll see some little things like groups to registrations. That's mine. I created this. I can also disable this if I don't want it to register them right away and then reengage this whenever we're ready.
+
+Okay. So that's one. Let's do another one over in services.
+
+Services is our volunteer product, our worship and volunteer product, and so we're gonna find automations in Teams.
+
+I'm going to head to the people tab and then the teams tab, and we're going to go into the band team.
+
+Now here, you'll see the automations tab, pretty similar, and look, it all looks pretty much like the automations everywhere else.
+
+When I'm here, what I'm going to do for this is I'm going to create an automation that when someone accepts a request to serve, I'm going to take an action. Now, this trigger, what we want is we want actually to have any time that someone requests or accepts the request to serve as a violinist, which isn't all the time. Right? It's just sometimes.
+
+Maybe you have a violin every week. But for us, we only have it every once in a while. So we're going to have the trigger be when someone accepts to play violin. We want to send a task or a notification to our guy who sets up the stage. So I'm going to perform an action in home, which is our tasks and dashboard product, and then I'm going to add a task that's called setup for violin.
+
+And then I'm gonna add this task to someone else's inbox, Not mine, because I'm not the person who knows how to set that up. But you know who does know how is Brandon.
+
+When I select Brandon, now I've got this whole thing that when someone accepts this, not every week, not every time, but just when they accept for violin, it's gonna create a task in Brandon's inbox. When I click create automation, you'll see it show up here on the side. When a person accepts, it's gonna send something to Brandon's inbox. Now let's say that somebody else needs to take over this automation for me.
+
+They can actually come in, sign in as themselves, click this little three dot, and click reassign to me. It's already assigned to me, so I can't do that. But you can see, like, here on this one that Aaron Stewart created, I can actually reassign this one to myself. It will ask, do you wanna do that?
+
+Yes, I wanna do that. Not in this case. But that's good if you're, like, going on vacation or you're just not in charge of this process anymore. You'd want that to be reassigned to someone else.
+
+You can also see the history of an automation here. And like we showed before, you can pause this automation or turn it back on.
+
+Super. Okay. So now we've looked at a couple of different options for how to create automations across our products. But I want to go back to people because every other automation in Planning Center requires that trigger to happen because of something someone has done. Right? So they join a group or they leave a group or they accept a request.
+
+But inside of lists in people, you can actually have automations run just by an automatic auto refresh of your list. So we're gonna make a birthday list. This is already made. Today's birthdays, I'm gonna click into this list.
+
+And list automations work a little different. Right? Oh, look. Ashley Howard. Ashley Howard's birthday is today.
+
+Happy birthday, Ashley. So I've got one person on the list here. My rules for this list are gonna be anybody who has a birthday today and then also anybody who has an email address. Because what I want to do is I want to send a birthday email from the church, well, really from me, that says, hey, happy birthday.
+
+Here's a free gift for you. And I want that to happen only on the day of their birthday. Okay. Before we get to automations, I'm gonna skip over to the settings tab.
+
+We want this to auto refresh. So I you'll see it sometimes set up like this. You'll click enable auto refresh, and then select your frequency to be nightly.
+
+Once you've done that, your list is going to refresh, and every night around two AM, you're going to get a new set of people. Right? You're going to have anybody who is added to this list, they're gonna show up here, and then we're gonna make an automation that's gonna send them that email. So automations.
+
+Let's create an automation. I don't have any right now. When a person is added to this list, which means their birthday is today, then we're going to perform an action in people where we send an email template to them as soon as they are added to the list. Let's click on template here, And I want to send where is this?
+
+My I'll just type in birthday. Oh, if I spell it correct there we go. Happy birthday. Here's your free gift.
+
+That's the email template we wanna send people who get added to this list.
+
+Then from I actually want this to come straight from me, so I'm gonna select that there. And then we're going to apply this action to current members on the list.
+
+This is important because Ashley's birthday is today, and I'm just now setting up this automation. So I want her to get this birthday email. I'm gonna click create automation. It's gonna ask me, are we sure we wanna send this email to Ashley today?
+
+Yes. I do. So perform that action. It has been sent, and now we're gonna have an automation here that every day that this auto refreshes, it's gonna send that email.
+
+Now the only other thing I wanna mention about this is that this result, Ashley's not gonna be on the list every single day. She's gonna drop off the list tomorrow because it's not her birthday tomorrow, and someone new might pop in, and then they'll be sent this email.
+
+So that's automations in Planning Center. The pattern is the same everywhere. Right? Pick a trigger, choose an action, and then let Planning Center handle it from there.
+
+What's cool is you can find automations in almost all of our products. And now that you've seen how they work, go try one out. Pick a process that you keep forgetting or that you just kind of feel like, man, I would like to not be doing this every single day or every single week. Figure that out, what that thing is, and then make automations do it for you.
+
+Less time worrying about process stuff and more time doing what you're best at, which is taking care of your people.
+
+---
+
+## Resolving Duplicate Profiles (5:00)
+
+What's up, everybody? Let's talk about duplicate profiles and the best way to navigate those in planning center. So, you know, duplicates happen. There's a lot of ways people can put information themselves into planning center, whether it's registering for an event or filling out a people form.
+
+There's lots of ways that can happen, and sometimes they don't always use the same information that's in their profile. And because of that, sometimes we end up with duplicates. But not to fear, we have given you a tool that will help you not only merge those profiles seamlessly, but it will also help you, find those profiles because there's no way you'll be able to dig through all your people and find those duplicates. So we've kinda got some we've got a system in place to help look for profiles that it's like, hey.
+
+These two seem like they might be the same person, but we need you to take a look to know for sure. So if you go to planning center people on the dashboards tab and you go to the overview tab, down here in the bottom right, you'll see there's a potential duplicate section. This section is always right here, never moves, and you can click view duplicates to see how many duplicates your church has, and you can just manage all those right here in this one spot. So let's take a look at Michael Adamson here.
+
+You'll see right here we've got two potential we've got profiles for Michael, that planning center has found, for some reason, it seems like these two are the same people, and we wanted you to take a look at it. So right here, we've got Michael Adams in the third, and over here, we've got oh, he's got two l's in his first name, which means when he was filling out his form, there there could have been a typo. You know, these two names seem very similar here. There's a couple other things I noticed.
+
+It looks like they've got the same email address and the same phone number. So that makes a little bit more of a compelling argument that these probably are the same person. But you'll see we'll highlight that stuff for you and let you know, hey. There's data in here that matches the primary profile.
+
+So it's easy for you to see at a glance. I think I see enough information here to where I'd feel good about merging these two. It's clear maybe there was just a typo, but a duplicate got created because of it. So what I wanna do is, second thing, once I've been like, you know what? These are probably the same person. You want to look at which one is your primary profile before you merge.
+
+The reason this is important is because in the instance where you're merging two profiles, if there's a field that only accepts one answer, such as first name, it will keep the information from the primary profile. If it accepts multiples, like phone number, it'll just keep them all, if there's multiple there. That way you've got all the data for that person. But if it's something that only accepts one answer, like first name or last name or something like that, we'll keep the one in the primary profile.
+
+So in this instance, I don't want this one to be my primary because I don't wanna keep Michael with two l's. I wanna keep Michael with one l because that's probably how he spells his name. And so keeping this profile as the primary is what's gonna ensure I keep the data that I want. Also, this is the older profile.
+
+This is clearly the one that has been around the longest and probably has the most correct information. So I'm gonna keep this one the primary. But if I did wanna switch it, all I have to do is click this button right here, and you see it just popped it right over. But I'm going to switch it back because I want this one to be the primary.
+
+Then from here, all I have to do is click merge duplicate. It's going to warn me, hey. This can't be undone. Are you sure you want to do this?
+
+And I'm going to say yes. Let's go ahead and merge them. And then it says success, and I'm done. And now Michael's profile is merged into one, and I can go on to the next duplicate profile.
+
+And that'll transfer over all the data from that other profile. So if there's check-in history or giving history or services history, it'll all go back into this one. So you didn't lose anything, except Michael with the two l's. That was the only thing we lost in the merge, and we didn't want that.
+
+Now if you're made aware of a duplicate that is not picked up by the detector because there just wasn't enough information for us to be able to flag it and say, hey. This is probably a duplicate. You can also manually merge duplicate. So let's go to Michael's actual profile here, and let's say someone let me know, like, hey.
+
+There's another profile for him that we want to manually merge in, but there wasn't enough information on it for it to be picked up by the duplicate detector. You can go to this actions drop down on their profile. You can say merge profile right here, and you can search for that other profile that someone lets you know about and merge them right here from within their profile. So you can do it manually.
+
+You can do it through the detector. We give you lots of tools to handle this, to make sure that your data stays clean and your profiles are all together. If you have any questions about this, please feel free to reach out to our support team. We'd be happy to help you through it or answer any questions about how that detector works.
+
+But, yeah, super cool tool. Be sure you check it out. Thanks so much.
+
+---
+
+## Profile Notes (8:34)
+
+Hey. Let me show you profile notes in People.
+
+We're in the People product here and on the dashboards page, and, we're gonna go to this profile notes tab.
+
+Perfect. This is all of the profile notes that are going into your account. Now if you're brand brand new, you won't have anything here. You will get to set up your note categories.
+
+Actually you'll have one note category and it will be this general category. But other than that, you're not gonna see anything here and so we'll we'll set those things up in just a second. I'll show you how to do that. If you do already have note categories, then you'll see these here.
+
+Now here's what a, note looks like. You've got the profile that the note is on.
+
+You have the actual note is right here in the middle. The date and the person who made the note, the category up in the top right corner, and then the option to delete it in the bottom right corner. Perfect. Also, you'll see down on this one, I actually made this note, and so I have a little edit pencil that will let me edit those as well.
+
+Oh, this one too, actually. Perfect. So let's say I get in here and all I want to see are the prayer requests. I can go into the note category and see just the prayer requests.
+
+Perfect. Now all of the categories have changed to prayer requests.
+
+But let's see. That's still more than I'm wanting to see. I really just wanna see in the last month. So I can say in the last thirty days, meaning from today, or if I just wanna see things from not the month that's now, but last month, I can do that as well.
+
+We'll do last thirty days because I want it to kind of be a rolling thirty days. And, okay. So the last thirty days, well, there's only two. Now this is a test account.
+
+You'll probably have a lot more in your account, but we do see that they're both per requests and here they are. Perfect. Now let's go back to all dates. I wanna see all of them, and then let's search for just, notes that Will, our pastor Will, added.
+
+So this is Will and then a little bit of his last name, and, here we are. We've got everything that Will has, added that is a prayer request, which is super here. So we've got those, and that's how that works. Great.
+
+If you're done looking at these specific notes, you can click clear filters and it will go away and you'll be back at the start.
+
+Nice. Also on this page, you can export a CSV which is just a spreadsheet of all of this information or you can click this print button and it will actually give you this print report, that you can see all of the same information that you saw on the last screen but just in a print form.
+
+Okay.
+
+So now back to this page. I wanna show you how to manage your note categories. So under note category, you'll click manage note categories, and this is where we can add a new note category, change permissions, and even add people to notifications.
+
+So you'll see the same note categories that I had on the other side, general, meetup notes, pastoral care, and per requests. And as I click through each of these, let me tell you something about them. First, general, everyone can see these. Anybody who has I'm sorry.
+
+That's wrong. Anybody who has permission in people can see these. So all the viewers and above can view these, and then the editors can view and create, and managers can manage them. General is baked into the product, so you can't change the collaborators on this specific note category.
+
+You don't really wanna put private stuff in here because everybody can see it who has permission to people.
+
+But then let's look at meetup notes. Meetup notes are managers, so anybody who has the manager level and above, which is all of them. All the managers are the highest level. They can manage this note category, and then all the viewers and above, meaning viewers and editors, can see this.
+
+They can view only. I could change this to view, create, or manage, but for now we want to leave that as view only. You get the idea. There's different setups for each of these, and then for prayer requests, this is kind of a fun one.
+
+We have a prayer team, where we want to notify these two prayer team leaders. So Amy and Emily, they're our prayer team leaders. I'm gonna actually send them a notification by typing in their name here and then adding them to this list.
+
+If one of them needs to stop getting notifications from this or they move on to a different job, I can just click this little circle right here and it will take them off of the list. But I want to add Amy back because she needs to be here. She's got to get those emails. Okay, perfect.
+
+Okay. So we're gonna actually create a new note category from the start, and I'm gonna show you what this is. We're gonna create something for counseling notes. Counseling notes. Great.
+
+Create that category.
+
+Now by default, we're always gonna let all managers manage a note category or a yeah. Yeah. A note category. But I don't want anybody to see these counseling notes except for the people who are in my counseling team. So how do I do this? Well, I'm gonna add myself as a collaborator, so I'll add person, and I'm gonna type in my name here.
+
+And then once I click on that, by default, I'll have a view only option, but I'm going to change myself to manage. Now what this does is it actually gives me the option to then remove all managers.
+
+Why does this happen? Well, because you can you have to have at least one manager. And since this was the one manager, we had to add another one before we can remove all managers. Okay. Now I'm gonna x out of that. So now I am the core manager, and see again, you can't take me out because I'm the only manager, but I also want to add Matt Watson. He is my, counseling buddy.
+
+And I wanna give him view create permission. I don't really want him to be able to manage who can, see these or add the notifications, but I do want him to be able to create them because he's one of our counselors.
+
+I could also add some notifications here, but because this is counseling notes, we won't do that. Okay. Great. So now what this is is anybody who gets into profile notes, they will not be able to see this this category as an option to even see or to create. This won't show up anywhere except for for myself and for Matt.
+
+Now speaking of that, how do people get profile notes on their profiles? Well, there's a couple different ways, so let's go over to the people tab first and we'll check it out.
+
+We're gonna go to Chase's profile and, on Chase's profile, we're gonna get in here and down on the left side you'll see the notes category.
+
+Now, notes will let you, add a note right from the profile.
+
+Say that, I was meeting with Chase and his wife, and we were just talking about some things and I needed to let people know. I'm gonna click add a note.
+
+The first thing you wanna do is choose your category. So this is gonna be this could be a meetup note or a counseling note. It could be any of these things. But, we're gonna we're gonna do meetup notes because I just met with them, and it wasn't really a pastoral call. Super. I'm gonna say met on, September twenty second, and, we'll call next week.
+
+Great. Now I can click create this note. Before I do that, hold on. This is gonna show you all viewers and above can view this note.
+
+That's okay with me. I don't really I I don't mind that they can see it. If I change this to counseling notes, you'll see that this changes. You and one other person can view this note.
+
+Remember, because only me and Matt can see these things. So, we're gonna do meetup notes and then create.
+
+Perfect. Now I could filter all of Chase's notes, but since he's only got one, here's what it is, and it looks exactly like what we see on the profile notes page.
+
+You can also add notes through forms and through workflows, but for that, you'll want to go and watch those forms and workflows videos. And that is all of profile notes.
+
+---
+
+## Background Checks (4:51)
+
+What's up, everybody? It is time to talk about background checks. Now we know lots of churches like to run background checks on people serving in specific ministry areas, and so we have a tool just for you to help you navigate that. So in planning center people, if you're on your dashboard tab, you'll notice there's a little tab right here called background checks.
+
+Now quick sidebar. If you don't see this tab, it means you don't have permissions to see it. By default, because this is a little bit more of a secure space, we do only surface it to organization administrators, but you can be added. So if you can't see that tab, have a conversation with your organization administrator, and they can definitely help you with that.
+
+But if you click right here into the background checks, you will see I've got, like, a table here, and I can see all the people in my database that we have a background check for that has been run. I can see at a glance how many are expiring soon. If I click this, I'll actually filter down to that, and and I can also see those who have been recently expired. So you'll see there's some things we can see at a glance here.
+
+We some quick filters we can utilize. I will show you what this actually looks like on an individual profile, but there's a couple things I wanna kinda give you some context for first. So first, we're gonna pop up here into the settings. If I go to my background check settings, you'll see there's two things I can set here.
+
+One, like I was saying a little bit earlier, we do by by default, only organization administrators can see this space, but you can add other administrators who need access to this area and this information to be able to manage it. So you can manage that right here within the settings. You'll also see we have an expiration policy you can set because there's no, you know, generally agreed upon frequency with which you should run background checks. We let you set that for your organization.
+
+Some place you know, some people do it every year. Some people do it every two years, every three years. You can set what that is for your church, and then we'll help you know whose check is expired based on this expiration policy.
+
+Alright. Now I'm gonna pop back out here to our background checks. And another thing I want to zoom in on here is these background checks, as you'll see, were added manually. That means that someone just went right here, clicked new background check, and they added a manual check.
+
+Now we also have some integration options. So if you're somebody who's using an outside background check, you know, party provider, We have four that have integrations with Planning Center. So if you're using Checkr, Protect My Ministry, MinistrySafe, or Verified First, we have integrations with them, whether they made it or we made it, that syncs that status back to planning center so that you don't have to be doing as much manual work or going, you know, and looking in two different places. If you're using a different one, that's still okay.
+
+You can still utilize this feature just by adding a manual check like you see right here. So you can look at what the status is in your other, your background check provider, and then you can go ahead and add a manual one here. And then we'll help you keep track of that status. Now the reason that you wanna do this is I'm gonna show you this because this is so cool.
+
+If you go look at let's look at an example here. Like, I've got Simone. She has a background check. You can see it's clear.
+
+I can see it right from her planning center profile at a glance. I know she's got a clear background check, which is helpful for your staff to know, you know, when they're having conversations about where she's gonna serve and all of that good stuff.
+
+You can see details about when it's gonna expire and all of that good stuff. But, also, once you have a background check applied to a profile, you can actually set other settings in planning center that make it to where only people's background checks qualify for certain things. So for example, because I know that was a little lofty, if I go to services and I look at I have my elementary small group team in services that I've set up. I've actually got this set as a secure team, which means only people who have a past background check can be scheduled on this team. So at the point where somebody's background check expires, I actually can't schedule them to serve anymore. So that kinda helps you keep tabs on, you know, what who is needing a background check, who's needing a refresh.
+
+Another place that you can, kinda utilize this tool is in check ins. If you go to one of your events and you look at the labels and locations, I can actually set it to where people cannot check-in as a volunteer unless they have a background check. So I've got this as a required background check area within check-in. So there's a couple different places you can utilize this tool once you have it set in planning center.
+
+So even if you're using not one of those four integrated, you know, areas, we still recommend adding the manual check-in the background check area because it's just gonna help you so many other places in planning center. And if you are using one of those four that I mentioned, check out that integration option because we can just bring that status right in the planning center, and we'll help keep it, you know, keep it updated for you. Alright. That is background checks in planning center people.
+
+---
+
+## Understanding List Rules and Conditions (12:23)
+
+Hey. Let's talk about list rules and conditions, plus a few pro tips to make your list go from good to great.
+
+Well, to do that, though, we'll need to create a new list. So I'm gonna click on new list over here and then add a rule. Now for this, we're gonna talk about columns and list options.
+
+So for this example, I'm gonna find all the females in our database.
+
+It can be any list rule because rules find your who. Right? I want to find all of the women. So I'm going to click save.
+
+And once this happens, I'm gonna show you how to use columns. So here we have all of those people who are listed as a female in our database. They obviously have to have that on their profile for them to show up here. But once we've done that, we're gonna go over here to this right side and click on select columns.
+
+Now while rules tell you the who, columns tell you more information about someone. So we could scroll through here and use all kinds of different columns, whatever we chose. But for me, I love the birthday column. So I'm gonna check this box right here and watch on this left side.
+
+It's gonna show up right here. This is nice because you can actually move these columns around. If I wanted birthday to be the very first thing that showed, I could just click and drag, put it over here, and you'll see it changes in the background. But let's put that back where it goes.
+
+Okay. So now we've got that. I'm gonna click this x, and we're gonna look at this.
+
+Here is everyone's birthday who has one listed. So now I've got everybody who's a female and then all of their birthdays here. I can sort this column by clicking on it.
+
+That shows everybody who doesn't have a birthday, which is really valuable information because then you can reach out and say, hey. Excuse me. You don't have a birthday.
+
+Or you can click on this, and you can roll through here and see whose birthday is when. Now that's columns. You can use columns for a ton of other things. You can also export these out and print them, whatever you need to do here.
+
+But let's go back to our rules because while columns are helpful, another thing that's really helpful is list options. So right now, list options doesn't exist, but when you add a rule or condition, you'll see a list option show up here at the top. And this is going to give you the chance to change the way that the rules interact with each other.
+
+I'm looking for everyone who's a female, and let's say that I wanna find everyone whose membership type is member.
+
+And why don't we include regular attenders as well? So I've got member, and then I'm gonna go over here and click this duplicate condition button. It also can be duplicate rule. The duplicate condition is going to multiply this.
+
+So now there's two, and then I'm just gonna change this to regular Tinder. Cool. I love that. Okay.
+
+So up here, list options, this is all this wants me to decide, do I want all rules to apply to the results or just any of them? I could say anybody who's a female or anybody who's a member of reg or a regular attender. That's not what I want. I want females who are members or regular attenders.
+
+Down here on a rule, I actually get list options as well. I get this rule option, which is people matching all of these conditions.
+
+Now in most cases, this is great.
+
+But for this case specifically, membership type is a single value field where you can only enter one thing into this field. So to ask the list to say, I want everybody who's a member and a regular attender, that's impossible because member and regular attender are they have to be one or the other. It can't be both. If I clicked save right now, there would be no results.
+
+So instead, what we wanna do is we wanna click this and say, I want any, which will also change this to or. So now I've got women who are members or regular attenders. This is perfect. That's exactly what I'm looking for.
+
+Now say you didn't want members or regular attenders. You only want all the other membership types.
+
+You could go through and duplicate these conditions and do that. But an easier way you'd think would be to click, you know, exclude, and then I exclude or and or.
+
+This works for very specific cases, but what this is doing right here is saying, I'm excluding all the members, or I want to exclude all the regular attenders. So you'll actually end up with members on your list and regular attenders, and it gets really wild. Instead of doing that, just select this third option under the conditions or under the list options, which is none. So now you're gonna get every female in the database who is not a member and is not a regular attender. And then if we click save here, we're gonna see what happens.
+
+Okay. So now we have a hundred and sixty three women who do not have either of those membership types, and we can use columns to even show us what their membership type actually is. So if we go down here to membership and then we close this up, you'll see I've got participant in progress. But you know what I don't see?
+
+Member or regular attender because we excluded those. We kept them out. Okay. That's the first thing, columns, list options.
+
+That's the longest one, I promise. We're gonna click delete this list, and we're gonna go ahead and create the next list. Now, again, a new list. You can also query for people who are in other products.
+
+So here, we're gonna click people instead of starting on the condition, and I'm gonna actually select services.
+
+What I'm looking for is teens who served in the last six months. So I'll do scheduled and then to any service type, any team, and we'll go since six months ago. Sorry. We're going to do this really quick. One, two, three, four, five, six. Okay. And then months ago.
+
+And I'm going to add a condition, which is that they have to be teens. Right? So I'm gonna click grade, or I'm gonna type in grade here. Click that.
+
+And then we're gonna say between sixth grade through twelfth grade. I could also do ages, and that would let me do, you know, thirteen to eighteen, but this will probably capture what I need. Okay. Now I'm gonna click save, and we've got that condition as all because we want them to match both of those things.
+
+Now it's gonna run this list, and here we go. I've got these seven people who are listed between sixth and twelfth grade, and they've served in services in the last six months, or they've been scheduled at least in some capacity. Cool.
+
+That is pretty much all of that. One thing to note, though, is when you need to know things about a person's profile, like their membership type or their birth date or their phone number, this is the way to do this.
+
+If you were looking for which team they're on or, like, for groups, which group they're in, you need to go do that in the actual product because it's gonna have better reporting on those specifics.
+
+Okay.
+
+That's the second thing. The third thing we're going to talk about is list inclusion. So another new list. We're going to find first graders.
+
+Let's just find first graders for now. Since we just did grade, that seems pretty good. We'll go first grade. Okay.
+
+But I don't actually wanna find first graders. I wanna find the parents of first graders, and that's where my list should include comes in, this thing down here at the bottom. I could look for exact match matches, which gives me the first graders, but I could also look for a lot of other things, and one of them is household parents of matches. When I click this, it's going to give me all the parents that are connected to a first grader in my database, and it won't won't show me the first grader depending on what I select here.
+
+I could include match if no parents are found, so I could include the first graders. But in this case, I just want the parents and no first graders. Okay. So I'll click save.
+
+That's gonna send Pico off. And now I have three parents that are connected to a first grader. These two actually have the same first grader here down here at the bottom, and then Landon has another first grader. Okay.
+
+That is that piece.
+
+The last piece and probably the most valuable that I'm going to to tell you today is how to find and set inactive profiles. We're gonna do that with actually two lists. So let's make a new list.
+
+This rule is going to be really anything that you consider to be activity on your profiles. So, like, check-in services, we're gonna do a couple of these really quick. Let's do check ins, and there's been attendance, attended any event, any location, any time since. We'll go six months ago because that seems like a good amount of time, and then any number of times, and we want everybody.
+
+And then we'll also do add a condition, and we'll say if they've registered for an event. So they're the named attendee for any event. Yes. Perfect.
+
+Oh, wait. But we wanna do any events between right. We're gonna go back a couple months here. Okay.
+
+And then we're gonna do today. Okay.
+
+So we've got these two things, but we want them to match either one. So we're gonna select this and select any. Right? So if they've checked in the last six months or if they've registered and been the named attendee in the last six months.
+
+I'm gonna click we want exact matches. I'm gonna click save, and now we're gonna see what gets named this. We really just want this to be, like, active attenders.
+
+Oh, not attendeers. I mean, that too. But okay. So we've got these seventy two people.
+
+That's great. They've all showed up. But here's the thing. I don't wanna set certain people in their household inactive just because they haven't checked in.
+
+So I'm gonna go back to my rules. I'm gonna actually set this to all household members of matches, and then I'm gonna click save.
+
+And now this is gonna bring up all of the household members attached to anybody who matched my rules.
+
+Okay. This is our active list. But now we need to make another list, and I'll tell you why here in a second. It's called list in a list.
+
+So I'm gonna click on lists. I'm gonna click a new list. We're gonna add a rule, and we want anybody, and we're gonna type in a list named active let's see. What was it called?
+
+Active attenders. And then we're gonna exclude anybody who's in that list.
+
+So what we're trying to find is anybody who's inactive in our account based on that other list. We'll say, exclude anybody who's in that list. I want to find only exact matches, and now I'm going to save. When I do this, it's going to give me a list of people who have been inactive over the last six months and aren't connected to anybody in their household who's been active either. So we'll call this inactive attendees, and we'll save that. Okay.
+
+So now from here, if I see somebody that I'm like, ugh, I don't really want to include that person because that wouldn't be helpful, I can I could do that? But really, what you want to do in most of these cases is have a low number. This is kind of a high number because this is a test account.
+
+Perform action, and then what you'd like to do is go ahead and set the profile status to inactive. And the reason, it could be no reason. It could be, you know, they're just they're just no activity for so many months or whatever. You decide you can add those in the custom field section.
+
+Then you can set the date for today, and you can even clear their membership status and then perform that action on all those people. What's going to happen is you're not going to lose historical data, but you will have all of those people out of your main active database, which helps you know who's actually participating and who you need to be in touch with.
+
+Well, that was a lot of things. But I hope that you feel more equipped to make better and more intentional lists and also to, keep taking care of your people in a great way.
+
+---
+
+## Lists Overview (9:49)
+
+Planning center people list is one of my favorite planning center features, and it should be yours too. And let's talk about why. So I am in the list tab in planning center people, and we are gonna jump right into a list just to get an example under our belt here. So let's say we're trying to find upcoming volunteer birthdays.
+
+So I have a list for this. We're gonna jump right to the rules tab where you're gonna see I have two conditions here that I'm looking for. And this is really the crux of what people lists are. It's conditions and rules that group people together by common criteria across all of planning centers.
+
+So right here, you'll notice I'm looking for people in the people product whose birthday is this month because maybe I send my birthday. You know, I pull everybody at the beginning of the month. I get all the birthdays, and then maybe I send out postcards at the beginning of the month. So I'm just gonna look for anybody whose birthday is this month.
+
+And it says current right here because this will change every month so I don't have to come back here and keep updating my list. So anytime you can use a relative date like current or since, that's a good thing to do.
+
+The next thing I'm looking for are people in planning center services. So now I'm actually looking at a different product, and this is what make lists so powerful is you can look across any product that you use in planning center. So you'll see here, I have many products I can pull from, but we're gonna look in services for people who have been scheduled in the last year or whatever time frame you wanna make it. You can also drill down to just your team if you want, but I've got it looking at any team.
+
+So right here, what I'm doing is I'm looking in people to figure out who's got a birthday this month, and then I'm looking for people who were scheduled in services in the last year. And that's gonna make my upcoming volunteer birthdays. So when I run this list, when I hit save, it's actually gonna give me results over here on the results tab. And I can see I've got two volunteers that qualify for this month.
+
+You can see I can see, information about them at a glance. I can see their name, email, phone number. I've pulled in the birthday column because I wanna know when their birthday is. That's important.
+
+But you can change what these columns are. If you need to see other pieces of information, you have that option.
+
+You can also do quite a few things on this tab. I can communicate with them if that's something I was trying to do here. I can export this as a CSV if I want to. We also have quite a few report options for you to select from or to choose from, but one specifically is the birthday report for our example here. We have a really nice clean report that just shows you their name, their address, their birthday. So if you have a group of volunteers that helps you write the cards to put in the mail, you could do this report and print it out once a month and then they'd have the information they needed.
+
+And then, of course, you can perform a bulk action, which just means this group of people, I can perform an action on the group of profiles pretty much anywhere in planning center. So I could register them for an event or put them on a team and services or change their membership status and people.
+
+Anything you can do, with regular bulk actions, can also do here. Now that doesn't really fit our example today, but I just want you to know it was possible. So here it is.
+
+So let's now jump over to the settings tab and take a look at what options we have over here.
+
+So right here, we've got our collaborators. If you have somebody who helps you with birthday things, you could add them right here. You can give them access to manage or maybe just view the list depending on what you need them to be able to do. But you can add collaborators in this space.
+
+You can filter your list by to a specific campus or category. Sorry. You can add them to a campus group or a category group so you can filter down by that campus or category. I will come back to this in just a minute to show you where that pops back up, so just keep that under your hat for a minute.
+
+You can set your list to auto refresh with a certain frequency. So I've got this list auto refreshing on the first day of the month, which just means whenever it turns the first day of the month, it's gonna go out and find new results because I only do this monthly, so I really only need it to refresh monthly.
+
+You can also change this, though, if you wanna do it, you know, on the third day of the week or if you want it to refresh nightly. You can change how often this is auto refreshing for you to make sure you have fresh results on your list. You can also add yourself to the notification section. So if you want to be alerted when people, join the list or maybe you don't want to give people access to the list necessarily, but you want them to be informed, this is a great feature to use.
+
+And then, of course, you can sync your list with Mailchimp if you'd rather use the Mailchimp email editor. If you're using this primarily for communication, you can sync the list with Mailchimp here as well. Let's also pop over to the automations tab because this is a really powerful thing. We have a whole video on automation.
+
+So if you wanna do a deep dive into this, I'll kinda I'll kinda graze over it. But if you wanna do a deep dive, I'd heavily recommend checking out the automation video because it's excellent and it'll really walk you through this. But in short, let's actually pop back to the rules tab. Let's kinda change our scenario.
+
+So right now, I'm pulling everybody whose birthday is this month. But let's say I wanna auto send them an email on their birthday, and I don't really want to do it. I wanna just automate it. You can use automations for that.
+
+So what I would probably do if it were me is I would actually change my list condition to be today. So now what this list is gonna do is it's gonna find me my volunteers whose birthday is today.
+
+Next thing I'm gonna do after I save my list, I'm gonna go to settings and I'm gonna set this to refresh nightly. Now those two actions, what I've done is I've made it to where it's gonna go every single night and it's gonna look for people who have a birthday today. And now this is where the cool part comes in. Now I can go to the automations tab, and I can set up an automation to send them an email from a template that I wrote.
+
+So it's still a personal touch, but you'll see anytime a person's added to this list, it's gonna send to them the happy birthday, here's your free gift email, and it's gonna come from my email address. So it's still a personal touch and I didn't really even have to know it was happening. Now, me personally, I don't love situations where I go to church and somebody's like, hey. Thank you for the birthday email.
+
+And I'm like, what are you talking about? So this is probably a use case where I would pop into the settings tab and I'd add myself to the notifications to make sure that I got a little email in the morning about people who were added to the list so that I could expect to hear from them on the weekend. So just that's an option. That's a reason that that's there.
+
+Alright. Perfect. So let's pop back out to the list tab and look at some of the org organization tools we have because you'll notice I have a lot of lists here and this is test data. So it is not uncommon for a, you know, a normal church to have a hundred or maybe even two hundred lists because they're so powerful. They can find such good information and you can automate so many things.
+
+It's not uncommon to have a lot of lists. So with that, sometimes you want a way to kinda keep things tidy. Right? So we've got a couple different tools for that. You can filter lists by campus in the list settings like I showed you.
+
+So your campuses that are set in your account settings, you can assign lists to a certain campus to help keep those processes kinda buttoned up together by campus. You can also create general categories. So if you've got children's ministry list versus, you know, growth track or new families, you can create kind of buckets to keep all those lists in to where you can filter down quickly and just kinda keep things tidy. I also have my list up here at the top.
+
+So these are lists, you know, that I've created. These are the ones that are mine. I've also got recently viewed. So if there's a list that I, you know, am using a lot right now, but I maybe don't want it to be in my favorite or my starred lists, which I'll show you in just a second, I can see which ones I've recently viewed right here, which brings us to starred lists.
+
+I've got a couple lists that I've just starred right here. I'll show you what that looks like. Let's say I wanted to, you know, revisit this list frequently. I can just hit this little gold star and it'll actually add it to this tab.
+
+And these are the ones that I probably wanna come back to all the time. You can also just star things as you need them, like, you know, during VBS season, maybe star all your VBS lists. Then after it's over, unstar them and they go away. It's you can use it however you need to.
+
+We've also got all lists. These are not necessarily lists that I've created, but it's just all the ones I have access to. So somebody else made one and I have access to it, I'm gonna see it right here.
+
+And then we have unassigned list. So sometimes there's situations where somebody, you know, had access in planning center and they made some lists and then they don't have access in planning center anymore. So that list becomes unassigned. We've got a tool in here to help you keep things kinda tidy where you can see their lists and, take them over if you have permissions to do so.
+
+We also have message history right here. I'm actually gonna pop back in a list and show you really quickly. We do have some messaging tools inside of planning center list. So you have the option to send an email to the group of people, a church center announcement to planning center, church center, or you can send a text message.
+
+You also see we have some integration options here if you use any, you know, Clearstream or in church, you can do that from a list as well. You also have the ability to choose who on the list is gonna receive the communication. So if you have, like you're trying to plan a birthday surprise for somebody and you're like, oh, I'm gonna pull this list of everybody, but I don't want Ashley to know because it's about her. It's her birthday, it needs to be a surprise.
+
+You can just uncheck her, and the communication will just go to the people who are checked. So there is that, which brings us back out to the list category or to the main list page here where I'll show you that you can see your message history. So if you email somebody, you text message them, or you send a church center announcement, you can see that message history from right here for you to keep track of. Lists, there's so much you can do with them.
+
+We do have another video that does a deep dive into list conditions if you wanna know more about that. Also, please lean on our support team while you're kinda getting used to lists. Make them your best friends. We have a lot of resources to help you kinda get comfortable in there and learn what conditions you have and how to build certain things.
+
+So feel free to reach out to us if you have any questions. Thanks so much.
+
+---
+
+## Workflows Overview (12:42)
+
+Hey. Let's talk about workflows and how they can work for your team to connect them to your congregation best. So I'm here in the people product on the workflows tab, and we're gonna get a lay of the land and then go into a workflow and then into a card, and we'll see all those details. Over on this left hand side, you have your filters and some settings. Now, the filters, I want to call out a few of them, not all of them. The first is search, which you can search for any keyword, and then if I want to find my baptism workflows, I just type that in. Boom.
+
+Over here on my cards, which is the next filter I want to talk about, this is if you need to just see workflows that have cards that you are assigned to. This is very, very helpful when you're just looking to complete the things that you're responsible for, and you can do that there.
+
+The next one is unassigned workflows. And unassigned workflows, fortunately, we have zero, But sometimes you'll see those there if someone's permissions have changed or some the last manager of a workflow has been removed from your database or permissions have changed in that case.
+
+When that happens, this workflow needs a manager, and so those will show up there so that you can manage those and add yourself to them or someone else.
+
+Under additional settings, we have notification preferences.
+
+If you do want emails, this is on by default. So if you do want emails when cards are assigned to you or they're overdue, you'll wanna keep that checked. If you don't, just uncheck that and then click save and you'll be all set.
+
+Finally, recently deleted workflows. This is if a workflow has been deleted in the last eight days, you'll see it in this section. So we deleted this recently.
+
+We could recover it if we need something from it. Otherwise, this is gonna go away in eight days.
+
+And also, this little option, if you don't see it, that means you don't have any recently deleted workflows. So you're all set there. Cool. Let's go back to active workflows, and I just wanna show you around these blocks.
+
+Let's go ahead and look at this baptism one. First, baptism is the name of the workflow. You've got details about the cards inside of this workflow.
+
+Over here, these little pills are campus with a little location symbol, and then category, which you can assign to any of these, and then filter with your filters over here.
+
+And then finally, we have archive, duplicate, and edit, and you would use those for any number of reasons.
+
+And then finally, the new workflow button where you can create a new workflow. So now let's go into the baptism workflow and see how this works.
+
+I wanna start on the settings tab and then move back to this steps tab. So humor me for a second. Here we go. Over in the settings tab, you're gonna see all the collaborators that are included in this specific workflow.
+
+People who aren't collaborators cannot do anything with the steps on this workflow, so you need to add people. So we've got managers. You can add them as groups or as individuals. The managers can all manage this workflow.
+
+Editors can edit all the cards. And, yeah, that's just kinda how that is. Editors and above, so anybody up there. But they can't manage.
+
+I could change it. Just do the thing, and then everyone can manage it, but we don't wanna do that right now.
+
+Now as far as individuals, you can add specific people. If I wanna add a collaborator, I just click on add collaborator. I'm gonna add a person, and let's add Ashley Johnson.
+
+Perfect. So now Ashley has the option to do whatever we choose here. She could be the manager of the workflow with Denver or edit all the cards. We're gonna leave her edit assigned cards. And I can also remove people. If I wanna take Tim off of this, I can just click this little x and then he goes away.
+
+Perfect. The other thing here is the filter settings. Remember, we have those filters over on the last page.
+
+You can set your campus and your categories here as well as manage your workflow categories so that you have what you need here.
+
+Okay. Back back one step to the automations tab.
+
+Now this automations tab is only gonna show you incoming automations from other places. So things like when in groups, somebody joins a group, then they're added to this workflow. Or when they register for something, they'll be added to this workflow. You can't create automations with workflows. They're a manual process because you want that personal connection, but you can automate things into your workflow.
+
+That's pretty much all of that tab.
+
+And finally, the steps tab. Okay. Now this is pretty full, so let's just look around here. First on the left side, I can add someone to the workflow manually.
+
+Now people are probably coming in from automations, so I don't need to add somebody, but I could. I could do that here. Here are all of your steps, one through four. Some workflows have ten.
+
+Some workflows have two. This one just is a middle lane kind of workflow. So I can either add another step if I want or reorder these steps if I'd like.
+
+Anybody who finishes all of these steps, they will end up in completed. And I wanna show you one thing here. Inside of completed, you can also view removed cards. So if someone's been removed from this workflow, you'll see them here.
+
+And that's important just in general if you need to know who's been in here or who hasn't. Okay. Let's go back to our first step. Now on our first step, I can actually edit this step, and I can edit all the things that exist here.
+
+So let's click on this, and I'll tell you about it.
+
+First, of course, I can change the name of this step, which I don't want to do because this is a workflow we use. But email baptism date, so let them know when it's happening. This description right now, this is actually something that this is our email copy, but it could be something as simple as don't forget to call the cookie place ahead of time and get cookies for them or whatever. You can do that there. The default assignee, there is one per step, not one per workflow, but just each step has a different default assignee or the same one.
+
+What's important about this is there's only one. You can't add more, and that's because once you start getting lots of people responsible for one thing, nobody feels responsible for it. And so we we make you choose somebody here, but you can change that by clicking change and then typing in somebody else's name. I'm not gonna do that quite here, but I guess I need to put Scott back in here.
+
+So he's gonna be the default assignee. You can auto snooze cards that come into this specific step. So if one of your steps needs a little bit of extra time or you need to wait a week or something, you can click auto snooze. You can do one week or one month or any number of those things and then do that.
+
+The last thing here is expected response time. If you have people like me on your team who need a deadline, this is for them.
+
+So you'll wanna click that, and then you can also select those things as well, just some days.
+
+The delete step, of course, you can do that here if you need, and then you can save, and all of those things will be saved. Great.
+
+Now here on this page, we're looking at a couple of different things. One is that I'm looking at cards that are assigned to me specifically. So these three cards are assigned to me. I can look at this and see other people's assignments.
+
+And if you notice, over here, this number is kind of wild. Like, the three is my cards, but then where are those ten cards while the other ten are assigned to other people? So I could click on Scott's cards and it looks like right through here. Something else that's really neat about this is say that let's say that Jacqueline is going on vacation and she's not gonna be able to complete these cards in time, I can actually check this box, and there's a lot of options here, but I can specifically, I wanna show you that you can reassign these cards to Steph or whoever.
+
+And when we reassign those, now Jacqueline isn't gonna have those cards, and I can take care of them while she's out. The same is true if you needed to change the default assignee for somebody who's gonna be out.
+
+You could go up there, change that while they're out of town so that someone else is getting the new cards, and then you can add them back whenever they're back. Cool.
+
+You can filter through these or sort them. You can also see all of your snoozed cards if you have any. And I think that's pretty much it on this page. Oh, oh, one other thing.
+
+Actions, the actions button. You can edit the title of the actual workflow from here, which is important if you need to. You can duplicate this workflow if you need it for another campus, and then you can archive and delete as well from this option. Okay.
+
+Let's go look at an actual card and see just kinda what it looks like there. Let's go to Matt Steingard.
+
+So on this card, you're gonna have a lot of information. Up top is gonna be your action buttons. So snoozing the card, reassigning the card, and also pinning the assignment. If we pin this assignment, I can stick with this card through all of the steps even if I'm not the default assignee. So this is great if it's a personal touch or you need, like, a specific, maybe a deacon to follow a card through, something like that, you can do that there.
+
+Here's the person's information. I can also go out to their profile with this little button. Here's, of course, the title of the step. You see the description here, and then it's also gonna tell me where it's gonna head once I complete this step, which is cool.
+
+There's some options in here which are super neat. If people are dropping into your workflow, but they don't really need to be in step one, when they first get here, we're gonna put them in step one. But after that, you can actually skip to a later step or skip this step completely, and that will move them down the line a little bit faster. You can also remove them from the workflow, and then you'd see them in the removed cards. And you can also delete the card itself.
+
+When you're done with this step with this person and they need to be in the next step, you would complete this step, and then they're over there.
+
+Here, you have internal notes. This can be saved onto someone's profile. So, like, he's cool. Maybe we met together. We ran into like, we chatted in the lobby about baptism.
+
+We could do that. And then I could save this to his profile and even select one of these things. So, like, you know, meetup notes or pastoral care. I could do that and then save that note, and that would be let's see if I can do it here.
+
+Yeah. There we go. And then I'll save that note. Now he's gonna be we're gonna add that to the workflow card and then also to his profile.
+
+Here, we have the option to send an email right from here, which is super. I can do a personal email, or I can send a template, which is very cool, especially if it's like a baptism thing and you just have the same thing you send to people. Do it right here. And then finally, perform action. This is if you need to do something else, like change their membership or or set their campus or something. You can do all of that from this page.
+
+Super.
+
+Let's see what else is here. Oh, down at the very bottom, this card history is gonna show you everything that's happened to this card. So this card was created by Jess. Then Scott was assigned because he's the default assignee.
+
+He got a notification email. We assigned it. We reassigned it to some people. We finally talked in the lobby, so I left this note, and now we're gonna be able to complete this step.
+
+Now watch. Matt is right here in step one, but when I complete this step, everything on this card is gonna change. So complete this step. Now he's in the follow-up about reading plan.
+
+That's the second step. And it's reassigned to Scott because I didn't pin the assignment, and Scott is the default assignee. This also shows you your snooze date and different things like that.
+
+And, yeah, you'll see that that movement there.
+
+Super. So that's really all of workflows. These are a super powerful tool that you can use to connect with people, to do, like, follow-up stuff, baptisms, volunteer pathways, all kinds of things. So if you have any questions, let us know. You can always click this question mark in the top right corner and then reach out to our team either by email or a call, and we'll be glad to help you make your workflows work for you.
+
+---
+
+## Forms Overview (11:26)
+
+What's up, everybody? Let's talk about planning center forms. Now what are forms, and what should I use them for? Those are great questions.
+
+Let's talk about it. So you'll see right here, this is our main forms tab in planning center people. And you'll see we have a lot of forms here. You'll see a lot of examples, and we're gonna talk about a few of these.
+
+But at its root, forms are a way to collect information, simple information from your congregants that you can use to update their profile, their existing planning center profile. You can use it to create new planning center profiles, or you can just use it to collect data so that you have it. So it's not only great just for data collection. It's also great for keeping your up your, congregants information up to date or getting new profiles for people who are new to your church. It's a very powerful, powerful tool.
+
+Now let's take a look at a couple things we have here. So you'll see, a baptism request form. If you just needed a way for people to say, Hey, I'm interested in getting baptized so you could get them more information, that's a great thing to use a form for. Another really popular one we have is the connect card.
+
+We see this across a lot of churches. This is kind of the I'm new here form. You want a way for, people kinda who are newer to your church to be able to say, hey. I, you know, I wanna learn more or I wanna get involved or something like that.
+
+This is a great thing to use a planning center form for. So let's kinda run with that example, and let's just create one together because I think that's the best way to learn is to just kinda go through it together. So we're gonna come up here and we're gonna say new form.
+
+And when I click this, it's gonna take me to a blank form. So let's give it a title. Let's call it I'm new here. Here we go.
+
+So this is gonna be our I'm new here form. We're gonna save this. And now we gotta add some questions in because it'd be pretty boring to fill out a form with no questions. So over here, you're gonna see we have lots of fields that you can just drag right into your form.
+
+At the top, you'll see we have profile fields. These are fields that will update the profile of the person filling out the form. So whoever's filling it out, this is actually gonna be used to fill or update their planning center profile, which is gonna save you a lot of time because you don't have to do any data entry once you get the form submission in. We'll just do it for you.
+
+We also have workflow fields, which will allow, you to add someone to a workflow when they fill out the form if they interact with a certain option. So an example of this is if I had this single checkbox here, I could have a a question that says, I'm interested in volunteering. And if they choose to check that box, it's gonna put them in a workflow that is gonna notify whoever it needs to notify that, hey. This person's interested in volunteering.
+
+Let's get them through the steps to, you know, get them onboarded or, you know, reach out and give them more information. Any whatever you need to do there. So that's a really powerful, you know, field type. If you're not sure what workflows are, I would heavily recommend you check out our workflow video.
+
+We have a whole video just for that. It's a really cool tool, that can save you a lot of time, and it's also right here in planning center people. So check that out if you're not sure what that is or what I'm talking about. And then the next thing is the basic fields.
+
+This is kind of the last group. These are just simple data collection fields where, you know, maybe you don't actually need to take action on information or get it put anywhere. You just wanna know, you know, for example, how'd you hear about us is something that sometimes people like to put in the form. Just how'd you hear about our church?
+
+Great, you know, use of this kind of a field type.
+
+So let's put some things in our field, or in our form here. So we you know, this is an I'm new here form, so we probably wanna know their phone number.
+
+We may wanna know their address. Here we go.
+
+And you know what? Let's also oh, the household member field. I'm gonna show you guys this one specifically.
+
+So the household member field, by default, forms collect first name, last name, and email address. And that's how we know if we're gonna match it to an existing profile in planning center or if we're gonna create a new one because we look for a match with those pieces of information. But sometimes you need these profile fields for their household members because you don't want this person to have to fill out the form seven different times if they have seven people in their family because that would be a lot of filling out a form. So we have a household member field, and that allows them to add an adult or a child into their household using the form. It can also be used to update their household.
+
+So right here, if I click on this field, you'll see you can choose what information you want from adults versus children. For the person filling out the form, you can you can choose what's available. So, you know, if they're gonna add a kiddo, I definitely want gender, birthday, grade, school, medical notes. These are all good.
+
+But I wanna require grade because we use that to make sure they go in the right room in children's check-in. So what I'm going to do is make that one required. And then for adults, you know, maybe I only want phone number and birthday. Maybe that's what's, you know, important for us to collect.
+
+So I'm going to go over here and hit save, and then I'm going to show you what that looks like when they go to fill out the form. So here, let's move this down here. There we go.
+
+So now, up here, you'll see this view on church center button. This is going to take me to the forward facing side of my form, the the side that congregants are going to see because they're not going to see this. This is just for you. So if you go over here and you click view on church center, it's gonna take us to the pretty side of our form that the congregants are gonna interact with.
+
+So you'll see I've got my first name, last name, email address, those those required fields I told you about. And then there's phone number, address, which we pulled into our form, and we have our household member field. So if I need to add a kiddo, I can add them. I can put in their information.
+
+I can add more kiddos. I can add another adult to my household, and then I can submit my form, And that data will go back to my form submission tab. Now let's go back and take a look at that. So I'm gonna jump back to our form here.
+
+Since we just made this form, nobody's filled it out. So there's nothing in the submissions tab. So let's jump over and look at a different form, like maybe our connect card because it's got quite a few submissions. So you'll see as people start to fill out my form, their information's gonna start popping into my submissions tab.
+
+I'm gonna be able to see at a glance what they chose. But if I wanna dig in and see the whole submission, I can click on one and see a nice little tidy recap. I can print it if I need to print it for any reason. This is where you see information about who has filled out your form.
+
+Another thing you can do with forms that's really cool is add an automation. You'll You'll see we've got a couple automations on this form. An automation is just a way to take an action when someone submits the form, an automatic action. It does it for you.
+
+So right here, anytime anybody submits this form, we're gonna send them an email that said, hey. Thank you for filling out our connect card. It's an email template we've created. Anytime someone fills out the form, they're gonna get sent that template.
+
+We've also got it here that we're adding them to a workflow. We've actually got this one turned off right now, but we could turn it on. And this automation, every time someone fills out the form, it's gonna add them to a workflow so that we get notified, and they can go through those workflow steps like we talked about earlier.
+
+So that is a really powerful tool. If you want more information about automations, we also have a video about that if you want more of a deep dive on kind of what all is possible there because you'll see automations all throughout planning center. They're in several of our products, and they're also in people lists. They they show up a lot of places, so I'd recommend you check those out.
+
+And then the last place I wanna show you within the form is the settings because we have lots of cool settings. So we've got, first up, the collaborators. If you want, someone to be able to see the form submissions, but maybe not, like, edit the form or mess with it. You can add them right here as a view only, or you can give them access to manage it if you want them to be able, to, you know, edit the fields and things like that.
+
+So you can choose kinda who has access here. We've also got this notification list, which means anytime someone fills out the form, the minute they submit it, these people are gonna get an email. So Jesse wants to know anytime someone fills out a form, he's on the notification list. We also have an option right here to send a, copy of the form submission to the person who submitted the form.
+
+So if you want the the submitter of the form to kind of get, like, a receipt of, hey. Yes. You filled this out. You wanna toggle that on.
+
+Right here, we have some filter settings, but I'm gonna come right back to those because it's gonna take us back out to our main page. Also, we have form status. Right now, my form is open. But if I got to the point let's say I was, you know, collecting sign ups for, like, a potluck, and I'm like, you know what?
+
+I have enough people that wanna help with that. We're gonna have too much food. We can go here. We can say closed.
+
+And if they still have the link to that form or they scan the QR code, it'll say, this form is currently closed. But right now, let's open this back up so I can show you. This is where you can get the link to your form. So if you wanna share this link, you wanna put a link to it on your website, you can get that link right here.
+
+You can also download a QR code. So if you wanna print out a QR code and put it on your, you know, first time visitor desk for them to scan, you can just we we created one for you. You can just download it right there. And you can also require submitters to be logged into Church Center.
+
+Now I mentioned Church Center earlier as kind of that forward facing side of the form. People are able to log into Church Center and that's a good way to reduce duplicates that are getting created. As I mentioned earlier, they're using their first name, last name, and email address to match to an existing planning center profile. But if they use a different email address, it will create them a duplicate.
+
+We've got tools to help you find those, but sometimes requiring them to be logged in helps identify if they're not using the right email address before they fill out the form, so you kinda reduce the amount of, like, oops, I used the wrong thing and I created a duplicate profile. So that's that's kind of a neat tool there.
+
+Coming back up here, we have ways to help keep your main form page organized by allowing you to assign a form to a campus or a custom category that you get to make. You'll see right here you can manage what categories you have, but let's say this one's for the Atlanta campus, and then my category is you know, if this was like a children's ministry form, I could put it in my kids ministry folder there. I'm not gonna do that because it's not what this one's for, but, for example, you know, you could. But so this one's assigned to my, Atlanta campus, and let me show you what that practically does for you.
+
+So if I jump back out to my form page, you'll see over here, I can now filter forms by campus. So if I go to, all campuses and I select Atlanta, now I only see the forms that are pertinent to my campus so that I get a zoomed in view and I don't have to filter through all of our church's forms. Or, I mean, even if you don't have campuses, you can set up your ministries here. So the children's ministry people can just see their forms, you know, the outreach people can just see their forms, and everybody's not having to fight through each other's forms.
+
+So this is a really great way to kinda keep this view organized. One last thing that I wanna show you here is we do have a recently deleted form, area. So if you go in here and you go ahead and delete one of your forms and you're like, oh, that was the wrong one. My bad.
+
+You can just go right here, click recently deleted forms, and you can restore those forms, for up to a certain amount of time frame. So do it quickly, but you can go ahead and restore those forms. So that is it for forms. Forms is a super powerful tool for data collection and keeping your profiles up to date.
+
+Highly recommend you go check them out. Thanks so much.
+
+---
+
+## The People Tab & Settings (5:24)
+
+What's up, everybody? Let's talk about the people tab in planning center people. So the first thing you'll notice on this page is that there is a giant table full of profiles. And you might wonder, where do all these profiles come from?
+
+That's a great question. This is a collection of all of your profiles across all the planning center products that you use. So if people registered for an event or they joined a small group or they checked in or they're in services, all those profiles across all the products come into this centralized table where you can get quick numbers on everyone in your organization. So you'll see, at a glance, I've got six hundred twenty five people in my table.
+
+But let's say I just quickly wanted to know how many of those are adults. This is a great place to just come here really quickly and filter down. You can see we can filter by many things, but right here, I'm just gonna say adult and I'll see at a glance within a couple seconds, I have about four hundred and sixty three adults and I can go do with that information whatever I needed to do with it. So this is a really good place to get quick metrics if you need them, but you maybe don't necessarily need to, like, take action on them in planning center.
+
+This is a great place to come get numbers. The next thing I wanna show you guys is this little settings drawer over here. This is a very small but mighty drawer. It is jam packed with very powerful tools, and I wanna walk through them with you.
+
+So if we open up this drawer, the first thing you'll see is bulk actions.
+
+Bulk actions are a way to take action on a group of profiles that either come from a list or it's just a group of individuals that maybe don't have, you know, anything in common except maybe you had a clipboard, you know, out where people were signing up to help with something, and you just need to add all those people to a workflow. For example, you could come in here. You can search for people, and I could add everybody to my list here and then I could just take an action on their profile. I can add them to a workflow.
+
+I could add a note to their account. I can order them a background check. You'll see I could go through the whole list here. There's a ton of stuff you can do from bulk actions.
+
+So this is a super powerful tool if you're needing to take action on many profiles, but you don't wanna go into everybody's individual profile.
+
+Let's take a look at the next one here. So we've also got import and export CSV. Now we have a whole planning center video on importing and exporting that, you should go watch if you are about to do an import or an export. But, basically, just in short, this is a way to add profiles into planning center in bulk or get profiles in bulk out of planning center, you know, if you're feeding them into a metrics tool or something like that.
+
+So this is a place where you can get that data out or into planning center. And if you're planning on doing this, I highly recommend checking out the import video. Alright. Let's jump back over here and talk about promoting grades.
+
+So this does exactly what it sounds like. It you know, whenever you have your promotion grades, this moves everybody's grade in your system up by one. So whenever you're ready to promote your kiddos into the next class, you come in here. It's gonna move everybody up by one.
+
+You say promote grades, and then it'll take care of that for you with a click of one button. Button. No manually moving people around.
+
+Alright. The next one here is customized fields. This is a space where you can come in and you can track, personal or custom information for your planning center profile. So if there's something that you wanna track that's important to your ministry that's not necessarily in the default planning center profile, you can add anything you want over here in this tab and you can track it for your ministry and it'll show up on everybody's profile.
+
+The next one here is email settings. So this is a really powerful one. This is where you can create your email templates. So if you have an email you send over and over again, like maybe when somebody is interested in volunteering or they're new to your church and you have, a welcome email, this is a place where you can create templates that anyone in your people database can grab and send out as they need to. You can also set custom senders here. So if you wanna set it up to where someone can send emails on your behalf or on behalf of the ministry, you could add those people right here as well.
+
+Right. Popping back out here. Church center settings. So this is primarily where you can set up your directory settings.
+
+If you all use the church center directory, this is where you can choose what fields, your congregants are allowed to share with each other that, you know, they have the option to turn on and off. You can invite people to the directory right here. You can also add more fields for people to fill in in Church Center including custom fields. So if you wanna add, you know, some custom fields into Church Center for people to be able to fill in, they can do that right here in this space or you can add it for them right here in this space and then they can do it in Church Center.
+
+And you can also choose how you want to handle assigning people to campuses and Church Center in here as well. So this one is really full of a ton of options, customization options as far as profiles in the church center app. And then last but not least, down here at the bottom, have the managed spam list. Now, unfortunately, if you put a form out there on the Internet, sometimes people use it in ways that you hope that they wouldn't, and they might try to spam your form.
+
+If that is the case, you can add their email address right here, and you can block them, from being able to fill out the form. We earnestly hope you don't need this feature. But if you do, it is here, and you could use it to, you know, make sure that you're keeping your account manageable.
+
+Alright. So that's it for the people tab. If you have any questions, as always, reach out to support. We'd love to help you. Thanks so much.
+
+---
+
+## Setting Up and Inviting People to the Directory (10:09)
+
+Hey. Let's talk about Planning Center directory. First, how to set it up, then how to invite people to the directory, and finally, let's look at what it looks like to those people that you've invited.
+
+So I'm starting in the people product, and I'm gonna head over to the people tab. And then we're gonna go over to this gear wheel on the far right and select church center settings, because church center is where the directory lives, both in the web and the app.
+
+Great. Now I'm here and on the right hand side you're gonna see directory settings, and all I have to do to enable the directory is click this tiny little toggle on.
+
+Perfect. That's saved. So now I'm gonna get some options on how to set up the directory.
+
+First is this sharing option.
+
+This is where admins can choose which fields they wanna make available for people to share. Now you can disable some of these if you'd like. If you don't want people to know anybody's birthday, you can do that, uncheck them, and save. Or you can, you know, leave them all checked and people will have the option to share that information.
+
+That won't actually automatically make them share that information, though. They will still get to choose all of those things.
+
+But there are two things you might be wondering where they are. Both email addresses and phone numbers are under this specific setting under advanced settings called privacy mode.
+
+Privacy mode is our direct response to scammers trying to get congregants information through your directory.
+
+To avoid that situation altogether, you can keep privacy mode enabled and, that will hide all of the email addresses and phone numbers even if they're on people's profiles, but it will still allow people who are invited to the directory to contact each other.
+
+You can disable privacy mode, which you just click this toggle, and that will show everyone's email addresses and phone numbers to everyone who's been invited to the directory no matter what. You can read more about this on this link, and if you want to opt out, you can click yes opt out, and then you'll see email addresses and phone numbers are listed there. Again, you can check those and save to not let people share them, but I prefer to have privacy mode on. So I'm gonna click that back on.
+
+Those will go away. Great. That's all of the setup for the directory. It's just these couple of clicks.
+
+But now let's look at how to invite people to the directory. We're gonna scroll down just a smidge here, and we've got this invite members section.
+
+You can invite members here, either individuals or a list of people, and how this looks is if it's an individual, you can type in their name, click their name here, and they show up in your invite box. Or if you want to invite a list, say that I want to invite all my active church members, I can click that and then it'll show me it's going to add fifty eight people. Once I click that button to select those fifty eight, it'll add them to this list. So now I have a total of fifty nine, but I just remembered that Aaron Stewart is actually moving overseas because he's starting a church plant for our church.
+
+So I don't need him to be in our directory today. I'm going to click this x and you'll watch Aaron Stewart disappear. There you go. So now I've got fifty eight people, and I could click invite fifty eight and it would send this email.
+
+By default, we're gonna send an email invitation, but you could uncheck this if you don't wanna send it. And I wanna show you that email really quick. Here's the preview.
+
+This is gonna show your church name, their name, and then tell them some information about why they're getting this email. Down here, it's gonna show their information that you have asked them to share, and they can actually click yes share my information from this email and it will share it automatically. They don't even have to go to church center. They could also click do not share my information and then you could follow-up later based on that, decline.
+
+There is a third option though here at the bottom in this paragraph. They could click log in to church center and they could select which pieces of their information they would like to share and which they would not like to share, and that can all be done from this email. Amazing. So you definitely want to send that.
+
+Once you've selected whether you want to do that or not, you click invite fifty eight people. Do I know these people? Yes, I do. But if you do not know this person, you should verify first that these people are people who should be in your directory.
+
+I'm gonna click yes invite because I do know these people. And now Pico's gonna blast off and invite all fifty eight of those people pretty fast. Way to go, Pico. Wow. And, yeah. So that's one way that you can invite members.
+
+There are two other ways if you're not in the directory settings. One is through the people tab and then this gear wheel by selecting bulk actions.
+
+Now this looks really familiar, doesn't it? You can invite individuals or lists. You can do that same thing and have them all down in this section here. But then over on the right hand side, you'll want to choose the action that you want to, run, which is to set directory access and then invite to the directory.
+
+Or sometimes you might want to remove several people from the directory. You can also do that here. When you click invite, you can click send invite, and then once I've added some people, it'll let me click this button here. Super.
+
+The third and final way to invite people is to go to someone's personal profile. If you just need to invite one person, so I'm here on Chase's profile. I've typed in his name and then come to his profile here. Under their name, once you've enabled the directory, you'll see this directory status.
+
+And right now, it says Chase cannot view it because he has not been invited. But I can click this little link, invite to directory.
+
+It's going to ask me, do I know Chase? That's really great. I love this warning. It's just a little alert to make sure that you're, you know, checking all your boxes. And then, yes, I want to invite Chase because I do know Chase.
+
+Great. Now it shows that I've invited him and when, and I could remove him from the directory here if I want or even resend an invite if he hasn't shared his profile, but I would like him to.
+
+Okay. So that's all of that. Now let's go over to church center and see what this looks like for Chase. So the easiest way for an admin to get there is to click on the people tab, to click the gear wheel, and then down to church center settings again.
+
+And right above directory settings, you'll see church center, this button, and you can click visit directory.
+
+Now this is gonna take me right over to church center. If you're not logged in, it will ask you to log in, but for this, I'm already logged in as Chase. So, here's the directory. This is what it looks like.
+
+Now, Chase could scroll through here and look for his friends and reach out, but we do want Chase to share his information. So I'm gonna click share it now. This says I haven't shared it. I'm gonna share it now.
+
+And then I'm going to check the boxes here that I want to share.
+
+I definitely wanna share my profile, and then I think I he probably wants this picture to be shown and his birthday for sure. But, oh my goodness. Sorry. But he doesn't really wanna share his anniversary or his address. Not really interested in people showing up.
+
+So we're not gonna share that. But this contact information, allow others to contact me, is that privacy mode setting. Right? Whenever he checks this, it will allow people in the directory to reach out to Chase.
+
+If he unchecks this, it won't let them reach out. It's just gonna show them his name and birthday and profile picture. We want people to contact him, so that's great. And then Chase also has other household, members, so he can also add them if he'd like.
+
+He could add Katie's picture and her birth date, and, he he wouldn't he could do this if she had an email address. She doesn't. But, yeah. So we could do that, and now we're going to join the directory.
+
+Great.
+
+Now Chase has joined the directory and you'll see his profile here both I could view his profile or Katie's.
+
+When we go into Chase's profile, remember how we said allow people to contact me?
+
+This button will show up for all the people who check that box when it's in privacy mode. And if you contact Chase, you'll be able to say, hey bro, church on Sunday, and then send that message and that will go to Chase's email address. See this, it'll tell you it's been sent. Any replies will come directly to my email address. So what's important here is that Chase then gets to decide if he wants to respond to that email, but it all came through the directory without me ever seeing his email address, which is super.
+
+That's what the directory looks like on this side of things. Now if you have time for a pro tip, we're gonna go back to this admin side and I wanna show you how to make a list of people who are in the directory. So we're gonna go to lists, and now we're gonna go to new list, and then you're going to add a rule which will show first the people product, then directory, which you can type into that section. And then you have three options here.
+
+Either people who can access the directory, people who are listed in the directory, or anyone who declined the invitation in that initial email invite. All three of these are super useful if you want to figure out who's in the directory, how many people you have, who doesn't want to be in the directory, and you could reach out to them. And that's all in lists in people, which is still free just like the directory and just like Church Center. And that is everything that you need to know about the Planning Center directory.
+
+---
+
+## Promoting Grades (4:14)
+
+What's up everybody? Aimee here with Planning Center and we are talking about grade promotion.
+
+If you go to the profile of any kiddo in your account, let's actually do this, here we go, you will see a school field with a grade listed next to it or the ability to add a grade in this space. You will not see this on adult profiles. It is only on children's profiles, but you do have the option to add a grade. And this has a trickle down effect in a couple places in Planning Center.
+
+For example, your check ins locations. You can filter check ins locations by grade so that kids are automatically sorted into the right locations. Or in registrations, you can set your sign ups to where kids are automatically routed to the correct sign up based on the grade they're in. So there's a couple places this kind of comes into play, and usually one time a year you are looking to promote kids from one grade to the next as it works with the school system.
+
+So eventually we want all the sixth graders to move into seventh grade, and I'm going to show you how to do that. So I'm gonna go to the people tab in planning center people, and we're gonna go to the settings cog, and there's an option here to promote grades. Now first thing in this modal, it tells you what it's gonna do.
+
+So first and foremost, it's going to move everybody's grade up by one on the click of a button. So all the sixth graders are going to move into seventh grade and so on with all of the grades in your database, Pre K through twelve. Now, there is one exception to this. You have the option not promote pre k and that is typically because some of our churches use pre k for a wider range of kiddos, like maybe it's three and four year olds and you don't want all of them moving into kindergarten.
+
+You really only want the four year olds moving into kindergarten. So you do have the option to not promote pre k into kindergarten if that's how your church is using that field, and then you can manually move the kids you need to move either at the check-in station next Sunday or if you want some options on how to do this in bulk, you can use bulk actions with lists to find all your four year olds and move them into kindergarten in one step. If you have questions about that, out to support by using this question mark in the top right hand corner and just say, Hey, I need to do a bulk action to move all my pre Kers into kindergarten.
+
+We can absolutely walk you through that if you're not familiar with that process.
+
+But that is what that option is about.
+
+And the last thing I want to point out here is this recent promotions button. If you see this, it's kind of a red flag because it means someone has promoted recently in your database and you definitely want to take a look at this. This is an action that should be done one time a year by one person because we don't want to be moving kids two grades in the same year obviously. So if I click right here on this button you are going to see a couple recent promotions.
+
+Now this is a test account so hopefully you wouldn't normally see two. But I can definitely see I have promoted recently and maybe I don't want to promote again if I see this. But the reason I bring you in here to show you this is just to show you you can also undo promotions. So even if there is an accident and you promote twice, that's okay.
+
+You can undo that promotion with the click of a button within fourteen days of doing it. So no stress if you do accidentally promote twice, just pop in here and undo that promotion.
+
+But let's head back to this modal. Let's say we do want to go ahead and promote. I can just say, yes, promote grades. It's going to let me know it's off and doing its thing.
+
+And then we are set to go. Now, one other thing I want to show you about promoting grades is that we do also have a school feature in the customized field setting. With the school feature, I can set schools and I can choose what grades go with which of my schools. So this middle school is for sixth through eighth grade and so another thing that the grade promotion modal does is when someone enters the sixth grade they will be moved to the appropriate school that goes with that grade range based on the settings you have here in this custom field setting.
+
+So that's great promotion in a nutshell. As always, you can hit this question mark to search our documentation if you have any questions. You can also reach out to support by opening a ticket right here. We'd be happy to help you.
+
+---
+
+
+# Registrations
+
+## Registrations Overview (1:10)
+
+Hi. I'm Matthew. And your sixty second intro to Planning Center registrations starts now.
+
+Registration is all about coordinating sign ups anytime there's something your church that people need to sign up for, registrations is the place. There are two sides to registrations. There's the admin side, which we call the planning center side. That's where you're watching this video right now.
+
+This is where you and your team will create and manage all the events that people can sign up for. Then there's the public side or as we call the church center side. That's where people will see all the events you created and it's where they'll actually sign up for those things. Now let's talk big picture for Registrations is just one part of the Planning Center Universe, and just like you can use registrations to coordinate sign ups, we've got a range of products designed for the different areas of ministry in your church.
+
+And when you get those products working together, all sorts of things are possible. Well, let's not get too far ahead of ourselves. For now, come on in, take a look around, make yourself at home. As you explore, if you ever have any questions, click on the question mark in the top right corner of the screen.
+
+From there, you can check out our help docs or get in touch with our support team. We're so glad you're here, and we can't wait to see what you do with the place.
+
+---
+
+## Creating a Signup (2:06)
+
+Let's walk through how to create a new sign up. So in registrations, you'll start on the sign ups page, and you'll click this blue new sign up button. Now this is gonna open the create a new sign up modal, and the first step here is to add a name for your event. So I'm gonna create a sign up for a potluck we're having this Friday.
+
+And then the next step is to add the date and time information. So I'm gonna adjust this for Friday from six to eight. My event is only two hours long, but if your event is lasting all day, you could check this setting here. And then we also have an option if your event is an ongoing program or opportunity.
+
+Now the next step is to decide how you would like to collect registrations.
+
+The first option is to collect named attendees. This is a great way to collect custom information for each person that's attending and being registered for your event. With this option, you'll have access to features like attendee forms, add ons, and you can use the check ins integration with your sign up. Now the second option is to collect just a simple count of attendees.
+
+With this option, people can tell you how many attendees are coming to your event without having to enter attendee specific information. This option also has split registrations. So if that's a feature that you're looking for, this is a great option for you. Now the last option is a none sign up, and this is a great way to create an event that you're not collecting registrations for.
+
+This will still create a page for you on your sign ups page on Church Center, but without being able to collect any registrations. Now another option for this type of event is to create event an event over in our calendar product, so that's another thing to consider as well.
+
+The last setting for you to adjust is the currency. And once you have that set, you can click this blue create a sign up button, and you'll be dropped into the about page for your sign up where you can start adding additional details and settings for your event.
+
+---
+
+## Starting a Detailed Signup (3:17)
+
+Let's create a detailed sign up. Now here on the confirmation page, what we recommend is you start on the left hand side and go tab by tab and fill out all the information under about, then settings, and then so on and so forth until you get to the bottom.
+
+If you have any questions along the way, feel free to click that question mark on the top right hand corner, and our support team is glad to answer any of those questions for you. So let's dive into the about tab really quickly. So we have our name already set here. We can always go back and edit that. A lot of the times with summer camps, you wanna maybe put up a logo or an image that you have of that. If you have that already, you can select the Edit button and go ahead and drop that in there.
+
+If you don't, we actually have a free photos option down here that you can kind of select a photo from here. We base it off of your sign up name, but you can enter any information here that you would like to. However, I think this kind of is the vibe we're going for, so we're gonna let that be our image there.
+
+Next, we'll talk about dates. If you need to go back and edit your dates or add times or anything like that, you can always do that here.
+
+Under locations, we are going to automatically list all of your campuses. So if this is a summer camp that's happening at one of your campuses, that information will already be here and you can select which campus that is.
+
+Now if it's not gonna be at a campus, it's gonna be off location, you can select other where you can then put in that information. So if you would just wanna put in a name, we're just gonna put the wilderness because we're gonna go real camp, not like in a cabin camping. But then you could put the address, and then that's just gonna allow the directions, and location to show up for your registrants. Now let's move over here to the description.
+
+Now description's really great to have because this is gonna show up on your public page. So if you select add a description, you can put all kind of information in here. This is very important to give details about the event, but also things you may want them to know before they go into the sign up. Like, they may need certain information ready before they go into the sign up, or they may need to know certain processes that you have on your side to put all of that in there.
+
+Once you have that, you can just select save and that information will show up.
+
+And then down on campus as you can and categories, you can actually make your event more searchable if you select the campuses that it applies to and the categories it applies to. Now this section is set up in other parts of Planning Center, so you would need to go there to set these up first, but once they are set up, you just select edit. You can do all campuses or specific campus, and we can say this is only for the Jackson campus if you wanted to, and then categories, we'll put this in for the youth.
+
+And then save, and that's done.
+
+---
+
+## Selection Types (8:22)
+
+So let's talk about selection types. Now selection types sometimes can feel a little tricky, but they can really just be as simple as you need them or as detailed as you need them depending on your event. So let's talk through it. Now once again, just to navigate you, we're on the confirmations tab and then sorry.
+
+Configurations tab, selection type tab. Now by default, every every sign up is going to have a selection type already made, and it's just gonna be a standard selection type. So we're gonna go in, and we're just going to select that so we can edit the one that's already created. Now for this event, we just have very simple a student selection type and a counselor selection type.
+
+However, for your event, what I would recommend is making sure that your selection type matches what is gonna make sense for the registrant. So, you know, try not to use your internal jargon or things that only make sense to people who work at the church. Maybe think about what do they see it as.
+
+Also, think about how many selection types you may need to have based on the things that you may need to do on the back end, like setting up assignments or, different questions that you may need to ask later on. And then also remember that we also have add ons and attendee questions that can help kind of navigate people to different things, like if you have a conference and you're wanting to offer breakout sessions. That may be a good place for an add on to step in and help you versus the selection type. Okay? If you have any questions about where these things should live, reach out to our support team. They're glad to walk you through that and to give you their suggestions. Now we're gonna go in here and edit this name, to student.
+
+We are charging two hundred and fifty dollars for our students. We also have this lovely little section here that is a description where you can kinda explain a little bit more about the selection type. We're not gonna use this here, but we will use it on our next one. So we'll talk about that a little bit more.
+
+Now I do want to make sure that only the people in the proper grades are attending or are selecting this selection type. So I'm gonna click here all grades, all ages and grades, and change it to grades. And we're gonna just go between seventh and twelfth grade, You know, because those sixth graders can just sometimes aggravate the twelfth graders. So we don't want that confusion in our summer camp.
+
+Underneath there, we're going to look at the personal information to collect. Now you are gonna be able to collect information for your registrant, so whoever is actually filling out the form. But this is gonna be specific information for the individual attendee. So what do I need to know about each attendee individually?
+
+So in this case, we do want gender, and I actually want to require gender. So I'm gonna come over and check the required box. Later, we're gonna be doing some cabins and all that kind of stuff. So I'm gonna need that information for what I need to set up on the back end for assignments.
+
+I do need their date of birth just to have that on file, but I'm gonna make that optional. I do have to have their emergency contact, so we're gonna make that a required option. And then since these are students, I don't really need their email, phone number, or address, but I do want medical notes to be an option to fill out. Now underneath this section, I wanna point out real quick, we do have a custom confirmation message.
+
+Now what this does is the whatever you put in this box will only send to attendees who have this selection type. So if I came in and registered as a counselor, I would not see this confirmation message. I would only see the one that went to everyone or that goes to the counselors. So this is a really neat feature where you can give specific information to different selection types.
+
+And then lastly, we're gonna come up top and we're going to go to the Options box and select Allow Partial Payment. So I basically want them to be able to pay what they can, when they can up to the event, but I could also require a minimum deposit. So if I wanted to say they had to pay fifty bucks for to reserve their spot, I could put that fifty bucks in there.
+
+Now let me select save, and then we will see that change over here. And we see it listed there with a lot of the information.
+
+And then I'm gonna come in here and select the new selections so I can add my counselor. Right? So I'm gonna come in here and add counselor as an option. It's gonna be free.
+
+But I'm also going to make sure that here I put a little note that says must have a background check. Just so that it's there as a little reminder, this can also be used to help explain the selection type a little bit better. And I do love to spell things properly, so let me fix that. Alright.
+
+We're gonna come down here, and I wanna make sure that, you know, one of my students isn't trying to sneak in for free under that counselor banner. So I am gonna select an age here, and I'm gonna say at least nineteen, not months, but years, by the start of this event is gonna be my requirement for you to be a counselor. Now just like we did before, I'm gonna come under the personal information to collect. I do need their gender.
+
+It doesn't need to be required. You will notice that the date of birth is grayed out because this was a restriction that we had up here.
+
+So this has to be collected, in order for the restriction to work. Adults don't have grades. I do want an emergency contact. Their phone number, I do want that required so I can contact them, and then their medical notes.
+
+Once again, you can enter a separate confirmation message here. And then we don't collect money, so we don't need any, partial payments. So I'm gonna select save there.
+
+Now we have our two beautiful selection types, very clean and simple, easy to understand for our registrants. Now another great feature within selection type is capacities. So if you select this edit capacities option, this is where you can limit how many people can register for each selection type. So I only have spots for one hundred students because that's all the beds that I have.
+
+And then I am going to need unlimited adults. All the adults who wanna come can come. We'll make room for them. So I'm not actually gonna put a limit there.
+
+Right? So that's gonna help. And then one thing I will point out, the very bottom one where you see the total here, this is for, like, I have a total auditorium that seats two hundred people, but my selection types are actually different tickets. So it may be the VIP tickets and the gold tickets and the silver tickets.
+
+And then all of those tickets combined can only reach two hundred people. So then it kinda takes the calculation from all of my selection types to do there. In most cases, you're not gonna need that. This is gonna need to stay unlimited, and you just focus on these capacities.
+
+Now once I have that set, I'm gonna select save. And what you will see is as people start registering for this event, this number will grow. So you'll see twenty five of one hundred spots have been taken.
+
+And then lastly, what I wanna discuss is Waitlist. So now that we have a capacity on the students, we can choose to enable Waitlist. Now what this is gonna do is it's gonna allow, once you reach that one hundred attendees, it's gonna allow other people to sign up for the wait list. So if something happens and the camp can open up more spots or if someone cancels, you'll already have a list of people there that you can then go in and promote. And we will talk more about wait list soon.
+
+---
+
+## Add-Ons (2:10)
+
+Let's talk about add ons. Add ons are a way for attendees to include extra items within their registration. This can be used for something like collecting t shirt sizes or for attendees to be able to pay for an optional activity within your event. Now let's walk through the process of creating an add on so that I can show you some examples. So to get started, we'll come to the configuration page and click on the add on options tab from the left hand side. From here, we'll click to create a new add on.
+
+Now for this summer camp, I have an adventure course that I wanna set up as an add on. Now the adventure course is an additional fifty dollars. So this price is going to be on top of the base price that's already been set up in the selection type settings.
+
+Now this adventure course does have limited space, so I'm gonna set a quantity of ten. And because this is limited space, I'm gonna leave this add on to be optional. What this means is that if an attendee wants to register for the adventure course and there's still capacity left, they can include this add on to their registration.
+
+So go ahead and click to save those settings, and then let's set up another add on to collect t shirt sizes.
+
+Now for this event, the price for a t shirt is already included in the base cost. So while I don't need to add a price for this add on, I am going to use the variation feature to create different sizes that attendees can choose from. And this is gonna be how I collect the t shirt size for each attendee. Whoops. So I'm gonna oh my goodness.
+
+I'm gonna create a variation for each size that we have available.
+
+And then because I wanna make sure to collect the t shirt size for each attendee, I am gonna mark this add on as required. And we'll get those settings saved, and there you have it. That's how you can set up two different types of add ons within your sign up.
+
+---
+
+## Questions and Forms (4:59)
+
+Let's talk about the different types of questions that you can ask both during the registration process and after a registration has been submitted.
+
+Now the two types of questions that you can ask during the registration process are attendee questions and registration questions. And if you're on the configuration page of your sign up, you'll see those types of questions here on the left hand side.
+
+Now attendee questions are attendee specific. So these are gonna be asked of each attendee included on a registration or for attendees that are registered for a specific selection type. Registration questions, on the other hand, are only asked once throughout the registration process and they're meant for the registrant to answer and that's the person that's submitting the registration form.
+
+So if you have information that you want to require from attendees to collect before they're able to reserve their spot for your event, these are the types of questions to use.
+
+Now if you have additional information that you want to collect from your attendees after the registration has been submitted but before the registration is marked as complete, then you can use our forms questions.
+
+So if you click over here to the forms tab on the configuration page, you'll see that the first form option that you have is the attendee information form. Now this is the default form built right into your sign up, and it's a great way to add additional attendee specific questions.
+
+If you click over here to the new form button, you'll see that there are three other types of forms that you can attach to your sign up.
+
+The first option is a PDF. So if you have an external document that you want to upload to make available to your attendees for them to download from the confirmation page, you can include that document here. Now one thing to note about forms is that forms can not only be attendees selection type specific, but they can also be add on specific. So as an example, on this sign up, I have an add on for an adventure course.
+
+So if I unselect the camp t shirt add on, that would make this PDF form that I upload only available to attendees that are registered for the adventure course. This is a great option if you have a waiver that you need specific attendees to complete, but not all attendees to complete.
+
+Alright. I'm gonna take away those settings so that we can take a look at the next form option, which is the online form. So this is a great way to direct attendees to an external website that you need them to go to to complete any other information. And to do that, you just add the URL for that website here, click the save button over here, and then a link for each attendee will be included on the confirmation page.
+
+Now the last type of form that we have is a people form. And this is a really great way to not only collect additional attendee specific information, but attendee specific information that can be updated to that attendee's profile in the people product.
+
+So once you create your form over in people, you can search for that form here in this drop down menu. And through this way, you can collect additional profile information. You can update custom fields. There's really so much that you can do with a people form. So if you have any questions about how to create a people form or what features are involved on a people form, you can click this question mark button over here in the top right hand corner of the page that you're on, and our team would be happy to help you set that form up.
+
+Now let's go back over here to the attendee questions tab, and let's see what it looks like to create a question. So we'll start by clicking the button to add a question.
+
+And then I'm going to require this question, but I only want this question to be available to people registering as a camp counselor. And for my camp counselors, I want to know, are you able to provide transportation?
+
+Now I really only wanna know a yes or a no answer to this question, so I'm going to create it as a drop down menu. We'll add the yes option.
+
+We'll add the no option, and then this question's all set up. So I'll click this blue save button down here, and then let's create a registration question as well.
+
+So for this registration, I wanna know how did you hear about this event?
+
+Now I'm gonna leave this question optional. So if the registrant doesn't really have information to provide, they can still submit their registration without filling out this question. But if they do wanna tell us, they'll be able to. We'll click save there. And there you go. There's your overview on the different types of questions available within your sign up.
+
+---
+
+## Discounts and Scholarships (6:38)
+
+Alright. Let's dive into discounts and scholarships.
+
+From the configuration page, scroll down to the discount tab.
+
+Select new discount button, and we're gonna dive into all the settings that you have for a discount. Now let's do some basic setup here. Let's just go ahead and give the discount a name. Know that this name will be seen on the admin side and on the registrant side inside of church center. So let's just do half off.
+
+Spacebar would be nice. And then what we're gonna do is we're gonna change our amount type from flat rate to percentage just to make things a little easier.
+
+For flat rate, you can just enter whatever amount you want the discount to be, and then percentage. We list those out for you that you can choose.
+
+And then the next option you're gonna get to is your discount type. So let me walk you through the three discount types that we offer. First up is a code discount. As plain and simple as it sounds, you can enter a discount here or a code here that the registrant will then enter on the registration and receive the discount.
+
+Now this code can be whatever you want it to be. Normally, the shorter, the better. The less complicated, the better. Something easy for them to remember and enter quickly.
+
+Straightforward, that's how that works. The registrant can put that on there. The next option, we're actually gonna skip group and come back to because it's a little bit bigger, is early bird.
+
+Now early bird is, as we know early bird, you can register all the way up into the event, but we really want you to register early. So we're gonna give you a discount if you'll register before a certain date and time. So whenever you select this type, you will see some additional options over here on the right hand side where you can enter the date and time you want this early bird discount to, expire. So So whenever you come in here, you can then select that date. So for this, I'm gonna say I want them to register before the end of this year for next year summer camp to receive that early bird. So I'm gonna go in here and just do December of twenty twenty five. We're gonna do the thirty first, and I'm gonna make this by the end of church service on that day, and I'm gonna say twelve PM.
+
+So I can be in church at day and see, like, you have to sign up before twelve o'clock today, and make it, you know, a little bit pressure, put pressure on them right there at the end of the year.
+
+And then the last one we're gonna talk about is group discounts. Now group discounts can work a few different ways, so let's kinda walk through them. The first thing you're gonna select in a group discount is going to be the minimum group size. So how many people does it take to get this discount? In this case, I'm just gonna put two to make it a smaller number.
+
+After you enter your minimum group size, you will see two options below.
+
+Apply to all attendees in the group or apply to everyone after let's click down here. Second attendee.
+
+Now the first option, apply to all, means after a second person is registered, this group discount will automatically apply to everyone in the group. So if this, summer camp is a hundred dollars per attendee and I apply fifty percent to both of them, then they're each just paying a hundred doll or, fifty dollars, a hundred dollar total versus two hundred dollars total.
+
+If I select the second option, this means if I had three attendees, only those after the second attendee would get it. So, apply to everyone after the second one. So I register four people. The first two are full price. The second two are half off. Alright? From here, you'll just click the save button, and your discount saved and is activated for the registrants to use.
+
+Now let's move on to scholarships because scholarships work a little differently than discounts.
+
+The main difference here is a discount is something that can be applied because of action by the registrant, whereas a scholarship has to be added from the admin side, and there has to be a scholarship bank per se, in order to do this. So I'm gonna come in here and name this scholarship bake sale, because I'm just gonna act like we had a bake sale. I'm typing too fast and spelling things incorrectly. And we raised a thousand dollars that I can now use to go towards helping people at Ford their camp.
+
+So this number is nothing that is attached to anything. It has to be manually entered. So if someone comes in later and says, hey. I didn't get to, you know, donate to the bake sale.
+
+Can I still add money? You can always come back in later and edit the big price, the the main price to add more to it. So once I hit add scholarship, you will see that scholarship listed here. I can always click on it and then say, oh, yeah.
+
+You know, brother Joe gave me an extra hundred dollars that I can now add to this amount, and it is listed there. So how do you use a how do you actually apply that money? How do you use a scholarship?
+
+The way you would do that is go to the registrations tab and find the person that you need to add this to. In this case, it's gonna be John.
+
+Now under the apply payment section, you will select the payment method, and one of the options will be bake sale. We also show you how much is left in the bake sale scholarship. So we can apply that there, and then you then enter the amount that you want to use towards this. In this case, we're only giving people a hundred dollars each to kinda spread it around.
+
+Choose whether you wanna send a receipt or not and hit submit, and then you will see that payment listed there for a hundred dollars came from the bake sale.
+
+Simply like that, it's applied.
+
+Now if you go back to the configurations tab and then the scholarships tab, you will see that bake sale. Here's the main amount. Here's the amount used, and here's how much you have left. So we kinda keep track of that so that if you have multiple scholarships or you just need a quick view of that, you will see that there. So that's discounts and scholarships.
+
+---
+
+## Create Assignments (5:08)
+
+Alright. So now that you have attendees that have started to register for your event, I'm gonna show you how to set up assignments on your sign up. So to get started, let's come over here to the assignments page. Now assignments are a really great way to keep your attendees organized within different parts of your event. So for our end of summer camp, let's create an assignment type for cabins. So to get started, we're gonna add a name for this assignment type, and then we're gonna click this button to add that assignment type.
+
+Now within an assignment type, you have to create different assignment areas. So to get started, we'll click this button, and then we're gonna start by creating an assignment area for a girl's cabin. Now this girl's cabin has a capacity of ten, And because it's a girl's cabin, I'm going to limit this assignment area to only our female attendees.
+
+If I wanted to set an age or grade filter, I could do that here. And then I also wanna set this assignment type to only be available to the attendees that have registered as a high school camper. Now there is gonna be a way for me as an admin to still add our attendees that have registered as a camp counselor to the girls cabin, but I'll show you that in just a minute.
+
+So we're gonna go ahead and save these settings, and then let's add one more area. So we're gonna add an area for a boys cabin. Oops. And let's set this capacity to ten as well.
+
+We're gonna make this area available only to our male attendees, and then we're gonna set this to also only be available to our high school campers. We'll click here to save those settings, and now you can see that we have two assignment areas created within our assignment type.
+
+Now I wanna draw your attention to these three tabs over here on the left. So the first tab is the all attendees list, and this is just gonna show you all attendees that are registered for your sign up. As we start assigning those attendees, the areas for each attendee will populate here. Now the next tab is the assigned attendees list. So as we start getting those attendees placed into our cabins, their name and their assignment area will be populated here.
+
+The last tab is our list of unassigned attendees. So this list will also update as we start to get our attendees assigned. Now let's get started with assigning those attendees. So first, I'm gonna show you how to do this manually.
+
+To do that, you're just gonna click right here under where it says area, and you're gonna see a drop down menu that shows you the two assignment areas that we've created. Now because we set up those restrictions, it does tell you if an attendee does not or does meet those area restrictions.
+
+So because Aileen is a female attendee that registered as a high school camper, we're gonna click to place her in the girl's cabin.
+
+We'll click to save, and then we'll see over here that Aileen has been added to the girls cabin. Now if we go back to the unassigned tab, I'm gonna show you how to auto assign attendees, which will really quickly place any attendee that meets the restrictions that you set up on those areas into those areas. So we're gonna click this auto assign button. And when you click that button, you'll see the two options that you have for auto assign. The first option is the waterfall, and that is gonna look like if, let's say, we had three girl cabin set up. If we chose the waterfall approach, it would fill up the first girl's cabin before placing attendees into the second girl's cabin and so on.
+
+The other approach is the balanced way, and that just is going to balance all areas evenly. And that's what we're gonna do right now. So we're gonna click here for balance, and then we'll see just like that, all of our attendees that were registered as a high school camper were placed into the assignment areas. So here are all of our female attendees, and here are all of our male attendees. Now if we go back to the unassigned tab, we'll see that our camp counselors are left. And again, these attendees were not included in that auto assign because they didn't meet the restrictions that we set up on those areas. But we still want camp counselors in our cabins, so I'll show you how to override those area restrictions.
+
+So to start, let's place David into the boys cabin. So I'm just gonna click here. I'm gonna click to save, and then I'm gonna see this pop up that's letting me know that doing this, placing this attendee into this assignment area is I have to override the restrictions that have been set up in order to do that. But that's exactly what I wanna do. So I'm gonna click this green assign button, and then we'll click over here to the boys cabin to see that David has been assigned.
+
+Now let's go back to the assign unassigned list and get Jennifer placed into the girls cabin. We're gonna do the same steps here by clicking to save. We're gonna override those area restrictions once again and see that Jennifer has been placed into the girls cabin. So there you have it. That's how you can set up assignment types, assignment areas, and get your attendees assigned.
+
+---
+
+## Setting Up Event Reminders (3:08)
+
+You know, there's nothing worse than getting close to an event time.
+
+And all of a sudden, everyone forgot. And And you have no people showing up to your event that you've worked so hard to plan and execute and get everything ready for. So planning center registrations has an option for you that may come in handy just to help send those reminders. So under the configurations tab, if you will scroll down to the reminders tab, we actually give you the ability to send reminders to your registrants and your attendees. Now by default, we're not gonna communicate with anyone about your registrations or your sign ups or your events without you being the one to initiate it. So by default, this is gonna be turned off.
+
+So to start, you're gonna turn on the general reminders and then select the edit button to make your edits for these reminders. Now for this, this is our summer camp, and I kinda wanna send some different information to my counselors than I do the students that are attending. Right? So I'm gonna start with my first option here. So I'm gonna email and not all my attendees, I actually only wanna email this, certain.
+
+And I'm gonna start with my high schoolers and middle schoolers, and I'm gonna send this not two days. I'm I think I'm gonna do one day just to give them a short reminder time so they don't forget. We know how high school and middle school students can be.
+
+And then we have the option to include a custom message. Now this is where, you know, you can tell them, you know, don't forget your packing list or whatever, if I could type properly.
+
+Whatever you wanna say, this is just like the confirmation messages you can set up in selection types or on the con confirmation page, and send them whatever you want to inside of this reminder.
+
+Then underneath there, you will see the button to add another reminder.
+
+Then we can send a separate reminder for the counselors. Now one thing to note, you can only send one reminder per selection type. So you can't send a general reminder to everyone and then send individual reminders to each election type after the fact. So make sure that you set this up in the best way possible for you that is gonna work for your event.
+
+Okay? So we're gonna do the counselors, but we're gonna do them two days out to give them a little bit more time, where to come in here and say yay. And that's gonna be set up for them a little separately. Okay?
+
+So once all of that's done, you will come back to the top and hit save, and then you will see your messages laid out there very clearly. So we have a reminder set for the high school and middle schoolers to go out on this date and this time, and this is what it's gonna say, and then your reminders for your counselors to go out this date and time and what it's going to say.
+
+---
+
+## Adding and Editing a Confirmation Message (1:43)
+
+Let's talk about confirmation messages.
+
+Now we automatically send a confirmation email to all registrants when they've registered to confirm that we've received their registration.
+
+But if you have some additional details that you want to include, you can create a custom confirmation message.
+
+To do that, you'll start on the configuration page of your sign up, and you'll come over here to the confirmation message tab on the left hand side.
+
+Once you click there, you'll see that this is where you can include a custom message in the confirmation email that will be sent to all registrations for your event.
+
+To get started, you'll click this button to add a message. You can type out your message. You'll see that there are a few formatting options that you have. You can even use this button to include a photo for your message, and then you'll want to make sure to use this blue save button.
+
+Now if you have some details that are selection type specific, you can come over here to the selection types tab and then click on the selection type you wanna create a custom confirmation message for.
+
+So let's create one for volunteers. Now from this page, if you scroll to the bottom of the page, you'll see that this is where you can include a custom confirmation message that will only be included in the confirmation email for attendees that have registered as a volunteer. So this is a great way to get out those selection type specific details to attendees once they've registered. And there you have it. That's the different ways that you can create a custom confirmation message for your sign up.
+
+---
+
+## Create Automations (2:35)
+
+Let's talk about automations in registrations. Now automations are a really great tool that bring together all the different parts of the planning center ecosystem. And in registrations, especially, are a really powerful tool. Now if you're looking at your sign up, you can click over here to the automations tab.
+
+And this is where we can set up and create some new automations. So for the youth summer camp sign up, we have two automations that have already been set up. There's one for when a person is a registration contact on a new registration to then add that person to a group that's been set up over in the group's product. Now the second automation is for when a person is a registration contact on a canceled registration.
+
+That person will then be removed from that group that they were added to. But this is a really great way to easily keep track of your registration contacts and making sure that they're part of the group that you need them to be added to in a completely separate product.
+
+Now let's create an automation together. So we'll start by clicking to create an automation over here. And we're gonna create an automation for those attendees that register as a counselor. Now because this is an open registration, anybody can register as a counselor for this youth summer camp.
+
+It's not restricted to members who have already been, vetted as volunteers for our church. So we are going to set this up so that when a person is registered as a new attendee with the counselor selection type, we wanna make sure that their status is active. We're then going to perform an action in people. And you'll see that this drop down menu is gonna show you a list of all the products that your organization is subscribed to.
+
+So depending on your subscriptions, you might not see all of these options here, but we're gonna stick with the people product. And then for these people who are registering as counselors, we're gonna order them a background check. Now right from this automation, I can choose the package that I wanna select. I can set our work location to Carlsbad.
+
+I don't need to include a driving record for this background check, but then what this automation is also gonna do, it is gonna skip anyone who has a current background check. So we're not ordering background checks for people that already have them. So we'll go ahead and click here to create an automation. And as easy as that, we've now got any counselors who register that need a background check.
+
+We'll get their background check automatically ordered. And there you go. That's how you can set up automations on your sign up.
+
+---
+
+## Attendance and Check-Ins (6:05)
+
+Let's talk about attendance in registrations.
+
+So there are two ways that you can take attendance in registrations.
+
+Inside of registrations, we have a basic roster attendance that you can use, and you can also integrate with check ins. So from the registrations tab, select the attendance tab, and you will see these two options. Now the first option is to take attendance within registrations, and the bottom is to take it within check ins. So let's talk about both of those options right now.
+
+So if you just want a basic roster that is set inside of registrations, you would click one of these two options. You can take attendance for all participants, or you can take attendance for these participants forty. Now what this really is doing is looking at your list. So what does that mean?
+
+That means that you can filter this list and only take attendance for certain people, like all the people who are on a selection type. So let me show you that real quick. If you select the add filter button and you choose, let's just say, selection types, and let's only take attendance for our high schoolers.
+
+I can filter this list from the forty full attendees to the twenty one who have that selection of high school students.
+
+Then whenever I come to the attendance button, you will see that number has changed from forty to twenty one. So I'm gonna go ahead and select that so we can see what this does.
+
+You're gonna be opened up to this simple roster. So So what you can do is whenever you're ready to take attendance, you come through and check the box for each person who is in attendance and leave the boxes unchecked for those who are not in attendance.
+
+As well as being able to take your attendance, there's a few more things you can do within this roster. If you select the edit button here, you're able to name it. So if it's not a date specific attendance and it's you want to separate your high school and middle school, you could come in here and just put high school, for September twelfth or whatever. Let me spell school right. That would be great, wouldn't it? And then you can save it there.
+
+Once you have that attendance taken, you can select done. Now from the registrations tab, you're gonna now have an attendance section on the left hand side, and you will see the name of that roster. If you ever need to go back into it, you simply select it. It's gonna pull up here.
+
+You can select edit attendance to go in and make any changes to that date if needed.
+
+So that is the simple roster attendance that we have in registrations. Let's talk about the registrations integrations that check ins has built. Now you can access this from two different places. So let me show you that.
+
+From the registrations tab, you can select attendance.
+
+And then down below where it says check ins, it'll say set up a check ins for this sign up. Whenever you select it, it's going to take you to the configurations tab on the check ins tab. So you can also just go straight to the configuration tab and then to check ins.
+
+Here, what you will do is you will select this create check ins event, which will then launch a check ins event inside of check ins. Now the difference here is that we are going to use everyone who registered for this event inside of that check-in. So only those that registered can check-in. Some people kind of use this as like a a a replacement for a ticketing system.
+
+So you can't really attend this event unless you check-in, and you can't check-in unless you register already. So that's kind of the use for this. Also, the registration integration allows you to use all the wonderful features that check ins have, like printing labels, using the stations, and running reports. So if you're looking for more detailed reports on people's attendance, this may also be a great option, to help you utilize check ins as well.
+
+The last thing I wanna say about the registrations integration is you can also use your assignments and registrations to set up different locations within your check ins event. Alright? So what this means is let's, go over to assignments, and we have these different assignments types. So if I select the squad here and I create my different areas, I'm just gonna do some colors. So blue squad.
+
+We're gonna say five people can come here.
+
+You can even select this down. I'm not gonna get into how assignments work because we've we'll cover that in a different video.
+
+And then I'm just gonna do the red squad.
+
+What can happen here is I can spell things properly when I type slower, is you can then assign your attendees to these different assignment areas, and then those assignment areas turn into different locations within check ins. So your assignment areas could be your nursery, your two to three year olds, your four to five year olds, your big kids, and then because you have different check-in stations for each of those age groups. So, whenever you do that, you will then see, that as an option inside of check ins to select whether you wanna do the full registration or if you wanna check-in by the assignment types. So if you have any other questions, be sure to click the question mark in the top right hand corner, and our support team can dig into those questions for you.
+
+---
+
+## Manage Registrations for a "Named Attendee" Signup (8:19)
+
+Alright. Let's talk about managing registrations for a detailed sign up. Now remember, as we've already talked about detailed sign up, you're collecting information on each attendee. So you have a lot more that can be involved in some of these registrations versus our simple registration.
+
+So we're gonna start from the Registrations tab on the Active tab. And what you're gonna see here is this beautiful table that has all of your simple information listed here, like when it was submitted, the names, the selection types. But more importantly, you'll see here the balance due, if there's any done or if it's paid, and then if anything has been left undone for that registration. Now you may have already noticed that on the far left side, you have some color differences.
+
+So you have some green and some yellow. Now here's the difference here. Green means they are all done. All their questions are answered.
+
+All payments are done. Their forms are filled out.
+
+Everything's marked off. Green is what we want. Okay? We want all of the information that you've asked for to be completed. So if that information is not completed, we need to go in and kinda check that out and that's where the yellow comes in. So as you kinda look down here, you'll see all of the incompletes marked by yellow. So we're gonna go in here to James because I actually talked to James on Sunday.
+
+So I'm gonna open up his registration. Now a few things I wanna note here is if you had multiple attendees on this registration, you would see a dot by the ones that are missing information. If they're not missing information, then that dot won't be there. This just helps you know if all the people on this registration are missing information or just one specific person.
+
+So we're gonna start here with our balance due because we do still see that the two hundred and fifty dollars has not been paid, but James actually gave me that in cash on Sunday in the lobby. So I'm gonna go ahead and select this apply payments button and then put in there that he gave me cash, the two fifty, and then I'm gonna put in here, collected in lobby. I'm not gonna send him a receipt. He said he didn't need one, so we're gonna hit submit.
+
+And then you will see that payment show there, and what we always love to see, balance due is zero. We have our money. We can pay for James' all of James' things. Right?
+
+Next, what we'll do is we'll scroll down, and we wanna find the attendee box.
+
+So that's gonna be down bottom, and you're gonna see their name listed here again. And if there once again, if there are multiple attendees, you would see a box for each attendee.
+
+But we're gonna see this yellowish incomplete banner. We don't want that. That is a yellow flag, but let's pretend it's a red flag. Like, no.
+
+No. Let's not do this. Okay? So what we're gonna do is look over what information is missing.
+
+Grade and emergency contact. Okay. Well, I know those things. So let me go ahead and edit that for him.
+
+So for personal information, I can click the edit profile information.
+
+Our edit profile window will pop up, and then I can come in here and insert his grade. He is a senior this year. And so I'm gonna put in that twelfth grade and select save.
+
+Perfect. But guess what?
+
+Our little banner did not go away because we still gotta fill out emergency contact. So I'm gonna select the edit button right next to emergency contact, and I am going to put in here his emergency contact and their phone number. Luckily, I just know my church so well. I have all of this stored in my head and could just throw it in here very easily.
+
+Now, we're still seeing that incomplete there. So what else could be missing? We keep scrolling and it's the additional form at the very bottom. And you can see that with the little dot right here and the fact that it's unchecked.
+
+Now in this case, this is an activity release that they have to print out and have signed, maybe even notarized, and they have to bring it back in. So as an admin, I have to go back in here and check that I received this. So I went and double checked my files. I did receive James's, and so I'm gonna go ahead and check this for him and select save.
+
+Now once you're kinda looked at this and you see no more yellow banners down here or anything missing, and this has not gone away, just refresh your tab, and magically, it completes. So we are complete inside the registration, but what's awesome is whenever we come back out here to the registrations tab into the main table, we come and find James right here, and he is now marked as green.
+
+So then you will kinda work through each yellow to try to figure out what needs to be completed for each registration. Now, let's talk about Bulk Action because Bulk Action may actually help you get these yellows turned to green. And And here's what I mean. We're gonna start over here on the Actions button.
+
+And in the dropdown, I want to focus on all of our email options that we have. Now first, we have the option to to send a general email. This will go to every registration contact. Now side note, you may have less registration contacts than you do attendees because some people may register multiple people.
+
+So that registration may have four people on it, but only one registration contact. Alright? So just be prepared for that. If you select this email, you are gonna see less.
+
+So you've got forty one registrations that will be emailed and only forty four attendees. That's just because multiple people signed up on the same registration.
+
+Now the other bulk email options you have are really cool because they take actions without you having to. And this is what I mean. We have the incomplete attendee information reminder, which means they some of their attendee information isn't filled out. Balance due reminder is anyone who still owes a balance.
+
+And then incomplete external form is anyone who hasn't filled out those forms. So what the system does automatically for you when you select this is it takes that all your attendees, which are forty four attendees right now, and you have the option to only send it to the people who have not paid. So it just throws all the people who have paid out of there and it's an easy book action for you. Now within this balance due, you have a few different ways you can send this or who you can send this to depending on who you've already sent it to.
+
+So read those instructions carefully if you choose to send that out. Now one other book action I wanna talk to you about and one of my favorite features that I use a lot is our filtering. So if you select the add table filter here, you will see all of these options will be specific to what you have collected in this sign up.
+
+Example is if you're not collecting a balance, this is a free event, the balance option won't show up. So this is gonna be different every event depending on what you are collecting. In this case, I actually need to look into our financial assistance question that we asked to see who asked for financial assistance so that we can get that financial assistant form to them so we can get all of that handled. So I'm gonna select question, then I'm gonna select the question that I asked, which is the financial. I'm gonna include all and then hit yes. So now once I add this filter, it's gonna take my forty four attendees down to only the five people who selected yes to this question. Then from here, I can go back to my actions and send a general email where the option will give me email all registrations or only the ones matching the current filter, which then allows me to email just those five people that matched my filter.
+
+---
+
+## Apply Payments and Update Info for an Attendee (3:41)
+
+Let's take a look at how you as an admin can apply a payment to a registration on the admin side of your sign up and how you can just see if a registration is complete or has any missing information. So to start with this, we're just gonna look at the registrations page of your sign up. Now from here, the first thing I wanna draw your attention to are these colored tabs on the left hand side. Now if a registration is complete, you'll see it has a little green tag here.
+
+And if we kind of glance at the overall details for this registration, we'll see that the balance has been paid, and there's no missing questions, profile information, or forms. Now if a balance is due for a registration, we'll see that right here. And then if there's any profile information or forms that are missing, you'll see that indicated by a yellow dot. And then we'll also see that yellow tag over here that just indicates that something is needed for these registrations.
+
+So if we click on this registration that has a balance due, we'll be able to see that there's a balance due of a hundred and fifty dollars. There was a seventy dollar payment that's already been made. We can expand those payment details by clicking here and see that this was an online payment that has already been applied to this registration.
+
+Now the registration contact here, Nicole, she actually dropped off a cash payment to the church lobby. So let's go ahead and click here, and I'll walk you through how to apply that payment. So for this, we're gonna select the payment method. This was a cash payment.
+
+And, again, that payment was a hundred dollars. If I wanted to include a note with this payment, I could add that here. They don't really need a receipt since we kinda talked about that payment already in person. So I'm gonna click this button and get that payment submitted.
+
+And then if we expand these details again, we'll see that cash payment was applied. So now the balance due here is only fifty dollars.
+
+Now if we scroll down, we'll just take a quick glance at the attendee information. So from here, we can see that Isaiah's registration is incomplete. There's that tag right here. And if we do a click a quick glance, we'll see that it's because the activity release is missing. So that's indicated by this yellow dot right here. So once that activity release is filled out, his registration will be complete. And then if we do another scroll, we'll see that Nicole's her registration is complete indicated by that green tag.
+
+Now while you're looking at an individual registration, that's one place that you can see the payment information. But if you click over here to the payments tab, this is also where you can see just an overview of all the payments that have been made towards your event. It's gonna show you the name of the person that made that payment, the amount. If it's an online payment, that payment is gonna be processed by Stripe, which is our payment processor. Processor. They do charge a payment processing fee for each online payment, and so the fee information is gonna be included here. You'll be able to see the payment method, the date and time for those payments.
+
+And then if you click on a specific payment, it's gonna kind of have those that recap of those details again right here. But if you're an admin that also has access to your Stripe account, you can click this view on Stripe dashboard button. And that's gonna take you over into Stripe where you can see additional details about the payment that Stripe processed on your behalf. And there you go. That's kind of an overview of payments, how to apply payments to a registration, and how to keep up to date on any incomplete registrations.
+
+---
+
+## Add Attendees to Assignments (3:13)
+
+Okay. So now that we have our assignments created, I'm gonna walk you through how to get your attendees assigned to those assignments. Now to do this, there are two different ways. You can manually assign an attendee or you can use our auto assign feature.
+
+I'm gonna walk you through how to do both of those processes, but let's start with the manual process. So to get started, I always like to start from the unassigned tab on the assignments page. And this is just gonna show me a list of all of my registered attendees that have yet to be placed in an assignment area. So to manually assign somebody, you just click right here in the area column, and that's gonna show a drop down menu of all the different assignment areas that I have to choose from.
+
+Now when I set up my assignment areas, I added restrictions on each of them just to help guide me through the process of getting attendees assigned to those areas. And right now, all of my cabins are restricted to attendees that are registered as a high school camper. Now because David is registered as a camp counselor, I'm seeing here that he does not meet the restrictions for these areas. So that is just a good note that can help you that can help guide you through the process of getting your attendees assigned to these areas.
+
+But I still wanna place David into a boys cabin. So I'm gonna click on voice cabin number two. I'm gonna click to save that. And then I'm gonna see here that this action does override the area restrictions that have been set up.
+
+But this is exactly what I wanna do, so I'm gonna click this green yes button.
+
+And we'll see that that action got David manually assigned to Voice Cabin number two.
+
+Now if we come back to this unassigned page, I'm gonna show you now how to auto assign your attendees.
+
+So we can click right here for the auto assign feature. And something to know about auto assign is the restrictions that were set up on the assignment areas is what the auto assign feature is using to know which attendees to place in which areas. And there are two different ways that I can approach this. The first one is the waterfall approach, and that's just gonna fill each area to capacity before using the next. So girls cabin number one would be filled before adding attendees to girls cabin number two. And the same thing would happen with our boys cabins. The other approach is just the balanced approach where all areas are balanced evenly, so attendees are just distributed evenly across those areas.
+
+And that's what we're gonna go with today. So I'm gonna click here for balanced and see that just with a click of a button, all of my attendees that met the area restrictions were placed into those different areas.
+
+We come back to the unassigned tab. I'll see that I still have my three camp counselors left, and these attendees will need to be manually assigned since they don't meet those area restrictions. But the auto assign feature is a really great way to use those area restrictions that you set up to quickly get your attendees assigned to the areas.
+
+---
+
+## Promote People from a Waitlist (1:45)
+
+Let's talk about promoting someone that is currently on your waitlist into an or active registration. Now from the registrations tab, you can go down to the waitlist tab and see a list of everyone who's sitting on a waitlist. Now the only way that you have the option to then promote off of a wait list is if someone cancels their registration or if an admin enables more capacity. So let's go through enabling more capacity because Ellie's our only middle schooler on the wait list, and we really wanna make room for them. So go to configurations tab and then to your selection type tab.
+
+Then select the edit capacity button here, and then we see that We have, for the middle school, we have that eighteen. We can bump it up to nineteen and then select save.
+
+And now we can go back to the registrations tab, the waitlist tab, select that registration.
+
+Now inside the registration, under the attendee box, you're gonna see a grayed out section for the waitlist. Check the box next to Ellie's name, and then select promote.
+
+Now once you promote, Ellie was then moved off of the wait list and back into the active registrations. So now you should find Ellie listed on the registrations tab under the active tab right there at the top, and now we have no one on our wait list.
+
+---
+
+## Register for a Signup on Church Center (4:47)
+
+Let's register for a sign up on Church Center. Now we'll start here on the home page of the Church Center app, and then we'll click on the sign ups button in that bottom navigation bar. And then from here, we're gonna scroll until we find the event that we're looking for. So I'm looking for the youth summer camp, is right here.
+
+So we'll click right on it. And then on this page of the sign up, I can see all the details that I will need to know before I begin the registration. So I can see the dates and times, the location, and then any details that I would wanna read through as well as the different selection types that are available for registration and the price for each of those selection types. So we'll get started by clicking to register.
+
+And then for this registration, I am logged in to Church Center under Nicole's profile. And the first step is to add the selection types to the registration. So I have a high school student that I wanna register, so I'll add one selection type for high school student.
+
+And then I also wanna register as a counselor. So we'll include those and scroll down a bit. And then because I'm logged in as Nicole, I'm gonna see that profile listed as the registration contact. So this is the contact for this registration for this event.
+
+And then we'll go ahead and click next to go to the attendee section. Now here's where we'll add an attendee for each selection type. So we'll choose Isaiah. And what we can see here is that the high school student selection type is restricted to attendees that are between ninth and twelfth grade.
+
+So Isaiah is actually the only person in this household that meets those restrictions, which is perfect. So we'll click on Isaiah's name.
+
+And then we'll see that for the high school student selection type, gender, last grade, and emergency contact are required. And because that profile information already exists for Isaiah, that's gonna be prepopulated here.
+
+Now we'll scroll down to pick the attendee for the counselor selection type. And I'm gonna go ahead and choose Nicole to get her registered as a counselor. Now we'll see again that she had some profile information that was already existing for her, so that was automatically filled in for the profile information that was required to collect for the counselor selection type.
+
+Now that all of those fields have been filled out, we can move on to the next section where we'll add some additional attendee information.
+
+So it looks like for Isaiah, there are two add ons that we can include. And while he doesn't wanna do paintball, he definitely wants a t shirt. So we'll click on t shirt, and then we'll add a size. And I can see here that there's, like, extra ten dollar cost for the t shirt.
+
+And then if Isaiah had anybody he wanted to cabin with, I can include that here with this attendee question.
+
+And then for Nicole, she also wants a T shirt. So we'll click that and select a size, and then we'll go ahead and move on to the next section.
+
+Now this section is the registration question. So this is questions that are just kind of asked on behalf of the whole registration. And this question is asking if we would like more information on financial assistance, and I think we're good for now.
+
+So we'll go to the last section, which is where we review and pay. This is where we'll see kind of the overview of what was added. So we have those two selection types, one for the high school student and the counselor, the T shirt add on that was included. And it looks like there was also an early bird discount that was applied automatically to this registration, which is amazing. And then we'll see our payment options down here.
+
+So because Nicole's profile has a saved credit card, that's gonna show here as a payment method that can be used to pay for this registration. I could also add a new card to save to the profile for this registration. And if Nicole had any saved bank accounts to her profile, that would show as a payment option here as well.
+
+So I am gonna use the save payment method, but I'm just gonna go ahead and pay the minimum deposit for now. And we'll go ahead and click to register and pay.
+
+And once that processes, we'll see that we are landing here on the confirmation page. So this is where I will see an overview of the information that was submitted for this registration and a few extra items that we have left to include.
+
+So it looks like for Isaiah, we have an activity release that needs to be included. So I can click to view here to finish that form. And then this is the page that I can also come to to make any outstanding payments. I do have a balance due of a hundred and fifty dollars. So when I'm ready to make that payment again, I can come back to this page and click to make a payment. And there you go. That's how you can register for a sign up on Church Center.
+
+---
+
+## Promoting Grades (4:14)
+
+What's up everybody? Aimee here with Planning Center and we are talking about grade promotion.
+
+If you go to the profile of any kiddo in your account, let's actually do this, here we go, you will see a school field with a grade listed next to it or the ability to add a grade in this space. You will not see this on adult profiles. It is only on children's profiles, but you do have the option to add a grade. And this has a trickle down effect in a couple places in Planning Center.
+
+For example, your check ins locations. You can filter check ins locations by grade so that kids are automatically sorted into the right locations. Or in registrations, you can set your sign ups to where kids are automatically routed to the correct sign up based on the grade they're in. So there's a couple places this kind of comes into play, and usually one time a year you are looking to promote kids from one grade to the next as it works with the school system.
+
+So eventually we want all the sixth graders to move into seventh grade, and I'm going to show you how to do that. So I'm gonna go to the people tab in planning center people, and we're gonna go to the settings cog, and there's an option here to promote grades. Now first thing in this modal, it tells you what it's gonna do.
+
+So first and foremost, it's going to move everybody's grade up by one on the click of a button. So all the sixth graders are going to move into seventh grade and so on with all of the grades in your database, Pre K through twelve. Now, there is one exception to this. You have the option not promote pre k and that is typically because some of our churches use pre k for a wider range of kiddos, like maybe it's three and four year olds and you don't want all of them moving into kindergarten.
+
+You really only want the four year olds moving into kindergarten. So you do have the option to not promote pre k into kindergarten if that's how your church is using that field, and then you can manually move the kids you need to move either at the check-in station next Sunday or if you want some options on how to do this in bulk, you can use bulk actions with lists to find all your four year olds and move them into kindergarten in one step. If you have questions about that, out to support by using this question mark in the top right hand corner and just say, Hey, I need to do a bulk action to move all my pre Kers into kindergarten.
+
+We can absolutely walk you through that if you're not familiar with that process.
+
+But that is what that option is about.
+
+And the last thing I want to point out here is this recent promotions button. If you see this, it's kind of a red flag because it means someone has promoted recently in your database and you definitely want to take a look at this. This is an action that should be done one time a year by one person because we don't want to be moving kids two grades in the same year obviously. So if I click right here on this button you are going to see a couple recent promotions.
+
+Now this is a test account so hopefully you wouldn't normally see two. But I can definitely see I have promoted recently and maybe I don't want to promote again if I see this. But the reason I bring you in here to show you this is just to show you you can also undo promotions. So even if there is an accident and you promote twice, that's okay.
+
+You can undo that promotion with the click of a button within fourteen days of doing it. So no stress if you do accidentally promote twice, just pop in here and undo that promotion.
+
+But let's head back to this modal. Let's say we do want to go ahead and promote. I can just say, yes, promote grades. It's going to let me know it's off and doing its thing.
+
+And then we are set to go. Now, one other thing I want to show you about promoting grades is that we do also have a school feature in the customized field setting. With the school feature, I can set schools and I can choose what grades go with which of my schools. So this middle school is for sixth through eighth grade and so another thing that the grade promotion modal does is when someone enters the sixth grade they will be moved to the appropriate school that goes with that grade range based on the settings you have here in this custom field setting.
+
+So that's great promotion in a nutshell. As always, you can hit this question mark to search our documentation if you have any questions. You can also reach out to support by opening a ticket right here. We'd be happy to help you.
+
+---
+
+
+# Check-Ins
+
+## Check-Ins Overview (1:11)
+
+Hi. I'm Emily, and your sixty second intro to Planning Center check ins starts right now. Check ins is all about welcoming people to your church. So everyone can get to the right place quickly and safely.
+
+The place where you're watching this video is what we call the admin side of check ins. This is where all the behind the scenes work happens where you set up your times, locations, name labels, and everything else. When people arrive at your church, their first stop is a station where they can get checked in. Each kid gets a label and the adult who's with them gets a security code for picking them up.
+
+Now, let's talk big picture for a second. Check it is just one part of the planning center yours. Just like you can use check ins to welcome people quickly and safely, we've got a range of products designed for the different areas of ministry in your church. And when you get those products working together, all sorts of things are possible.
+
+But let's not get too far ahead of ourselves. For now, come on in, take a look around and make yourself at home. As you explore, if you ever have any questions, click the question mark in the top right hand corner of the screen. From there, you could check out our help docs or get in touch with our support team.
+
+We're so glad you're here and we can't wait to see what you do at the place.
+
+---
+
+## Setting Up an Event - Where to Start (8:48)
+
+Hey. Today, we're gonna talk about creating your first check ins event. And if you're wondering what an event is, usually, it's your Sunday morning services, Wednesday night services, or even a one off event like if your church hosts an Easter icon or something similar. So let's walk through the process of creating an event together. We're gonna click on the add event button here on the events tab in check ins, and then we're gonna follow each step of the event creation wizard. We're gonna call it test event.
+
+And we're leave the frequency set to weekly. Weekly is probably the most common frequency used. You know, it's best with your Sunday services.
+
+Anything that recurs weekly, you're gonna wanna use that frequency. Daily is great for things like VBS or if you have a week long conference where it will automatically create new sessions every day. And then none is helpful if you've got an event that doesn't necessarily follow a set schedule recurring. You know, if it's a monthly event or if it's every other week, the none frequency allows you to manually start sessions instead of having them automatically be created.
+
+It's useful and helps keep your attendance data accurate. So we're gonna check weekly and leave it there. We're gonna ignore the campus field for now. But if you're a multi campus church, you can assign check ins events to different campuses.
+
+This integration section, we're gonna cover more in-depth in other videos, but just a quick overview. Church center, it'll display your event on church center to enable the pre check feature.
+
+Services allows you to, quickly check-in your scheduled volunteers at stations, and then the registrations integration is useful, for things like VBS or where you want people to sign up if there's a fee and then track the attendance in check ins. So now we're gonna click this next add times button and add our service time. So the first one, we're gonna go with a nine AM service, and you'll notice that these two times automatically update.
+
+So this is set to show this event is set to show at seven AM, two hours prior to your start time so people will be able to check-in at seven AM. You can adjust that if you'd like to. Generally, we we recommend at least a half hour to forty five minutes before the start of your service. Just so you you've got a lot of those people that like to come early so they can get checked in. Good for staff kids, pastors kids as well. So I'm gonna add a second time, and we're just gonna leave this one as is. But I do wanna adjust the second time, and we're just gonna go to ten thirty.
+
+You can also select the time manually by clicking the little clock icon in the in the bar here.
+
+Alright. Now next, we're gonna add locations.
+
+So here, you've got three different options. If you have an existing event and you've got you know, you're not going to a different building or you're not doing any different sort of check ins layout or whatever, you can copy locations from another event. Or if you have multiple locations, you can select this. Or if you have no locations, if you wanna just say it's the event for your Sunday morning sanctuary and you don't need a location, you just wanna check people into this event, you can, select the I have no locations option.
+
+But I'm gonna add multiples just to show you how that process works. I wanna add one or more locations. So we're gonna create this event, and now it automatically takes us to the locations page. So the most common location, you know, most every church has a nursery.
+
+We're gonna create this first location, and then I want it to be zero through let's go eighteen months. I feel like that's pretty common.
+
+And then that's pretty much it. You can go through all of these settings, and they'll be gone over in more detail in another video. But these are the basic filter settings that you can use, to ensure that only babies and nursery age, children can check-in.
+
+Alright. Now we're going to click back on this labels and locations tab and you'll see that we've got our nursery location. Well, I'm going to add another location and I'm just going to call it children's church.
+
+For children's church, I want this to be grades.
+
+We'll go kindergarten through fourth.
+
+And again, same layout for this, just different between grade and age filters. Once a child has a grade filter on their profile excuse me, a grade listed on their profile, check ins will automatically default to using the grade level instead of their birth date for the filter. So that's one important thing to keep in mind.
+
+Alright. Other things of note, just real quick overview. This is the page where you can see attendance at a glance, the overview page. Check ins page is gonna show you everybody that is checked into your event, and you can set different filter options to show only your regulars or your guests or your volunteers. You can filter to different locations.
+
+You can also select different service times. Also, it's helpful if you're checking kids out. Say it's the end of EBS and it's a late night and you only wanna see those kids that weren't checked out. You can filter to show not checked out or checked out.
+
+Either way, it is a useful feature, just making sure that you've got an accurate record of who's checked in and who's not checked in. Alright. For the reports page, these will be covered in detail in another video, but there are two different types of reports. There's your basic and then there's a headcount report that is a numbers only attendance report.
+
+You've got your times where you can edit and add times.
+
+Labels and locations, you've already seen this page. You can edit and add locations. You can also come in here and add and edit labels.
+
+This is the settings page, which is automatically open when you go to edit your labels. Now this has you can change the frequency if you'd like to. You can go back and assign a campus again. Pre select the pre select feature is on a check-in station. If someone has checked in, prior or if they're new, the system will automatically put a check mark next to their name and and try to place them in the location for which they meet the filter requirements.
+
+You can disable that. Some folks don't like it. Some people enjoy it, and we've given you the option to turn it on or off. And then we've got the same integrations, the church center app, services integration down here. And then this is head counts. So you can choose to hide or show events in the head counts app. Head counts app is an app that allows you to keep numbers attendance.
+
+So it's useful for things like if you've got ushers that are welcoming people into the sanctuary for a service or an event, they can have the app open and just simply tap. There's a plus and a minus sign, and it allows them to track that attendance automatically.
+
+Allow one time visitor. This is a a we call it the label only option because if you want to check someone in to your check ins event but you don't want to save their information in your database, this option allows you to check them in on a station but print a name label for them for that day.
+
+Background checks. This is useful. Require background checks for all locations. It's very common for most churches to require background checks for anybody that volunteers in a kid's area. And finally, this announcement location.
+
+So an announcement will show for every check-in on all station types. So what happens is if someone goes to check-in, they'll see a little text box that pops up before they can check-in that will have any information. So it's useful for, hey. You know, double check with us at the front desk to make sure that all of your information is up to date. Or, hey. Today is water day. Just so you're aware, you know, this we do that at our VBS, specifically Wednesday every VBS where kids gotta show up with swimsuits.
+
+And that's a useful feature to have the announcement just so parents are aware of what's going on.
+
+Finally, we've got the head counts.
+
+This is where you can see these so these standard head counts, you see this locked icon. That means they cannot be customized or disabled. But let's just walk through creating a custom head count quick.
+
+We're gonna go sanctuary Then green is the best. And so now you'll see that you can enter numbers using the toggles here or manually, and then it saves the total automatically.
+
+That's a quick overview of how to create your event and the basic features of each event. I hope this video was helpful. And if you have any questions, please reach out to support and click the question mark here in the upper right hand corner of any of our products and open a support ticket with us, and we'll respond within one business hour. Thanks.
+
+---
+
+## Setting Up an Event - Location Filters and Labels (6:04)
+
+In this video today, we're gonna walk through the filters page for your labels and locations. At the top, you'll notice just some basic features like no age or grade filter. This is, you know, useful if you want a location that's available to everybody in your church such as the worship center or sanctuary.
+
+Grades, very self explanatory. We've got pre k through twelve in planning center currently, and you can filter using those grades for anybody with a grade level on their profile.
+
+Ages is next. This is, you know, again, you filter by age, relies on having an accurate and up to date birth date on each child's profile or adult, whoever you choose to check-in. But for this one, we're just gonna go zero through eighteen months because that's a pretty common thing for nursery because once they get start getting a little bit older, you get people running around and and probably time to graduate from the nursery. This show advanced options here.
+
+This adds a little bit of complexity to the filtering process, but it does allow for you to say your local school district has a set promoting schedule that you want every child of a certain age to promote at the same time regardless of when their birthday falls. So this is helpful in that case. If you want more in-depth information on how advanced age filters work, just click on this question markup here and search for filtering, and that's gonna show you this filtering people into locations article that you can see a great walk through there. To continue, we're just gonna hide this.
+
+You know, we've got the adult child.
+
+You can say adults only. You know, it's useful if you're checking people into, a Sunday school class and all your classes are adults only. Children only, useful again if you if you only want children checking into specific location. Gender filter, you know, you've got options there, self explanatory. And then volunteers only. Volunteers only is useful if, you know, if you've got a a maybe a one time event where you've got a bunch of different positions everybody knows where they're serving, but you don't necessarily wanna list out all of those locations in your event. Volunteers only, you can have one location and then only allow volunteers to check-in there.
+
+This next this next section really is is more of like its ratios. So in this case, require at least two volunteers prior to anybody being allowed to check into this specific location. You know, especially for nursery where there's young kids, children's church, this is useful where the requirement to have people in the room before kiddos can check-in is very helpful.
+
+Then capacity, you can set a limit. You know, if we only want fifteen babies in the nursery, then, you know, this location's limited to fifteen only. And then the ratio limited to, let's say, ten attendees for every one volunteer. So, you in this case with a capacity that wouldn't make much sense, but the ratio, it's it's nice to have that if you've got things that you have to meet for your fire code or any other restrictions that you want in place or for that specific location.
+
+For your background checks, background checks are totally handled in people. Again, if you come here and you just search for background, You're gonna see this this article background checks for volunteers that'll walk you through how to get that set up. But for this video, you can set this location to require background checks for volunteers. We do recommend this for check ins events, especially any volunteers that are gonna be serving with children. But this this will make it so that anybody with a background check that is approved can check into this location and prevent the opposite. Anybody with a background check that's not approved will not be able to check-in.
+
+Alright. Off to this label section. As you can see, we've already got an event tier label. And what I mean by that in the hierarchy, just a brief explanation is you've got event folders and locations. Anything you add to the event tier is gonna carry on to every single location. But if you wanna add a specific label to this location only, you can click on add a location and then you can choose to do you want it to print for regular guests or volunteers? In this case, you know, we want a custom volunteer label and we're gonna choose whatever whatever your name is of your custom label, and then add that to this location.
+
+And then hit save. And then this this label will print for volunteers whenever they check-in to this location along with the custom label selected here. So just keep that in mind when you're configuring your labels. If you only want certain labels to print for certain locations, it's probably best to remove the label from the event here and then configure each locations labels individually.
+
+This feature is one of my favorite features on this page, but it's location options. And what this does is it allows you to add things like, you know what, if a if a child is coming to the nursery, they probably have a diaper bag. And you know what, I also wanna make sure that I'm tracking the the diaper bag correctly so that it goes with this the correct child. So you wanna print a label as well.
+
+So this case, we're gonna name this option diaper bag and we wanna print a default label. What that does is when a child is checked in by their parent, it offers them the option to select this optional label to print out and then the station will remember that for each check-in going forward until the child ages out of that location. Very helpful for things like diaper bags, accessories, anything that where they wanna track additional information like, can this child have a snack? You know, some child children have allergies, which that information should already be tracked on their name label, but this is helpful if there are, you know, more serious allergies or any specific instructions that you wanna give parents the option of, you know, having that secondary label so it's noticeable that their child needs maybe a little bit different attention for whatever reason.
+
+But as always, if you've got any questions, you can go up here and you can search all of our documentation. You can also open a ticket, and and we try to get back to you within one business hour. Thanks.
+
+---
+
+## Setting Up an Event - Locations and Folders (7:46)
+
+Now let's talk about labels and locations. So I am here in my event, and I am on the labels and locations tab. And there's a lot of different things that are happening right now, so let's just go ahead and break down what we're seeing. Right over here in this upper right hand corner, you can see two buttons, a new folder button and a new location button. So locations.
+
+Location is the actual physical place that these kiddos are gonna be checking in at. So this could be, you know, the actual, like, name of the room. You see some examples here. We've got nursery.
+
+We've got the orange room, or the actual room number, room one forty six. It's going to print out on their name lab label. So eat whatever you call it, just make sure it's a place where you can sort of easily identify, hey. This is this is where this kid belongs.
+
+And then we also see, that we've got some folders here. So there's lots of different reasons that you might want to use a folder in your system here. You can lock a station to a folder, but also kind of within the folder itself, there's some really, really neat settings that can help you organize your locations, add an extra layer of how you wanna distribute your kiddos to these locations, which we'll get to in a second, give you some flexibility for where you add labels. And so we see we see churches using this folder option, especially if they've got, like, a handful of locations and some of which they kinda wanna, like, group together and treat similarly and some that might be treated a little differently. So folders are a really, really great tool to use.
+
+So let's go ahead and actually let's click into one. We're gonna click into this pre k folder, but I just wanted you to notice that in this folder, we have two different locations, but both of them with the same age filters.
+
+And the reason that I'm using this as an example is because one of the best features that we have aside from age filters within the location itself, for helping your kids get, to the right location is this distribution feature that's only available in the folders.
+
+So there are three different ways that you can distribute kiddos to your different locations. So let's in this example, let's say that you've got two different pre k rooms for three and four year olds, and you've got a couple of different ways that you can get them distributed. Now the waterfall would be an example of, like, room a has a set capacity. And once it reaches that set capacity, then check ins is gonna go like, okay, room a is full. Let's open up room b and start checking in kiddos into room b. So waterfall is kinda like, like if this was an overflow room, waterfall, overflow.
+
+You get it. So, the other option with this scenario is let's say that you've got I've got pre k room a and room b, and they're both open, and I want kids to go to both, and I want it to be pretty much even. I want it to be balanced between the two classrooms.
+
+So you can you can do that as well. And another really neat thing that you can do in that scenario is if you select this always default to the last checked in location, then you've created the scenario where you've got, you know, Johnny checked in to room a on his first week, and then next week when he comes, doesn't matter where he's where he is on the list or what time he checked in, he's gonna continue to be recommended to that room a, and it becomes kind of almost like a classroom setting. So, that's a great kinda combination to use if you've got these two different classrooms, but you want the same kids to go to the same room week after week, and that's used, like, you know, they can connect and have some consistency, and so it's ideal for that.
+
+Something that is noteworthy if you do that combination, though, is that you're not gonna see those perfectly balanced numbers week by week if kiddos are going to their last checked in location, because, you know, sometimes there's vacations or sickness, but as new kids are coming into these rooms, check ins will do its best to keep it as even as possible.
+
+Alright. Well, so for this third one, we're actually gonna go to a different folder, and we're gonna look at the milestone distribution setting, which is super cool. So milestone is ideal for those early childhood locations where they're not necessarily moving up because of their birth date, because of their age, but ideally, they would be moving up based on their development.
+
+So where the last, folder had, like, the same age filters, what you're gonna see in a milestone distribution setting is overlapping age filters. So you see right here, we've got nursery and the orange room. So nursery, you got zero to thirteen months, but the orange room will take six months to sixteen months. So the way this milestone would work is that once that nursery kiddo hits the six month age mark, their parents are going to be prompted to say, hey.
+
+Have they hit this milestone yet? Are they crawling yet? And as soon as they are, the parents indicate that, and then they'll start to get recommended to that next location up and and so on. So this is just an example of how you could set it up, but there's lots of different milestones, lots of different ways that you might wanna organize your kids based on those milestones.
+
+So this distribution type gives you lots of options and lots of flexibility.
+
+So I'm telling you, distribution types, it's amazing.
+
+Alright. We're actually gonna switch gears now, and we're gonna look at what's going on over here because we've got some really neat little colorful icons.
+
+And this is where you're gonna see label information in the folders.
+
+So we've got these three icons here. The green label represents name labels. The blue label, will represent security labels. And this kind of reddish orange color is where you're gonna see that you've got birthday labels.
+
+We don't have time to go into that. You'll see more about that in a different video. But birthday labels are a great addition to your events. You do that in the custom labels.
+
+We've got a little template for you with our Pico, our robot mascot, and he's got balloons. And they'll print out for kiddos if their birthday is three days before or three days after the your event, and, it's it's super fun. Kids love it. But you can see these icons kinda represent these are the these are the labels that we've attached to this folder, And anytime anyone checks in, they're gonna get one of those labels.
+
+So they're gonna get all of those labels, actually. So let's back out for a second, and we're gonna see the icons popping over here as well. So you can see this is the folder. This is where those labels are added.
+
+And they are they are inherited. All of the locations within this folder have inherited those labels as well. So there's like a trickle down here. So you can see all of them.
+
+Now these two locations have an extra label. So while you can add them to the folder, you can also add a location label just specific for this location. So you can see here the nursery and the orange room, we added this extra name label that is specific for diaper bags because that is a natural and normal thing that happens at this age group is that parents will come in and bring diaper bags. So that's added on the location because not every single location here in this folder needs them. Just we just think those two need them, so you can add them right there. So you can see between folders and locations and labels, you have all this flexibility to make sure that your event is tailor made for your needs.
+
+---
+
+## Setting Up an Event - Times (4:25)
+
+It's time to talk about times. So I'm here on the times tab of my Sunday morning event, and let's just kinda look around and see what's going on over here. The main thing you're gonna notice is that I've got my two service times set up right here, eight thirty and ten AM.
+
+And then as you kinda pop over here onto the right side of these rectangles, you're gonna see some more time, some more information here. A show at time, the event time, and then a hide at time. So, you know, whenever you have an event, if it starts at eight thirty, you don't want that to be, like, the first time that people can start checking in. You want people to be able to come early, get checked in, get where they need to be. You might even wanna be able to check-in volunteers or do a couple of tests early.
+
+So that show at time is meant to be like, hey. This is when the event is gonna be live, and people can start checking in.
+
+Now the hide at time is going to be considered, like, what is the last time that you think someone would be checking out of this event? And something that's really noteworthy, if you have more than one service time in an event, kinda think about the show at and the hide at times as, like, they work for both times together. You can't hide one time from another time. It's like all for one and one for all when it comes to times in the show at and hide at time. So at seven thirty AM, someone could check-in at eight thirty or for the eight thirty event or for the ten o'clock event.
+
+Now this is ideal for situations where maybe you have volunteers who come and they're serving at one of these times and they're attending another time and they wanna check-in their kids for both services right at the same time. This enables you to do that. So it's actually a really, really neat feature. Alright.
+
+So those are the show at and the hide at times. Those are your event times. Let's say that it's like Easter or Christmas, and you're like, hey. We need to add a third service.
+
+Adding a new time to your event is simple. The one thing that you wanna note is that you wanna make sure that you wait until the session is created for the Sunday that you want that extra time. So, like, right now, I couldn't create an extra Christmas service time because that's weeks and weeks and weeks away. But the week before you wanna add the new service time, again, check the session, make sure you're in the correct session, and then you come over here to the blue button, new time.
+
+And let's say that we are just we're gonna do an eleven thirty. So choose that in the drop down. Make sure you've got the right date and all that stuff. Press save, and there you go.
+
+You've got a new time. So it's right there hanging out. Now one other little kind of pro tip is the next time a new session is created, it's gonna have all three of these times. So kinda like reverse engineer that when you're like, well, we're just going back to the eight thirty and the ten o'clock, for the next week.
+
+So come back to the next session that's empty, and then you can delete the time by going, boop, boop, boop, delete.
+
+The other thing that I want you to see here that's like another really neat feature is the ability to exclude certain locations from certain times. Now this is gonna come in really handy. Let's say that like at your eight thirty, you've got tons of little kids, but you don't offer middle school or high school, and you don't want a new family coming to the station and checking at eight thirty and checking into a location where there's no programming. So you can exclude locations.
+
+So we're gonna click into the eight thirty, and we're gonna click on the excluded locations tab. And so I'm gonna add our youth locations to the excluded locations. So that means that anytime anyone comes to check-in at the eight thirty, now they're not gonna see those as options for check ins. I'm gonna press save.
+
+And then let's say at the ten o'clock, maybe you don't offer as many of those early childhood locations as you do for the eight thirty. So we can kind of pop up here and say, hey, we we don't have the rabbits class for that one, and and we don't have the pre k class. We just kind of distribute the kids with those two location those groups of locations right there.
+
+And now you've been able to kind of curate a list that is appropriate for each service time in terms of what you're offering. So it adds just a little bit of extra flexibility that makes times work for whatever your situation is. So I hope that helps.
+
+---
+
+## Reports (2:42)
+
+Hey. Today, we're gonna talk about the event chart. To get to the event chart, you just click the events tab at the top, and it'll open this page by default. This is very useful to get, like, a good overview of attendance for your events, where people are checking in, what times they're checking into.
+
+There's a lot of information available. But to start seeing data on the event, you've gotta check at least one event box here. And then you'll see that I've got a custom date range set right now, so it's not gonna show any data until let's go you know what? We're gonna do the last two years, and we'll wait for that data to populate.
+
+And you can see that we've got this attendance marked here. And right now, it's set to a specific mode where it's gonna show what type of check ins they are. So for this one, we've got eight hundred and fifty two regulars, and then this looks to be a head count with the label auditorium just over seven thousand. But to change what you see here, you can click on this little options, and this this button here is only available when one event is selected.
+
+So click on options, and then you'll see all this additional information. So you've got check ins locations, and then you've got times, and then you've got the kind. So say we just wanted to see the head count for this. You know what?
+
+We're gonna just we're gonna clear all of that. And then for head counts, we can see there that we've got these three options. You can deselect, You know, you can just change it around. And as you as I'm changing these options, you see it update in real time to show different information.
+
+Very helpful if you need, like, specific information for a week or for, you know, over the last couple of years, whatever the case.
+
+That's it's a very useful intuitive tool that's available right on the the front page of check ins. But then you'll see as soon as I select a second event, that those options go away, and then it's just it's just attendance that you'll see there. And it combines them. You'll they'll they'll be different colors based on what event they are.
+
+And if you hover over, you can see. So this color matches the Sunday services checkbox as well. So there is that correlation there to help you keep them separate. And also, this this data that's gathered here, you can also export it as a CSV file.
+
+I hope this helps. This is a great tool to utilize. It's got a lot of useful information.
+
+But if you have any questions or any trouble with it, you can always feel free to reach out to us by clicking the question mark in the upper right hand corner here and sending us an email, or you can email us directly at support at planning center dot com.
+
+---
+
+## Creating Custom Labels (3:16)
+
+Hey. Today, I wanna talk about the labels tab and check ins. So let's click on labels in the top navigation here, and this is gonna bring up a page that shows you every label that is currently within your account. You'll notice these first two here, they have little lock icons in the upper right hand corner.
+
+Those are the default name and security labels. Those cannot be deleted or edited, and those come preloaded into your account. You'll also notice that you've got a list of what events this label set to print for, and then also an indication of what label type it is in the lower right hand corner. So for this one, this avatar indicates that it is a name label.
+
+And then for this one, the blue barcode is for security labels, and then this one is a birthday label. We'll take a look at those in a minute. But first, I wanna show you how if you wanna customize your label or create a custom label, you click on this add label option here. And for today, let's just call it check ins label.
+
+And now you can start with a blank slate or you can use one of our default templates. So for today, I'm gonna use this default template so you can see what that looks like. Create Create the label, and then we've got all of the prepopulated fields and which is great. But if, say, if you wanted to add you know, I wanna see what grade a child is in.
+
+You would to customize that, you just click and drag. So you highlight this area, and then what that does is it shows all of the different fields that you can add to your label. I would encourage you to get in and and play with the label editor. You can't hurt anything.
+
+You can create as many labels as you'd like to. It is a really great and powerful tool. But for today, let's stick with the grade level. Gonna click on person details, and then from this drop down at the top, gonna click grade, and now you can see that we've got grade there.
+
+That's, real quick and easy, and you can move the label all around any way that you'd like to. If you'd like to have a little bit more precise movements and placement, you can uncheck this snap to grid box, and you can get real into the nitty gritty with how you place this. You can also eliminate the grid, make things a little bit easier to see where they are, a little less noisy. But personally, I like to have both of that on because it is a little easier to kinda get things placed when you have that snap in line.
+
+You can also, you know, change the size of the text, the truncating options here. It's got a lot of different option. It's a very powerful tool, so I encourage you to get in and test it. Alright.
+
+So let's go back to the labels page.
+
+And we're gonna look at the birthday label. It's a fun label. It's got Pico on it. It's my birthday.
+
+It prints out anytime a child checks in and their birthday is within, three days prior or three days after, so nobody gets missed, you'll they'll print out this label. Another thing that we've seen churches do is for their volunteers. Like, if they have a birthday, they'll they'll have this free birthday coffee, kind of like a voucher that prints out that they can redeem for anything. So, yeah, that's the labels creator and the page.
+
+And as always, if you've got any questions, click on this question mark in the upper right hand corner of any of our products. You can open a ticket. You can also see all of our great documentation.
+
+---
+
+## Promoting Grades (4:14)
+
+What's up everybody? Aimee here with Planning Center and we are talking about grade promotion.
+
+If you go to the profile of any kiddo in your account, let's actually do this, here we go, you will see a school field with a grade listed next to it or the ability to add a grade in this space. You will not see this on adult profiles. It is only on children's profiles, but you do have the option to add a grade. And this has a trickle down effect in a couple places in Planning Center.
+
+For example, your check ins locations. You can filter check ins locations by grade so that kids are automatically sorted into the right locations. Or in registrations, you can set your sign ups to where kids are automatically routed to the correct sign up based on the grade they're in. So there's a couple places this kind of comes into play, and usually one time a year you are looking to promote kids from one grade to the next as it works with the school system.
+
+So eventually we want all the sixth graders to move into seventh grade, and I'm going to show you how to do that. So I'm gonna go to the people tab in planning center people, and we're gonna go to the settings cog, and there's an option here to promote grades. Now first thing in this modal, it tells you what it's gonna do.
+
+So first and foremost, it's going to move everybody's grade up by one on the click of a button. So all the sixth graders are going to move into seventh grade and so on with all of the grades in your database, Pre K through twelve. Now, there is one exception to this. You have the option not promote pre k and that is typically because some of our churches use pre k for a wider range of kiddos, like maybe it's three and four year olds and you don't want all of them moving into kindergarten.
+
+You really only want the four year olds moving into kindergarten. So you do have the option to not promote pre k into kindergarten if that's how your church is using that field, and then you can manually move the kids you need to move either at the check-in station next Sunday or if you want some options on how to do this in bulk, you can use bulk actions with lists to find all your four year olds and move them into kindergarten in one step. If you have questions about that, out to support by using this question mark in the top right hand corner and just say, Hey, I need to do a bulk action to move all my pre Kers into kindergarten.
+
+We can absolutely walk you through that if you're not familiar with that process.
+
+But that is what that option is about.
+
+And the last thing I want to point out here is this recent promotions button. If you see this, it's kind of a red flag because it means someone has promoted recently in your database and you definitely want to take a look at this. This is an action that should be done one time a year by one person because we don't want to be moving kids two grades in the same year obviously. So if I click right here on this button you are going to see a couple recent promotions.
+
+Now this is a test account so hopefully you wouldn't normally see two. But I can definitely see I have promoted recently and maybe I don't want to promote again if I see this. But the reason I bring you in here to show you this is just to show you you can also undo promotions. So even if there is an accident and you promote twice, that's okay.
+
+You can undo that promotion with the click of a button within fourteen days of doing it. So no stress if you do accidentally promote twice, just pop in here and undo that promotion.
+
+But let's head back to this modal. Let's say we do want to go ahead and promote. I can just say, yes, promote grades. It's going to let me know it's off and doing its thing.
+
+And then we are set to go. Now, one other thing I want to show you about promoting grades is that we do also have a school feature in the customized field setting. With the school feature, I can set schools and I can choose what grades go with which of my schools. So this middle school is for sixth through eighth grade and so another thing that the grade promotion modal does is when someone enters the sixth grade they will be moved to the appropriate school that goes with that grade range based on the settings you have here in this custom field setting.
+
+So that's great promotion in a nutshell. As always, you can hit this question mark to search our documentation if you have any questions. You can also reach out to support by opening a ticket right here. We'd be happy to help you.
+
+---
+
+## Adding People to Check-Ins (4:27)
+
+Alright. Let's spend a little bit of time on the people page here in the check ins product. Now the first thing I wanna tell you is what this page isn't telling you. Now we have a lot of people who are brand new to our system, and they've never checked anyone in.
+
+And they'll say, hey. How do I get my people over from people to check-in so that I can check them in? And the truth is that you don't have to do that. Actually, check ins just kinda, like, reaches right into your people database to get information for check ins.
+
+So if you have nobody on this page, it doesn't mean that you can't check anyone in. This page is showing you who you have checked in or who has interacted with check ins in some way. So if that's all you need, now you know. Go ahead.
+
+Check people in even if this table is blank. But there's a lot of other cool things on this page that I wanna walk you through. So first, let's pop over here to this drop down menu.
+
+Now like I said, this list this is a list of people who have interacted in some way with check ins. And it's not you can't delete people off this list. This is kinda just like a record. Okay?
+
+But you can filter who's showing up on this table. And you can specifically filter it based on people's permissions within the check ins app. So you can say, hey. I just wanna see who my head counters are.
+
+Or if you're like, hey. I wanna see all of my editors so that I can find out, you know, if there's anyone on there who shouldn't be an editor anymore, you can go ahead and organize the list based on that. So that can be really, really helpful.
+
+The other thing I wanted to show you is over here on the right side with these three little lines, we have our columns options over here. So you have some other things that you can populate this table with. Let's say we want their email. We'd love to see the last time they checked in and how many times they've checked in.
+
+What's also really cool is that you can kinda come back to this, header part of the table and sort by that information. So if I wanted to see, you know, the last time someone checked in, or or what the most active last event was. I can sort there, and then we can kinda see all these dates or who's checked in the most. There we go.
+
+It's amazing. So that's all, you know, columns that you can add and ways that you can sort information.
+
+Now right here, search by name. If you ever have a situation where you're like, hey. I know I saw that person. I just don't know the last time they checked in.
+
+I don't know where they checked in. I don't wanna go through every session or every event. I just wanna find this person. Well, this is where you do that.
+
+So, we're gonna type in a name, and immediately this is gonna pop up. And now we can click and see, hey. When's the last time Danae checked in? And, we can access some household information.
+
+You can see their available locations, their medical notes. You can see that all right there just by searching for their names. So that is super helpful.
+
+The last thing I'm gonna show you is this button right here, the find or add person button. Now this is a pretty powerful tool. I think it's pretty awesome. Let's say that you're seeing, like you know, we've searched for people on the search by name list, but you're like, hey.
+
+I I think I wanna actually, there's some someone in my database, they're not in, check ins yet. They don't have any check ins data, but I'm just kinda curious what what they could check into, what locations are available for them. You can actually search directly into the database and then pull you know, go ahead and click on their name, and it's gonna automatically open them up. Now Dahlia doesn't have any check-in history, but you can still see a little bit of information.
+
+Like I said, her household, if she was to check-in, locations would be available for her. That's all super super helpful. The other thing you can do here is you can actually add a person to your database. So I know that my buddy Jenna, she's not in this database yet searching I've searched for her in all the other places, and now I'm gonna go ahead and select create a new person, and I've got everything I need to go ahead and add her to the whole database.
+
+So, again, super powerful tool. Lots of really neat options here on the people page, and I hope that helps.
+
+---
+
+## Self Station - Checking In (8:17)
+
+And now what we need to do is talk about what happens when people actually show up at your doors and need to check-in. So we are gonna start by jumping over to this self station right here.
+
+If you're interested in this cool, like, you know, iPad holder, this is called a bounce pad and it's really sleek and, you know, small and you can fit a lot of them in a small space, which is cool. So if you're interested in this thing, this is called a bounce pad. But this is a self station. So we have three types of stations.
+
+We have self, manned, and roster. And first, we're gonna talk about a self station. Self stations are meant to be like the congregant facing station. It's the station that people can check themselves into.
+
+And it's very secure. You can't edit anything from a self station. The amount of household data that's shown is very limited. So this is a good one to have a lot of in your lobby where people can just kinda quickly check themselves in.
+
+So I'm gonna show you what that looks like. All they need to do is walk up to the station and then type in the last four digits of their phone number. So one nine nine four, here we go. And I have pulled up my household here.
+
+Now you'll notice my two kids are already pre checked and that's because they were checked in last week. So we do our best to keep this as fast as possible, which means if we know the location that they should be checking into and we've got previous check-in data for them, we'll go ahead and preselect them for you just to make this even quicker. It's very easy to unselect them if you need to, if they're maybe not here today, but we try to remove clicks at the station as much as we can just to keep your families moving through because we know that check-in lobby can get kind of congested sometimes and you just really need people to be able to get through efficiently.
+
+But, so we, my two kids were already preselected. You'll notice they're both recommended eleven a. M. That's because that's the closest service time to me right now.
+
+We automatically do that for you. And then also, they're both being filtered into the kids' worship location because that's the one available for that service. So that was it. That was all I had to do to check them in.
+
+Last four digits of my phone number and then all I would need to do is hit Check-in to people and we'd be ready to go. But before I do that, I wanna show you one more thing on this or two more things here on the Self Station that are kind of helpful. We have this Show More People to Check bar right here. You'll notice I have another kiddo that I can check-in and that's because I'm listed as a trusted person in his account.
+
+So we know sometimes there's situations where, like, maybe there's grandparents who bring their grandkids to church or, like, maybe you bring your neighbor or a friend or somebody and they don't really come with their family, but they come with yours sometimes. And you need to be able to check them in. You need them to have the same claim check code or security code as your kids, and you need to be able to check them out.
+
+That feature is called Trusted People, and it exists in your Planning Center profiles. You can jump in the profile and you can add people as trusted people on a household and you don't have to add them to the household, which helps keep your data clean, it helps keep things organized and reduce confusion around who actually belongs to who, you know. So that is a feature. If you're interested in trusted people, I would recommend just hitting that question mark in Planning Center. Type in trusted people. There's an article that'll walk you through exactly how to add those in profiles. But I am listed as a trusted person on Tyler's account, so I can check him in with my kiddos in the event if he were to come to church with me.
+
+Okey doke. So that's one feature. And then the next thing here is this Checked In By. This is the last thing I kind of want to call out on a self station.
+
+The Checked In By feature allows me to change who brought the kiddos to church today so that we know, because ministry, it typically runs just a little bit different than like, you know, an elementary school where, you know, if they're enrolled in a school, it's like the kiddos get dropped off and then we just need an emergency contact to call. But, like, the parents aren't staying on property. But with church, typically, the parents are still there or guardians and you need to know who actually brought the kids to church today, and that can be like a fluid thing, you know, it changes from week to week.
+
+But it's most helpful for you to know who's actually in the building in the event where if I were to need, you know, assistance. So we have the Checked In By feature, which allows you to select adults in the household or trusted people on the account. So like I've got grandparents listed here. I've got Ray and Judy.
+
+If grandma brought them to church, she could be the checked in by person. And we do our best to make a guess for you here. So like I used my phone number to search for my household.
+
+So it put me automatically as the checked in by person. But if my husband were to use his phone number, it would put him. So that's the checked in by feature.
+
+And one thing that the checked in by feature does also is that it prints on the default name label, and you can set it to print on your custom labels. So my name and phone number will print out on these labels, which is also helpful to make sure that you have the information you need in the spaces where it's helpful for it to be. So, yeah. That's it for checking in on a self station. Very quick, very easy.
+
+And then I'm just gonna go ahead and say check-in to people, and my labels will come out of my printer here.
+
+Here we go.
+
+And one more.
+
+There it is. There. Alright. So we got all of our labels. You'll notice I have a a name label right here.
+
+For my kiddo, I've got the security code on the side over here and then I'm listed as the checked in by person. My phone number's on this label and then there's a matching security label that gets printed out with it for checkout purposes so you can match the code on the security label to the code on the label. So yes, that is check-in at the self station.
+
+Let's see here. Okay. So oh. So the self station is a super fast way to check people in.
+
+It's probably the fastest station of the three, if you're wanting people to check themselves in and get through the lobby quickly. But I'm gonna show you there's actually a way to make self stations even faster, and that is by using Church Center. So I'm gonna switch over here to my phone and I'm gonna go to the check ins tab and you'll see right here, we've got Sunday services. I'm gonna click into that.
+
+This is an app that people can download on their phones before church. They can have it and you can set your event to show on Church Center and allow people to check into it. So like if I'm sitting at home at the breakfast table or maybe, I'm in the car on the way to church, I can come in here and I can just start the check-in process to remove even more time from the station. So I've got my household listed here.
+
+I'm gonna go ahead and check-in Rosalie, and then just say next, and I can edit where she's being checked in, the times if I have more than one option. I can do all of that right from here. And then I've got this QR code which means I'm pre checked for this event. Now, if you see the QR code, that does not mean that your child is checked in.
+
+It does not mean that there's a spot saved for them. Really, what it means is just you've done all of the pre selecting work at the station and now when you get to church, all you have to do is take the phone. We're gonna walk over to the self station. I'm gonna say tap to scan.
+
+Scan my QR code. There it goes. And it just immediately checked Rosalie in and I didn't really have to touch anything, which is amazing. And you can actually set your stations, to have that camera open all the time so that, some churches, they get really creative with it and they have like a lightning lane, or like a fast lane and it's just the one station and it's meant for church center check ins and people can just walk up, scan, get their labels and go and it just makes the experience even faster, which is so cool. But one more thing that I'll show you is on my phone here, Now, instead of that QR code, I have my security code, the same one that printed out on the name tag. So if for some reason I lose this little security code, which sometimes happens, it just like ends up in the bottom of the purse or something, I've got it on my phone, just to make checkout process even faster too.
+
+---
+
+## Manned Station - Checking In and Adding a New Family (3:45)
+
+The next thing I want to do is transition over to our desktop here, and I'm gonna show you a manned station. Now this is our second check-in type. So the main or our second check-in station type. So the manned station is functionally very similar to the self station. We consider manned stations and self stations both lobby stations or stations that should be out in the lobby where people are checking in.
+
+But a manned station allows you to override anything.
+
+So, like, you can override the location they go into, the time they go into, even if those locations are unavailable for or, like, the child doesn't need the filter, you can override anything you want to on a man station because it is meant for administrators to have the flexibility they need to get people where they need to go regardless of the circumstances. We know with kids ministry, sometimes it's a little chaotic and you just need some flexibility. That's what the man station is for. But, we do, as it's named, recommend that it be manned. So, this is not a station type that I would just leave out on the counter for people to check into because you'll notice one of the the distinct feature differences here is that there's a search bar here instead of a keypad. So I can type in my name and pull up my household.
+
+But I can also pull up anybody else's household and I can edit, and I can see household information here. I can make changes to the household.
+
+But that is why we don't recommend they just be forward facing out in your lobby. You want this one to be manned by a volunteer.
+
+But if I needed to get in here and I needed to, change some information, change your birthday, anything like that, I could do it from the self station very quickly, which is helpful for helping people keep their, you know, keep their people their congregants data up to date, which is helpful. Make sure they're going into the right classrooms and things. So we do recommend you have a few man stations, but, of course, just make sure there's a volunteer standing at it. You can also add new family members from the station. So if we needed to add a new kiddo to our household, we could. And then also one thing I will mention is that from a manned station, you can also add new families.
+
+So, like, let's say I have a new family, and this isn't actually what they would be named. You wouldn't type in new family. You would type in the name of the person to see if they were in your database. But if they don't exist, you're just gonna see this button that says add person. You can add the person here. We're gonna choose if they're gonna go into a new household or an existing household.
+
+In many cases, if you're adding a new family, it would be a new household. I can add more household members very quickly here. This is the fastest way to add new families in the check-in process, you know, in, like, your your check-in station area. Because once you get them added, you can collect all the information you need to collect here. We tried to put things up at the top that were generally, you know, wanted by most places, but you we also have some other details down here you can collect, like email address, phone number, physical address, things like that. But once I get my person added, I can just say save household and then they're immediately ready for check-in. And it's gonna because I didn't add a birthday, I've gotta select a location for them.
+
+But if I had added a birthday, it would just automatically put them in where they need need to go. And then I could go ahead and check-in, my person. And it's just that fast.
+
+Let's see here. Okay. So that is let's make sure that I've covered everything here. So, yeah, man stations, very flexible, very close to a self station, except they allow you to override anything you need to override. So we do recommend having one or two of those, you know, for first time guests and, you know, data changes and things like that.
+
+---
+
+## Roster Station - Checking In (9:20)
+
+I'm gonna switch this over to a roster station. And you'll notice there are some different settings. And I'm gonna talk about these in just a little bit. But let's go ahead. I'm going to this is locked to our Sunday service. And I'm gonna go ahead and lock it to my kids worship location here.
+
+There we go.
+
+Right. So this is going to change us to a roster station. Now immediately what you'll probably notice is that we have some kids populated on this tab. Now roster stations have three tabs.
+
+There's the ready tab, the here tab, and the checked out tab. The ready tab are people who have not been checked in yet. But based on previous attendance, we think they probably might come this week. And you can choose how far back you want the roster station to look in the settings.
+
+You might have noticed there's a little setting that said, look back six active days, Or if this was a weekly event, six active weeks. You can set it anywhere between one and six, and we will look back and we'll populate this roster station for you based on your previous data and the people who have, you know, been frequently coming. But if for some reason, maybe someone hasn't come back in a while, you can still use the search bar to pull up people who are not on the roster station. So just because they're not prepopulated, no big deal.
+
+You can still find them and check them in using a roster station, but we just try to make a make a guess for you based on who we think will come.
+
+And then to check the person in, you just check the box next to their name. And you'll notice if I keep checking these boxes here, nothing will happen until I stop checking these boxes. And then at that point where it's set for a minute, it'll move over to the here tab. And we do that on purpose to help reduce, accidents.
+
+You know, people accidentally checking in the wrong person. Because we know sometimes you're a teacher, you're standing in your classroom, you have your roster station, and, there's kiddos running in the door past you and, like, you're trying to check them in. It's like, oh, no. That was the wrong Timmy.
+
+Because we've got two.
+
+We don't finalize the check ins till a couple of seconds later so that if I do check-in the wrong person, I can just untap it and no harm done. They weren't accidentally checked in. So that's something we built in that I always thought was kinda cool and, helpful for teachers.
+
+One thing I'll back up just a little bit. One thing I do wanna say about roster stations is that this really is meant to to be your teacher resource. This is, what we call a classroom station. It's meant to be we built it with your classroom teachers in mind, and we put information on it that we think would be helpful for someone in the classroom who needs an active list of the kids who are checked in, like a roster for their room.
+
+So when we go through these features, kinda have that mindset and kind of have your mind in that space of, okay, what would my teachers need in the classroom? Because this is really kind of their station type.
+
+So next we are going to jump over to the here tab because that's where the check ins kind of disappear to. So now we know who is here today.
+
+We've got these are all kiddos that we checked in. I checked in Jake and Oliver earlier on the self station. But these three or these two, we just checked in a minute ago.
+
+And you can see this is the tab that has the most information because this is probably where your teachers will, like, park most of the time is this here tab because this is your class list.
+
+You'll notice we've got these little, like, lifeline alerts right here. If you click on one of these, this will show you their medical notes. You can set medical notes a lot of different places in their profile, in people or in check ins, but you can also set it from a manned station if you need to. This is a good way to let classroom teachers know of, like, needs that these kiddos have that they might wanna be aware of.
+
+And then also you'll see there's like a little text bubble right here. Now this text bubble opens up the texting feature.
+
+We have some preset messages for, your volunteers to be able to contact parents with. Now this is a this is a test environment, so my account does not have a valid phone number. So it won't actually let me send this message. But if you had a valid phone number on your account here, on the parent's account, it will automatically select the checked in by person who was selected at the station because that's probably the person at church today, but you can change it.
+
+You can pick through any of the household adults or trusted people on that household. And then you can choose from any of these preset messages just to make it as quick a, process as possible so that you can send the message. We've even got one here called doing great because we know sometimes, you know, a kiddo might be crying when they get dropped off. And sometimes you just wanna let their parents know, like, hey.
+
+They're doing awesome now.
+
+You can use the doing great message for that. So there's just a lot of options in here so that you can contact parents and get a hold of them if you do need assistance.
+
+Okay. Wonderful.
+
+And the last thing I'll kinda call out here is that you can see if someone is not authorized for pickup. So we've talked about trusted people, but there's actually another section called not authorized people for their situations where maybe there's someone who shouldn't be picking up a particular person.
+
+You can click find out who. This is probably something that would be good, you know, for your classroom teacher to know, because they're generally in charge of, like, the pickup process. So, that's something that you can also see from a roster station that might be helpful for your teachers.
+
+So that is it. So then there's one more tab we haven't talked about checked out. And this is where, you know, as the kids are leaving the classroom, you can go ahead and tap the box next to their name and it will move them onto that checked out tab, and we'll be able to see at what point they were checked out and you can see a full list there. So this is how you keep your classroom roster just up to date so that we always know who who is in our care and who isn't, who's already, you know, been released back with their parents.
+
+Now in the station settings, there were three more things that you can actually turn on to make roster stations even cooler, even more helpful for your teachers. So I'm gonna open our station settings one more time, and I'm gonna click on these three extra features.
+
+But before we close out of here, one more thing I do wanna show you is that you can actually disable any of these tabs that you want to disable.
+
+So if you don't want your classroom teachers to be able to check people in, you just truly want it to be like a class list, you can actually just turn off that ready tab and they'll just see kids who have been checked in like out in the lobby if you don't want them, checking in people at the door. So that's an option you have. But I'm gonna turn on these three options here and I'm gonna show you what those do. So I'm gonna go ahead and say save.
+
+And now you'll notice my roster looks just like a hair different. So right here you'll notice these kids are in a box that says unconfirmed. This is because I turned on our confirmed feature. And this is for those situations where, maybe your kiddos check out in the lobby and then they run to class and we wanna know who's actually in the classroom. And we also wanna know if someone checked in and then didn't show up to class. Because we know sometimes in your church, you might have a situation where, like, everybody's in main worship together, and then there's a point where they release all the kids to go to class, and you wanna know if someone didn't make it into the classroom. So this is a feature to kinda help you keep track of who's actually walked in the door.
+
+So you'll notice it. There's like a little timer that gets started. So Jake and Oliver checked in twenty one minutes ago. If they haven't shown up yet, I might wanna let their parents know. So we have a special texting option in this space just to let you know, let the parents know that, hey, you know, so and so never made it to class. They might have got distracted at the snack station.
+
+But just to let the parents know, you could do that.
+
+But to confirm them, I can just go ahead and click the box next to their name. And what it does is it moves them down into the confirmed area. And then I see all the alerts and things that I need to see for them because they're in my care now. And so I've got that information that I need for them and I can easily see who hasn't made it yet.
+
+One more thing that, oh, two other things. One thing that I turned on was the security code. So you'll see right here there's this, c two b nine. This is Oliver's security label today.
+
+Some people need that for checkout purposes. They want that on the roster. In case you've got more than one Oliver and you need to know who is who, you can, you know, have that on the roster just to help your teachers out a little bit more. And then the last thing I enabled was this all locations button.
+
+So we know sometimes ministries have situations where kiddos are checked into individual classrooms, everybody who's checked in across all of your locations, and you can check them out from one, like, big list rather than a bunch of individual little lists that you kinda have to, like, filter between.
+
+Yeah. So that is it for roster stations. Again, this is really built with your teachers in mind. We recommend having one of these in every classroom if possible.
+
+They're safe to put on your volunteers' phones because when that service, that hideout time passes, roster stations are not active anymore and the station isn't live anymore. So it's only useful during the event time on Sunday and then the rest of the week. It's just a station that says, sorry, there's no active live services right now. So we are good to put on volunteers phones or if you have, like, classroom device.
+
+Roster stations are so helpful in the classroom.
+
+---
+
+## Changing Settings from Station (6:51)
+
+Also, I wanna show you how you can change the station type right from the station. So you don't actually have to get over onto the admin side to change anything about a station. You can do it right from the station, which is the fastest way to do it on a Sunday. So I'm gonna come right over here to this little gear, and I'm gonna click it and immediately a keypad pops up.
+
+Now I know some of you out there are like, Amy, I do not know what that code is. I've seen it. I don't know what it is. That is okay.
+
+We can help you with that. So right here, we have this little link that says not sure what this key is. You can click that and we will show you where to find the station keys on the admin side. You can see existing ones, you can edit, remove, add new ones, whatever you need to do.
+
+We will show you this will open up an article that will show you where to find all of that. And then, of course, if you have any trouble beyond that, please reach out to our support team. We can walk you through, how to get a station key set up. But, at the at the, you know, minimum of what it is, it's just a six digit PIN code that keeps your station settings safe.
+
+Because if you had, like, a self station, you don't want just anybody getting into your station settings and turning it into a man's station and opening up all that data, to just anybody who may walk by. So we keep it behind a station key to keep you guys safe, but they're very easy to set up.
+
+Now I do know my station key my station key today.
+
+Let's see. Hopefully here.
+
+Oh my goodness.
+
+There we go. We got it. Okay. So you'll notice this opened up my station settings and immediately at the top here, this is where I can change between the different station types.
+
+It's just this first option right here. And most of the station settings are the same from station to station with the exception of rosters. There's a couple of extra settings for rosters that I'll go over, but first we'll just go over kind of the general ones that are available to most stations.
+
+So the first one right here is this lock station to one event or location. If you are a smaller church, and or, you know, even if you're not a smaller church, but you're only using check ins for, like, one or two events, you have a Sunday and you have a Wednesday, and those are really the only two things you're running. The station will only ever show events that are live right now. So you don't have to worry about locking your station to an event if you're only running events. You know, there's only one at a time and they're not ever gonna overlap. But if you do have multiple events running at the same time, like maybe you have a small group training happening the same time, you've got like a mother's day out thing going on, you do have the option to lock your station to a particular event to make sure that this station is only being used for check-in for this event.
+
+Or another use case there is, like, if you're a multisite, and you, have multiple Sunday services running across multiple campuses and you wanna make sure that the campuses stay locked into their event, you could use it that way as well. You can also lock it into a specific location, folder. So earlier, we talked about folders a little bit and how those kinda help you with some organization things. This is a place where they surface.
+
+You'll notice I've actually got this station set to where I can only check kiddos into, at this station into my kids center folder, which means I can check them in anywhere from nursery all the way to the zebra room. But maybe I don't want youth to be checking in at this station. They need to be checking in, you know, at the station in their, you know, youth area. So that is another way that you can use this.
+
+I'm actually gonna set this back to all locations.
+
+Let's see here. You can also print to another station. So just an example of how this works. Sometimes people will have like a desktop on their computer, and that is for their manned station.
+
+But then, they also have a printer connected to the desktop kind of sitting right here. Then maybe you have an iPad that's like forward facing and you've got that as a self station, but you don't wanna buy another printer, and they can kinda both use the same one. So what you could do is have this station hooked up to the printer, and then you can set the iPad to where it prints to the computer.
+
+And then that way, both devices can just kinda use the same printer and the labels will just come out as they need to be printed. So that's a way you can utilize that. There's a lot of creative ways that you can use your existing devices for setup. There's so many ways, to kind of navigate what you might have as far as hardware.
+
+If you have questions about your hardware, we have a really great article called hardware and software for check ins. Or you can reach out to our support team and you can just say, hey, here's what I've got. You know, what would you recommend? How would you set this up?
+
+And we can absolutely help you walk through that because there's just a lot of options. There's a lot of ways to kind of pair your stations and your printers and things like that and navigate those hardware needs. So please let us know how we can help with that because I know sometimes that stuff can seem just a little bit overwhelming. We are here.
+
+We got you. We can help.
+
+Okay. Wonderful. So that's print to another station.
+
+And then also, we mentioned earlier, you can create themes for your check-in station. You'll notice I've kinda got this blue, like, swashy background. But by default, if you guys, have ever, you know, set check ins up new, the default station is just purple because that's the color of check ins and it's fun.
+
+But you can also, set a different background for your stations, and we've got a lot of options in here. But I've even seen some churches get really creative with this. Like, they'll use their series art as the background to help the parents remember what series we're talking about this week.
+
+Or they'll, you know, just make it more on theme with their ministry, make sure it matches the colors that match the church logo, things like that. So you can you can also set up station themes. And then the last thing I'll kinda go over that's just like a general station setting is this refresh station after after so many seconds of inactivity.
+
+Now I have this turned off because I'm doing a PCU and I'm taking a long time to tell you about things.
+
+But we do actually recommend having this setting turned on.
+
+So if you need, just for, like, safety reasons. So, like, for example, if someone were at a station, like a self station, and they pulled up their household and then they walked away for whatever reason. They got distracted. Something happened.
+
+They wanna go give someone a hug, whatever the case may be. After so many seconds of inactivity, it would probably be good for that station to go back to the keypad to reduce, you know, someone else accidentally walking up and, you know, accidentally checking in that family when maybe they hadn't actually checked in yet, wrong labels, you know, this just helps reduce confusion or more from like a safety aspect. If you have a manned station, you've got somebody's household details pulled up, you know, after forty five seconds of no one touching, you know, the keypad or something, it'll just default back to the main screen, and then that information just isn't out on display.
+
+So we do recommend having this turned on, just to kinda help reduce confusion for people walking up to a station, from someone who maybe left it in the statement.
+
+---
+
+## Station Settings and Quick Stations (3:42)
+
+Let's hang out on the station's page for a little while. Now you're gonna learn how to launch a station from a different video, but for this video, let's just spend a little bit of time looking at what we have going on over here in the settings wheel. There's a lot of really neat options for how to customize the station experience for your congregants and your kiddos. There's also some really convenience features in here as well.
+
+But we're gonna start over here with success messages. So if you click into the success messages, you've probably noticed that as people are checking in and they they kinda get this little pop up message that comes after their check-in is done. So when their check-in is done, it'll say chop chop lollipop or something like that. But I don't know if you knew that that is all customizable.
+
+So when you go into this section, you can edit, you can delete, you can add new ones, add messages that are, like, kind of on point for your church and your congregation. You can do it for the messages they see after they've checked in. And if you use checkouts, then you can, you can have messages specific for when a kiddo's checked out. So this is a really fun way to add some, personality and flare to your check-in experience.
+
+The other thing that I wanted to point out here in the same settings wheel is the themes section. So you've got look at, like, look at this. You've got all these kind of color schemes, these opportunities, these options of mixing and matching backgrounds and foregrounds and how you want the text to look. And, this can work for kinda like, any time of year.
+
+If you've got VBS coming up or if you've got Easter coming up, you can really customize the look of your stations and, and give people kind of like a really unique experience when they come to check-in.
+
+So those are some of the fun customizing things. Go explore that. It's pretty cool. The other thing I wanna show you is this feature right here called quick stations. So quick stations are a way that you can kind of create, like, a template so that as you are creating new stations, the template is able to be applied to those new stations. Because when you're creating a station, there's lots of different choices that you can make about what kind of station you want it to be, a manned, a self, or a roster station, what theme you wanna use, and all of that. And quick stations makes it really easy to sort of set that template up ahead of time.
+
+The best example where I think that, churches love to use this is think about VBS. Maybe it's VBS season, and you want all of your leaders to make their phones a roster station. So that could be setting up twenty new roster stations or maybe even more than that. And when you create a QuickStation, you create kind of you create that template. You're like, okay. So this is gonna be the the name of the QuickStation is our VBS roster twenty twenty five.
+
+It's gonna be a roster station.
+
+It's gonna be set to print to self. We've got a really specific theme. We want it to use the kids church theme, and we want all of those roster stations to show ready, here, checked out, and show security codes and confirm check ins. Now I just saved you nineteen clicks because you're you're going through, you're creating this template once, and then as you create all of these rosters for these twenty different phones, you just apply the QuickStation.
+
+So you've created a QuickStation. We're gonna save the QuickStation, and then it's ready to go. It's right there. So it's a pretty amazing trick to be able to use to make it so much easier when you have lots of stations to create.
+
+---
+
+## Launching Quick Station (1:30)
+
+Hey. Let's talk about the options to launch a check-in station. So let's open the station's page in check ins, and you'll see this button on the right hand side here labeled launch station. Go ahead and click on that.
+
+You'll see two options. You can select use this device launch app, which will launch check ins that's installed on this computer. But the more common use case is to activate a station. So you've got an event like VBS or another event like a conference where you're gonna have a lot of volunteers helping people check-in.
+
+You'll wanna click this activate station button. And you'll see you've got options to enter a code, the station name, as well as select a quick station template.
+
+Where this code lives so on the phone here, this is your volunteer's phone.
+
+You wanna tap more options and then you'll see the code that listed there. Volunteers condense in that code to an administrator and then they can enter it on the administrative side of check ins to activate that station. But for today, we're gonna use the QR code option as this is generally faster. So open the camera app on an administrator's phone that is logged in to check ins on a browser. Go ahead and scan the QR code, and then that's gonna take us to the admin sign of check ins where we can then enter the name of our station.
+
+We're gonna select the VBS to space quick station template, create station. And then the station will automatically update and be ready to check people in.
+
+---
+
+## Brother Printer Setup WIFI (1:44)
+
+Hey. My name is Brandon. Today, we're gonna work through connecting your Brother QL eight twenty NWB, to your Wi Fi network and in turn your iPad station. So first things first, we're gonna start with the Brother printer itself. Gonna press this menu button.
+
+We're gonna go down to the submenu that's labeled WLAN.
+
+Hit okay. And then we're gonna go all the way down to this infra manual setting. Press okay. And it's gonna turn your Wi Fi radio on if it's off, And then it's going to start searching for all of the wireless networks that are in range.
+
+Select the correct network.
+
+Press okay. Type your password.
+
+Then once your password's typed in, hit connect. It should all be connected.
+
+So the other setting that we need to verify is is that the network mode is set to infrastructure only. So back to the WLAN submenu, come down to this network mode option.
+
+We're gonna scroll up and select infrastructure mode.
+
+Back to menu, you can see the little Wi Fi icon. Your printer is now connected to your wireless network.
+
+Alright. Now that your printer is connected to your wireless network, we're gonna go back to the iPad station. You're gonna tap on this gear icon in the lower right hand corner to bring up your station key. Scroll down, though, and tap the printer settings link.
+
+And now we're gonna select the printer. In this case, it's the first one listed at the top here. We're gonna make sure that we've got the correct labels selected, which in this case is the d k two two zero five. And then now that we've got it selected, print the test label, and Kevin's all checked in.
+
+---
+
+## Brother Printer Setup BLUETOOTH (1:51)
+
+Hey. My name is Brendan. And today, we're gonna work through connecting your Brother QL eight twenty NWB printer to your iPad via Bluetooth. So the first thing that we're gonna come and check is that we see that this printer's already connected to the wireless network, so we wanna make sure that we shut that off. To do that, we're just going to hit the menu button. Scroll down to the WLAN submenu. Press okay.
+
+Press okay again on this top option, and then we're going to select off.
+
+Go back to the menu. Main screen, we can see that it's no longer connected to the wireless network. So now we need to make sure that Bluetooth is on. So press the menu button again.
+
+Scroll down to the Bluetooth option.
+
+Press okay again on this top option, and then turn Bluetooth on.
+
+Now that we see the Bluetooth icon, that means Bluetooth is on, and now the printer is discoverable.
+
+Alright. Now that your printer is discoverable, we're gonna go to the iPad. We're gonna open settings.
+
+Navigate to the Bluetooth menu.
+
+And now we see the QLE twenty NWB three six nine zero showing up there. Tap that.
+
+Wait for it to connect. Awesome. Now let's go back and open Checkins.
+
+Tap the gear icon in the lower right hand corner there. Again, scroll down to Printer Settings.
+
+Now we see we've got several that are discovered, but we see that this one has Bluetooth listed under the printer name. So that's the one we wanna select. Make sure that the correct label type is selected, which it is, and then we're gonna print our test label.
+
+And Kevin's all checked in.
+
+---
+
+## Brother Printer Setup USB (2:16)
+
+Hey. My name is Brendan. Today, we're gonna work through connecting your Brother eight twenty n w b to your computer. Today, we're gonna be using a Mac. So the first thing we're gonna be doing is making sure that we have a compatible USB cable for your printer that connects to the computer you're using. We're gonna connect the power, connect the USB, turn turn that printer on.
+
+The next step is we're gonna be going to Brother's website to download their drivers. So we're gonna we're at support dot brother dot com.
+
+We're gonna search for the model number eight twenty NWB.
+
+Scroll down to the bottom here.
+
+And then we wanna make sure that if you're using Windows, you download the Windows version. And in this case, we're using Mac, so we're gonna be downloading the Mac version of the driver.
+
+It's this first link at the top. And then once you click in, scroll down to the bottom, agree to the EULA and download.
+
+And then once it's finished downloading, go to where your downloads are stored or open it from the browser.
+
+Double click the file, and then just follow each step. There's gonna be a moment where we agree with the license.
+
+You just gotta click agree.
+
+And then once you click install, type your password. It shouldn't take very long at all.
+
+Alright. Now the drivers are installed.
+
+Next thing that you want to make sure that if you haven't already that you go to, planning center dot com slash check ins slash download and download check ins for your computer. Install that and then follow the steps to set up a station. And once your station is all set up, you're gonna wanna go and open the printer settings in your station and make sure that the Brother is selected as the default printer. So to get there, click on the gear in the lower right hand corner and then printer settings.
+
+Alright. Now we see that the Brother is already selected along with the correct label type. If you've got multiple printers installed, it will it will have you select the Brother as the default. So now that we see everything's connected, we're gonna send a test print.
+
+And Kevin's all checked in.
+
+---
+
+## Citizen Printer Setup (1:14)
+
+Hey. My name is Brendan. And today, we're gonna be working on connecting your Citizen printer to your iPad via Bluetooth. And first things first, you're gonna wanna make sure that you've got your printer charged. The DC port in for the adapter is here on the right side of the printer. Battery should be in there. And once it's charged, we're gonna turn it on.
+
+Alright. Now that your printer is powered on, you hear a couple little beeps, you're ready to connect to the iPad. So open your iPad settings, go to Bluetooth, and we're gonna select the one that says CMP here in the title. That's the citizen printer.
+
+Alright. Now the printer's connected.
+
+Let's go to check ins.
+
+We're gonna select the gear icon down here in the lower right hand corner.
+
+Scroll down to the bottom of the keypad and tap the printer settings link.
+
+Scroll down just a little bit. We're gonna select this connect to citizen printer option.
+
+Automatically detects it. Tap okay. Now let's print that test label.
+
+Kevin's all checked in.
+
+---
+
+## Dymo Printer Setup (2:06)
+
+Hey. My name is Brendan. And today, we're gonna work on connecting your DYMO printer to your MacBook. So the first step is to make sure your printer's plugged into power.
+
+Go ahead and plug the USB in as well.
+
+And now that your printer is powered up, we're gonna go to dimo dot com slash support. Then on the left hand side, we're gonna click driver and software downloads.
+
+Once on this page, click this top drop down here and select Dymo Connect for macOS.
+
+I'm gonna download DYMO Connect.
+
+And once that's downloaded, start the installation process.
+
+Click continue. This is gonna ask us to agree to their licensing, and then we click install and just wait for the install to finish after we type our password in.
+
+Alright. So now that Dymo Connect is installed, it's gonna ask you for one little bit more permissions here, for certificates for the software. So just type your password in, and then it's gonna ask you to do it a second time.
+
+And now we're good to go. We can close this terminal window.
+
+Close the installer.
+
+Alright. Now that Dymo Connect is installed, before we move on to downloading check ins, we're gonna open macOS settings. Scroll all the way down to the bottom here and select printer and scanners. Once on this page, click the Add Printer, Scanner, or Fax button.
+
+Select your Dymo printer here and Add, and now we're good to go.
+
+If you haven't already, go to planningcenter dot com slash check ins slash download and download the check ins app and follow the instructions to set up a station.
+
+Once your station is up and running, let's go to click on this gear icon in the lower right hand corner, select the printer settings link, and then once this populates here, we'll have the drop down to select the Dymo printer and send a test print.
+
+Kevin's all checked in.
+
+---
+
+## Zebra Printer Setup (1:42)
+
+Hey. My name is Brendan. Today, we're gonna work through connecting your Zebra printer to your MacBook.
+
+First step in this is to get your printer plugged into power, get the USB cable plugged in as well, and switch the printer on. Once you turn it on, you'll see a red light that comes on. And once that red light turns green, you're ready to connect your printer to your computer. Then we're gonna open the macOS settings. Go all the way down to the bottom here where it says printers and scanners, and then click this add printer, scanner, or fax button.
+
+This next screen here, it already sees that there's a Zebra printer connected by USB. So we've gotta select that.
+
+And then this next step is we're gonna have to choose a driver. Now Zebra printers don't have a dedicated driver that you download from the Internet. This is just a generic macOS driver that we're gonna use. So we're gonna click this, choose a driver, select the software, and then we're gonna scroll all the way to the bottom and select this Zebra ZPL label printer.
+
+Hit okay.
+
+Add, and then we're good to go. Alright. Now that your printer's installed, if you haven't already, go to planning center dot com slash check ins slash download and download the check ins app and follow the instructions to set up a station. Once your station is set up and ready to go, you've got that open. We're gonna click this gear in the lower right hand corner.
+
+Click on the printer settings link.
+
+And then once this populates here, we'll have the option to select the drop down and then we see this Zebra Technologies printer. Select that, and now we can send a test print.
+
+And Kevin is all checked in.
+
+---
+
+## Check-Ins Volunteer Training: How to Use Self Stations (2:21)
+
+A self station is a station that anyone can use on their own. Most of the time, many of these will be set up in the lobby so that people can check themselves in as quickly as possible. For anyone who's checked in at your church before, they can get started by typing their phone number. And actually, they should only need to type the last four digits.
+
+What they'll see is a list of all the people who they are able to check-in. Of course, this would include people in their household, like their kids. But you could also have grandparents who need to check-in their grandkids.
+
+If the grandparent is listed as a trusted person for those grandkids, then they'll see them here in this list. Check ins will automatically select people to be checked in based on where they've checked in before. But of course, they can make adjustments if they need to. Like if one of their kids isn't there that day, they can just deselect them. If they need to change a time or location for anyone, they can do that by tapping the pencil icon. That will show all the options that are available for that person.
+
+At the bottom of the screen, there's a name. We call them the checked in by person because all the people being checked in are being checked in by that person.
+
+Whoever is doing the check-in should make sure that their name is listed in that spot. That way, if there are any issues, everyone knows who checked the kids in so they can get in touch with that person. Once everything's all set, they can officially check those people in, and it will print a label for everyone.
+
+There's an even faster way to do this with pre check-in the Church Center app. Let me show you how it works. When a family is on their way to church, they can pre check their kids in the app. That will give them a QR code.
+
+When they get to church, they can scan that QR code at a cell station. On a station like this, they can just tap on the barcode button to open the camera and then scan the code. And just like that, their labels automatically print. You can even set this station up to always have the camera on. This could act as the FastPass for those with the app. When you set it up that way, it's fast and completely touchless.
+
+---
+
+## Check-Ins Volunteer Training: How to Use Manned Stations (1:28)
+
+A MAN station has a designated person who helps to get people checked in at a welcome desk or even on your phone. The goal is to have most people check themselves in using self stations. But if someone's having trouble, they need to edit something in their profile, or a brand new family shows up, that's where manned stations come in. Let's take a look at how to do it.
+
+When you're checking in someone new, start by typing in their full name. Then go ahead and click add person. We're adding a whole new family, so we'll add to a new household. Now we can start to enter information for Claire.
+
+Since they're an adult, you'll wanna make sure you get at least their email address and phone number so you can contact them if you need to. Once we've got Claire all set, we'll add the next member of the family. Let's say, Millie.
+
+This time, we're gonna add a child. But if you have another adult that you want to add first, you can just toggle back and forth.
+
+The information that we need for a child is different from what we wanted for an adult. You'll wanna include things like their birthday and their grade in school.
+
+Once you get the whole household entered, then you can get them checked in. Their labels will print and they'll be good to go. And every time they come back, they'll be able to check themselves in using a self station. You can also run a manned station on any mobile device like your phone, which means everyone on your team can have a station ready to go.
+
+---
+
+## Check-Ins Volunteer Training: How to Use Roster Stations (2:37)
+
+A roster station shows everyone who's previously checked in to a certain location. It's meant to be used by a teacher in their classroom so they can keep track of who's there. If you're a teacher, the first thing you wanna do is select the right location and time. On the ready tab, you can see all the kids who are ready to be checked in based on who's been there before.
+
+When they arrive, all you have to do to check them in is just check the box. And if you have printing turned on, their labels will automatically print. If you don't see the person you're looking for on this list, you can use the search bar to find them. Type in their name, and if you don't see them there, then go ahead and search the entire database.
+
+Then you can select them and get them checked in. If you're checking in more than one person, like people in the same household, you can check them all in at the same time without the page jumping around. And if you accidentally select someone, you can just unselect them.
+
+One other note here. If more than one kid from the same household checks in at the same station, they'll share the same security code. So it will only print one set of the required labels.
+
+Once someone's checked in, they move over to the here tab. If any kids have medical notes, this is a really easy place to see those. And if you need to send a text to an adult about any of the kids in your class, you can do that from right here. Choose the adult and the message that fits the situation. Let's go with the positive one for our new mom who was anxious about dropping off their kid. We'll go with doing great and then send the message.
+
+In some churches, everyone checks in at the lobby and then has to walk aways to actually get to their class. In that case, you can turn on confirm check ins so that you can confirm when each kid actually makes it to their class.
+
+Now, when we're on the here tab, we'll see a list of the unconfirmed check ins at the top. When those kids get to class, just tap the down arrow and they'll move down to the confirmed part of the list.
+
+When it's time to check kids out, you'll want to make sure that their security code matches up with the adult's security code. Each child's label will have a security code printed on it, but you can also see it from the roster station. If you turn on show security codes, you'll see a code just below each kid's name. When someone comes to pick them up, you can make sure this code matches the adult's code.
+
+When a kid is ready to leave, tap the right arrow and they'll move over to the checked out tab.
+
+---
+
+## Check-Ins Volunteer Training: How to Use Headcounts (1:53)
+
+Headcounts is an app used for counting how many people are in a room at one time.
+
+The first thing you want to do is choose the right event. We'll go to Sunday service. From there, you'll choose the type and the time.
+
+The capacity of our room is one hundred, and we're not checking people in at a station, so we don't want more than one hundred in here.
+
+Now it's time to start counting.
+
+Each time a person goes in, tap the plus button, and I bet you can figure out what the minus button does. If you've got an iPhone, you can also use the volume buttons.
+
+This live count even works when there are multiple people counting at the same time. My buddy Jesse is gonna help us out. Now check this out. When they add or subtract from the count, it automatically updates for Me Too.
+
+If you need to, you can still see exactly how many people you've counted on your specific device.
+
+But you can have as many counting buddies as you want, and that big total will stay synced for everyone in real time.
+
+Thanks, Jesse. Of course.
+
+If you want to just enter a number without using the up and down arrows, you can do that too.
+
+Just tap on the number and directly enter a total.
+
+But be careful. When you enter a number this way, it overwrites any other numbers that have already been entered. It won't add to what's already there. When you get close to the capacity, headcounts will give you a heads up. When you get to ninety percent, it'll turn yellow.
+
+And when you go over the limit, it'll turn red.
+
+---
+
+## Check-Ins Volunteer Training: How to Print from a Mobile Device (2:37)
+
+We want you to feel comfortable using your printers when people show up to check-in at an event.
+
+If you need an immediate fix, the best thing you can do is connect your station to another printer that's already working.
+
+Select the gear icon in the bottom corner to open up your station settings. You'll need to enter a station key, so use yours if you have one or find an administrator.
+
+From there, open up the print to drop down, then choose which station you wanna send your labels to.
+
+Now, you can check someone in at this station, and the labels will print at this other station that's already up and running. That's how it works.
+
+Okay. If you're just setting things up in a non emergency situation, let's talk about how to get your station connected to the right printer.
+
+First, always turn on your printers first and then your devices.
+
+If you turn on your devices first, as soon as you turn on a printer, all the devices will connect to that printer.
+
+When you turn your printers on first, then they're all available as you turn your devices on, and they can all connect to the right one.
+
+Start by looking for the icon at the bottom of the screen. If you're connected to a printer, it should show a gray icon. If you're not connected, you'll see a yellow triangle.
+
+Click on the icon to start troubleshooting.
+
+When you get to the settings page, the first thing you'll see is a list of the printers that you're able to connect to.
+
+Once a station has been connected to a printer, it will automatically attempt to connect to that same printer the next time. However, depending on how your Wi Fi network is set up, if there are too many devices at one time, your printer could get kicked off the network.
+
+If that happens, then your device will automatically look for the next available printer. Now, the station says it's connected, but it's not printing in the place you would expect. In that case, make sure your printer gets reconnected to the WiFi, then go to the printer settings on your station and select the printer that you want. To avoid this problem, it's a good idea to set up a separate network just for your printers and stations.
+
+That way, no matter what happens with your main network, it won't affect those connections.
+
+---
+
+## Check-Ins Volunteer Training: How to Print from a Computer (1:28)
+
+We want you to feel comfortable using your printers when people show up to check-in at an event. If you need an immediate fix, the best thing you can do is connect your station to to another printer that's already working. Select the gear icon in the bottom corner to open up your station settings. You'll need to enter a station key, so use yours if you have one or find an administrator.
+
+From there, open up the print to drop down, then choose which station you want to send your labels to.
+
+Now, you can check someone in at this station and the labels will print at this other station that's already up and running.
+
+Okay. If you're just setting things up in a non emergency situation, let's talk about how to get your station connected to the right printer.
+
+Start by looking for the print icon at the bottom of the screen. If you're connected to a printer, it should show a gray icon. If you're not connected, you'll see a yellow triangle.
+
+Click on the triangle to start troubleshooting.
+
+Even if you're connected, there may be times where you want to access your printer settings.
+
+You can always get there by going to the window menu and then clicking printer check. This page will walk you through all the steps that you need to take to get connected. And for all you power users, don't forget to actually plug in your printer.
+
+---
+
+
+# Home
+
+## Dashboards (9:44)
+
+Hey. Let's talk about home dashboards.
+
+But first, let's just talk about home. Okay? What is home? Well, home is one of the Planning Center products that you have access to.
+
+And I know that because everybody at Planning Center, if you can log in to Planning Center on the administrative side, you have access to Planning Center Home by default. You just get it for free. Let's look at our product switcher up here in the top left. When you click on this, it's gonna show you where you can go in Planning Center.
+
+This is a demo account. Right? So I've got everything. Yours is gonna look a little different from mine probably.
+
+But the one thing that you and I have in common is we've got home right here at the top. Click on home. You're gonna land on this page that says dashboards.
+
+The reason we give everybody access to home is because it is where all of Planning Center comes together. If you're doing work in a bunch of different products, if you're in, like, giving and people, you can put that information here. If you're in check ins, calendar, registrations, running some events, you can pull all that information into one place so you can see it at a bird's eye view. So the dashboard that everybody has, it's called my dashboard because it's yours.
+
+This is a private dashboard. Board. Only you have access to this, so you can customize it to be exactly what you need to start your day and get a ten thousand foot view of everything going on in your world. So just I'll walk you through mine real quick.
+
+I'm the facilities person at my church. So I've got my tasks here. I'm also on the prayer team, so I've got those tasks in here. I've got some workflow cards that are overdue that I need to get to.
+
+I've also got a list of my pending approvals and conflicts I need to resolve, as well as a filtered list of events that only I need to know about. It's not every event at the church. It's just the ones that I need to know about. So, like, in my role, this is a great way to start my day.
+
+So I hit home every single morning. I'm gonna walk through this, address all these things, and make sure that everything is on the up and up. Right? So that's a great way to start your day with your private dashboard, but you need to customize it.
+
+It needs to have your information on it. So every one of these little blocks here, these are called widgets. And so you can add widgets by clicking on this add widget button right here. And when you do, you're gonna have to select what product you wanna pull some information from.
+
+So, again, I've got access to everything. You'll only see the ones you have access to here. But let's say I wanna get some information from people.
+
+Okay? Once you pick your product, it's gonna say, okay. Well, what kind of information do you wanna pull back? Because people does, like, workflows and lists and forms and birthdays and all kinds of stuff.
+
+So you can choose what you wanna do here. Like, let's say you wanna see people's upcoming birthdays. Right? There you go.
+
+This is everybody who has a birthday coming up, but that's everybody. If I wanted to pick just my staff list and see just staff member birthdays or pick a group I lead and see their birthdays, I could do that. You can come up here and pick a different widget. Let's see, like, list results.
+
+Lists and people are the thing. I mean, it's the way that you define certain categories of people at your church, like people who give or regularly attend, that kind of stuff. You'll create a list for that inside of people. And then over in home, you can access those lists to, like, visualize that information.
+
+So let's just see. I wanna look I'm gonna select a list in my list results widget, and I'm gonna say active church members. Okay. Wow.
+
+These guys are active and they are consistent. Okay. They're sitting at sixty people and have for a long time. Not a lot of growth, but you know what?
+
+Consistency is key. So we're gonna compare that year over year. Okay. Very consistent here too.
+
+You can add additional lists if you want to. You can change the name of this widget, active members. And now when you add this to your dashboard, it's just gonna show up right there. And every time you come back, you can check on the the list, the information that you just added.
+
+If you need to remove a widget, this little settings gear or if you wanna change something, you can modify anything. You can remove it right here.
+
+Boom. That's it. So get in there, create your dashboard that's gonna help you get all the information you need at your church. Okay?
+
+But you can actually add additional dashboards too. Okay? So what I'm gonna do is I'm gonna click up here. I'm just gonna give you a quick overview of the metrics widgets and the non metrics widgets, which are just the kinds of widgets you can add to a So this dashboard is all metrics widgets.
+
+I made it just to show you guys kinda what it looks like. You're gonna notice a trend. A lot of bar charts, a lot of numbers. We got some colors, pie charts.
+
+It's gonna tell you what product it comes from. It's It's gonna be called what the thing is. Like, this is new profiles from people. Right?
+
+So you're gonna be able to see over time as new profiles are being added to our database. You can check for, hey, how often people are being scheduled in services.
+
+You can look at donor activity. You can look at your church center app visitors. Like, you can do all kinds of stuff with metrics widgets. It's all about numbers.
+
+Right? This is informing you with data. That's what metrics widgets do. But now let's take a look at this other dashboard I've called nonmetrics widgets.
+
+This is everything else. Right? So this is like upcoming events. It's gonna tell you when you have a first time visitor, people who've never come to your church before.
+
+It's gonna highlight them here so you can contact them. Groups overviews. Right? You can look at specific groups and see the status of them.
+
+Like, these guys have pending member requests. These guys took attendance recently. It's gonna give you insight into these things without having to actually go to that product and dig into that information.
+
+So again, this could be anything. This could be your tasks. This could be anniversaries, birthdays, recently edited pages on your website, recent registrations, like an overview of what's going on with your services. So you can see who's confirmed, rejected, who is pending.
+
+You could click right here and it takes you straight to that plan so you can start working on it. The whole goal of Home is to equip you so you can stay on top of everything that you've got going on at your church. Okay? So that is all the different kinds of widgets we offer.
+
+Hopefully, that gives you a little bit of an overview. But now what I wanna do is talk about ways you can actually use these widgets, and you can collaborate with other people at your church, which is the most important and most powerful part of home. We call it shared dashboards or shareable dashboards. So all these dashboards, you can see, it's just my face right here.
+
+I'm the only guy looking at these things. But why would I keep it to myself? Why would I hold this goodness inside? I need to share it with other people.
+
+Right? So here's two examples of ways you can do that. So I'm gonna click right here on engagement. So this is my church's engagement dashboard, and I'm using a combination of different widgets here to communicate what engagement means to us.
+
+So I've got, a notepad widget right here where I've written down exactly what engagement means to our church to explain that to anybody who looks at this page. I've got a bunch of attendance widgets here to see, like, what our attendance looks like. I've got giving located right here. And then I've got a couple of snapshots using lists to show who is a basic engaged person and who is a fully engaged person at the church just so we can try and stay on top of this information.
+
+So let me explain the concept of sharing this dashboard with other people. So like I said before, when I go to add a widget, I'm only gonna see the products that I have access to right here. So let's say that I'm just the events person, and I've only got, like, calendar, check ins, registrations, services. I don't have any of the money stuff.
+
+They said keep this guy far from the money. Right? Keep me out of people so I can't mess with data. Right?
+
+Just let me do events.
+
+So I'm gonna come to this dashboard, and I'm gonna add what I can add, what I can contribute, which is check ins, groups, registrations, services.
+
+But how did this giving one get on here if I don't have access to giving? So what I did is I can add collaborators, people to collaborate with up here by just clicking on these profile icons. It's gonna open up my collaborator, dashboard, collaborators modal here. And I can just start searching and add people to this dashboard.
+
+Now if I add someone as a manager like Eric here, he can come in and he can manage this dashboard. He can add new widgets. He can remove widgets. And so Eric is my giving guy.
+
+So I said, hey, Eric. I'm making an engagement dashboard for the leadership team. Can you please come and add the donation information? And he said, yeah.
+
+Sure. So he came in. He added a widget, and he added this donation widget. Now I can't edit this because I don't have access to giving, but Eric does.
+
+So this is a great way to give people insight into products without having to give them access to those products. It keeps your permissions scoped really tightly, and it makes sure you're not just like doling out keys to the kingdom all over the place when people all they really need is just to know, hey, generally how we doing. So again, let's come back up here. We'll go back to our collaborators.
+
+So Eric's my giving guy. We got Jeff Berg here. He's the the lead pastor. He's in charge of everything.
+
+He needs to see this information. But you know what? I made him a viewer because he doesn't need to be clicking on these things and changing things. He just needs to see the information.
+
+So shared dashboards are the way to share information with people across your entire organization.
+
+So when it comes to information sharing, great. Make a shared dashboard for it. Another thing I've seen people do a lot is make a staff hub or a team hub or a project hub. So what you can do is press this little plus button right here, create a new dashboard, and then you can go through and say, hey.
+
+Look. This is just our staff page right here. I've got a little welcome. Maybe I could put some announcements here.
+
+I've got a birthday list here that I've just filtered down to just our staff members. I've got some links, our quick links widget from home, where you can just link to things that are important resources for your staff. Down here we've got anniversaries and then maybe any information that they wanna see because you can add any widget to this. So we've got membership.
+
+You can see the recently added page on the website. You can see how our services are coming up. So that is two different ways that I've seen people really use Home to its maximum capacity, to share information, to limit permissions in other products, and make it easy to see what you've got going on. So now you're a pro.
+
+Get out there and start sharing dashboards.
+
+---
+
+## Tasks (9:38)
+
+Hey. Let's talk about planning center tasks. So you're probably familiar with the concept of tasks and task lists, lists of tasks, things you need to do. Maybe you're writing it down on a sheet of paper.
+
+Maybe you have an app on your phone or you're using some software to do this for tasks in your personal life or tasks at work. Everybody does. Totally makes sense. You might be asking, why would I use planning center tasks as opposed to whatever it is I'm currently doing?
+
+I'm glad you asked because it's actually on my script to answer that question. It's because it's in planning center. It's because you have access to all of the different things, that you are doing in planning center, and you can relate tasks to those things. You've also got access to the people you're collaborating with and you can assign tasks to them and invite them to task lists without having to worry about, like, inviting them to your personal task list or having another separate login to some software.
+
+So what I'm gonna do is I'm gonna talk about how to use tasks first, then then I'm gonna talk about this cool thing called automations, which just creates tasks for you at the very end. So, as you can see, we're here in home. If you hit the little product switcher here, it lets you switch to different products, aptly named.
+
+I have access to everything. You might not. But the one thing that you are gonna have access to is home. Up here at the top, everybody who can log in to planning center has access to home.
+
+So if you click on home, click on tasks, you're gonna see like the full shebang right here. You've got all the things you can do with the task list. But the reason that I call this Planning Center tasks and not just Home tasks is because you can access them from anywhere. Tasks is like a global feature in Planning Center.
+
+So if you go over, you look at your little profile picture, hop down a couple, you've got this little clipboard here. Clicking this is gonna give you access to all of your task lists, all the different task lists that you have access to. And then you can actually click through and edit or do whatever you want to to these tasks. You can complete them from here.
+
+And it doesn't matter if you're in services, giving, check ins, whatever, you can access your tasks. This is super important. Do not forget about this. Okay?
+
+But if you want the full experience, you gotta go over to home. So, let's just talk through what's on the page here. So we've got a couple of things up here. You've got all tasks that you have access to.
+
+You've got my tasks, which are just the tasks that you're responsible for, and then you have your inbox. Your inbox is just a private task list that only you have access to. So you can just put stuff in here for yourself. But if you wanna share and you wanna collaborate with people, you gotta create a new task list.
+
+So you hit this little button here to create a new list. You can name it whatever you want to. Right? So I've got my prayer team list.
+
+I've got my monthly child dedication, weekly finance tasks, things that need to get done.
+
+So anything that has multiple steps where things could potentially fall through the cracks, you're gonna wanna make a task list for that. So, like, this service is special in the sense that, like, I need to, like, communicate with the parents and get pictures and make a slideshow so that everyone can cry when they see all the cute babies. So, like, that's unique things that I need to remember to do every single month when we have this service. So I made a task list for it.
+
+One we're we're the the one we're really gonna focus on here is the, prayer team task list though. So right now, I'm a prayer team of one. Right? So, like, whenever somebody submits our prayer request form, I get an email, and then I come and I make a task in here to remind myself to pray for those people.
+
+Okay. Well, I could just be praying alone in my closet. I hear that's a thing you're supposed to do, but I wanna invite other people. I want other people to be a part of this prayer team.
+
+Right? So I'm gonna click on my little collaborator picture right here, and then I can add whoever else I want to to this list. So let's see. I'm gonna add Catherine, and I'm gonna add, Isaac.
+
+Alright. So now when I hit done, what it's gonna do is it's gonna fire off an email to both Catherine and Isaac and say, hey. You've got access to the prayer team list now, and it's gonna link them to this page. Because they are collaborators with me, they can do anything. They can add a task. They can complete tasks. They can edit information.
+
+And because they're collaborators, I can assign tasks to them. Right? So let's say Isaac's got a heart for international missions. Great.
+
+He needs to be praying for them. So we've got assigned to right here. And anybody who's a collaborator on this list, I'm just gonna click Isaac, he'll be notified. He's gonna get a notification saying, hey.
+
+Evan gave you a task.
+
+Boom. There you go. There's his picture. That's one huge reason why planning center tasks is so powerful is because you've already got all the people you're working with here, and you can assign tasks.
+
+You can monitor and make sure things are getting done in a reasonable amount of time. The collaboration aspect of this is really where all the power is. Okay. So let's talk about things that regularly happen that you might wanna make task lists for.
+
+You got special events or some volunteer onboarding. I know for a fact that whenever somebody gets onboarded onto my team, I've got a lot of steps. Your your steps are probably gonna look like a lot more than this whenever you have to onboard a new person onto your team. Right?
+
+And so if you're doing the same thing over and over and over again, make a task list for it and turn it into a template. Make a template for the things that you regularly do. Right? So now when I come up here and I wanna make a new task list for my new volunteer, I'm gonna click this little drop down, and I'm gonna see, hey.
+
+Here's my templates. I'm gonna select the volunteer onboarding template.
+
+It gets added to my lists, and then boom. It's just a normal task list. I can go through. I can complete things.
+
+I can add other collaborators to this list. I can do whatever I need to. Like it's a normal task list. But it saved me so much time because it just made these tasks for me.
+
+Another new thing that we're working on right now is this thing called planning center templates. So you've got your templates that you make, and then there's this template that we made, and it's called planning a big event. It's one of the most complicated feats of project management to run like a VBS or like a a harvest festival or, like, whatever it is that you guys do that's a large multi, you know, multi campus, large scale, many people event.
+
+That's all really complicated, so we wanted to simplify that for you. So we made a template called planning a big event.
+
+And you can go through and treat this just like any other template. You can go through. It'll tell you the steps. It'll link out to our documentation and tell you how to use all of our different products to work together to run a big event.
+
+But because it's your list and you might not let's say let's say you don't use calendar, for example. Right? You can actually just go through and just, like, remove this. You can modify it however you want it to be.
+
+You can add new tasks. You can add collaborators and help you stay on top of all the things that you need to do to pull off a large event. We're gonna be making more of these as time goes on, so keep an eye out for more planning center templates.
+
+So okay. Now you know how to use templates, how to use planning center templates, how to make lists and share them with other people. Let's talk about automations because that really is the special sauce here. Okay?
+
+So we'll go back to my prayer team list. Like I said before, I've got a form in people called prayer requests. And whenever somebody submits that form, I get an email, and then I come and I add a task to this list. Wouldn't it be cool if I didn't have to do that though?
+
+Wouldn't it be cool if it just automatically made a task for me? Again, so glad you asked. This is great. Because planning center can do that.
+
+Alright. I already have this open. So I'm just gonna go over to people, and I'm gonna go to my form. This is my prayer request form in people.
+
+And I want you to keep an eye out for this. Anytime you see this automations tab, it shows up in a lot of different places in planning center. What this means is whatever you're looking at here, if it has the automations tab, that means when something happens with this thing, you can do something else. Okay?
+
+So I'll show you what I mean by that. I'm gonna click automations, and you can see there are a couple of things. So whenever somebody submits this form, it's gonna send them an email from a specific template. It's also gonna add that person to a workflow in People.
+
+So this is already fantastic. There are all kinds of use cases and things you can do with automations, but let's just talk about tasks specifically real quick. I wanna make a task to pray for the person who submitted this prayer request. So I'm gonna go to create a new automation, create automation, and then it's all the logic that goes with the automation.
+
+So when a person submits the form, I wanna take an action in home, and that action is creating a task. The task name is gonna be pray for this person.
+
+And what task list do I want to add it to? Well, I wanna add it to a specific list. It's not just for me. It's for a team.
+
+And then that specific list is the prayer team. And then let's just say Isaac is my guy. I'm just gonna give it to Isaac every time it comes in, and then he can choose who he wants to reassign it to. Alright?
+
+Create automation. That's it. Now every time somebody submits a request, over here in the submissions, you can see every time somebody submits a request, it's also gonna create a task in home. So I have one that I've already gotten ready for us to look at because it does something special when you create a task from an automation.
+
+So I'm going to go to all my tasks, and I'm gonna look at the pray for this person task. So this was created from the automation.
+
+And when it it's created this way, there's this related to field down here. And when I click on these things, I can go straight to the form submission and see this task is related to this form submission.
+
+I can just grab this description right here, and I can copy it, paste it over here. I could even change it out and say I wanna pray for this person. I wanna put their name in here, and we'll just say pray for this guy.
+
+Alright. Then we'll save. And look. Now I've got all that information here. Everyone on my prayer team has access to it, and it was created for me automatically.
+
+How cool is that? And then it has a link to all the information. If I just wanna go to his profile and see what he's doing at the church, great. Right?
+
+So that is automations. And now you are a task master. You know all about using task lists at Planning Center from anywhere. So, go out and, start completing tasks.
+
+---
+
+## Using Home as a Children's Ministry Leader (7:49)
+
+Now what I wanna do is I wanna walk you through how the dashboard, tasks, and toolbar of home can be used in your ministry work. And we're gonna start off by going through how you might use home as a children's ministry leader.
+
+So here, I'm logged in as Jacqueline.
+
+Now Jacqueline is our persona for a children's ministry pastor. Now as a children's ministry pastor, you might have a lot going on. You are managing teams of people in services. You're managing their schedules.
+
+You're sending them curriculum stuff. You're in services. It's a lot. You're also managing events. You've got a lot of different things going on.
+
+You've got weekly things. You've got special services. You've got all the things in registrations.
+
+Then you're also running check ins. You've got a whole ton of people who are checking kids in day to day. You're in check ins. You're also in calendar because that's where you schedule everything. So you are just all over the place in ministry and in planning center.
+
+Home is gonna help you tie all of those things together as you go about your work. So as Jacqueline, I am here looking at my dashboard, and the first thing that I'm seeing is my schedule. So just anything that I have coming up, I'm gonna see right here. I also have my workflow cards.
+
+So as a worship, or not a worship leader, as a children's ministry pastor, I'm gonna be following up with first time guests, anyone who came to church for the first time this Sunday. Got a couple of kids who are interested in baptism. I wanna reach out to them, ask them about their journey. I also have some tasks, which which I'm gonna get into in a little bit.
+
+These are things that I might need to take action on really quickly. And then I just wanna have a quick pulse on everything else that's going on in my children's ministry, recent registrations, upcoming events, attendance. This is just a metric that I can see what's going on. My first time visitors, upcoming birthdays, and then I'm also a participant in a group.
+
+I'm not just a pastor. I am also involved in a community, and so I can see my groups here so that as I'm going about my ministry work, I can also be cared for and connect with my community. Okay? So this is my dashboard, as a Jacqueline as a children's pastor.
+
+Alright. Then I can go over my tasks.
+
+Click the tab. Great. So when I first log in, I'm gonna see all of the tasks that I am responsible for. Now from this task list, I can organize a couple things.
+
+I have the most important things listed by due date right now, but I could also sort it by lists. So anything that's related to Awana, I can see it here. More Awana, and then just my inbox. K?
+
+From here, I can always add a task like that.
+
+I have a couple of different lists.
+
+Again, as a children's ministry pastor, I've got a lot going on. So I've got a list for my Sunday school prep for this week. I've also got a winter camp planning list and a nativity prep because Christmas is right around the corner, which is crazy.
+
+And then I also have a couple of templates for those things that are happening all the time. Awana, always happening every Wednesday.
+
+Sunday school, always happening on Sunday. I have a couple of templates set up so that I don't have to recreate those task lists every week. I've got a couple of different people that I'm collaborating with. So these are all of the teachers and volunteers that are helping me with Awana week to week. We're all on the list together so that we can assign things to each other from here.
+
+Easy way to stay organized. You can always add a new list with a template from here. Oh, that was a new task list. Well, that's how to create a new task list. Here's another way you can also oops.
+
+Okay.
+
+Sometimes things go wrong, and then they go right after you hit command r. Alright. So I can also create a list from a template here. So that was what I was trying to do. Okay.
+
+Now, there are a couple of other ways that you can get tasks onto your list. Let's say as Jacqueline, I am over in services figuring out my schedules and my plans. Now if I go over to people and I wanna look at my team of people who are involved week to week in children's ministry. You're gonna click on children's ministry here at all of my teams.
+
+I can set up an automation so that when someone is added to this team, I get a task to, set up a meeting with them. So that's just a task like, hey. They got added to the team. They've already been through the workflow to make sure that they're set.
+
+They've got their background check. But now they're officially a volunteer of children's ministry. It's time for a one on one meeting with the pastor. Let's get that scheduled, create the automation.
+
+And now whenever someone's added to that team, I'm gonna get a task in my inbox, schedule coffee. Let's do this. Okay?
+
+So that's a way to add a task.
+
+Also, since we're in services, let me show you how you might be able to use this new thing called chat.
+
+So chat is a new feature in beta.
+
+And when I go over to my plan, I'm gonna see for this Sunday, I've got a couple of people, here, scheduled. They are all confirmed. Very exciting. I need one more person, but we're gonna get to that in a minute.
+
+I can go over to chat here with this little bubble in the sidebar, new conversation, and I wanna start a chat with all of the people who are scheduled for this week. I could start a chat with all of the people who are in this team, but not all of them are scheduled for this week. So I'm gonna filter by a plan, and I'm gonna choose October sixth. So it's just the people who are set up.
+
+I can also see here that Ally is a volunteer, but she's under eighteen, so she's not eligible to chat. That's a safety feature we have so that only people who are over the age of eighteen can participate in those conversations, so she can't chat.
+
+Let's start the conversation.
+
+Looking forward to extra capital u there. Okay. So I've got all of the people. I'm gonna chat with them. Oh, you know what? I need to add the other person. So I'm gonna click here.
+
+I'm gonna add that volunteer. I'm gonna add Matthew. He's available.
+
+Add Matthew. Okay. I'm gonna go back over to that chat, start the conversation, and, oh my gosh. Look.
+
+Matthew. Oh, he hasn't confirmed yet. That's what I gotta do. Okay. Matthew, I made a decision for you. You are coming this Sunday.
+
+And in a minute, you're gonna see something so cool. There's Matthew. So the chat automatically, updated to include Matthew in the chat.
+
+You can go back and oh my gosh. There's Matthew. He's coming. This is so exciting. Okay. So that's how chat could work for you as a children's ministry pastor. Go back over to chat.
+
+You can also see all of the different chats that I'm involved with, as a group member or leader. I can always start a new conversation with the teams that I lead or participate in a group.
+
+So that is an overview of how you might be able to use home as a children's ministry leader week to week, day to day.
+
+---
+
+## Home for Executive Leadership (14:10)
+
+Hey, let's talk about using Planning Center Home as a leadership team member, as an executive team member. I'm talking about the people at the church who run the business side of things, the people who are looking at the money that's coming in and they're saying, should we do a building addition or should we open a new campus?
+
+Are the events that we're putting on, are they actually resulting in the type of engagement that we want?
+
+Are we able to hire new staff? Like these people who are making these kind of decisions, they're not people who typically live in planning center. They're not going into every single one of the different planning center products and trying to get information out. They're asking other people at the church to say, Hey, can you pull a report on that?
+
+Hey, can you actually give me a chart that shows this? Hey, can you And Home is made specifically for these kinds of people. Home is useful to pretty much anybody who uses planning center, but specifically for leadership team members. This has been such an eye opener for so many executive leadership team people at churches that I've talked to.
+
+So if that is not you, please share this video with the person who would greatly benefit from it at your church. So first I'm gonna talk through a couple of things, talk about home, what it is, what are these two tabs up here, what you can do with the dashboard.
+
+And then we'll talk about tasks a little bit at the end, but primarily we're gonna focus on dashboards and information and data visualization this time around. So Home is one of our Planning Center products, but it's different from all of the other ones in the sense that everybody has access to Home. Anyone who can log into the Planning Center on the administrative side of Planning Center can just click the little product switcher and click on Home and you'll land right here on my dashboard. Now my dashboard is unique.
+
+It's private, which means it can't be shared with anybody else. Any other dashboard that you create, you can invite other people into it and you can collaborate with other people and share on those dashboards. And that's the true power of the leadership team dashboard is these guys right here. But first, we're just gonna talk about your private dashboard and how it could help you out.
+
+So every one of these little squares you see here, this is called a widget. If you wanna add a new widget, you click the add widgets button up here. You'll see that you can select a product first. And so again, like I said, leadership team members are typically not in all of the planning center products.
+
+Maybe they're in giving, maybe they're in people, but they need information from all those other products. That's where the shared dashboards come in, but I'm just showing you this so you have some context for when I talk about adding widgets later. So each product has widgets that belong to it. And each widget like a window into that product, into a specific piece of information from that product.
+
+So let's say calendar, right? This is our calendaring product. It's where all your events from your church come in. So typically, people have to approve the use of rooms and resources in calendar to make sure you like don't double book the sanctuary or that no two small groups are trying to use the same room at your facilities.
+
+Calendar also has this concept of event request forms where people can request to use rooms at your church. This is great for like community outreach or for like neighborhoods who wanna come in or if you have non profits that need a place to work or whatever it is. And so I, as a leadership team member, let's just pretend I'm a leadership team member real quick. I've got this calendar widget here and it's got my pending approvals on it.
+
+These are the ones that are just for me. And this is only for the ones that are external requests. So I have an HOA that wants to meet here. I wanna be in charge of who is allowed to meet at our church and if that's okay or not.
+
+And then I'm gonna let someone else handle the room and resource stuff. So I've got this widget here just so I'm able to respond to people in the community in a timely manner. So I can just click view my approvals right here. It'll take me straight to that.
+
+I can have a conversation with the person who requested it. I can approve it, reject it.
+
+Great. That helps me stay on top of things. Then we have people here. That's this little blue icon with a little people avatars on it.
+
+People is like your database of people but it also has this feature called workflows. And a workflow in people is super powerful because it's a linear progression of things. It's multiple steps that work towards an end. So let's say as a leadership team member, I'm responsible for the elder group.
+
+And so our church, like we just had, we had an elder move out and he wants to be with his grandkids and he moved to Florida, right? And so we have an opening. And so what our elder team does is they nominate new people to be a part of the elder board. And so I've got a workflow step for both of these new people.
+
+So we're going to nominate them, interview them, talk about them and then eventually pick one of them to be added to our elder board. And that's very important to me. And so I've got it on my private dashboard right here. So I can just click and go straight to see what step these guys are on and what people are saying about them.
+
+And then on top of that, let's say I run our all staff meeting. We do an all staff meeting once a month and I wanna know whose birthday it is and whose anniversary it is. This is great because in people, there's also this concept of a list and I'm gonna talk about lists a lot. So if you're not familiar, you maybe need to go watch a people video on lists, but at a high level, a list is just some criteria.
+
+It's just some conditions that you can put on your database and it will return the people that fit that criteria. So if I just say, hey, want people who are only staff members who are of the membership type staff, I can create a list for that. And then I can use this birthday widget or this anniversaries widget. There, look, I'll just show you.
+
+Click on the settings gear here and you can see, I say, hey, I named it staff birthdays. I don't want my entire database here. I just want people on specific lists. And so I have my active staff list that I searched for and added right here.
+
+You can search for more lists if you want to and add multiple lists, whatever you wanna do here.
+
+But what that allows me to do is just see my staff member birthdays and anniversaries so that I'm ready for our all staff meeting to celebrate these people. I've also got another widget down here. This is our home widget. Home, it's not really looking into any other product.
+
+It's kind of just like random stuff that is useful on a dashboard. Right? And so if you wanna be able to use your browser links for like, you know, your personal use but you wanna keep your church work, your, you know, planning center specific work in one place, you can use this quick links widget to just save, let's see, I'll even show you this one. To save information like, all right, this is like our church documentation.
+
+This is our HR docs. This is our internal things. This is where we have links to third party products that we use to plan and visualize other things or communicate other things. This is just a quick way to keep it front and center so that when you drop on this page and you're looking at all this other information, it can act as a reminder and a quick way to get where you're trying to go to get all the information you need to do your job.
+
+So this is your private dashboard. Let's talk about these shared dashboards over here. The number one thing that most leadership team members are concerned with is engagement. And engagement typically boils down to about four things.
+
+It's attendance, it's being in a group or taking a class, it is serving, and giving. Every church cares about some combination of these four things.
+
+And so what an engagement dashboard can do for you is that you can get information on check ins, on groups, on donations, on scheduling to serve. You can get all this information from our check ins, groups, services, and giving products. And And then as you can see up here, we got a lot of these little blue squares. This is people because people has that list functionality in it that I was talking about.
+
+You can create lists for all kinds of things, for engagement because engagement looks different at every church. So you can create a list that is specifically defining the engagement of people at your church. And then you can add a widget from people, like a demographic widget, and it can break down the demographics of the people on that list. So I know that sounds a little confusing.
+
+Let's say at my church, engagement is, hey, you attend at least, once a month. You regularly give and you are in a small group. Right? If I just say those are the three things that my church cares about, that's how we define engagement, I can make a list with those conditions and it's gonna show me just those people on a list.
+
+Then I can take that list and add all these widgets on my dashboard like this engagement by age right here. I wanna see who are the most engaged people at my church. This is a test organization, so obviously four to eleven year olds are probably not gonna be your most engaged group of people, or maybe they are. Maybe you have a fantastic youth ministry and they've got a bankroll and they're just donating like crazy to your church, who knows?
+
+But that's what these widgets allow you to do. You can see, hey, who's most engaged by campus? Who, what are the different membership types that make up our church? Like how do, how many people do we have who are first time visitors versus regular attendees versus fully engaged versus partially engaged people.
+
+You can visualize all this information and it's completely customizable to exactly what you need at your church. So that's the demographics piece, that's the lists piece. But then down here, if you want more information, like these are just a couple of widgets that I grabbed from check ins, groups, services, and giving here. But each one of these products has all kinds of other widgets you can add to show any information you want for those products.
+
+But like I said before, it's pretty unlikely that leadership team members have access to all of the different planning center products. Well, here is where the power of the shared dashboard comes in. So I made this engagement dashboard and me as a leadership team team member, I've really only got access to people. So I could add all these, but I can't add the other stuff.
+
+The cool thing is, look, I've got Jason here. He's our giving person. I've got Lila here. She is our groups person.
+
+So what I can do is I can just click on these avatars right here or I can just go to settings and click manage collaborators.
+
+And I can add different collaborators to the dashboard. So I can make Jason a manager. I can make Lila a manager. I can say Peter's not a manager anymore.
+
+So viewers, they can come in and just look at this information. They can't add widgets, they can't remove widgets, they can't change the settings, but managers can. So when I add them, I can then message them and say, hey Jason, can you add a couple of widgets about upcoming donations? And Lila, can you add some groups widgets that kind of give us an overview into what's happening in group's world?
+
+And then you're off to the races. Now, as a leadership team member, I don't have to have access to check ins and groups and services or giving. I can have my staff members add those widgets for me. It's like creating a dynamic report that I can look at anytime I want to.
+
+So this is super powerful and it makes it so focused who has access to what products and planning center and what information they can see. So I kind of drove the point home about giving, but a lot of times I've seen executive team members have giving dashboards as well. So let's just look at that real quick. This is a few examples of some of our other giving widgets.
+
+We've got batches in progress. We have a recurring donation forecast. You can even break this down by campus and see what's gonna happen next month based on previous activity. You can see donors by campus using that demographics widget and a list that is specifically pointed at active members and donors.
+
+You can see total amount donated, all kinds of stuff. This church is doing real well. Those four year olds at this church are just rolling in it, Scrooge McDuck style. So, okay.
+
+So that's it. So what I'm trying to say is leadership team members, please make yourself a private dashboard with your personal to dos on it. Make an engagement dashboard and invite all the people at your church to contribute information to it to help you define what engagement looks like at your church. And then create a giving dashboard with your finance person so you can stay on top of the money that's coming in and going out.
+
+So that's dashboards. And again, you can make as many dashboards as you want. You can add whatever combination of widgets that you want to get the information that you need to get in Planning Center. Now let's briefly talk about tasks.
+
+So I'll be honest, I've not seen a whole lot of leadership team members using tasks specifically because this is way more for like your events people who need to delegate out different things and make Sunday happen and make the next big event happen. But the few times I have seen this, it's typically for quarterly planning of things, reminders for planning center specific things. Like I have a finance team meeting task list here. I've added Diane, who's my groups person, but let me click here and I'm gonna add Jason, who's my finance person.
+
+I say done.
+
+So when I add Jason to this task list, what that means is he's gonna get an email saying you've been added to the finance team meetings task list. Then he can see this page in his home product or over here in the sidebar when you click tasks right here, you can hop in here and say finance team meetings. Look, so from the tasks menu in the sidebar anywhere in planning center, you can come over here and see any of the task lists that you have access to. You can complete them, edit them, whatever you need to do.
+
+But what this allows me to do is I can come in now and I can assign these tasks to Jason and say, hey, I need you to pull reports like physical reports, not just adding a widget to a dashboard, but pull out reports that I can print out and bring to the elder meeting and bring to the monthly budget meeting. And I can set recurring dates on these. So this happens the first of every month or whatever cycle that we have for our meetings.
+
+There's also like strategic planning or if you're a part of a church network. Any type of these things that you do quarterly or monthly or whatever, you can create tasks just to help yourself stay on top of it. And then of course, if you go back to your dashboard here, there's a widget that's a tasks widget and it's my upcoming tasks. And this is what's gonna keep you on top of these types of things that you've got coming up regularly.
+
+Okay, so or onboarding of a staff member, that's a pretty another pretty regular thing that I've seen people do. Executive team members typically have to interview this person, give them access to all of the different things, maybe train them on something, take them out to lunch, whatever it is. A workflow is a sequential order of things inside of people. But a task list is the kind of stuff you can just kinda do whenever.
+
+It's a list of ten things and you can check them off in whatever order you want to, right? So that is a general overview of Planning Center Home and how you can use it as an executive team member, as a leadership team member. Just remember, it's all about collaboration. It's all about bringing in everyone else, distributing these tasks, assigning them to people, delegating, getting that information out of the other planning center products to equip you to do the best work that you can do.
+
+---
+
+## Using Home as a Worship Leader (12:51)
+
+Hey, let's talk about how worship leaders in particular can use Planning Center Home to up their game, stay on top of all the stuff they have to do, and also contribute information to the rest of the organization in a really meaningful way. So let's talk about what home is first. So home is dashboards and tasks. It's two different things.
+
+The cool thing about this is what these do is they just open up a window into the rest of Planning Center. They let you see anything that you have access to, any products, any resources or information you have access to. You can grab that out of Planning Center and using widgets, is what we call these little squares here. You can add a widget right here.
+
+What you can do is you can just grab that information and dump a widget of that information onto your dashboard so that you can see it really easily at a glance. And you can click through and just go straight to very specific things that are pertinent to you. So, let's talk about your, dashboards first and then we'll talk a little bit about tasks later. There's a separate video about how to use tasks.
+
+So I'm just gonna do a quick flyby of tasks later. But dashboards are the big thing we're talking about today. So everybody who can log in to Planning Center, you can use the little product switcher up here and go straight to home. Everybody is gonna have this and their little navigation up here.
+
+And when you go to home, you're gonna land on my dashboard, which is your private dashboard. You can't share it with anybody else. Only you can see it. It's specific to you.
+
+And the whole idea behind this is that it gives you a a launching point, a starting point for your day or your week, into all the things you have to do at Planning Center. So like I said before, you can add widgets your dashboard if you want to, but I've already kind of set this up for a worship leader. So I'm a worship leader at my church. I've got my tasks widget right here, and I can go to my settings, and I can change it to be whatever display of tasks I would like for it to be.
+
+So I've got a bunch of tasks in Planning Center, but on my dashboard, I only wanna see my tasks, not all the tasks I can see, just the ones that are assigned to me. And then I wanna see the ones that are due this week because Sunday is coming and I got a bunch of stuff to do before that happens. So this is really helpful for me to see any of my overdue tasks plus anything that's due this week front and center. So I can just click through and get straight to those things.
+
+Then I've got my workflow cards. So workflows, these are these are things this is a feature inside of Planning Center People that it's a it's a series of steps. It's like a process queue that you walk people through. And so as a worship leader, I have this worship team interest workflow.
+
+People will fill out a form and then they get automatically added to this workflow.
+
+And there's a bunch of different steps that I like to do. First, I like to, meet the person, talk to them. I like to have them come do an audition or send me a video and then or a recording. And then I like to have them come and show up on a Sunday and just shadow somebody, like just be in the environment and get to know people, and then I can schedule them. So that's a workflow that I do for all of my new musicians and singers and production people. And so what this widget does is it lets me know, hey, here's some people who are ready and they're at certain steps of the workflow. And I can just click right through and go straight to this person and communicate with them or change the step that they're on all from my home dashboard.
+
+So that's other products. Now let's talk about services. This is the one that worship leaders spend most of their time in. Right?
+
+They're scheduling people. They're putting together the order of service. So I got a couple of widgets here. I've got plans forecast and I've got team breakdown.
+
+So plans forecast, this is gonna look at some upcoming plans and just make sure that, hey, I've got the people scheduled and they've all actually responded. As you can see, as you're probably well familiar with, if you're a worship leader, there's a lot of pending people who have not responded yet. But what this view does is it's gonna show me the next few plans that I have scheduled in any given service type, and then it's gonna show me their statuses. So if I need to go and get on somebody so that they actually update their thing and accept their requests, or I see that people have rejected and I can go, like, fill their spot, this is a great way for me to get this overview in one place and jump straight.
+
+I can just click on this and jump straight to it and be able to edit that information. Next to it, I've got team breakdown.
+
+So what team breakdown is gonna do it's gonna show you just the next service. So January eleventh is my next one. It's gonna show me January eleventh. But what I've got it doing is showing every single team.
+
+I'm only responsible for the band, but I wanna see everybody. Because a lot of times organizations view the worship leader as like the owner of the services account. And usually, a lot of times anyway, that's how it actually worked because you just started using services, then the rest of your organization started using Planning Center and you're kind of the expert. So do your due diligence and share your services prowess with the rest of your team by looking at everybody's team and making sure everybody has got somebody scheduled.
+
+Like, own that and help out the rest of your organization. So you'll see here, this is just the team that I am responsible for, but this is every team. That's because I set these widgets up if I go into plans forecast. I only wanna see the teams I lead for this in particular because I wanna plan out in the future and make sure that all my people are ready.
+
+For team breakdown, this is like the Sunday's coming widget. Right? The next one. And I set this one to be all teams. I could just be teams I lead, but that's not super helpful. I think all teams, unless you manage multiple teams. Right?
+
+Excuse me. All teams is super helpful because now I can see, hey. For this upcoming service, are we actually ready as a team? So that's very important.
+
+I've also got my schedule down here, but, I'm really busy managing other people on Sunday right now, and I can't have a chance to play just yet. So when I do get a schedule and I'm actually serving in services, I'll be able to see my schedules down here. So this right here, this gives me an overview of so much of the things that I have to do at the church as a worship leader. And I can't stress enough how helpful this is for anybody, to just stay on top of what they need to do.
+
+Okay. That's your private dashboard. Let's talk about shared dashboards. So shared dashboards, any other dashboard you create using this little plus button right here has the, potential to be shared.
+
+You can choose to invite other people to it. You could just create a bunch of other private dashboards, but the power is being able to collaborate with other people. Like, let's look at the weekly worship prep dashboard. So this is a dashboard that I made for the administrative side.
+
+This is all the teams that are responsible for pulling off a Sunday. And I've invited all of them over here. You can see everyone who has access to this right here. You can even manage who has access to this by clicking.
+
+And you can see you can invite people as viewers or managers. Manager just means you can edit and add widgets or remove widgets. Viewer means you can't. You can just see the information and click on it.
+
+So you can invite anybody you want to at any permission level that you want to. You can remove people.
+
+And so what I've done here is I have a notepad widget where I have some announcements. I've got a quick links widget, which is like, you know, production resources, forms, inspiration videos, like whatever you wanna add here that everyone can kinda have access to. So this acts as like a hub for your administrative team. Even this right here, the tasks, it's not the same tasks widget that I have on my private dashboard. It's just my tasks. What I did here is I added the team weekly prep list, and now this is a shared collaborative task list that we can all look at from one place and see what's done and what's not done.
+
+Then I've got upcoming events right here. So this is really, important for the team that pulls off Sunday because what I've done is this is in calendar, which is our calendaring product. And if I go to the settings here, I don't wanna see every single event that's in calendar. I just wanna see the ones that are the worship service type that are approved.
+
+And when I hit save, boom. Now I'm only seeing the events that are pertinent to this team right here. How many times can I say pertinent in one recording? So that's this is like your administrative side.
+
+This gets everybody on the same page. You could say, hey, everybody pull up the dashboard and let's talk about what's happening this Sunday. Right? And then you've got all this context right here.
+
+The other option is that you could have a team hub, maybe for your musicians and your production team, and you could have an announcement. You could have links for them like join a small group. Here's a band playlist on Spotify or Apple Music or whatever. They've got some documentation on how to do things all listed right here in a little wiki knowledge base type thing.
+
+You've got upcoming birthdays from the people app. You've got upcoming upcoming services. You've got, hey, is our next service ready to go right here? It's the same widget from your private dashboard pulled over here.
+
+I've seen so many people use this to varying degrees and it's such a powerful tool. Anybody who can be scheduled in services can access this page. So they don't have to be an administrator or planning center. You can just share this link with them or you can add them as a collaborator, as a viewer, and they'll get an email saying, hey, you have access to this page now.
+
+So that's two really important ways that I've seen people use, dashboards as team hubs, ways to pull people together and get them on the same page. But one of the superpowers of the shared dashboard is the ability for people, to add information that only they have access to and share it with other people. I see a lot of people do this with, like, executive pastors who, like, don't have access to all the planning centers products, but they want information at a higher level or for, you know, campuses, teams, departments, people in that same situation. So what I have here is a worship engagement dashboard.
+
+I've invited a bunch of different people from across my whole organization, and I've got this widget right here. You can take attendance inside of services to see who actually showed up, not just who was scheduled. There's also another widget for scheduling information. I've got the plans forecast and the team breakdown here.
+
+But this is just the information that I have access to as the worship leader in services. So I was able to add these widgets because I have access to services. Not everybody in the organization does. But then Amy here, she came and she has access to our registrations product that I don't have access to.
+
+And because I added her as a manager to this dashboard, she added recent registrations for, a lot of our upcoming events, worship night attendance right here. And then I invited Steven here, and he's our people administrator. And so he's got access to all of our work flows for worship team interest and all the other things that are pertinent to this group of people. And he was able to add this widget.
+
+And so this is where, shared dashboards really shine is you can collaborate with other people and bring to the table the part of planning center that you're responsible for, and then everybody else can bring their information. And now you have a super comprehensive view of everything going on at the church. So again, this is just like dummy information for a test organization.
+
+You can work with your org and find all the widgets that really work for you to get the high level overview about things that are actually gonna move the needle at your church or things that need attention. So I'm super super excited to see what you learn to do with shared dashboards.
+
+Whether it's, you know, informative or it's a hub for your team or it's just you staying on top of all the things that you need to do at Planning Center.
+
+Excuse me. So I will say the tasks there's another video about tasks. But one thing that I really wanted to talk about for worship leaders in particular is you probably find yourself doing the same type of stuff stuff over and over and over again, especially like weekly service prep stuff or maybe like when you do get a new musician, there's some onboarding things you wanna do. You have to add them to certain products.
+
+You wanna make sure that you talk to them about certain things or train them on certain things. So I've made two templates down here. I've got weekly service prep and musician onboarding. So a template is just a way for you to create a bunch of tasks and like relative due dates and information and assign them to certain people.
+
+And then anytime that new that thing spins up, anytime there's a new weekly service you gotta prepare for, When you're going to add a a task list, you just hit this drop down here and you can create either the weekly service prep or the musician onboarding template and boom. When you do that, it's gonna make a new instance of that task list and it's gonna have all of the things right here relative to the due date of when you created it, which is great. And then over here in the sidebar, right here, you just click this guy right here. It's gonna give you access to all of this stuff from anywhere inside of planning center.
+
+So even when you head over to services and you're doing all your services y work, services y, you can click on this right here and boom. You've got access to all of your different task lists and and even your workflow with all of the different people on the worship team. So that's just a couple of ways that you can use services as a worship leader to up your game, stay on top of things, and share that sweet, sweet services information with the other people at your organization.
+
+---
+
+
+# Giving
+
+## Giving Overview (1:11)
+
+Hi. I'm Emily, and your sixty second intro to Planning Center Giving starts right now. Giving is all about making it easy for people to give, and making it easy for your church accept and process donations.
+
+Now there are two sides to giving. There's the admin side, planning center, which is where you're watching this video right now. This is where you and your team will manage your donors and their donations.
+
+Then there's the public side, church center, which donors can access from the web or the mobile app. Where they can give online and manage their account, including their giving history and recurring donations.
+
+Now let's big picture for a second. Giving is just one part of the playing center universe. We've got a range of products designed for the different areas of in your church. And when you get those products working together, all sorts of things are possible.
+
+But let's not get too far ahead of ourselves. For now, Come on in, take a look around, and make yourself at home. As you explore, if you have any questions, click the question mark in the top right hand corner of the screen. From there, you can check out our help docs or get in touch with our support team.
+
+We're so glad you're here and we can't wait to see what you do at the place.
+
+---
+
+## Setting Up Your Giving Account (3:12)
+
+Let's talk about setting up your account in planning center giving. So after you go through an initial process of linking a Stripe account and configuring other organization details, you're gonna be taken to this page and you may be asking yourself, where do I begin? Well, a great place to start would be in the manage tab. If you head over here, you're gonna see a couple items listed here such as your funds that you're using to manage your donations with your church, labels, statements is, important for statement season.
+
+You may have different payment sources that you're utilizing other than planning center, like qualified charitable distributions, this is where you can manage those. One really important thing I wanna call attention to is the donation form. So this is gonna be a lot of where your donors are visiting when they're making their donations to your church. If you want to toggle on certain settings, like whether or not you can accept credit card donations, or if you're gonna include the ability for them to drop a memo line for a specific fund.
+
+Here's where you can manage those. All of that is gonna take place on your church center site. So you may see this up in the corner here to view on church center. Church center is generally the home for all of your online giving.
+
+So, you can see the URL that you have set up, some markers here to indicate whether it's active on your account, especially if you have this enabled for the mobile app.
+
+So church center is definitely important part of the planning center giving ecosystem. We have also got some videos here, for whether or not you want people to cover the fee and how to set that up accordingly. Below that, we've got our Stripe page for you to, manage that integration.
+
+And then as well, there's some other settings that you may wanna take note of whether or not you you wish to implement donor numbers to help manage your different donors in your system as well as registering to text to give. If you haven't already done that, this can be a great resource for your church. And so be sure to check out all of these in the manage tab. One thing I also wanna call attention to is this question mark bubble in the upper right hand corner.
+
+We can, provide all sorts of resources for you, through our documentation. If you wanna just search certain keywords, like giving through batches, it'll take you to that user article. Or if you're wanting a little bit more hands on help, you could either email our support team or schedule a call with an agent, and they'll be able to help you that way, or watch one of our other Planning Center University videos, at a time that works for you. So, we hope you reach out, for help soon and look forward to serving you.
+
+---
+
+## Managing User Permissions (3:59)
+
+So now we want to set up different members of our team to be able to help manage different things across the giving platforms.
+
+So to do that, I'm going to head to this people tab here, and right away it's gonna take you to a list of donors. There's also this users tab. That's where we're going to set different permission levels for team members to be able to help with managing, our giving. So, right away you can see there's a list of names here, different user roles, and then contact information.
+
+I'm gonna select add user, and then I'm gonna type in a member of my team that I know is already in our system. We've got Jacob here. He's not yet been given, permissions for giving yet, so so I'm gonna select Jacob.
+
+And then, if you click details here, that's just gonna confirm some, different contact data there. If I click continue, it's gonna pull up this permissions chart, and what I love about this is it'll give you a sort of a reference guide for what levels of permission this person already has. But, of course, we're just looking at giving right now. There's no access.
+
+So it's gonna give me this drop down where I have a couple options. Obviously, administrator is gonna be our highest level, but right below that, bookkeeper is just like administrator in that, someone who's set up as a bookkeeper is able to manage a whole lot in giving, except they don't have the ability to access the settings page. So, your Stripe account setup, all those things that we talked about in the last video, those are just gonna be for your administrator. The other differences with bookkeepers, they'll be able to see different permission levels with other people on your team, but they're not able to edit or adjust those, in any way.
+
+That's also a role reserved for your administrator.
+
+Then we have counter. This is a great, permission level for maybe volunteers that you have on your team that are gonna help out with counting, physical donations after your service like checks, cash, but they're not gonna have much access beyond that to change any, crucial settings, or view donor data. And then after that, we've got reviewer. Reviewer is another great permission level.
+
+It's most often used for, like, a pastor who wants to see, like, a bird's eye view of what amount of money is coming through the church, how's it, being funneled, timeline for different recurring donations, but that sensitive donor data isn't visible. They can't really see exactly who is is giving, at any given time. So, highly recommend, that reviewer permission level for your, people wanting something similar to that. I'm gonna go ahead and set Jacob up as an administrator here.
+
+I'm gonna click update. There we go.
+
+Now if I type in Jacob's name, there he is giving administrator.
+
+Awesome. So I'm gonna click his profile, and, a couple of things I wanna point out here, if you notice on the right hand side, there's different notifications that I can set him up with. Maybe you've got someone who's wanting to be really on top of communications. You could toggle all of these on for them, if they want to be notified of, for instance, anytime a new recurring donation is established, if processing has failed for a donor, whenever a batch is committed. These are great options to have, but also depending on the activity within your organization, it could be a lot. So, communicate with your team and see how they want these set. They, of course, can turn them on and off themselves, but, that's it for our user permissions.
+
+---
+
+## Creating and Managing Funds (3:28)
+
+Alright. I'd love to show you how to set up some funds for your organization in planning center giving. So first, you're gonna want to head to the manage tab and actually right away it's gonna take you straight to where you can start to build new funds for donors to, direct their giving towards. And so, you're gonna see this button here to open a new fund.
+
+I'm gonna select that and, let's give this one a name, fall missions trip. We could even give it a nice little fall color there. If you wanna get more specific in the description, let's say you have multiple trips, throughout the year. I'm gonna name this one Panama.
+
+And, if you happen to use ledger codes as well, there's an option to add one there. If you're not sure what those are, if you click that little eye icon, it gives you a little explanation there to see if that would be of help to your team.
+
+Below, you're gonna see some options here for church center availability. So this is going to dictate how your funds are appearing for your online givers as to whether or not they'll see it in the list of options when they enter their donations. So listed is the default option. Below that, you have a direct link.
+
+And so if you want an ability to send out a link for people to give towards this fund, you can select direct link. This is not gonna be publicly available, in your list of, available funds, but if you want people to still be able to give, you're gonna need one of these options. If you select unpublished, this is going to remove this fund entirely from people to be able to give towards. Only admins will be able to designate donations to this fund.
+
+This can be a helpful option throughout the year, particularly if you have seasons where you're not wanting to promote certain funds. You can just hide them by selecting unpublished there. And then finally, there's an option for text to give. If that's a tool that you use for people to give at your church, you can select that option.
+
+People would need to enter the full name of the fund if they wanna specify their gift towards this fund. However, there's an option to add a shortcut. So you could, for instance, make it fall trip or Panama, whichever option makes the most sense for your needs.
+
+Once you've got that set up, you can create your new fund, and then there it is in our list here. If you wanna reprioritize which funds appear, first for your online givers, you can drag and drop these accordingly.
+
+Note that if I want to delete this, it will let me because there's no funds that have been added yet, but once you start seeing donations applied to these funds, you're not gonna see the option to delete until you've removed any donations from those funds. So just be mindful of that. Again, selecting unpublished is a great way to remove options rather than deleting funds entirely. And that's how you set up new funds within planning center giving.
+
+---
+
+## Understanding Payment Sources (1:50)
+
+Alright. So up next, we're gonna take a look at payment sources within giving. So you're gonna wanna head to your manage tab and then on the left, you're gonna see payment sources.
+
+Payment sources gives you a way to count donations from other systems. They also give you a way to record non deductible donations, from donor advised funds and qualified charitable distributions.
+
+So this is going to be where we could set, that money that's coming in. If I select add a new payment source before I enter that in, there's a couple options here for different payment source types, either direct from donor, a donor advised fund, or a qualified charitable distribution. I'm gonna go ahead and select qualified charitable distribution and, I may even just add a QCD there just for organization purposes. Before I hit create, you'll notice there's an option here to have donation acknowledgments emailed. If you don't toggle this on, not to worry, it's always something that you can change after the fact.
+
+In fact, if I select create here, I'm gonna see that appear, in my options, but sure enough, it's letting me know acknowledgments are disabled. If, down the road you decide you want to toggle that back on, just select and then you can, toggle that option right there.
+
+And then, there you've got your list of, payment source options. Once these are all set up, you're gonna see those available, when you start setting your batches.
+
+---
+
+## Donating on Church Center (6:12)
+
+Let me show you what it looks like to donate through Church Center. We're gonna look at how to donate on Church Center through Church Center app and Church Center web, so we'll cover everything that we need to know. To start, let's start looking at Church Center app, and we're gonna look at that over here. As you can see, I've already got the Church Center app pulled up. I'm logged in. I'm ready to go. We're gonna look at a few things on this page, so stick with me.
+
+The first thing with any donation is the amount. So right here, you'll see the option to add an amount to give. So for this example, we're gonna type in fifty dollars, and we want that to go to the general fund. So that would be super simple, easy fifty dollars general fund, but we have more really awesome options on this page. The first one we're gonna check out is that we could split our donation between two funds right from the Church Center app. So let's say we wanted to also donate to, one of the memorial funds that our church has going on. We could also enter an amount for that.
+
+And then you would see that now our donation is a hundred dollars fifty for each fund.
+
+The other thing that we're gonna take a quick look at is let's get rid of this really quick. We're back to our first fifty dollar donation, but let's say instead of donating to general, we we're just donating to the memorial fund today.
+
+When you select this fund, you'll see the option to add a memo to this fund. So if you want to specify, or share a preference of where this donation could go, you can do that here. So you could add a name. You could add a specific cause, whatever you needed to write in this line so that your church would see that one making your donation.
+
+This can only this you'll only see this box for the specific funds that have the memo line enabled. So for example, if we go back to the general fund, that option goes away. So those are just a couple cool things that we can do, both on the Church Center app and on the Church Center web. So let's finish this donation for Brandon.
+
+So we have fifty dollars to the general fund. The last thing that we need to pick from this page is the frequency. Do we want this to be a one time donation? Do we want this to be a reoccurring donation?
+
+So for this example, we do. We want it to be a recurring donation, so we're gonna select weekly.
+
+And then you can see that this is going to be starting on Sunday, twelve fourteen. And I can select to continue to give.
+
+Because I've given before, my payment methods are already listed here, so I just need to pick which one I want to use.
+
+So we're gonna stick with the Visa that's selected, and then we're going to click give fifty dollars weekly. And then we'll be taken to this really helpful page that just lets us know when our donation's gonna start and some really helpful links if we wanna go view our giving or go back to our church's website. So that was super easy. Right?
+
+You're already logged in. Great. We did it. Now we're gonna look at how easy is it for somebody that has never donated to your church before and maybe they're doing this for the very first time.
+
+So to demonstrate that, we're gonna go over to the Church Center web. So you'll see a very similar page to what we were just looking at on the Church Center app. First things first, we wanna enter an amount. So for this one, we're going to give seventy five dollars, and we're gonna give it to the general fund.
+
+And this is just gonna be a one time donation, so we don't need to make any other selections right now. We're just gonna click continue to give.
+
+Once we click this, you'll see that this is where we're gonna prompt people to just enter a code so that we can keep our giving system really secure. For this example, we wanna use the email address instead to get our code, so I'm going to type in my email address.
+
+And then once I click next, I'm gonna get my code sent over to me so I can quickly enter it just a one time code, then I'll be ready to go.
+
+Alright. So now that I've got my code, I can enter that right here. I am going to hit next.
+
+And I'm gonna skip this for now, but this is where you could add a mobile number if you wanted to. And then they just need my name. Right? So they know who gave this donation. So I'm gonna enter my name and hit next.
+
+Perfect. Then it's gonna take me to a really similar screen again like we saw in the Church Center app. So it's a really similar experience between both spots. So now the last thing that we need to do is add a payment method.
+
+So for this case, I'm gonna add a card. This is a super real card number. Just kidding. It's not.
+
+So I'm gonna type that in, and I'm gonna give the expiration date and the also very secure security code and the very real ZIP code. So now that that is all added, all I need to do is select to give seventy five dollars. I'm gonna click this button. My donation is going to process.
+
+And then once it does, you get this really helpful screen. Again, really similar to the Church Center app that my donation has been received. I got an email with a record of that and a couple of helpful links, again, whether I want to go add a mailing address or go check out my giving.
+
+So to wrap this up, what would it look like to go view my giving? To see a really helpful picture of this, we're gonna go back to the Church Center app. So if we look back over here, you'll see I'm still logged in as Brandon. This helpful screen is still pulled up, and I can select to go view my giving. So if I click on view my giving, it's gonna take me to this overview page where I can see my donation history. I can see my reoccurring donations. I can see any pledge campaigns that I'm a part of, and I can see my text to give settings, my notification settings, and if I can I can access any statements that I have on my profile as well?
+
+The very last thing that we wanna look at at this page is the ability to manage our payment methods also lives right here. So if I click on that, it's gonna take me to my existing payment method. So from this screen, I can either remove any old payment methods or add a new payment method. Can all be done right here super easy. So that's giving on Church Center.
+
+---
+
+## Handling Cash and Check Donations with Batches (6:01)
+
+Alright. Let's take a look at batches in planning center giving. So batches are designed to track physical donations like cash and checks or donations from external payment sources. So first, you're gonna head to the batches tab here and then, you're gonna see if you have any in progress.
+
+Right now, we don't. So let's change that. I'm gonna create a new batch group here and you can organize these however you want. I'm going to title mine after this past Sunday's service.
+
+So we've got December seventh. I'm gonna hit save and then I'll create two batches for this group. One will be for cash and then one will be for checks. Again, you don't have to do two separate batches.
+
+This is just a way to help, keep things organized for our team. So, once I've hit save there, I could start entering my donations to each batch. Now notice there's an alert here that says this uncommitted batch is still in progress. Donations won't appear in donor history or donor statements yet.
+
+So this is all sort of a rough draft until we hit commit on the batch, and then our donors are gonna be notified of their contributions. So if you're using an envelope system to collect cash during your services, that's a great way to collect donor info.
+
+So let's say we've got an envelope here with cash from our friend Jacob. He's given fifty dollars to our general fund, so you can select your fund there.
+
+The receive date lets you specify what date those donations came in. For payment source, for cash and checks, it's probably just gonna be that, planning center payment source. However, if you are, utilizing qualified, charitable distributions as, external payment sources, here's where you would select those.
+
+For payment method, I'm gonna select cash. And then if Jacob is assigned a campus, it will show right down here. Right now, he's unassigned. And so I'm gonna select next donation, and there we go.
+
+We've already entered our first our first first donation into our batch. So what if at the end of your service, you've got some loose cash that's not necessarily assigned to a specific donor? Well, we have a way, to process that as well. If you start to type in anonymous, you could select anonymous donor.
+
+Let's say we ended up with sixty seven dollars, coming in, to our general fund. You can, just as before, fill out all those fields, And then, of course, our anonymous donor isn't going to have a campus attached. We can select next donation, and there we go. We've got, all the loose cash, reflected here as well.
+
+I'm gonna head over to the checks, batch and, let's say I've got a check that I need to put in here for twenty four dollars, to the memorial fund.
+
+And then just as before, you're gonna enter all of that same information. Now for checks, it gives you the opportunity to put in the check number as well. So I'm gonna select next donation. One other, tool I wanna call out that's really helpful, especially when you're entering in a lot of donations, is this batch defaults option.
+
+So you saw where I selected that, memorial fund. Let's say this weekend, you took up an offering for that fund and you have a ton of donations that are being assigned to the same place. So you can choose your received date, donation fund, payment source, payment method, prefill all of this so that, you have an easier way to enter these all in moving forward. So let's say we've got another donation here from our friend Brandon.
+
+So I'm going to, put him in here. Look. The memorial fund is already prefilled. Same information I already entered earlier.
+
+So and he's, of course, a part of our San Diego campus, so it's gonna reflect that here. As I select next donation, you could see that was a much quicker way to enter donations into your batches. So just as I called out earlier, these are not committed yet, so we need to commit the batches. Now, if you're seeing that you're unable to click it, it's, because when you have a group of batches, you commit them all at the same time.
+
+So I'm gonna select the batch group.
+
+Here, it's gonna give me the option to commit this group. I see this pop up that just, again reminds me, this is, when donors with email addresses on file are gonna be sent a receipt. If you've toggled that on in your payment settings, I'm gonna go ahead and select commit batch group, and it's gonna take a second to update. And now these have been committed and these donors are gonna start to see this activity in their donor profiles, as well as on the admin side of things.
+
+So, that's how you commit batches. One more thing I wanted to call attention to is, if you are tracking checks, we do have a really helpful user guide online, for check readers. If that's something that your church uses, the way that works is it takes the MICR number and assigns it to a donor so that the next time that they give, it's a much quicker process. If you're interested in that, head to our help center and check out our user guide on check readers.
+
+And I hope you have a wonderful day, entering in your batches.
+
+---
+
+## In-Kind Donations (3:08)
+
+Alright. Let's take a look at how to add an in kind donation to somebody's profile in planning center giving. So first, we have to get to the profile of the person we wanna add the in kind donation to. So from the people tab, we can search for our donor.
+
+We wanna add an in kind donation for our friend Brandon today. So we're gonna click on Brandon's profile, and then you can see on over here on the left hand side, there's a tab for monetary donations, and there's a tab for in kind donations.
+
+So for today, wanna look at in kind donations. So now is a good time to talk about what is an in kind donation. So an in kind donation is a non cash gift. So these can include goods, services, securities, or other tangible items. So it's something that someone's giving to your church that's not a monetary donation. So to add this to Brandon's profile, we wanna go over here on the right hand side and click new in kind donation.
+
+Then we can give a description. So for this example, Brandon donated, his iPad, which is really cool of him, and we can enter the date that we got the iPad, and he brought it to church last Sunday. And it's gonna go to the general fund. And then right here is where you can add internal notes.
+
+So we can write something like older iPad donated for kids check-in. Really cool. Thanks, Brandon. We're gonna hit next.
+
+And this next step is the valuation, which is optional. So for this step, it's kind of trying to figure out should fair market value be determined by the donors or appraisers. So for this example, nope. We don't need that. And then the section second option is were goods or services exchanged for the donation? Also a no for this one. So we're good to move on to step number three, which is the acknowledgment letter.
+
+So you can choose to send the acknowledgment letter right now as you're adding this in kind donation. You can choose to send it a little bit later on, maybe at the end of your day, or you can choose to not send it at all and just include this in their end of year donor statement.
+
+But for the sake of this demo, let's look at what the acknowledgment email looks like. So if we select to toggle this on, we're gonna see a preview of the acknowledgment letter that Brandon and Nicole would get. They would both get this because they're joint donors and planning centers, so they're both gonna get this notification.
+
+And if we scroll down, we can see that it's filling in the details that we added. So we can see thank you for the iPad and we can see the date of ten twelve.
+
+So those things that we entered are going to prop are going to populate on this page for us.
+
+So if that all looks good to us, we can say, yep. We're good to go, and we are going to save and send.
+
+Awesome. And then up here, can see that we got the notification that the in kind donation was created successfully, which means we did it. It's on his profile. We can see it right here, and that's how you add an in kind donation to somebody's profile in planning center giving.
+
+---
+
+## Adjusting Donations and Giving Refunds (2:53)
+
+Let's take a look at how to adjust donations or give a refund for somebody that's in your giving database. So as you can see right now, we are on Brandon's profile, and we can see under this monetary donations tab all of the donations that he has given to our church. So sometimes people make mistakes. Right?
+
+They donate to a fund, maybe they meant to donate to a different fund, or maybe they donated and they accidentally didn't mean to donate at this time, so they're in need a refund or they need help adjusting it. You can do this from the admin side of giving. So say that Brandon donated two hundred and fifty dollars to the general fund. He did this on eleven one.
+
+Thanks, Brandon. But then he reaches out to us and he lets us know, hey, I actually meant this donation to go to our fall missions trip. Can you help me out? We can.
+
+So if we click into the donation and we click edit donation, right here, you can see that we can change the fund. So instead of general, he wanted this to go to the fall missions trip. So we can easily select that and hit save donation. We'll get the little banner that says we did this successfully.
+
+Thank you very much.
+
+And then if we go back to Brandon's profile, we can now see that this is going to the fall missions trip. The other really cool thing that we can see now is that it has this blue line over here that lets us know that this donation was adjusted.
+
+So if anyone's ever wondering what got adjusted or what changes were made, they can always go see that from his donation.
+
+Alright. While we're still here, let's take a look at how we would refund a donation if needed.
+
+So let's say his donation back on the eighteenth for the new building, let's look at that.
+
+Let's say that we just need to issue a refund for this. For whatever reason, Brandon's reached out to us and let us know that he needs this donation to be refunded. Again, we click into this donation, and we see this issue refund button. We can click on that, and then we'll see that there's a few refund reasons. For the most part, you're just gonna wanna use the standard refund, but there's also an option to refund this because it's a duplicate charge or because it's a fraudulent donation. But for this example, we're going standard refund all the way, so we can click on refund donation.
+
+We'll see our green banner again that says we did it successfully. Good job, everybody. And then we can go back to Brandon's profile, and we'll see now this is highlighted as red as refunded so that we know this donation was refunded to Brandon. And because it's refunded, it won't show on any, of his end of year statements either. So that's how to handle adjusting donations or refunding donations in Planning Center.
+
+---
+
+## Joint Donors (2:14)
+
+In planning center, we have the option to join donors together. So let's take a look at how to do that. So first, we gotta find who we're joining. So for this example, we want to join Brandon.
+
+So we found Brandon right here, and we'll go to his profile page. And on the top right hand side, you'll see the option to join donors. So if we click on this, it's gonna open up this window. And if Brandon is already in household with somebody, we're gonna suggest that person right here.
+
+So you can see that because Brandon is in a household with Nicole, Nicole's who we're suggesting, so that pops up right there. But say for example, Brandon's not in a house hold yet or maybe we don't want him to be joined with Nicole, you can always search for another person right here. But for our example, Nicole's the right person. So we can go right here and we can select Nicole.
+
+And then you'll see this little blue window that pops up that just lets us know what does joining a donor actually mean and what does it do. So when you join a donor, it's going to blend their donor profiles together so that they can view each other's donation history, each other's statements, and pledges, they'll all be shown in a combined view. So when we're when we're joining donors, we also email both people to let them know what action we just took so that if there this happens incorrectly or if they don't wanna be joined, we gotta let them know, hey. Just so you know, this person can now see your donation details. But for for our example, everything's good to go. We wanna join Brandon and Nicole, so we're gonna go ahead and click join and notify donors.
+
+Awesome. We'll see this green box right here that lets us know we did that. And then the other cool thing is that now we can see right here, instead of saying join donors, we already joined them. So we see Nicole's listed right there. And then if we take a look at Brandon's donations right here, we can also see Nicole's are populated right next to his. So that's how you handle joint donors in Planning Center.
+
+---
+
+## Managing Pledge Campaigns (4:44)
+
+Alright. Let's take a look at creating pledge campaigns in planning center giving. So first, you're gonna wanna head to the donations tab, and then below that on the left hand side, you'll find pledge campaigns.
+
+If you already have some created with your church, you'll see these listed here. I'm gonna walk us through creating a new pledge campaign. If you're unfamiliar, pledge campaigns are a great way to track the donations that are coming in for a particular fund within a certain period of time. So that could be for a certain budget, new project, whatever you have going on at your church that you're trying to raise money for. We're gonna look at a new coffee shop that we're raising money for today. So I'm gonna create a new pledge campaign. Just as I said, we've got new coffee shop.
+
+And, for the description, I'm just gonna keep it the same. You can certainly customize that if you'd like.
+
+Gonna select next, and now it's gonna ask me to confirm the period in which we're raising money for this coffee shop. I'm gonna select today's date, October seventeenth, and then let's go ahead and set this for one year, ending October, oops, October seventeenth twenty twenty six. So if you've selected today's date, it's gonna just confirm that this is a current campaign. You can, of course, also enter in future dates for an upcoming campaign.
+
+And then I need to confirm a fund that this is going towards. So I've already created a coffee shop fund, so I'm gonna select that.
+
+And then, you also have the option to set a goal. So, this isn't necessarily required, but it can be a great way to let everybody know, what you're building towards. And so I'm gonna set this at a hundred thousand dollars, and then you can also choose whether or not to display this campaign goal to your donors. So I'm gonna go ahead and create that campaign, and then right away it's gonna take me to any activity that's maybe already come in for that fund.
+
+This is a new project. I'm gonna be announcing it at my church this weekend, so not a lot of activity to show quite yet. I'm gonna go ahead and look at one of our, existing pledge campaigns to give you an idea of some of the differences between these metrics listed here. So last year, we created a pledge campaign for this youth ministry room.
+
+You can see we met our goal, which is awesome, and then, we've got, actually a couple days left on the, duration of this campaign. So if anyone pledged, they still have some time to get their pledges in.
+
+And then you'll notice this third option here that shows, six thousand, given already, as far as, received pledges. And you may be wondering how'd that happen if we've met our goal? Well, sometimes you may have people give towards the fund, but they didn't necessarily create a pledge per se. So this is a great way to track activity and get an idea of how well you may be marketed this pledge campaign or just how generous people are just feeling towards this particular fund. So this is a great place to get that information, as well as see, some of the pledges that came in as well as, donations towards this fund. So I'm gonna go back to my coffee shop pledge campaign, and, you know, my friend Jacob already let me know that he wants to give towards this. So I'm gonna enter this pledge, and we've got Jacob here.
+
+And he's let me know that he wants to give five thousand dollars towards this pledge campaign. So it will default to sending a thank you for your pledge email. If you'd like, you can toggle that off if you want. I'm gonna go ahead and leave that there just to let him know we really appreciate his generosity.
+
+And then you could either save or save and add another. And you know what? I'm feeling generous as well, so, I'm gonna give just a little bit more here, and then, gonna go ahead and save that. And then here, we can see our two pledges already getting us off to a great start, with our pledge campaign. And then if I go to the overview, as soon as either of us starts to give towards that, you're gonna see that activity represented here. In fact, in the next year, any donations that we make towards the coffee shop fund specifically are gonna be reflected in this pledge campaign report. And that's it for pledge campaigns.
+
+---
+
+## Creating End of Year Statements (7:35)
+
+In Planning Center Giving, we have the option to create end of year giving statements for your donors. So let's take a look at how to do that. So to get to the statements tab, you're gonna go to the manage tab first, and then on the left hand side, you'll see the option for statements. So that's what we're looking at right now.
+
+So this is where we wanna be when we're going to create a new statement. The other thing that we wanna call out is we have great we have great resources to help you with this. So you can check out this article or watch a step by step video like you're doing right now to see how to create giving statements. Before we get too far into this, we just wanna call out that we're gonna demonstrate how to, generate statements for donors in the US.
+
+We also have the option to generate donor statements for our Canadian and Australian and New Zealand donors as well. But today, we're gonna be taking at our US donors. If you are in one of those countries and need help with your statements, if you click on this question mark right over here, this will pop up, and you can type in statements right here, and it will give you an article on how to create statements for your country. Alright.
+
+So let's start by creating a new statement. We're gonna hit this blue button, and then we'll see the option to create a new statement. So the first thing that we wanna do is we want to name it.
+
+A helpful thing to know here is that you don't have to add the word statement to the name. We're gonna add that automatically. So I can just say twenty twenty five, and it'll put the word statement at the end for me.
+
+So this is going to start on January first of this year, and it's going to end on December thirty first of this year. So we're gonna hit save, and then you're you'll see that we're dropped onto now. We're in our statement. We're in the page that we need to be in. Here's our twenty twenty five statement, and we're now gonna configure the statement. So we're gonna make make sure all the settings are how we want it to.
+
+So something that's helpful on this page is that we can see an overview about how many donors are going to get this statement and how is our deliverability looking. So you can see we have ninety five percent of our people have an email address on file. Go us. That's awesome. Fifty four percent have a mailing address.
+
+Less good. Still okay. And then we have five percent of our donors who don't have an email address and who don't have a mailing address. So that just means that we don't actually have a way to get them this statement. So this might be something that we wanna look into, wanna see if we can maybe catch them on Sunday, get an email address, get an address. But this page is kinda showing you what to expect and how many people can expect to get this statement.
+
+So if we keep scrolling down on the page, we'll see the other options for configuring our statement such as adding addresses. But the thing that we wanna look at is the is the include items down here. So this is totally up to you and your church. So you guys can decide if you want to include contributions from any donor advised funds or include contributions from qualified charitable distributions during this time period or include pledge updates during this time period.
+
+You can select any of these. You can select none of these. You can select some of these. Totally up to you.
+
+For the sake of this demo, we're selecting them all. We want everything on the statement. And then as you keep scrolling, you can see a great preview of what your donors would see on the statement as well. So you can kind of get a bird's eye view of what you're gonna be sending out to your donors.
+
+So once all of that looks good, we're gonna move on to the steps of actually sending these out. So first, we wanna configure and send our email statements. We click on this blue button, and then we're dropped to the email page. So from this page, you see that we also have some configure settings up here too.
+
+So we can see that this is going to thirty eight of our donors, and you could download a CSV if you want a record of who those thirty eight donors are. And then you'll see a couple other settings on here too. So you can change the subject if needed, and you can select whether or not you want to include a cover letter. We do wanna include a cover letter because we wanna be able to say something to our donors when we're sending out this statement.
+
+So this box right here is where you can customize and change anything that you need to. So you can add bold text, you can add italic text, add a link. We have different text sizes, which is really cool. And the last thing that we wanna call out is that we have template variables.
+
+So if you click on the template variables, you can see just all the different options of different placeholders that you can put in your cover letter. So if you wanna address your donors by their full names, which would include, like, all possible name fields.
+
+So if you want to address somebody by their full name, you could do that. Or if you're more casual, you just wanna go first name, that's where you can make these settings too so you can select what you want those to look like.
+
+The other really cool thing that we can do on this page is we can preview it. So if we hit this preview button, we can see what our donors would see on this email. So we can kind of check that out, make sure everything looks good.
+
+I think it looks great. So now that we are okay with how it looks, we can select the send us to thirty eight donors. So I'm gonna go ahead and click that. Yep. I am sure we're sending it.
+
+So that's gonna send. We get the confirmation that the emails are on their way, and we're on to our next step. So you can see these email results. So right now, zero percent have accessed their statement by the email, which is not surprising.
+
+We just sent it. No one's on it that much. And then now we wanna move on to our print statements. So we can click this blue button to configure our print statements.
+
+So you'll see a lot of similar things on this page too, but we what we wanna look at first is who are we generating this for. Again, this is something that's really up to you and your team. So you can select to include donors who were emailed a statement but haven't viewed it yet. So you can see that just brought our total up to forty donors instead of two.
+
+Or you can select to say, you know what? I wanna send this to them. I wanna generate a print statement for these people even if they viewed it. I don't care.
+
+Everyone's getting an email. Everyone's getting it printed out. So that's totally up to you and your team.
+
+You'll also see just different print settings that you can select if you want to add blank pages for double sided printing or force a page break after your cover letter. All of those things totally customizable for you and your team.
+
+And if we scroll down, we're gonna see a very similar formatting option that we did on our email statements. So you have the same options here. We got your bold. You can make your text bigger or smaller, add in some lists if you need to, and, again, those template variables are also on here too.
+
+So we can kinda take a look at all of that. And then, again, we see our preview button, so we can just kind of check that out. Take a look. Alright.
+
+Everything looks right. We've got all of their donations. We have our church information.
+
+It looks great. So we're gonna select to generate these statements for our donors. Yep. We're sure again.
+
+Awesome. So then you can see that once these are ready to be downloaded, you can click on this download button, and it would download those directly to your computer. So you'll have that whole record of all of these giving statements that you've created, and you can kind of save those if you need to or just have a record of who got a giving statement this year. So that's how you handle giving statements in planning center giving.
+
+---
+
+## Importance of Year-Round Reporting (7:13)
+
+Let's take a look at the built in reporting options in planning center giving. So to get to these reports, we're gonna start on our donations tab up here. You can see that we've selected that, and then the reports tab on our left hand side. So the first one that we're gonna look at is our is our reporting dashboard. So let's change the date range first. You'll see the these options on all of our reporting pages. We wanna look at just a little bit more data, so we're gonna change this to look at the last three months of data.
+
+And as you can see, those will live update. So then we can start scrolling down, and as you can see, the dashboard is super visual. There's lots of colors. There's lots of different graphs.
+
+There's lots of different information that lives on the dashboard page. So if we just keep scrolling down, we can see all the different things that are listed on these reports. So the dashboard is a great spot to look if you're just kind of looking for an overview of things. This is also a really great page to share with somebody that maybe doesn't need to know the specifics of your donations, but kinda just wants that high level view of, like, how are things going and giving?
+
+How is that looking?
+
+And so the cool thing that's on this dashboard page and on a lot of our other reporting pages is this export options. So you'll see on the right hand side that we can choose to export either a CSV or a print view of what we're looking at right now.
+
+So, again, the dashboard is great. It's one of the most fun pages to look at for sure. So if we go one over, we can look at our by donation report. So if we click on by donation report, the cool thing is that you'll see that our filters stayed in place. So we're looking at the last three months still, and we're looking at all of our campuses.
+
+So for the donation reports, there, we just wanna look at the donations in the last three months, and then we also have this other filtering option. So let's look at what it looks like to filter by a specific stamp. So we can select stamp, and let's say for the past three months, I'm really interested in knowing who has donated using our mobile app. So I can go over to this drop down, and then we'll see the option to select mobile app.
+
+So if I click that, now what I am seeing is all donations from any campus over the last three months that have been donated using the mobile app. So we can see that we have twenty nine donations in the past three months that's using the mobile app, which is really cool. So say your church just launched the mobile app, and we just wanna see, like, how is it going? This is a great report to look at and so you can kind of see, alright, like, it's going pretty good.
+
+And then, again, on the right hand side, we have the exporting option as well. So exporting a CSV or a print view. So that's what it looks like to filter and use our by donations tab. So you'll see those option.
+
+And then if we go to the by donor tab one more over, you'll see those filters are still there. But for now, we're gonna clear these filters because we wanna look at something else over here that's really cool. So one of the things that the by donor tab has to offer is that we can select to only see new donors in our selected date range. So this box over here on the right hand side, if we click that, now I'm only looking at our new donors.
+
+So in the last three months, we've had seven new donors, which is really cool, And then you could filter this again too. We could look at okay. So let's see of our new donors in the last three months, who has donated to the general fund? So we could see, okay.
+
+Cool. Five donors have donated to the general fund in the past three months.
+
+And then if you ever want to see, like, okay. I'm I just wanna know, like, I don't care if they're new donors or not now. I just wanna kinda see everybody. You just unselect this box, and then now we can see. Okay. Cool. Now we have twenty one donors in the last three months who have donated to the general fund.
+
+So there's lots of really cool options that we can do on this page. So I encourage you to play around with these filters, look at the different stamps that we have to offer, look at all of the different funds that you have set up, and then remember that these filters are gonna stay in place over time too.
+
+Alright. The last one over here oh, actually, before we leave this page, I can't believe I almost forgot this. The other really cool thing on this page is that you'll see the option to email these donors. So say we wanna go back to let's set our filters up again.
+
+Last three months to the general fund, and we want to only see new donors. So now we have our page set up how we want it to. I could email these donors and just shoot them a quick thank you to be like, hey. Thanks for donating these past months.
+
+We see that you're donating to our general fund, we really appreciate it. So you can email donors from this page, so don't miss that. It's a great option as well as the option to export still too.
+
+Okay. Now we can move on to this last tab of the in kind donations. So we're gonna clear these filters again.
+
+And we actually we want a look at the last six months. And you can see that in the last six months, we've got one in kind donation, which is great. We just started using these at our church. So one, it's not a bad thing. We can still check it out, and you can see the details of when it came in, who was the donor, what fund did it go to, and see if we sent them already an acknowledgment email too, and we did. So those are those those reporting options. The last reporting thing that we want to point out is right over here on the left hand side, right under reports, we have a recurring donations tab.
+
+So if we click on recurring donations, this is really cool because it offers monthly forecasting. So based on all of the people in your account that have reoccurring donations set up, we show you how much money you can expect remaining for the month.
+
+And over here in blue, you can see how much is expected for the next month. So we're just trying to help you know what to expect. So this page is really great for that.
+
+The other really helpful thing on this page is we can look at the status of our reoccurring donations. So let's click this drop down, and we can see that we can see active donations on hold, on hold until a date, on hold indefinitely, or missing a payment method. So all of these are really great options, but for the sake of this demo, let's look at those who are missing a payment method. So if we select a filter by all reoccurring donations who are missing a payment method, we can see that we have three donors who have a reoccurring donation set up, but they don't have a payment method to go with it.
+
+So those reoccurring donations won't process. So what we can do is we can see these names, we could export these as a CSV or a print view, and we can contact these people just to give them a heads up and say, hey. We appreciate that you have your reoccurring donation set up, but you need to add a payment method to go with it so that it can process. So this is a really great page to check out if you haven't already.
+
+We really encourage you to look at reoccurring donations and kind of see how that can help you and your team.
+
+Alright. So that's reporting and planning center. Remember, it's this donations tab and then the very first reporting tab, and you can see the dashboard by donation, by donor, and in kind donations.
+
+---
+
+
+# Groups
+
+## Groups Overview (1:10)
+
+Hi. I'm Matthew, and your sixty second intro to planning center groups starts now. Groups is all about community. It's about helping the people in your church to connect with each other.
+
+There are two sides to groups. There's the admin side, which we call the planning center side. That's where you're watching this video right now. This is where you and your team will create organize and manage all of your groups.
+
+Then there's the public side, whereas we call it the church center side. That's what people will see when they're looking for then it's the place where your leaders and group members, and stay connected to each other. Now let's talk big picture for a second. Groups is just one part of the Planning Center Universe, and just like you can use group to help people connect.
+
+We've got a range of products designed for the different areas of ministry in your church. When you get those products working together, all sorts of things are possible. Let's not get too far ahead of ourselves. For now, come on in, take a look around and make yourself at home.
+
+As you explore, if you ever have any questions, click on the question mark in the top right corner of the screen. From there, you can check out our help docs or get in touch with our support team. We're so glad you're here. And we can't wait to see what you do at the place.
+
+---
+
+## Admin | Group Settings Overview (11:17)
+
+Let's take a detailed look at the settings available for your group. We'll walk through each section of this settings page so that you're confident that the tools you need are configured the way that you want.
+
+One quick call out, leaders and administrators can both access the settings page for their group, but what they can see and do is a little bit different. We outline those differences in our group's help center documentation, so I'm not gonna compare and contrast in this overview, but but just wanted to let you guys know. Okay. Let's start from the top.
+
+As we get started, we are jumping right into our basic info for your group. It's kind of what you expect, the name of the group, the group type, which is set up on that group types page, you can select it with a drop down here, an image for your group, which you'll see you can upload from your local computer or even search through the Unsplash images in the free photo library, Select one, and it adds that as your group image.
+
+The other pieces of information in this this basic setup area is the chat settings. Right now, you'll see it's grayed out. All it takes is a quick click to enable chat, and you'll have another setting that becomes selectable who can create those new conversations. The settings is where you'll find that, option. The next thing here is the contact person for the leader.
+
+Now this is who a leader will reach out to if they have any trouble. So some of those automatic emails, like the reminder to take attendance for their meeting, if they reply to that email, the person you select here, you'll see it can be an administrator or a group type manager. Whomever you select here will receive that reply from the leader. So this is your person who's equipping and supporting your leaders. This is not who your group members are reaching out to.
+
+Speaking of attendance reminder, emails, you can choose or not choose to have all the leaders in your group receive that attendance email. As we walk down this page, maybe you've noticed almost every single one of these headers has a tip.
+
+I want you to get used to reading those tips as you're working in the administrative pages of planning center, definitely here in groups. It helps it helps you understand what this setting is for or what this area is for.
+
+You'll see that if you reveal this tip, that you're reminded that roughly ten minutes before the start of the event time, your leaders and any member attendance takers will get that email.
+
+This security setting is not recommended as you'll see, as you see it say right there. Essentially, it allows your leaders to add members to their groups by searching your people database. When they search, they are then able to see some contact information like email addresses, physical addresses, phone numbers, and adult child status.
+
+They are not granted people permission, but they do have a lot more visibility into some of that contact information that's typically only reserved for people with people permission. So use this security setting very, very carefully, and I just wanna call it out that that is where you'll find that option for your leaders to add members by searching that directory. Moving right along to the promote on church center section. Now there's two church center sections on the settings page. This section is how people are finding your group on church center. There's another section, foreshadowing, how accessible and available it is on church center. So let's talk about the promotion section first.
+
+This is the public page workup. Here you can add a description for your group. This is that group contact. So who who is being reached out to when somebody is trying to learn about the group for the first time?
+
+And then you also have a few options for what details about the group you show on that public page, the leader name, the event schedule, the meeting schedule. If you're wondering what that looks like, let's just go ahead and take a look. This is the public page for our group. I haven't refreshed the page for that new image yet, but as you'll see, we have the campus showing, some categories showing, we'll talk more about categories or tags, the schedule, the location.
+
+Here's your upcoming events, your past events. There's that description. So when you start to fiddle around in this area, the promote on church center area in your settings, you'll see a direct result in on that public page in church center. Let's give this page a refresh.
+
+There's our new image that we selected and now that I've added the leader names, they're showing here on this public page as well.
+
+As you get further down the promote, you'll see that you can select a campus for this group. All campuses, specific campuses, we have this set to a specific campus. If you don't see this, it's probably because you only have one campus set up in accounts, but as soon as you add a campus there, you'll see the option to assign a campus to this group or by default it'll be showing for all campuses. And then there's the tag area and this is reflected here in these categories, but even more importantly, your campus and your tag selections on the settings page show up here on this is the group type page on church center where those tags the campus that's selected in those tags allow you to filter to a specific group.
+
+And here I am applying random filters so that we get no search results, but even just adding the campus gets me right to the group that I'm looking for. This is what people are going to be encountering when they're looking for a group for the first time. So here on the settings page, you want to make sure that the items that make this group findable are set up as tags as a campus, and you'll have the option to jump right into managing those tags if you need to create a new tag group, for example, from this section of the settings page.
+
+The last piece here is the location that this group typically meets. You'll see a list of shared locations. You'll see group locations that have been created, and you'll also see an option to edit or delete your location. What I wanna call out here is when I click on this map, you'll see the nonmember or the member preview of what the map looks like.
+
+Right now I have it set up where the non member view of this location is an approximate location. They don't know exactly where the Brady house is, but they've got a good idea what part of town it's in. Members, however, always see the precise location. They're probably gonna navigate there for the group meeting.
+
+That is something that can be edited at the when you're editing the location or creating a location. You'll see that when you click that edit button, you have the option to share this, make this a shared location, or even adjust that non member display. Maybe we'll just go ahead and hide it. So here on our public page, the location, which did say Brady House, is now just removed because I'm not logged in, and so I don't get to see where this group meets.
+
+Alright. Moving right along to the availability section of of the church center settings. This is where as you can see, we're going to talk about enrollment and visibility altogether.
+
+That first section, the enrollment status, this is handling, is your group open or is it not open? This is kind of just the the the initial gate. Is it open? Is it closed?
+
+We're gonna close it. Now it's closed. We're gonna open it. Now it's open. The way that it is open is your enrollment settings.
+
+So you'll see the strategy here is the request to join strategy or the open sign up strategy. We recommend the request to join strategy. The open sign up use case is pretty narrow. There's there's occasionally a good reason, to let anyone just come in without being vetted by a leader or an admin, but in most cases, you wanna keep that strategy as request to join.
+
+This is also where you can set a date for the group enrollment to close or a capacity for the group enrollment or even an alert to the admin when it starts to reach a certain level. Maybe that's not even capacity, the overall capacity, but maybe you want to know a few members before it reaches capacity. This is all set up here, and just a quick call out, when you use the capacity setting, you will see that the group shows that it is full on Church Center rather than closed. And so you'll see some messaging here that it's either not accepting new members or you'll see a tag on the group type page that the group is full, just peeking out right there down at the bottom of the page.
+
+On this second column of the settings page, you have your visibility. Is this listed at all? If not, it will hide it from Church Center altogether. That's pretty straightforward. And then you have your member privacy option.
+
+This is disabled at this moment because I have chat enabled for this group. If I were to, let's scroll up to the top, disable chat for my group, verify that this is what I actually want to do.
+
+That way I I'm a willing participant in losing some of those chat conversations. Now I can make the member list confidential. Doing this means you'll see a badge that it's a confidential group over there on Church Center, but it also hides the member list from other members. Members still know they're in the group, even if it's a confidential group, but they don't know who else is in the group. That is an awesome option for your support groups, your recovery groups, some of your grief share groups, things like that, where it's a little bit more sensitive and and you don't necessarily want members knowing who else is going through those steps with them.
+
+Okay. The last little bit to this page is your event default. Now when you hear default, just know that it means the starting point. When you create when you set the event default for your group, it means that every new event you create will have these settings to start with, and then you can change whatever you need to for that event. So this is your reminder email, you can go all the way up to ten days, and this is your RSVP setting, and we have the meeting schedule we keep right there next to the event so you can keep it all together. So I'm gonna update this event default to two days before, and I'll I'll show you when I hit a create new event here, you're gonna see two days before and RSVPs automatically set up because we have those defaults selected.
+
+Alright. That wraps up our settings page. You're ready to start getting your groups going.
+
+---
+
+## Admin | Managing Requests, Reports, Events, and Resources in Groups (4:22)
+
+Let's look at the different tools you have for requests, reports, events, and resources as an administrator in groups. When logging in, you're dropped here on what we call the group's index page or the main group's page. You'll see the groups that you're responsible for scope to your permission level and you can customize this view with a filter or by adding removing columns that you'd like to see. Now the first space I want you to be aware of is the list of pages here under the gear icon. Let's jump into the member requests page.
+
+Have you been looking for a way to help your group leaders process their join requests?
+
+You found it. This page will show everyone who is trying to join a group, what group they're requesting to join, and you can jump in to support your leaders by adding or not adding those members as things maybe get a little backed up. Now while we're here, I wanna draw your attention to a trend. If you see somebody trying to join many of your groups and it doesn't really make sense the groups they're trying to join, there's not really a way they could be involved across those ministries that should raise a red flag.
+
+Scammers often out themselves in this way, and you'll be the one that notices it first when reviewing this page. It's not a cause for alarm.
+
+It's as easy as denying those join requests, and that scammer hasn't been able to access a single thing.
+
+On that happy note, let's jump to our shared resources page.
+
+Here, you'll find a list of the resources that are available to two or more of your groups. The individual group resources aren't reflected here, but you can add and edit anything that you need that you need multiple groups to access.
+
+Moving right along, we'll jump to our shared locations page. This is kind of the same idea as the shared resources page. These are the locations that two or more of your groups can use when creating events for their group. Now I recommend keeping this list short because it's pretty cumbersome to scroll through dozens of locations when creating an event, and it often ends up making duplicate locations an issue.
+
+The group types and tags pages, are pretty self explanatory, and we have some trainings for managing those areas. So I'm going to jump out of the gear icon and head back to our main groups page.
+
+As I mentioned before, this is generally your starting point. Let's jump over to the reports page where you can expect reporting.
+
+Here you will be able to get numbers on your memberships, your attendance and really, I really recommend fiddling with this, fiddling with the filters, testing out the attendance CSV export by, adding and removing some data. And especially reading these little tips that we have embedded on the page. So you can get an idea of how this information is being generated, where it's coming from, how we're showing it on this page.
+
+The The next page here is the events page. Now this page is showing you all of the events across all of your groups and the list below the calendar is reflected from this calendar. So So as you navigate the months, you'll see different lists different events populated below. The nice thing about this page is that you can audit the attendance taking habits of your groups. You will see if attendance was submitted. You will see if there were visitors referenced. You will see if there's an event note about a cancellation.
+
+This page can be really handy in auditing that process for your groups.
+
+To wrap up this overview, we'll take a quick look at the people page, and this is pretty much what you expect. It's a list of profiles that are currently in or have ever been in a group. You have the expected filters and can tackle some communication items like, emailing or maybe printing or exporting the master list.
+
+And that wraps it up. As always, let us know if there are tools you wish you had here by writing into our support team with any and all suggestions. Till next time.
+
+---
+
+## Admin | Managing Group Types (4:45)
+
+Let's talk about managing your group types. From the main groups page, you'll select the gear icon to go to your group types page. Now why do group types even exist? I'll tell you three main reasons.
+
+To delegate administrative access, to streamline the setup of new groups, and to categorize your groups. So let's walk through those three things, starting with delegating administrative access. When you have a group type created, you'll select the managers button to add someone as a manager over this group type. Group type managers are functionally able to administrate over the groups, but only the ones in their type.
+
+So they can create new groups or delete groups or archive groups or add new members or do the reporting, everything you need them to do, but scope to just this type, and they won't even really know the others exist. So this will help you in sensitive cases of privacy or when just your scale is so huge, you need to delegate, leadership over certain areas.
+
+You'll search the database for the manager's, profile and be able to select that person, save your manager, and that person will be able to log into groups to administrate over this the groups in this type.
+
+Let's talk about point two, streamlining group creation and setup.
+
+That happens in on this from this group types page by clicking the defaults button. Here, you'll see a page that looks very similar to your group settings page, the individual one, but these defaults allow you to set up what is in common for these groups in the type. So maybe they all have a similar meeting location or this or a virtual link. They may have the same reminder email RSVP setup or the same capacity.
+
+This isn't a bulk editing tool. It doesn't apply to groups that are currently assigned to this type. But once you set up these defaults, you build the foundation for new groups created in this type so that you're not starting from scratch, but all of them have some essential settings already applied.
+
+That's delegating. That is streamlining. Let's talk about categorizing.
+
+That's probably the most obvious use of group types. It's putting groups with common purposes and similar settings together in a certain category.
+
+That is what you'll see here with quarterly classes. Those are all the quarterly classes groups. Men's ministry, all the men's ministry groups. So as you are explaining and describing that category or that group type, you'll select the settings button. This here pulls up this window where you can describe this group type. You can enable or disable certain settings around chat or visibility on church center, and this will help your congregants know what they are getting into when they're searching for a group.
+
+Help them know, you ask. Yes. Over on church center, you can get there right from the top of the page, visit groups on church center. You'll see these group types, and you'll see those descriptions that you're able to edit in the settings pop up from the group types page over in groups.
+
+This is the church center group types page where your congregants are looking, reading these descriptions, selecting a group type, and then filtering this list down even further to find a group to join.
+
+Now you'll notice that this page has a particular order to it that matches your group types page in groups. This order is editable here on the group types page by dragging and dropping your groups into a different order. That will update how they're listed in church center. Now the other thing I do want to point out is here in church center, you'll see one group type that you can't edit. It's the unique group, unique groups group type.
+
+That is the default group type. It's actually kind of an anti group type. It is the collection of any group without a group type. These groups, this group type is assigned to your group by default when you're creating a new group with no type. And there's not a way to add a description or to add a manager or defaults or settings to the unique group types because it's probably different for every single group in that type. So you won't find unique groups on this page, but any group that doesn't fit into one of these categories will drop into that unique groups, category there in church center.
+
+And that is group types. Please let us know if you have any questions.
+
+---
+
+## Admin | Setting Up Campuses (4:59)
+
+Okay. Let's talk about campuses for groups. So if your church has multiple campuses, these features will really help you organize and optimize for your small groups across all of those campuses. So first question is, where do you set up campuses? Well, let me show you. So if you go over to the product switcher on the top left and then scroll down to account settings, Click on that.
+
+And then on the left, if you click on church campuses, guess what? This is where the campuses are, and this is where you'll add new ones. You'll edit existing ones, remove any that you need to. All the setup really happens here, and then these things show up throughout the planning center products.
+
+That's how it works in groups too. So if I go back to groups with the products which are here, click on groups, and here I am back on the groups list. So what I can do is I click on the column filter columns button on the right and then click on campus. And this will show me any of the existing groups that have campuses assigned to them, so I could see that really easily.
+
+And then once you have these assigned, if you click on the filter menu, you'll have a campus spot here, and you can filter by individual campuses or multiple campuses or ones that are all campuses. You have all of those options there.
+
+So but question is, how do you actually assign a group to a campus? So I can do that. I can show you how to do that. If you scroll on down to, let's say, this elder board needs a campus.
+
+Come on, elders. Okay. So I click on that. Scroll on down to settings on the left, and then all the way down to this campus section.
+
+And by default, the group is set up. It's gonna be showing for all campuses, but I can change it to specific campuses and then click assign, and I can assign. And maybe I'll send this one to San Diego. Alright.
+
+So I did that.
+
+And if I go back to the groups list, scroll down to the elder board, I can see, yep, campus San Diego. It did it. Awesome. So what if you have a lot of groups and or a lot of campuses?
+
+Be nice to do that in bulk to save a lot of time. Well, you can do that. So let's say, for example, I want to select a few of these. I'm gonna say Ephesians and Hebrews and this one.
+
+So I click click those check boxes next to those groups. I selected three and scroll up to the edit pencil and then click edit those three groups. And then you have a campus section here, and this is where you can, in bulk, assign these. I'm gonna say put these all in the Vista campus.
+
+So you can assign to multiple campuses. You can remove. So great way to do it in one fell swoop. Save a lot of time here.
+
+So I'll update those three.
+
+It'll go ahead and say it's updating.
+
+Now let me just double check, open my filter menu again, click on Vista campus, and it assigned those. Awesome. Okay. Now once you have these groups assigned, you can use that same filter menu throughout the group's admin pages here.
+
+So if I click on reports, I've got underneath the filter menu, I've got the campuses there, so I can use it for filtering reports. I can also use it for filtering events. So same thing, that filter menu with campuses. So a great way to organize within the admin side of groups here.
+
+So then another good question. What does it look like on the congregate side for campuses and groups? Glad to ask. So if you click on the church center button up top here and then visit groups on church center, this will be the congregant facing side for church center for your groups.
+
+And let's say I'm a new congregant. I'm looking to join a small group, so I'll click on that small group, group type, and look it. I've got a campus filter option, and here's all of the campuses that are available. And I wanna find something in Vista.
+
+I click on Vista, and here we go. Here's all the groups that are assigned to Vista so I can find a group to join at my campus. Yes. Awesome.
+
+So that's, yeah. And then on the on the Church Center iOS and Android app side, when you log in as a congregant and you choose a campus at login, it'll actually default filter to groups that are at your campuses. So it kind of helps really pinpoint you there. That happens on the Church Center app, so I wanted to mention that too.
+
+So that's really campuses and groups. Thanks for watching and hoping that this makes the campus setup as easy in groups, even easier than finding a parking spot at the eleven AM service. It's so hard. Where do I park? Where do I park? Where do I park?
+
+---
+
+## Admin | Organize Groups with Tags (6:15)
+
+I wanna talk about tags in groups. So on the group's admin side, if you click on little gear menu up top and then tags, this is where you can find the tag setup area. So what are tags? Great question.
+
+So really good way to think about tags is really labels or attributes that you can apply to any of your groups, things like stage of life that the group is in or the season that they meet or if there's child care or not or if they meet in person or virtually. So all sorts of different ways you can label these groups. And it's really helpful in two main areas. One is on the church center side.
+
+Having these tags, these attributes, these labels helps people find the right group to join for them. So knowing that it's a college group and it meets virtually, for example, great. Okay. Now I know which one I wanna join.
+
+So great looking for the right group to join via these. The other is on the admin side. You can use these really to help organize and filter and report by all of these different ways you can have the group groups labeled with these tags. So here's a bunch of existing tags for, this setup, but maybe I wanna add a new one for food.
+
+So on the top right, I'll click on add tag group, and I'll type in food. And so you have some options here you can choose to display this tag on church center or not. So, for example, maybe you have, this coaches tag. That's great for organizational purposes, but maybe you don't really need people looking for the right coach of the group when they're trying to join one.
+
+So that's an option you can have to turn it off or not. The other is allowing multiple tags to be selected. So you can choose that if you wanted to.
+
+Let me click save here. And then now I have my new food tag group created. Okay. Let me add some options. I'm going to say meal provided.
+
+And let's say snacks only is another option. That's the kind of group I'd like to join. Oh, yeah. Snacks. Or how about no food?
+
+So now I've got my options.
+
+Another cool thing you can do here is if you drag this little if you click on this little dot dot dot six dots menu, you can reorder these tags. And I'll put that one a little bit higher. And what this does is it changes the sorting to be higher on the church center side and then also here within groups admin. So a great way to change the order.
+
+So you can do that. But now that I've got this one created, how do I actually assign groups to it? So let me go over to the groups list by clicking on groups up top. And then I can find all my groups here.
+
+And maybe I want to only apply it to one group. This Blackwell Life group, for example. So I'll click on that.
+
+And then on the left menu, I'll scroll down to settings and click on that. And then scroll all the way down to the tag section. And now I can see here's all the existing tags that have been assigned to this group.
+
+But I have another button here for assigning tags.
+
+And this is where I can see, all the tags I can assign. So maybe I want to apply this one, assign snacks only. There we go. So it assigned it.
+
+Great. We did it. So that's great for one group, but what if you have a lot of groups and you wanna update a bunch in one shot? Well, you can do that.
+
+The way I like to do this is if you click on the column menu over on the right, and it's the filter column button. Click on that and then turn on tags. And now I can see all the tags for these groups. Really handy way to see them at a glance.
+
+And then maybe I want to apply that tag to these three. So I'll select those with the check boxes and then click on the edit pencil up top and then edit those three groups. And now here's the bulk edit menu. And now I can actually there's a tag section and I can bulk add tags and or remove tags.
+
+So a great way to do it in one shot and save a lot of time. But let me add that food snacks only one to these three.
+
+And I'll click the update three groups button.
+
+And now it will assign. There we go. Snacks only. Done. So I just did three in one shot.
+
+So again, amazing time saver, that bulk edit option. And then again, so now that you have these tags set up, they're all useful for filtering within groups. So if I click on filter and then scroll or toggle over to tags, I can see here's all the tags I have. I can, again, use these to filter and find and sort.
+
+So very, very powerful for organization.
+
+And the same tags show up in reports. So I can use them for filtering reports, and then also for filtering events.
+
+So again, very, very powerful for organization.
+
+So then what does it actually look like on the Church Center side? So if you go back to the groups page and then up top, there's this Church Center button and then click on visit groups on Church Center. And this will actually open up your group's display for Church Center. And here we go.
+
+And then maybe I'll click on this Small Groups group type. And now I can see these little dropdown guys. These are all the tags that I've shown on Church Center for people to use to find the right group. So there's my new one for food.
+
+Remember, we reordered it to put it here a little bit higher. So here's all the tags that people can use these again to search and find the right group to join. So really, really powerful.
+
+So, again, tags are amazing and really a simple but very powerful way to help people find the right group to find on Church Center, but also great for organization purposes on the group's admin side. All right. Thanks for listening.
+
+---
+
+## Admin | Creating a New Group (5:24)
+
+We're gonna walk through creating a group from scratch. From the main groups page, select the new group button in the top right.
+
+Name your group. And if you have created group types, you'll see the group type drop down right below. I'm gonna select small groups.
+
+If you have configured default settings for your group types, this new group will have those settings already applied.
+
+You'll see here a call out in blue about the purpose of your group. I recommend reading up on the features we've built for your groups to connect and communicate and gather. And if most of those features are not going to be used by this group, there's probably a better planning center tool for the tasks that you need to accomplish with or for these people.
+
+Once your group is created, you're dropped on this page where we give you a few options for your next steps. You can manage your group settings. You can start adding your members. You can even take a tour of planning center groups, which is super helpful if you're just getting started.
+
+Now when you first create a group, I recommend starting with your settings and working your way up.
+
+The more details you can get settled before adding your members, the better.
+
+The settings page is where you'll find the tools to configure chat, to set up your church center visibility, maybe your group's capacity, your meeting schedules, things of that nature.
+
+I recommend watching our settings overview video to get a detailed walkthrough of every item on this page.
+
+Now once you have your settings updated, you'll jump to the next rung of the ladder, your resources page.
+
+There's not a ton to do here when you're first getting started. Just double check that the shared resources that you need are showing already and then add anything that's specific to this group by clicking the add a group resource button.
+
+Now you're ready to get those first events on the calendar.
+
+Even though you updated the meeting schedule for your group on the settings page, you still need to actually create an event in order to be able to record attendance.
+
+Hot tip, you can tackle this in bulk once all of your groups are created and their meeting schedules are determined. Today though, let's create one together just for this group. Select that create a new event button to open up this this detail form for your new event.
+
+Let's title our events.
+
+We'll script skip the description this time and let's set the schedule.
+
+Maybe every Thursday, let's do the evenings.
+
+And I want this to happen. How about the second and fourth Thursday of every month?
+
+We're gonna meet like this all the way through Christmas.
+
+That'll do.
+
+You can update the location, even enable your reminders and RSVPs.
+
+Let's let's set that to one day, then create the event.
+
+You're dropped right here on the event details page, and this is a handy page to come back to. You can see the RSVP status for the specific event. You can select the edit event button to make any changes. You can cancel if scheduling gets funky. And now this event is showing on your main events page where all of your group events show, and also it's listed on the events list for this specific group. You can see the recurrences that will tie to the these calendar, what the calendar is showing at the top of this page.
+
+Finally, it's member time.
+
+On this page, you'll typically start by adding leaders for this group.
+
+Your group leaders can then help you add the rest of your members so you don't have to add everyone manually.
+
+Like I mentioned, your leaders can take this task over by accepting join requests. Automations can add members from from a team, a form, a list, a sign up. You can even use bulk actions to move a whole list of people into a group as you're getting things roll rolling. Now if you forget to select the correct role upfront like I just did, you can actually edit it right here from this member's page. Next to the role, you'll select edit and you can update that role. And you can do this anytime you need to, as you're adding leaders and members to your group.
+
+Now that you've created your group, you're ready for the next one. You can make group number two happen lickety split by duplicating this group. You'll see the option in the actions drop down, duplicate group, and you can select the things that are exactly the same for group number two, which I'm gonna leave these default selections selected this time, and then duplicate.
+
+Let's go to our new group. You'll finalize the details here and then you're ready to launch your new season of groups.
+
+---
+
+## Admin | Create New Events in Bulk (3:38)
+
+Want to talk about creating events in groups in bulk. Yes. Bulk. So we really think there are three reasons you wanna do this.
+
+One is saving time. Two is staying consistent. And three is helping people plan ahead. So yeah, one, two, three.
+
+Got it. So first one, saving time. So having the ability to schedule everything across multiple groups all in one shot instead of week by week, one at a time, across single groups can save you a ton of time. We all want time back.
+
+Yes, yes, yes. The second, staying consistent. So keeping the dates and the details, the uniform and the same across all of your groups via this bulk mechanism really hopefully helps you create and have fewer mistakes. So that consistency.
+
+And the third is helping people plan ahead, knowing what's coming on their scheduled calendars so they can plan accordingly on their side. So some examples are those weekly small group meetings, Bible studies, men's and women's groups, maybe a prayer meeting across all the groups. Many reasons you want to use this. So let's walk through an example.
+
+So let's say I want to add events to Calhoun Adults group and Centerville Young Adults. So I'll select those with the checkboxes on the left. Then click on the Edit pencil up top. Click on the Create Events in Two Groups.
+
+This is your bulk create events menu. You have two types of events. One is the repeating, recurring, consistent events, and then you have one time, one off events. If you choose the one time events, you're going to have these group default options, which these come from the settings defaults within each of the groups where the group meets, when the event reminders go out and RSVPs are turned on or off.
+
+So if you are on the one time setup, you can actually override those and change those settings separate from the group settings defaults.
+
+If you're on the recurring or repeating setup, all of those settings are going to come from the group's default settings. So I'm going to do that for this example. I'm going to create a small group meeting.
+
+And I'm going to choose my dates. Let's say I want to start now and go all the way to right before Thanksgiving.
+
+So kind of plan that roughly two to three months, September two months. Yeah. I'll click Create Event in Two Groups.
+
+It's going to go ahead and show that it's creating, preparing, this little loader up top.
+
+And still going.
+
+All right. So that's done. Now let me just check that and make sure it did it. So I'm going to go into Calhoun Adults by clicking on it and then over to Events on the left.
+
+Scroll down. And hey, look at that, five events set up in one shot time savings. Yes. Okay. I'm going to check the other group, which was Centerville.
+
+And then click on Events again.
+
+There it is. Done. So great. Again, amazing way to help you save time, stay consistent, and plan ahead this bulk event creation in groups. Thank you for listening.
+
+---
+
+## Admin | Set Automations (3:36)
+
+I wanna talk about automations in groups. So automations are such a great way to streamline communications and actions for people within your groups.
+
+So no one falls through the cracks. So a great, great feature to help you do that. So these live over within the group and then automations, in the bottom of the left nav over here. So I've got some existing ones set up.
+
+You you have the ones up top. These are outgoing automation. So things that are happening within groups and then going and doing something in a different product. So this one, for example, is setting the membership type when someone joins this group, set the membership type over in people.
+
+This one's setting a campus.
+
+This one's adding to a workflow.
+
+And then on the bottom here, you have incoming automations, automations that are coming from other products. So this one, for example, is when a person is added to this special event list in people, then they get added to this group.
+
+So if you have these existing automations, you can pause them with the toggle if you want to, take a break or for some reason you want to turn it off.
+
+In the dot dot dot menu, you have you can see the history of when the automation was run. We can also change the assignment, who actually owns the automation.
+
+But let's go through let's walk through creating a new one. So over on the right, I have a create automation button. I'll click on that.
+
+And you really have the trigger section and then the action section. So for the trigger options, you have when a person joins this group, leaves this group, or requests to join this group. You have all those options.
+
+And then you have the action options.
+
+And these can be actions that can happen in many products. So check ins, home, people, registration, services.
+
+And then within those, you have different actions like adding to workflows, adding notes, ordering a background check, setting fields, updating fields. So really so many options of what you can automate. But let's set up maybe I want to set up one for when someone leaves the group. I want to put them into a workflow to have a few people kind of understand why they're leaving, if they can kind of help them out.
+
+And, yeah. So kind of go down, go down that path. So So I'm gonna say when a person leaves this group, I want to perform an action in people. I know that's where the workflows are.
+
+I'm gonna say add to workflow.
+
+The workflows will load. And then I say, oh, I've got this falling through the cracks workflow set up. That sounds great.
+
+And I can choose to skip people who have already started or completed this workflow if I want to and click create automation.
+
+And there we go. So this is set up. It's running. But, yeah, I can pause it. I can change the assignment.
+
+So, yeah, really, that's as simple as it is. So again, so many options. So great to think through kind of what can I automate? Where are ways that I can kind of make these tracking people, adding people, what happens when they leave, when they join. If there's things I can do to really streamline those communications and actions. So automations are amazing at that. So, yeah, again, really wanted to share automations with you, and thanks for listening.
+
+---
+
+## Chat with Your Group in Church Center (6:08)
+
+I want to, jump into some chat thing because again, part of groups is that you're staying connected and chat is what, is where you can connect during the week when you're not meeting physically with each other. So I'm gonna jump into the prayer requests channel. Actually, let me back up and explain why we have different channels, why we have different, like, topics or conversations that's going on. It's because when you are in a group chat, like on iMessage or Android or whatever it might be, there's this limitation where somebody might share a funny meme.
+
+And then then right after that, somebody shares that their grandma is in the hospital or something like that. But you wanna respond to that funny meme. Right? Because it's kinda it was kinda funny and it hit you right, you know, but but you can't do that now because there's a different vibe because there's a prayer request and you have to do that.
+
+So having these like different contexts on the same thing kinda discourages a lot of conversations. And that's why we have different conversations in chat. So now we can have a different conversation for prayer requests versus general versus announcements. That's the purpose of having multiple chats within the same group so that it encourages more connections.
+
+If I jump into a chat, you can see that it's it's everything that you would expect with chat, But I do wanna point out for members that you can hold down on something, for example, and I can, like, add a, like, reaction, a prayer hands or something like that if I want. So I don't have to type, each time for that. I can just respond for that.
+
+Okay. One other thing I wanna point out is let's say that in this general channel, it's getting kinda it's kinda getting yappy, you know, and maybe you don't want notifications all the time for this specific channel. You can do that as a member. Hit the general up here with your conversation details, and you can choose to mute that conversation if you want, so that you won't get notifications on the general channel, but you still will will for prayer requests and announcements.
+
+On that topic, I also wanna say as a member, you can set up other, notification preferences for you. So but we're not gonna do that here, in groups on this group dashboard. Instead, we're gonna go up to the avatar because this is kind of a more global thing, and I'm gonna go to my settings over here. And in the settings, there is this notification setting that I can click on. And that is where you do all your kind of global settings like team schedule if you're using services, giving if you want some notifications for that, and then all the groups that you're in. And if I go into one of those groups, I can choose to get notifications for new resources, new events, or event reminders, or what is coming is, just being able to turn all the chat for that whole group out. That's one of the reasons that this is in a beta at this point, but that should be there as well.
+
+Okay. That is everything of what things look like for, members. Now I wanna move over to what things look like for leaders because leaders are gonna be doing everything in church center as well. So I'm gonna go into a group and we're gonna go into a group that I'm a leader of, the Blackwell Life Group.
+
+And you can already see a little bit of differences here. We first, we got our dashboard. You can see that I can take attendance right there, at the front and I can see all the chat that's happening. Something a couple other things to point out is I can email the group right here from the top here if I want to email everybody.
+
+This is important because, sometimes you're having conversations with people, but it's only happening with people who also have the Church Center app. So if you wanna communicate to something to everybody, whether or not they're in the chat or not, you can do that from that email group.
+
+You can also share the group that pulls up your share sheet that allows you to email or text or share in whatever other apps that are on your phone, or you can view the public page just to make sure that things look right for people if they're trying to sign up well.
+
+Now I do wanna point out that, again, that this is all in a beta that might be coming out in you know, a few weeks or so. So this might look a little different than what it looks like now, but it should be looking like this fairly soon.
+
+Okay. Now I wanna show I'm just gonna point out the things that are different for leaders here, just so you know what's different. So I'm gonna jump into this barbecue weekend chat, and something that is different is well, you could see that we are just like, hey, there's a barbecue coming up, and someone's like, so excited. I'd love to cook.
+
+And then, and then they paste posted this weird GIF. This is a bad example. There might not be a lot of good examples, but as a leader, I wanna point out that you can hold down on something and you can delete the message. So if you do want to moderate your chat for some reason, first, that feels like a thing and that you should be talking with those people because you already do have a relationship with them.
+
+And second though, you can delete things as a leader for anybody if you want.
+
+Yeah. Okay. So another thing that I wanna point out here is let's say that in this barbecue weekend, I have had a conversation and then things are done. We've like decided on something and I don't want anybody to chat anymore, but I do want this chat to stay here so people can come and see what we've decided on.
+
+I can hit the edit for the barbecue weekend and there as a leader, you'll see a freeze conversation option. That freezes it so people can't chat or respond or react, in there if you just wanna, like, cut that down. Another use case for that, by the way, is if you want to, like, make an announcement for something that you don't want people to have a conversation with, you can create a new thing, make an announcement, and then freeze it. And then if you wanna create another announcement, unfreeze it, you know, say the announcement and then freeze it again.
+
+You know, you could you could use it like that if you'd like.
+
+---
+
+## Leader | Using Church Center for Groups (6:11)
+
+Hey there, I wanna show you all the things that you can do as a small group leader in church center. First step though is to download the app. You can do that with the QR code right here or you can do it from the app store. Now let me show you all the things you can do.
+
+First of all, this might look completely different for you than it does to me. Your church has the ability to make this look however they want. So you might have groups down here at the bottom or you might have it on the dot dot dot. The more here, it might be in here.
+
+But you should always be able to count on it if you tap your avatar at the top right. You've got things like notifications, schedule, and you can see your activity involvement. You can count on your groups always being here for that as long as you're a part of them.
+
+So I'm gonna go into the Blackwell Life Group here, you can see and I just like get put into the dashboard.
+
+Now the dashboard has my upcoming events, my chat and there's a couple things I wanna point out that are specific to the leader only. And the first is that email group. So I can stay in contact with my whole group via email right there. I can also view the public page if I just wanna know what that looks like.
+
+And then also manage your group notifications and even schedule a daily email digest so you get an email anytime there's kind of like chats going on that you don't wanna miss. Now
+
+there's probably two things that you're going to be doing as a leader in church center. One is taking attendance and the second is, managing your members. Let me show you those two things.
+
+The first is attendance, and you can do that over in events. I'm gonna go to this events page, and there's actually three ways to get to attendance. One is on the event page. This, you see it says take attendance.
+
+That will show up about an hour before the, event starts. The second way is you can even get an email notification, and that will show up in your inbox probably about ten minutes before the event starts. And last, if you can have a notification, that just comes through your phone normally and you can see that we've got time to take attendance here, by clicking your avatar and seeing your notifications. So I'm gonna click on that notification and it pulls up the attendance.
+
+The normal things that I think you would expect to do, you can click the people who are there and hit submit to check them in or to take attendance on them. So we'll hit submit, that was successful. Now if you have canceled an event though, it's actually important to go over here to the event page, scroll down to the very bottom and hit cancel the event.
+
+There's a couple more things I wanna show on the event for a leader. This is back to the events page, so I'm gonna go into my group by going over here, hitting that group, and go to events. Couple things to show you though, is first you have this kind of like report thing that you've got going on. What this does is it shows you all the people who haven't attended in the longest amount of time.
+
+So you got your zero percents up here. Now this is a test org so these might not be more realistic, but then at the bottom is the people who are usually always there. The idea here is that all the people that you need to stay in contact with will be up towards the top. The other thing I wanna point out is in the actions button, you can create a new event, like if you have like a Saturday barbecue or something that you wanna add for your, small group, you can do that right there.
+
+Now the second thing that you're doing as a group leader is, taking care of your, members in the group. So a couple ways to do that. I'm gonna go back into the event and I'm gonna hit update on attendance. And at the very bottom of the attendance page, there's two options.
+
+One of them is if you just wanna keep track of how many showed people showed up, you can use the plus and minus buttons to, you know, talk about that. That's not gonna save any of their information. The second way is clicking add member. This will show a QR code.
+
+But another way to add a member, I'm gonna hit done here and let me go back, and we'll go to members up at the top right, and there's this add button right here. So if you wanna add a member from the members page, you can do that, and it pops up that same QR code.
+
+Now in this world of caring for personal data online, we wanna make sure the member knows what they're sharing and they give consent to share their information. So there's a few steps to get someone added to a member. The first step is for them to request to join. They can do that, by scanning this QR code. You can also invite them with like a message or like copying the link and sending it to them however you'd like. Or if they just signed up online, it will make a request to join.
+
+Now when somebody joins a group, they immediately have access to all the shared contact information for everybody in that group. So leaders, you need to make sure that you know who that person is before you put them in the group. So you'll see up here at the top, there's a review requests and I can click onto somebody here and say I know Larry, actually Larry's sketchy son, maybe he's a little sketchy and I could decline it or add them right there to the group.
+
+The last thing is when somebody joins, they have the ability to share whatever they want with that group. So they'll see their name up at the top just like you see yours and you can hit edit visibility information and you can say I wanna just show my profile photo, my email address or my phone number right there. So I'm gonna go ahead and say, I wanna share my email address because I am the leader so I'll go ahead and choose that and they can do that right there.
+
+Okay, that's basically all the things that you need to know as a leader to navigate Church Center. Now if you don't have this app, that's also totally okay. You can follow the links in your email and there's a web version that'll get you through all of this stuff as well. Okay, that's it. Thanks for leading this group and good luck.
+
+---
+
+## Member | Use the Church Center App (4:11)
+
+Now I have requested to join a group. Now let's pretend that, I am a member still, but I want to experience that group. So let me show you what it looks like with Church Center app here.
+
+So I do wanna call out that there are a couple differences at this moment with Church Center app that are in beta at the moment that should be coming out in the next few weeks perhaps. And, so if something that looks a little different from your app right now, it's going to come fairly soon, but we're just kind of working out some details. But I wanna show you what it would look like for most of the time, once once all that's out. So the first thing is I have received a notification.
+
+So I'm gonna tap at the top right my avatar right there, and I can see all the notifications that I've received. And you can see I requested for an event and it's and it says that I've been added to that group. So that means that the leader has accepted me in there. And I'm gonna click on that and it'll go to the group and it's going to go to the member's page.
+
+And that's very specific because, there's an action that we want new members to do on that member's page. And you can see as I scroll down and look at all the members that some people, I can see their avatar, and some people, I can't. You know, that's because each member has the ability to choose what information they like to share with the rest of the group. So you can see at the top, I'll hit edit visible info here, and I can choose to share my profile photo or my email address or whatever I'd like to do like that.
+
+And I'll hit save and that's it. So that's like the first thing that you'll do once you're in a group, kind of set your the priority of what kind of information you wanna show. Now, I'm gonna work backwards from members all the way to, the the far left over here. So let's just go to resources and let you know what all of this is about.
+
+So this is all about, like, being able to see like, if you want all your members to see a link to something, maybe it's a PDF, maybe, it could be kinda any, like, type of, like, a device that he wants. Sorry. Device isn't the right word. I couldn't find the right word as you could tell.
+
+But it could be any type of file. There we go. We got there. That you'd like to show up on there, for people to access.
+
+Sometime there you can also see, by the way, there is not a ton of organization here. There's not like a folder structure or anything. So sometimes you might want to set up, like, a Google Drive link so that people if you do need extra organization, you can still have the link there and they can get to all the things that you need there.
+
+But a couple things to point out for members is that you can go in to see more information or if you hold down on something, you can go directly to that file.
+
+Now let's jump over to events, and I wanna point some things out. First, it just has the list of the upcoming events. This is when you're meeting with the people you're doing life together, so it tells you when things are. Most of the time, that's gonna be the same thing because it's every Tuesday seven to nine. But sometimes, you might have, like, you know, a barbecue weekend or something, and it'll show up there. But something to important to point out is there is an actions thing that I totally missed.
+
+Fun fact about Church Center app is that it is good for left handers and right handers. I'm a right hander using my left hand. So if you see me click something wrong, that's, that's my bad. But if I hit the actions there, you can see I have these two options here.
+
+Subscribe to group calendar is what I wanna point out. This is a way for you to get all of these events in your own personal calendar. So if you're using Google Calendar or something like that, what's neat about this integration is if somebody adds a new, like, barbecue event happening in the weekend, it'll automatically be in your calendar because you've subscribed to that.
+
+And then lastly, here is the dashboard. The dashboard this this part is kind of new here and it kinda, it's trying to wrap up all the things that are most important for you in the group. For example, the next few upcoming events when they are and then all the conversations that you're having with chat.
+
+---
+
+## Member | Use Church Center on the Web (3:27)
+
+So I want to start first with how members experience church center. So we're gonna start on the web because the idea here is that if you are brand new, you might want to sign up for a group and you might not have the church center app yet. So let me show you what it looks like once things are set up, for a member to sign up. So if I'm a member in here, I will see my the church center web, here and it has everything that's customized that I've already created. I can give, I can do, I could sign up for groups or look for groups or sign up for, like, an event or something like that.
+
+I'm gonna click on groups. And then then we have, what we call group types. And this is an organization structure that you've created to help people choose the right groups. I'm just gonna go into these small groups group type here, and I have this nice filter.
+
+Something to call out that is kinda neat for members is there is a map. I can see a map of all the small groups that are within this filter right here. So I can see if I wanna pick one that's just like close to my house or something. And you can also see that, the the map isn't very specific on when that where that group is held because this is the Internet, you know. So everybody can access this page. So you don't want to show people's physical address on there, but it's giving kind of like a general idea of where the groups might be.
+
+But, I got a couple of options here. Let me see if I can filter those downs to pick the right one. So we have these, things that we that you'll set up called tags. You can have as many as you want and you can customize these how you'd like.
+
+But just a couple examples. Actually, too many examples are on this page here. I'm gonna show you kind of the most popular ones and that's stage of life. So let's pretend that in this stage of life, I'm a young adult.
+
+You might have to stretch your imagination, I think. But, let's we can pretend together.
+
+And then for the day of week, let's say I want to meet on Tuesdays. Great. There. I filter down to all the groups that are available for me, and I can find my Centerville young adults.
+
+So let's tap on that. You can see all the tags that are part of this group. If I want as a potential new member, I can contact the leader here to ask any questions about that, or I can straight up request to join right there. There's a bit more information.
+
+There's the upcoming events, so I could see kind of the event event schedule, what it used to be as well. And then, like, I also see the event schedule here. They're just saying that it's meeting Tuesdays from seven to nine. See the leaders are and, of course, the location.
+
+So I'm gonna go ahead and say that this is good. It's on the right day. It's in the right, you know, young adults category for me. So I'm gonna go ahead and request to join. Here's where I could put anything that I want, like, if I'm joining because I know a friend or something, I can say, hey, I'd like to join because I know, you know, this person. Whatever you might want to add here. I'm not gonna add anything there for now, but I'll go ahead and send the request.
+
+And that's it. It's just easy as that. It's as easy as filtering down to what you need to find so that someone can easily find a group and then sign up for that group.
+
+---
+
+## Member | Chat with Your Group in Church Center (3:07)
+
+I want to, jump into some chat thing because, again, part of groups is that you're staying connected and chat is what, is where you can connect during the week when you're not meeting physically with each other. So I'm gonna jump into the prayer request channel. Actually, let me back up and explain why we have different channels, why we have different, like, topics or conversations that's going on. It's because when you are in a group chat, like, on iMessage or Android or whatever it might be, there's this limitation where somebody might share, the a funny meme.
+
+And then, and then right after that, somebody shares that their grandma is in the hospital, or something like that. But you wanna respond to that funny meme. Right? Because it's kinda it was kinda funny, and it hit you right.
+
+You know? But but you can't do that now because there's a different vibe because there's a prayer request and you have to do that. So having these, like, different contexts on the same thing kinda discourages a lot of conversations. And that's why we have different conversations in chat.
+
+So now we can have a different conversation for prayer requests versus general versus announcements.
+
+That's the purpose of having multiple chats within the same group so that it encourages more connections.
+
+If If I jump into a chat, you can see that it's it's everything that you would expect with chat. But I do wanna point out for members that you can hold down on something, for example, and I can, like, add a, like, reaction of prayer hands or something like that if I want. So I don't have to type, each time for that. I can just respond for that.
+
+Okay. One other thing I wanna point out is, let's say that in this general channel, it's getting kinda it's kinda getting yappy, you know, and maybe you don't want notifications all the time for this specific channel. You can do that as a member. Hit the general up here with your conversation details, and you can choose to mute that conversation if you want, so that you won't get notifications on the general channel, but you still will will for pay requests and announcements.
+
+On that topic, I also want to say as a member, you can set up other, notification preferences for you. So but we're not gonna do that here, in groups on this group dashboard. Instead, we're gonna go up to the avatar because this is kind of a more global thing, and I'm gonna go to my settings over here. And in the settings, there is this notification setting that I can click on. And that is where you do all your kind of global settings, like team schedule if you're using services, giving if you want some notifications for that, and then all the groups that you're in. And if I go into one of the those groups, I can choose to get notifications for new resources, new events, or event reminders, or what is coming is, just being able to turn all the chat for that whole group out. That's one of the reasons that this is in a beta at this point, but that should be there as well.
+
+---
+
+## Admin | Security in Groups: Enrollment Options (1:37)
+
+We can't address security practices in Planning Center without digging into your group's settings. Here's the idea I want you to walk away with: membership equals access.
+
+Let's take a look at an individual group's settings page to talk about those options.
+
+Over here, you'll scroll down to the availability on Church Center section where you'll see your enrollment status. Is your group open or closed? But also your enrollment settings or that strategy that you want to use when your group is open.
+
+Request to join is like keeping the front door closed while someone you trust, your group leader, your admin, is making sure that you can also trust the person on the other side.
+
+The open sign up option is like leaving the front door wide open so that any new person immediately has access to the group's private spaces.
+
+That means their chats. That means their addresses and phone numbers. That means their meeting locations. In almost every case, your open strategy should be request to join.
+
+This adds just that appropriate amount of friction so that you can make sure your members are protected from scammers. Your leaders and admins will just have to review these requests. Your leaders can do this right in Church Center by just tapping the review request button. This way, they can make sure that door is closed to any scammers but is open to anyone who wants to join the group to meet and start building relationships.
+
+---
+
+## Leaders | Security in Groups: Managing Requests (1:57)
+
+As you refine your security practices and planning center, you'll want to make sure that your group leaders know that membership equals access. So you've already set up your enrollment strategy. You're over here on the group's settings page. You've scrolled down to the availability on Church Center section and you have opened your group and you've set that enrollment strategy to request to join. Now, your group leaders are notified when somebody requests to join their group and they can see some information about that request. In Church Center, your leaders will tap that new member request, and they'll be able to see a name, some contact information, maybe a message that's included with the request.
+
+Now we know that tapping this add to group button immediately gives this person access to the group's private spaces. So your group leaders need to take extra caution when they notice a few things about the request. Maybe it's that there's multiple names in the profile name field. Maybe there's limited contact information or a weird message.
+
+Maybe they've heard that Mike and Mary are asking to join all of the groups all at once. Do those items mean that this this request is absolutely fraudulent? No. Not necessarily.
+
+But your group leaders should use Church Center to contact these new members. They should check with other group leaders. Ultimately, they're just taking the extra step to make sure that their group members are protected. Now, when they do decide to add to group, they're not alone.
+
+They'll be reminded with every membership request to consider these security items, combining the power of planning center activity information with your group leader's discernment. That way, they can confirm new members with confidence.
+
+---
+
+## Member | Security in Groups: Sharing Personal Information (1:47)
+
+In Planning Center groups, your leaders and admins are already taking steps to make membership more secure. But it doesn't stop there. Each member also needs to know that membership equals access, and they have control over how much of their own contact information is accessible. Let's jump into Church Center where your members are going to see a page like this.
+
+They can scroll this page to see the names of other group members because those are always shared by default. Well, there's two exceptions. Any profiles under thirteen will just not show on this member list. Only group leaders and Planning Center admins can see children in groups.
+
+The other exception is Confidential Member Groups, where this Members tab actually is just a Leaders tab because members can't see other members in Confidential Member Groups. Again, only Leaders and Planning Center administrators can see the members of confidential member groups. But in every other group, this is where your member will be able to view the details of another member. This is information that this person has made visible.
+
+It's also where the member can edit their own visible information. This space is where they'll be reminded the impact of what they share or what they maybe don't have control over, but they'll be able to make some changes, apply that to all of their groups or just to this specific group, and save so that they know they have ownership of their own contact information so that they can connect with each of their groups the way that they want.
+
+---
+
+
+# Church Center
+
+## Leading Your Group from Church Center (6:11)
+
+Hey there, I wanna show you all the things that you can do as a small group leader in church center. First step though is to download the app. You can do that with the QR code right here or you can do it from the app store. Now let me show you all the things you can do.
+
+First of all, this might look completely different for you than it does to me. Your church has the ability to make this look however they want. So you might have groups down here at the bottom or you might have it on the dot dot dot. The more here, it might be in here.
+
+But you should always be able to count on it if you tap your avatar at the top right. You've got things like notifications, schedule, and you can see your activity involvement. You can count on your groups always being here for that as long as you're a part of them.
+
+So I'm gonna go into the Blackwell Life Group here, you can see and I just like get put into the dashboard.
+
+Now the dashboard has my upcoming events, my chat and there's a couple things I wanna point out that are specific to the leader only. And the first is that email group. So I can stay in contact with my whole group via email right there. I can also view the public page if I just wanna know what that looks like.
+
+And then also manage your group notifications and even schedule a daily email digest so you get an email anytime there's kind of like chats going on that you don't wanna miss. Now
+
+there's probably two things that you're going to be doing as a leader in church center. One is taking attendance and the second is, managing your members. Let me show you those two things.
+
+The first is attendance, and you can do that over in events. I'm gonna go to this events page, and there's actually three ways to get to attendance. One is on the event page. This, you see it says take attendance.
+
+That will show up about an hour before the, event starts. The second way is you can even get an email notification, and that will show up in your inbox probably about ten minutes before the event starts. And last, if you can have a notification, that just comes through your phone normally and you can see that we've got time to take attendance here, by clicking your avatar and seeing your notifications. So I'm gonna click on that notification and it pulls up the attendance.
+
+The normal things that I think you would expect to do, you can click the people who are there and hit submit to check them in or to take attendance on them. So we'll hit submit, that was successful. Now if you have canceled an event though, it's actually important to go over here to the event page, scroll down to the very bottom and hit cancel the event.
+
+There's a couple more things I wanna show on the event for a leader. This is back to the events page, so I'm gonna go into my group by going over here, hitting that group, and go to events. Couple things to show you though, is first you have this kind of like report thing that you've got going on. What this does is it shows you all the people who haven't attended in the longest amount of time.
+
+So you got your zero percents up here. Now this is a test org so these might not be more realistic, but then at the bottom is the people who are usually always there. The idea here is that all the people that you need to stay in contact with will be up towards the top. The other thing I wanna point out is in the actions button, you can create a new event, like if you have like a Saturday barbecue or something that you wanna add for your, small group, you can do that right there.
+
+Now the second thing that you're doing as a group leader is, taking care of your, members in the group. So a couple ways to do that. I'm gonna go back into the event and I'm gonna hit update on attendance. And at the very bottom of the attendance page, there's two options.
+
+One of them is if you just wanna keep track of how many showed people showed up, you can use the plus and minus buttons to, you know, talk about that. That's not gonna save any of their information. The second way is clicking add member. This will show a QR code.
+
+But another way to add a member, I'm gonna hit done here and let me go back, and we'll go to members up at the top right, and there's this add button right here. So if you wanna add a member from the members page, you can do that, and it pops up that same QR code.
+
+Now in this world of caring for personal data online, we wanna make sure the member knows what they're sharing and they give consent to share their information. So there's a few steps to get someone added to a member. The first step is for them to request to join. They can do that, by scanning this QR code. You can also invite them with like a message or like copying the link and sending it to them however you'd like. Or if they just signed up online, it will make a request to join.
+
+Now when somebody joins a group, they immediately have access to all the shared contact information for everybody in that group. So leaders, you need to make sure that you know who that person is before you put them in the group. So you'll see up here at the top, there's a review requests and I can click onto somebody here and say I know Larry, actually Larry's sketchy son, maybe he's a little sketchy and I could decline it or add them right there to the group.
+
+The last thing is when somebody joins, they have the ability to share whatever they want with that group. So they'll see their name up at the top just like you see yours and you can hit edit visibility information and you can say I wanna just show my profile photo, my email address or my phone number right there. So I'm gonna go ahead and say, I wanna share my email address because I am the leader so I'll go ahead and choose that and they can do that right there.
+
+Okay, that's basically all the things that you need to know as a leader to navigate Church Center. Now if you don't have this app, that's also totally okay. You can follow the links in your email and there's a web version that'll get you through all of this stuff as well. Okay, that's it. Thanks for leading this group and good luck.
+
+---
+
+## Chatting on Church Center (1:31)
+
+If you're in a group or on a team, chat is a great way to communicate with your people. Let's check it out. To see your chats, click this bubble in the top right corner.
+
+Here, you can see all the chats that I'm a part of. I can filter down to groups or teams or just see them all in one feed here. This one at the top is here because I'm scheduled on the children's ministry team for this specific plan. When I click in here and then click the details, I can see a lot of different things, including everybody who's currently scheduled on this same team.
+
+The coolest thing is that if we add somebody to this team, they will show up here automatically, and that also means that they will have access to this chat automatically.
+
+It looks like Jordan isn't sure if she can make it, so I can long touch on this message and give her a thumbs up so she knows that I saw it.
+
+Now back to my other chats, I have three for this group right here.
+
+In groups, you're talking about a lot of different things, so you might need different threads for each of those things. Of course, we've got announcements, general, and prayer requests because we wanna pray for each other. But if I need to make a new conversation, I can click this button down here, select my group, and then name it and start chatting. And that's how you can keep in touch with your teams and groups using chat.
+
+---
+
+## Utilizing the People Directory on Church Center (1:32)
+
+Oh, hey. I just got invited to my community's church directory, and I'd love to show you how you can connect with your church in this way too. I'm in the Church Center app where my church has put the directory in the navigation.
+
+I can select here and I can see everyone who has already shared their information with my congregation. If I wanna share my information, I can select this share now button. In most cases, you'll also receive an email that allows you to do the same thing.
+
+From this screen, I can select the information that I'd like to share. Select my name, include my profile information, birthday, anniversary. I can also come down here and choose which information I wanna share with my household. Select my child's name, select their birthday so that kids ministry can send them a birthday card, include their photo.
+
+And now I can come up here and select share.
+
+If I ever wanna customize that information or edit it later, I can do that from my profile settings or I can come right here, type in my name and select search, click my name, and I can click on that edit button on the top to customize or edit any of the information that I've already shared. And that's how easy it is for you to connect with your church through the directory.
+
+---
+
+## Donating to Your Church on Church Center (0:48)
+
+Hey. Let me show you how to give on Church Center.
+
+From the gift tab, enter your amount.
+
+Choose the fund that you would like to give from.
+
+Enter the frequency you would like to donate one time or even set up a reoccurring donation.
+
+Select your payment method, even allowing you to add your a new payment method.
+
+Choose whether you want to cover the fee for your church and select give now.
+
+Once you've donated back on the give page, you can select my giving. On this page, you can see your donation history, your reoccurring donations, payment methods, notifications, and year end statements.
+
+---
+
+## Registering for a Signup on Church Center (4:47)
+
+Let's register for a sign up on Church Center. Now we'll start here on the home page of the Church Center app, and then we'll click on the sign ups button in that bottom navigation bar. And then from here, we're gonna scroll until we find the event that we're looking for. So I'm looking for the youth summer camp, is right here.
+
+So we'll click right on it. And then on this page of the sign up, I can see all the details that I will need to know before I begin the registration. So I can see the dates and times, the location, and then any details that I would wanna read through as well as the different selection types that are available for registration and the price for each of those selection types. So we'll get started by clicking to register.
+
+And then for this registration, I am logged in to Church Center under Nicole's profile. And the first step is to add the selection types to the registration. So I have a high school student that I wanna register, so I'll add one selection type for high school student.
+
+And then I also wanna register as a counselor. So we'll include those and scroll down a bit. And then because I'm logged in as Nicole, I'm gonna see that profile listed as the registration contact. So this is the contact for this registration for this event.
+
+And then we'll go ahead and click next to go to the attendee section. Now here's where we'll add an attendee for each selection type. So we'll choose Isaiah. And what we can see here is that the high school student selection type is restricted to attendees that are between ninth and twelfth grade.
+
+So Isaiah is actually the only person in this household that meets those restrictions, which is perfect. So we'll click on Isaiah's name.
+
+And then we'll see that for the high school student selection type, gender, last grade, and emergency contact are required. And because that profile information already exists for Isaiah, that's gonna be prepopulated here.
+
+Now we'll scroll down to pick the attendee for the counselor selection type. And I'm gonna go ahead and choose Nicole to get her registered as a counselor. Now we'll see again that she had some profile information that was already existing for her, so that was automatically filled in for the profile information that was required to collect for the counselor selection type.
+
+Now that all of those fields have been filled out, we can move on to the next section where we'll add some additional attendee information.
+
+So it looks like for Isaiah, there are two add ons that we can include. And while he doesn't wanna do paintball, he definitely wants a t shirt. So we'll click on t shirt, and then we'll add a size. And I can see here that there's, like, extra ten dollar cost for the t shirt.
+
+And then if Isaiah had anybody he wanted to cabin with, I can include that here with this attendee question.
+
+And then for Nicole, she also wants a T shirt. So we'll click that and select a size, and then we'll go ahead and move on to the next section.
+
+Now this section is the registration question. So this is questions that are just kind of asked on behalf of the whole registration. And this question is asking if we would like more information on financial assistance, and I think we're good for now.
+
+So we'll go to the last section, which is where we review and pay. This is where we'll see kind of the overview of what was added. So we have those two selection types, one for the high school student and the counselor, the T shirt add on that was included. And it looks like there was also an early bird discount that was applied automatically to this registration, which is amazing. And then we'll see our payment options down here.
+
+So because Nicole's profile has a saved credit card, that's gonna show here as a payment method that can be used to pay for this registration. I could also add a new card to save to the profile for this registration. And if Nicole had any saved bank accounts to her profile, that would show as a payment option here as well.
+
+So I am gonna use the save payment method, but I'm just gonna go ahead and pay the minimum deposit for now. And we'll go ahead and click to register and pay.
+
+And once that processes, we'll see that we are landing here on the confirmation page. So this is where I will see an overview of the information that was submitted for this registration and a few extra items that we have left to include.
+
+So it looks like for Isaiah, we have an activity release that needs to be included. So I can click to view here to finish that form. And then this is the page that I can also come to to make any outstanding payments. I do have a balance due of a hundred and fifty dollars. So when I'm ready to make that payment again, I can come back to this page and click to make a payment. And there you go. That's how you can register for a sign up on Church Center.
+
+---
+
+
+# Publishing
+
+## Publishing Overview (1:10)
+
+Hi. I'm Matthew. And your sixty second intro to Planning Center Publishing starts right now. Publishing is all about personalizing your online presence.
+
+A place where you can create and share content with your congregation. Everything you build here in publishing will be seen by your congregation over in church Church Center is the public face of your planning center account. It's how people engage with your church online. I'm either the web or the church center app.
+
+With publishing, you can customize that church center experience. Add custom pages, edit your navigation, share sermon audio, live stream your services, the more you make it your own easier it is for people to connect with your church. Now let's talk big picture for a second. Publishing is just one part of the Planning Center Universe, and we've got a range of other products designed different areas of ministry in your church.
+
+When you get those products working together, all sorts of things are possible. But let's not get too far ahead of ourselves. For now, Come on in. Take a look around and make yourself at home.
+
+As you explore, if you have any questions, click on the question mark in the top right corner of the screen. From there, you can check out our help docs, or get in touch with our support team. We're so glad you're here and we can't wait to see what you do at the place.
+
+---
+
+## Plans and Pricing in Publishing (7:46)
+
+Let's look over how publishing is priced and which subscription level is right for you and your team. Now we don't do this kind of video for every product because most of our products are priced by how many people are using the product. But for publishing, it's priced by feature. You'll see that we have these three levels here, essential, plus, and premium, and each of those subscriptions have different features associated with them.
+
+Now at the very least, you'll want to subscribe to the Essential package because it's completely free, and you get app management, home customizable homepage, and page analytics for free. You can tell who's at your church center site or on the app for free. It's it's free. Okay. I think I've said that enough. Let's go look at those features and what you can expect from that.
+
+So we're in publishing, and first, we're gonna look at the app, the mobile app management. You'll go to the customize tab and then to the mobile app tab inside of that. And here, this is the first thing you wanna do when you subscribe to publishing is go and turn on the mobile app.
+
+When you enable this toggle, you'll also be able to add your different campuses, and people can see all of your hard work showing up on Church Center.
+
+The next thing is analytics. Analytics shows you all of the unique visitors and total views for your app and web or separate if you'd like. And, also, you can see in the last however many days or months these things these numbers came from. You can also see each of your specific pages down here at the bottom.
+
+The next thing is on the pages index, and this is your customizable home page.
+
+Now this page looks like our church. It's got our mission statement and all of our different buttons, pictures of our people, and even our campuses and our socials at the bottom. But the cool thing is you can customize this page all yourself. It's gonna be blank when you click in here, so don't panic. But instead, use these blocks over here to make this home page look like your church.
+
+Finally, this is a thing that's included in every subscription level, but I wanna call it out here is built in pages.
+
+These are connected to every product that you subscribe to in Planning Center, where you'll have if you're subscribed to calendar, you'll have a calendar page show up here. Giving, you'll do that as well. Even directory, which is a fee a free feature inside of people, you once you have people, which is free and comes with every account, then you have a free directory ready for your church. And you can do all of the customizing in each of those products.
+
+We have a whole video on built in pages that you should go and check out because it's got a lot more details. Okay. Super. So that's all of the essential package. Let's go back and look here now at the plus package. So this is gonna include custom pages and themes, making your church center look even more like your church.
+
+So I'm here in publishing again, and we're gonna look at first our custom pages. I'm on the pages index. And while we have a customizable home page, now we'll also have these other pages here, like Family Hub or About Us, even a bulletin. So when we have a bulletin, we're gonna like, every single week, we create this bulletin, and then we give this out to our people.
+
+And it's actually in our navigation for a church center, So people will be able to find it. This has all kinds of stuff. So, like, links to the songs, who's praying, and who's leading everything, as well as giving buttons, and even some upcoming events down here at the very bottom. We change this out every week.
+
+You could make a custom page for whatever, and custom pages are unlimited in this level of publishing.
+
+The other thing is in the customize tab, the theme.
+
+So this is the theme for your church center pages.
+
+You can customize this to be whatever color you'd like. So right now, it's in this gradient blue green. But if I customize it and I want it to be dark purple, I can. Or if I want it to be this wild purple, I can.
+
+I can do all of this and then save, and this will change all of my links, buttons, action buttons, and then also the headers on the app. This is also your preview for light and dark mode. But my church really likes the gradient, so we leave it there. Super.
+
+Okay. That's all of the things that are added in the plus level, but that's also in addition to everything that you get in the essential level.
+
+Back to this. The last thing is the premium subscription, which includes audio and video channels as well as sermon notes. Now if you're using if you're live streaming sermons or even if you want to have a sermon library, this is probably the level for you. Let me show you around.
+
+So we're in publishing, and I'm gonna go to the sermons tab.
+
+And in here, you're gonna see my three channels, but you can have as many channels as you'd like. These all serve a different purpose. So weekend service is where all of our live stuff is. We've got kids church, which is a resource for parents, and that's got videos that have already been created, and they're just on demand.
+
+They can click through them. And then daily devotions, we actually use this for just our bible study groups. So we can send out this link to that, and we do daily devotions, you know, all the time. Different pastors do their audio versions there, and then we even push this out to a podcast.
+
+And that all happens in publishing, which is so cool. Okay. So let's look into one of these. Let's look into weekend service.
+
+In here, you'll see you've got a different a few different options here. One is series. You can add all of your different sermon series. But then also, all of these are your episodes. So I'm gonna click into an episode.
+
+Here, I can add all of my media and resources. Resources meaning, like, links to giving or checking in or even our missionary of the week, something like that.
+
+I've also got the option to add video so that people can watch live. They can also watch later if I add this to on demand, and you can even host audio in publishing. It's hard to find audio hosting sites, and so if you don't know where to do that, you can just do it here, and it comes with this subscription. This also allows you to link out to audio, and you can take all of the audio that you've got here and push it out to a podcast, which is super neat.
+
+The last thing here is sermon notes, and it is what you think it is. It is literally things that we wrote in here for people to take notes on. We can we've added fill in the blanks here, but then also you can add personal notes area where people can write their own notes. And then they're all saved on their app after they've taken those so they can look back.
+
+Super. The last thing here, I think, in sermons is that I wanna talk about the speakers. This tab allows you to add different speakers to any episode. Right?
+
+We just looked at episodes. Any episode, you can add a speaker there. And then that way, people can search or filter by their favorite speaker and check out what else they've done, and it's all within that premium level.
+
+So that's all of plans and pricing.
+
+Feel free to go ahead and subscribe to the first level because it's free. But then also, every other level comes with a thirty day free trial so you can try out the features and see what's right for you.
+
+---
+
+## People and Permissions (2:52)
+
+Let's talk about the people tab in Planning Center publishing.
+
+In order to get there, we wanna make sure that we're in the publishing product, and then we're going to click people in the publishing dashboard.
+
+Now we have a list of people, and these are your people who have the ability to change, update, or edit your church center web or your church center app. And there are two types of administrators represented in this list. The first one is your organizational administrators, and these are the people who have administrative access over all of your products in your Planning Center account. But then we also have our publishing administrators, and this is the group of people who only have permission to make updates and changes in your publishing product alone.
+
+Now as I'm looking at my list, I realize that I'm missing my friend Adam who just joined the team, and I need to add him. No need to worry. There's an easy way to do that. In the top right hand corner, you can click add person and then type in his name.
+
+There he is. Perfect.
+
+In order to give him access, I just want to make sure that I have publishing selected here, and I'm going to click administrator and then update.
+
+Nice. Let's see if he's there. Ta da. There he is. Now there is an easier way to be able to see who is who in this specific list, and that's just by looking at our green check mark right here. If they have a green check mark, that means they're an org admin, and if they don't, that means they're a publishing admin.
+
+Alright. There's one more thing I wanna show you, and that is this actions menu right here.
+
+You have two options within this menu, and there are caveats to both that I need to point out. First, if you need to update someone's profile and you have permissions in People, that's the caveat here, you can open their profile in People and make the changes that you need to make.
+
+And then the second option in the actions menu is if someone decides, hey. This team is not the right team for me. I would like to serve somewhere else. You can actually remove their access from publishing right here. And the caveat to this is you can't make this change for administrators or organizational administrators because that needs to be changed in account settings.
+
+So for Adam, unfortunately, he did decide that, you know, he doesn't really want to be on the media team, But fortunately, he did decide that he would like to join the worship team, so I just need to remove his access from publishing. Again, I've made sure that publishing is highlighted, and I'm just going to give him no access and update.
+
+And we are finished.
+
+And that's all you need to know about the people tab in planning center publishing.
+
+---
+
+## Enabling and Sharing the Church Center App (4:40)
+
+Let's enable your Church Center app. To get started, organizational administrators will go to account settings, click on the Organization tab, and on the left hand side click church center.
+
+On this screen, you're able to create your church center URL, and whenever you have the right one for your church, you can click save church center URL.
+
+And then next, it's going to ask you to subscribe to publishing. Now church center is one hundred percent free, but it is powered by publishing. This is where you can edit, update, and really make your church center experience your own for your congregation. So let's go ahead and do that.
+
+You can click this blue sign up button, and it will take you to a place where you can change your plans. We're gonna scroll down to publishing and choose the package that's right for us. Now one thing I want to mention is if you would like to try the plus and premium package for publishing, you can do that with a thirty day trial or you can even just try it. And then if you decide by your next billing cycle that it's not right for you, come back to this page, update this, and you will not be charged.
+
+But for this video, we're going to use the essential package, and then we're going to save changes.
+
+Perfect. I'm going to refresh my page so that whenever I come to the product switcher right here in the left hand corner, publishing magically appears.
+
+To continue enabling your church center app, you want to go to the customize tab and then click mobile app.
+
+Right here is your final step to enabling your church center app. All you need to do is toggle this switch on, and you are completely set up. Now for some of you, you may have run into an issue clicking this, and all that means is you need to create your campus right here. You can add a campus and then go ahead and toggle on your Church Center app. So you've set up your church center app, but how do you get it into the hands of your congregation?
+
+Well, if we scroll down on this page, we have a few resources for you here.
+
+The first one that I want to go over is this church center promotional video. In this video, you can choose the products that your church is going to use in your church center, and it creates a video just for you with your own logo that you can show to your congregation. In order to get started with that, you click, You guessed it. Get started.
+
+You can use your church current logo or you can upload your own, but I would like to use our logo. Then you click next.
+
+Then you will choose the products that you would like to feature in your video. These are all of the ones that I like, and in this video, I would like to include background music, and then I'm going to click generate video.
+
+Now while this video is thinking, I'm gonna tell you about the rest of the resources on this page.
+
+Right here, have your church center app setup link. And this is extremely important because when someone downloads the church center app for the very first time, if they do not have this link, they have to search for your church. And that's wonderful when they're in the building because the localization feature will kick in and they will see your church at the very top of the list. But if they're at home, this is the link that you want them to have because whenever they download your Church Center app, it sends them directly to your church right away.
+
+So you can copy your link to clipboard, You could open it up in a tab right now, but you can also download a QR code to show on your screen or print it out for your church so that they can access it at any time.
+
+Oh, our video is ready. Awesome. So as you can see, we have our highlighted features here. We can download our video if we want to. And if you decide that you would like to update or change any of these features, you can do that here by resetting promotional video. Let me just give you a little snippet of what this looks like.
+
+That's my logo.
+
+Oh, yeah. Everything you need all in one place. This app is going to change the culture of your church. I just know it.
+
+Alright. And finally, we have marketing aids and resources. This is where you can download promotional templates and promote on Church Center. So you officially know how to enable and share your Church Center app.
+
+---
+
+## Navigation (7:33)
+
+Let's talk about the navigation and planning center publishing. What is the navigation? The navigation is the menu part of Church Center. So when you're on the app, you can see it at the bottom. When you're on the web, you can see it at the top. And the navigation is important because it allows you to be able to focus your congregation in the right direction when it comes to accessing different content. So how do you update this information?
+
+When you are in Planning Center Publishing, you can go to the customize tab in your dashboard, and it takes you straight to the navigation menu. And there's a lot going on here, but it's super cool and pretty easy to update and change as you want to. One thing I really want to point out to you first is that when you are in the menu, you can see five different icons, but four of them are going to be your top four. These are those items that you know your congregation is going to use on a regular basis, and so you want to put them up front and center on the menu.
+
+If there's anything else that you want to include in the navigation, no worries. They will pop up in this more section so that they can be able to access that as needed. When you come over here into this edit section, you can see your top four up top and the rest of it, which we call the navigation overflow on the bottom. As I'm looking over here, I realized that we do not have our church bulletin on here, and that's something that I really want our congregation to have access to.
+
+So in order to add something into the navigation, you can come over to the right hand side, and you will see quite a few pages already here. Your built in pages and your custom pages can be found here pretty easily, and all you have to do to add them is click this plus sign, and they will automatically populate over.
+
+This bulletin is something that I see our congregation using on a regular basis, so I'm gonna put it into our top four. And you will notice that check ins goes down to the bottom. And I think that that's perfect because check ins is only used on Sundays, where the rest of these are probably gonna be used on any given day of the week.
+
+There will be times when you're going to want to add something to your navigation, but you don't want to make it a page in your publishing or you don't have access to custom pages, and you only want to add something like a custom form from Planning Center People and you want to add that into your navigation, you can do that as well. Right here where it says search or paste link, you can add your link here, but make sure that you click your link here. It's going to populate right there in that little menu. Click it because that is a button and it automatically adds into your navigation. Now when you are adding things into your navigation, there are two ways that you can edit them. You can create a label, and this is the name that they see. So this is going to be Connect Form.
+
+And then I wanna create an icon that's oh, I like this. It looks like connection.
+
+And then it'll automatically update over here. And then you can exit, and then that's perfect.
+
+If there's ever a time when you want to remove something from your navigation, that can be done by clicking this little delete trash can, and it will go away. One thing that I absolutely love is that by the time you get finished making all the changes and edits that you've done, and you are ready to save and publish, it is an immediate change to your church center. So as you can see over here, my more section already updated. Let's see. Sermons and bulletins did as well, and then I also want to check the church center web, sermons, bulletins, and this updated too. That is so cool. I love that.
+
+Whenever you are creating your church center experience for your congregation, there are two landing pages that they can come to whenever it comes time to opening the app or opening the web. You can choose to have it open up to the homepage, or you can have it open up to their me page, which is the area where they're able to update their profile, see their schedule, see any notifications, activity, involvement, and things like that. Right now, I wanna keep things for our homepage, so that is perfect as it is. If you ever see that there's something that you want to update or if you wanna change the name, for instance, if you want to change the name of Give to Giving, you can click this little pencil icon, update the name.
+
+There we go. And you can update the icon if you want to do that. For now, I'm gonna keep it Give because it just is perfect as is. But I did want to show you that aspect of things too.
+
+Now something that I'm really excited about is if you create a page and you only want certain people to be able to access it, you can actually do that. And in order to do that, you're going to go to the page tab in the dashboard of publishing, and you're going to choose the page that you want to restrict.
+
+We have a page here called Family Hub, and you can see right here, right now it's link only, and there's this visibility tab lets you know, hey, is in the navigation, always available, link only, and then we can also restrict access, and it'll change to access only, which I wanna show you what to do right now. So in order to get to your navigation access for the page, you're going to click this drop down menu right here.
+
+I'm gonna talk about this here in a second, but right now to update the page access, we're going to toggle on this button right here. Now please keep in mind that before you do this, anyone has access to that page. But if I want my Family Hub page to only be viewable to my members, all I would need to do is click the checkbox for the members. Now there are a lot of options here, and you can choose which one is best for each page.
+
+And this information can be updated in planning center people under the membership types whenever you manage those. But right now for this page, I want it to just be members. I'm going to save and publish, and now it's updated. Only my members have access to this page.
+
+So how do they get there? There's a few different options here. If you wanted to add it to your navigation, you absolutely can. You can click edit navigation and it will take you right back to the navigation menu in the customize tab.
+
+Now one thing to keep in mind about this though is it's going to show up in this more section.
+
+And if someone is not a member and they click that link, it will tell them, hey, you don't have access to this. You need to reach out to your administrator. It depends on you and your congregation, how you want things to look to people, but that is an option. Another option is you can copy the link here to your clipboard. You can send it in an email or in a text message.
+
+You can download a QR code and use that if you would like to. And then the other option is that you can go ahead and open the tab and show it to someone right away. Okay. So now whenever we go back to the pages tab, we should see something different. Right here, it says link only, and it has this little lock picture, and it tells you this page is page access restricted. Meaning that, hey, only certain types of people can come and see this specific page.
+
+Alright, friends. You have now seen an overview of the navigation in Planning Center Publishing.
+
+---
+
+## Page Analytics (3:44)
+
+Do you wanna know how your church center content is performing? The analytics tab in the church center dashboard of publishing is the place to find out and give you insights as to how your content is performing with your congregation. Let's take a look and find out what you can see to make better decisions about how your content can be used. You'll likely notice that the analytics graph is previewed here on the overview tab of the dashboard.
+
+And one path that you can take to get a more detailed view is by clicking the view analytics button right here. Another path, one that I like to take pretty often, is viewing the list of most viewed pages here in the church center content widget of the dashboard. It gets your engagement story started. And, you have a quick way to jump into the details with just the click of a button.
+
+However, once you do open the analytics tab, you'll see engagement data for your church center content.
+
+This data helps you answer questions like, what pages are people visiting the most? Are people engaging with our content at all? And what should we prioritize?
+
+Well, let's look and see what we have here.
+
+First, we see a beautiful graph, but without understanding what it means, how do we even know where to start?
+
+I wanna start right here by showing you what these numbers are. We have three hundred and six unique visitors and five hundred and ninety one total views. The unique visitors means individual people who have viewed it, and the total views means how many times those individual people have viewed this content.
+
+Now right here, we have two different types of graphs or two different versions of this graph. We have the darker blue, which means the time period that I'm looking at right now, and then we have the lighter blue that has the dotted lines, which means the previous period before that.
+
+And you're probably thinking, okay. Well, what does that mean? Right here, you can see that we're looking at the last seven days. So that darker blue means the last seven days, and the lighter blue means the seven days prior to the last seven days. And, yes, this can be changed. You can choose between the last seven days and all the way up to the last twelve months.
+
+Now if you really want to know what's working with your congregation, we also have a way for you to see just the app, how it's performing, and just the web and how it is performing. I'm gonna go back to the last seven days, and I'm gonna do both app and web. You even have the ability to be able to see what pages have engagement as well. So if you scroll down underneath this graph, you can see the name of a page, how many visitors, and how many viewers. Now one thing I want to mention is if you click on this specific word right here, it takes you to that page in your church center so that you can make edits and changes if you would like to. But if you just wanna see that information in the graph, you just click right here, and it'll open up for you. In the app and web in the last seven days, I've had twenty four unique visitors with total of eighty four views.
+
+You can also see this information here, and then you can zoom in and out of a page by clicking this unfocus button, and this takes us back to all total views for all pages. Analytics aren't just numbers. They're insights into how you can better serve and connect with your congregation. Use this data to make informed decisions on what content to create, what to highlight, and where to focus your energy.
+
+---
+
+## Built-In Pages (6:15)
+
+Hey. Let's look at built in pages in publishing.
+
+So built in pages are subscription based pages that Planning Center has built for you so you can just do your work once.
+
+But this isn't publishing. Wait a second. This is Church Center. I wanna show you the end result of these built in pages, and then I'll show you how to set them up.
+
+So here, I'm on my home page in Church Center, but you'll also see that I have lots of different pages here. The giving page, which if I'm subscribed to giving and then I put it in my navigation, you'll see this with all of those different pieces.
+
+The calendar page, if you're subscribed to calendar, you can put in your events and then put them in the navigation, and you'll see this.
+
+Groups, because I'm, logged in, I see my groups at the top of this page, but then also all of our group types that you'll set up over in groups.
+
+And then we've also got check ins and sign ups and a couple of other things here. Now there is one built in page that's, not in your navigation. It's actually or it can be in your navigation, but you can also access it by clicking on your profile here. If somebody is not logged in, they can click log in, then click their profile, but they'll see this page. And this is called the me page.
+
+So this page is another built in page that has all of the information that you'd want to know as a person who's logged in. It's got my profile. It's got my household, my schedule here. I can see my, different groups, and then also my giving registrations and my sermon notes all in one place, all in a built in page that you didn't have to build because we made it for you. So that's super. But how do we set that up? Well, let's go over to publishing and check this out.
+
+So here is my publishing product. Right? And I'm on the pages index. This is a list of all the pages that you can make available to your congregation, and it includes all those built in pages.
+
+You can tell which ones are which because the built in pages will have the product icon next to them. And if you're not subscribed to, say, calendar, then calendar won't show up at the top of this list. But if you are subscribed, you should see these up, near the top with their product icons.
+
+Perfect. So now that we're here, let's talk a little bit about these different things. I've got the me page. I mentioned that just now.
+
+Right? The the profile page with all of the different, schedule and my giving registrations and such. This, for visibility, it's always going to be visible. That's because that is how people keep up with what's going on in the church, And you want them to stay connected, so we keep that available all the time.
+
+But for the rest of these built in pages, you can put those in your navigation, or you can make them a link only page. So I've got giving, calendar, groups, check ins, and sign ups. Sign ups is the registrations, right, the registrations page, and then the others are by their name. Those are all in my navigation right now.
+
+So people can click on that top bar in Church Center web or even on the bottom bar in Church Center app and go directly to those pages.
+
+There is one page, though, down here. After you get done within navigation, we have all of our link only pages.
+
+Directory is also a built in page, and it's a an invite only feature. So we don't show that always in navigation. Right? For my church, we just keep that as link only because we only want people who are invited to be able to have access. But you could also put this in your navigation.
+
+And that's a a quick thing by going up to customize, and then there's a navigation tab. We have a video for that. So go check that one out about how to customize your navigation.
+
+Super. So that's the visibility of all of those pages. Then we have last updated. That's just the date that this was last updated, and, it's pretty self explanatory right there.
+
+And then finally, we've got these actions buttons or these action drop downs. So each one is gonna say edit or view on church center. And when I click on edit let's, go to the calendar one, for example. If I click on edit, it's gonna take me to this page.
+
+Wait a second. This doesn't look like an editing page. Well, it's because you won't need to add any blocks or, any formatting to these pages. They're already done for you.
+
+But what you can do is go and configure what's on these pages in the actual product.
+
+Now I anticipate that you probably will most likely be working in the product and then wanna go straight from the product to Church Center, which you can do, in any of those products. There's, like, a little button at the top that you can click, that will say view on church center. But let's say that you get here and then you're like, I need to change something. You can click configure and whatever that product is.
+
+They all look the same, so let me click back to the pages just for fun. You'll see check ins. It has configured check-in. And then give, it does the same thing.
+
+The things that you can configure for those, like giving, you can change which funds are showing. Calendar, you can change which events show up on church center and when. Groups, same with, like, different groups that you can show. Check ins, this is gonna be different events that come live at different times for your people.
+
+And then sign ups, that's kinda the same. The registrations that you want to show or maybe that you want to, disappear, right, because they're closed. You can do all of that in those different products. Okay.
+
+So then when you're on this page, you can either go there and change that or you can go and view these on Church Center, which takes you to Church Center web so that you can kinda get a lay of the land and figure out what everything looks like.
+
+And that is all of built in pages.
+
+Let these pages work for you so that you can do your work once and then focus on your ministry and your people, which is the stuff that really, really matters.
+
+---
+
+## Custom Theme (4:17)
+
+Hey. Let's talk about how you can customize your church center theme in publishing.
+
+So I'm here on the publishing product, and I'm gonna go over to the customize page.
+
+From there, I'm gonna click the theme tab, and you're gonna see two things here. First, your church center logo, which obviously matters to this theme. Right? You want it to look nice with the rest of your church center things.
+
+You can change this in accounts as long as you have org admin access. But if this is grayed out for you, that means you only have publishing admin access, at least for, you know, this product.
+
+And we'll give you a list of all the people that you can contact to get that changed. Super. That's the first thing. But then the second thing down here is the custom church center theme. Custom church center theme is gonna make church center app and web look more like your church.
+
+This comes with the second subscription level of publishing. So once you've subscribed to that, then you can use this. No problem. So how do we do it? Let's click the customized toggle here.
+
+And then I've got mine already kind of set. This is a little wild. I have my light preview and my dark preview over here. So when I'm selecting a color, what I can do is I can either scroll around here like this, or I can I can and I can even change, you know, this right here, or I can type in the code that I need down here?
+
+So if I want yeah. We all know. We all know. There it is.
+
+So that's that's a possibility as well. You can do either thing here. There's something important to pay attention to here. One is that this is your light mode color, and this is your dark mode color, and you can have different ones.
+
+Also, though, underneath those, you're gonna see this great contrast option sorry, this great contrast notification. And whenever you're seeing that, this is because the web content accessibility guidelines are setting that for us. If you take your cursor and you drag it around, if we take the light mode to white, this says poor contrast because it is not great contrast. You can't see anything.
+
+Right? The same is true if we took dark mode all the way down to black. You're gonna lose your headers. You're gonna lose some of this, your links, your buttons.
+
+So we wanna be smart about which colors we pick, and there's an easy way to make sure that you're getting your color and then something close to it that both have good contrast. If you click this auto check mark, you're gonna see that this is going to kind of link these two, essentially. Now I'm gonna go up to purple because that's the color that I wanna pick. And then as I scroll around, watch the poor contrast and great contrast.
+
+They will change based on where I am on this. So it's a little bit of a game, but you do wanna get where it says great contrast on both. And then look here. I've got this color and this color, and they're brilliant.
+
+Now, before I click save, I want to show you what this looks like on Church Center app because it's gonna change immediately. So let's get a view of both of these together. There's my phone, and here's my screen. Once I click save, watch what happens to the top of Church Center app and then also to my buttons and my links right here.
+
+All of those are gonna update automatically, which is super cool. This is in light mode. Of course, in dark mode, it would look a little bit different.
+
+But you're gonna see that this changes for this and every page that's in your Church Center app. I can also go and view this on church center web if I'd like, but that's that's pretty much what it looks like. Now our pastors, they really love the gradient, so we're gonna undo this. You can disable the custom theme by clicking on that again.
+
+You'll go back to this, but don't forget to save when you do that. And then there, that color goes back. Perfect. And that is everything about customizing your church center theme.
+
+---
+
+## Custom Pages (12:05)
+
+Let's build a custom page from scratch. You may be like, oh my gosh. Do I even have custom pages? And yes.
+
+Every publishing subscription has at least one custom page, which is your home page. And you'll always see that in the menu right here in your index, your pages index. But you may also have unlimited custom pages if you have the second or third subscription level. So in that case, you could use this add page to kind of get started.
+
+We've already made our home page. I'm gonna show you that in a second, but we're so we're gonna go to a custom page that I've just created to do this video, actually. So here, I'm gonna click here, and this is it. It's a blank canvas.
+
+When you get here, you're gonna see the title, which you can edit if you click in there. You're gonna see a couple of buttons up here for previews and analytics. Then you're also gonna see this little drop down that gives you the link to the page and some options for access limitations.
+
+But otherwise, it's blank. So what do you need to do first? Well, the very first thing that I would suggest doing, you can do this in any order, but I would say to start with a section header. So we can either click add new block or we can click and drag over here to drop this onto the page. And now I have a section header. Now what's a section header? Well, this is something that you want to be, like, a beautiful picture that kind of welcomes people into your space.
+
+It's basically like the welcome crew of your your home page here.
+
+I'm gonna to to get an image here, you need to click upload image. Over on the far right side, you'll see a lot of other options here. But I'll click upload image, and now I have three choices. I could either give it a new image that we've never used before. Maybe we created an image on our own or something. I could use previous images, images that people have put into other pages in publishing or things that I've used before.
+
+But the one I wanna choose right now is free images, and this is Unsplash. It's just tons and tons of photos that people have taken and then given to Unsplash to share with you. So let's type in here. We'll type in church.
+
+Hopefully, this is something yes. Perfect. Okay. So we let's see if we wanna dig through here.
+
+We can look at any of these pictures and say, yes. This is what we want. Oh, looks just like my church right on the prairie. Yeah.
+
+So we'll pick this image. You can pick whatever image you want. And then when you click add image, it's gonna put it right here in the section header. Perfect.
+
+Now the options here, I'm I'm gonna go through them pretty quick, but you can play with them on your own.
+
+The height, of course, is if it's a bigger picture or a smaller picture. But keep in mind that this actually will change. This section header at the top of the page, only that one, will change with what device you're looking at it on. So you want it to be an image that could resize, and it would be okay anyway. So but we'll do it as tall.
+
+We can select the headline color if we decide that we want a headline. So that's this right here. I could do welcome, and then I could change that to light or dark. I kinda like it dark, but also I don't think I even want a headline, so I'm gonna take that out.
+
+And then you could also do you could have a button here. Like, if you have a real call to action, like give now, you could do that or some other thing, like, I don't know, new here, that would be a good one to do. You can do that and then link that button here. But, also, I don't wanna show that button.
+
+I'm just gonna leave this like it is.
+
+Actually, let's make it regular, and then we're going to go up here and save and publish.
+
+So when we do that, that's going to publish this publicly right now to this page. And if it's in my navigation, which this one is, then I would see that change happen. Okay. Let's look at another couple of these blocks.
+
+Another that I wanna call out is the text box. So this one right here, this is just normally what people do with their mission statement or, like, you know, just any kind of little blurb, maybe a quote, stuff like that. So we'll put that in there. And, oh, sorry.
+
+Before we go too far, I wanted to mention, you can highlight this and change how it looks. You can do a couple of different rich text editing. You can put it in the middle. That's my speed.
+
+And you can also change those to bullets or numbers. Pretty pretty basic there. Okay. Oh, but I do want this to be a header because it looks a little bit nicer.
+
+Okay. Mission statement and a quote there.
+
+But now you probably have some things you want them to do. So one way you could do that is by using this button block. And if I click on that, again, this could be the give now.
+
+We could do another button block that says sign up. Maybe we have some things we want them to sign up for. This is fine and totally could be the way that you want to set your things up. However, there's a very cool way to do this that looks a little more like your church. So when I click on this, I'm gonna actually just delete these blocks right here. Okay.
+
+I'm gonna use an image, and here's why. When I click on image, you'll see I've got an option to put an image here, which maybe you want to just put a picture of your people. But what's cooler about this is you can actually link these images out to places.
+
+So let's say that I want to make a button to go somewhere else on my church center site or even to our own website or a giving page, any of those things, you can choose an image for that. I'm gonna go ahead and click previous images because I have one in here called Family Hub right here. Okay. So this we created on our own. Right? This isn't like a premade image. This is just something we've used in the past, and our team created it.
+
+When I use this, you'll see it actually resizes to be that kind of button size. And then what I'm gonna do is I'm gonna link this image to the family hub, which is already in my pages in church center. If you create a custom page, you can type in the name of that page here and link to it. So this is really cool for your home page.
+
+I'm gonna click this. That's gonna link to that exact custom page, and then I could select to open it in a new tab or not. I don't really need to do that. Of course, we wanna save and publish.
+
+Always wanna save and publish because you want these things to be public immediately. There's some other things over here, but one more I wanna call out really quick is the grid block. This right here, when you use the grid block, this is for if you need something that's in columns. So say that you want to introduce your staff on your home page.
+
+You could do that by, you know, clicking on any of these items once they come up, uploading an image, and let's just sure, this is our photographer. That'll be great. This is obviously not our photographer. I don't know this guy.
+
+But so there's that. And then we'll say, you know, Josh Tripp. There he is, Josh Tripp, and he's our photographer.
+
+This is neat because you can basically feature whatever you want to feature here, and it can be in several columns. You also don't have to have three things. You could just have two by clicking on the one you wanna get rid of and clicking this little cancel or x I sorry. Delete is actually the one. Once you delete that and then you go to settings and you're gonna set your columns to two, now it spreads out. It formats the way you want it to.
+
+So you could you could edit in here and then edit each one of these. You could even link those images out as well. So if you don't wanna do a long button, you could do a couple of small buttons and just link those. Okay.
+
+That is the content side, but the setting side of the grid block is kind of important too. So you've got some image options here. You can show the title or not show the title if you don't want that big title. You don't have to have body characters.
+
+You can just have that. But you can also show a button. And this button shows up down here, and then you could say contact us or whatever you wanted here. This way, you could, you know, put an email address in here or something else, and it's just really useful.
+
+The grid block is wild. People do all kinds of cool stuff with it. So try that out. Check that out for yourself.
+
+Cool. So now I'm wondering if there's anything else. Nope. I think that's all. Oh, oh, one more thing.
+
+For columns, you can actually change the columns for mobile. So if you don't want this to be a two column here for mobile, you just want it to be one. On your mobile app, it'll actually just show as one. Or if you want it to be three on your mobile, you can do those three there.
+
+Okay.
+
+Cool. That's all of those things. Now I'm gonna save and publish as always.
+
+Now I've got my my grid block. I've got my button, all of these things. But there's something else that I want to tell you about that's gonna save you time. Down here underneath the basic blocks, there is a thing called planning center blocks.
+
+Planning center blocks are going to take all the work that you've done in these other products that you're subscribed to and just put it into a block on your page. So let's, for example, take the calendar block. If I click and drag this over here, I'll just put it right in here, it's going to pull in information from my calendar product without me having to go and, like, make a grid block of it or whatever. It's already got all the information. And people can click on these and go to that event.
+
+All you have to do is add the block. So and then you've got all your options here. For each of those blocks, they're a little bit different. But once you've done that, you can actually see that we have calendar, giving, registrations, and a sermons block all available for you to use on this page.
+
+Okay.
+
+So we've got that, and this page is fine. It's fine. If I had more time, I would want to create some images and make some different things. We have a page that looks the way that you probably want your page to look, and I want to show it to you now, now that you know all these elements. So we're gonna go back to the pages index. I'm gonna click on our home page.
+
+And on our home page, you're gonna see what this could look like. Right? Here's our section header like we created. It's that full width. We've got our mission statement here.
+
+These are all buttons. These are those arrows I was talking about. So our new here page, if anybody's got a per request, this goes right out to the per request form from our people forms if you have used those at all. This is our sermons right here in the middle, then our podcast.
+
+You've got a threefold, which is a grid block. It doesn't have any buttons or text because we already put it on the images. And, again, we made all these images in house. So we so meaning, like, our church made them for this page.
+
+So you can do that with Canva or other things like that. Then here are some section headers that are actually showing our campuses. Really slick here. So your Atlanta campus, Riverside, San Diego, and then Sydney. I've got this and then a social block at the bottom.
+
+You can do a ton with your home page and with custom pages, and we have a resource for you that you can check out what other people are doing to get some inspiration. If you go to this question mark in the top corner, you can actually click join our customer community and then go join the Planning Center community. And we have an entire library full of people's home pages and how they've kind of set their stuff up that you can check out, and then build your own home page or custom page. And that's how you do it.
+
+That's it. If you have any questions about this or if you need any help, always, always click that question mark in the top right corner. You can email our support team or schedule a call. We'd be glad to talk with you about this.
+
+And let us know what you create. We're excited to see it.
+
+---
+
+## Preparing Your Sermons in Publishing (17:56)
+
+Let's talk sermons in publishing. With the premium pricing plan, you gain access to this space where your church media, video, audio, live streams, they can be scheduled and organized for your congregation to join in in the moment, like a livestream, or access your library anytime. Let's walk through the steps today to set up your first channel, series, and episode. From this landing page, go ahead and click get started to jump into the channel creation wizard.
+
+Now what's a channel, you might ask? It's a good question. A channel is that top level organizational tool when grouping your church's media. Often, it's the name of your weekly service, like Sunday morning.
+
+Sometimes it's the, name of the ministry that you're getting this channel set up for, and other times, maybe you're transferring an existing podcast or something into publishing, and you might name your channel the name of that show. Regardless, this can be edited after the fact, so we're gonna go with this generic Sunday morning title.
+
+The next step in the wizard are, the enabling channel formats. These are these the common ways that people might engage with your media. For today's sake, we're gonna do all of it. We're just gonna enable everything we can enable to get the most out of Planning Center Publishing.
+
+Hit next to set up your times. So this first option is to use service times from planning center services. This is fantastic. This connects you to your plans. It connects you to your series, your titles, your order of service.
+
+It's a really robust, connection point so that the work you're doing in services can be pulled here into publishing. That being said, for the very first time, I recommend just going ahead and going through these steps manually to get confident and familiar with the tools in publishing, then starting to integrate with the other planning center applications. So we're gonna make sure that both of our services are set up here and click finish.
+
+Once you complete the the steps in the wizard, you're dropped on the settings page of your channel where you can flesh things out a little bit more. Starting with a description that is really creative to tell people what what is going on in this channel. I'll show you where this lives in in Church Center in just a little bit. Let's hit save.
+
+Speaking of living in Church Center, in order for your congregants to access this channel and the episodes that we will add to it, it needs to be published on church center. Now the nice thing is that when you want to promote that that that you have a published channel on Church Center, you can come right here to grab the latest episode URL or the latest note URL. And what's what's awesome about these URLs is that you won't have to change them every single week. It'll be the same URL. You can leave it on your website, on your home page, on your custom page, and every time someone uses it, it'll take them to the most recent sermon or episode that you have added.
+
+Moving right along, we already enabled formats in the wizard, so now we're gonna configure some of the settings for those formats, starting with our livestream. Those times came from our create channel wizard as well, but you can add a time, change the times as you need to seasonally.
+
+The countdown timer is pretty intuitive. It's fifteen minutes before the start time you see a countdown. So you can update that if you would like it to be shorter, longer, or otherwise.
+
+The watch now button shows up on your channel when you have a livestream going on. So typically, you want that button to show the whole service. If your service is shorter or longer than two hours, you might need to change this default to match your actual service time.
+
+Moving right along to these last little last few items here for your livestream, chat is something that you can enable either for just group members or for anyone that is tuning into your livestream. If you haven't subscribed to planning center groups, you won't even see the group option, but the general chat functions the same way. People can talk to one another during the livestream or they can talk to other members of their group during the livestream. We're gonna enable both for our test today.
+
+This last option gives you the ability to take a static embed code from your provider to to use for every single episode that you create. Youtube might have a channel code, Vimeo, Resi, Boxcast. They also might have a permanent link where every time you create a new episode, that permanent link routes to that new episode. So if you know what I'm talking about, you probably know what I'm talking about, and this is the space that you would enter that so that you don't have to enter a different livestream link with every episode that you create. Today, we are going to keep it simple and just enter our the livestream link for the next episode that we scheduled.
+
+Okay. We're not gonna dig deep into podcasts today. I just really wanna tell you three things. One, they're usually free. It might be worth looking into.
+
+Two, publishing will you you can use this podcast feed URL from publishing to create new episodes in your show on Spotify or Apple. So you take this and you throw it in there, and every time you have an audio, you add audio to your episode, it creates a new episode of your show in Spotify. The third thing is that Spotify has a link to an Apple that you can bring back into publishing so that your congregants can see that you have a podcast that they might wanna subscribe to. In fact, I have my Spotify podcast pulled up here, just a testing podcast, just to show you how that functions. So I'm gonna add my share link right in here, and I'll show you where that shows up in church center in just a bit.
+
+Moving right along, we've got two more sections here on the settings page. We're not gonna talk about the connected service type. That's something that you can experiment with after you've gotten the basics down.
+
+So let's talk about these default links. This is like a call to action for your congregants when they're watching your livestream or they're engaging with your on demand video.
+
+So there's a few options here, a URL, a people form, a giving fund. Often, I see folks creating a check-in button so that once I'm tuning into the livestream, I also can click check-in and go ahead and get checked in to the the at home, you know, the online worship service. A people form, like, for a new family or for prayer requests. A giving fund, that general fund might be a button that you want to show up for every episode. But just so you know, we can create a default link. This is in the channel settings, so it will show up for every episode, but we can also add episode specific links when we create an episode. Let's type in check-in here and use our Spotify link that we already have copied just so we can see how that shows up in the episode creation process and on Church Center.
+
+Whoo. Alright. We did it. We did the settings page of our channel. So let's jump to series. We're going we're going channel series episode, and adding a series is as easy as the click of a button. Let's add series.
+
+There's a there's two pieces to your series. Your title, we're gonna call it Romans. We're gonna summarize what our series is about. Again, we're exercising a lot of creativity in this training, and, we're gonna save that summary. Bada bing, bada boom. You have a series. So in our next, step of creating an episode, we'll see where that series comes into play.
+
+On our episodes tab, we'll click add episode.
+
+Now what's nice is there are pieces on all of these tabs, on all of these new tabs of the new episode that have already been set up by our channel settings. So I'll point those out to you as we go, but we'll first start with just titling our episode. This is one this is next Sunday's sermon, and we're gonna go through Romans one, the first first chapter.
+
+We're gonna save that summary. The title saved automatically. So let's take a little bit more of a look at this general tab. In the availability box, we have the times that are in the channel. We have the countdown that's set up in the channel, and then we have, some more specifics to this episode.
+
+The episode will be included on the channel page, and you have the option, is it included only during the time that it's live, or is it included at a specific date or time? Typically, we'll want to include it on a specific date or time. If you're adding to that on demand library as well, this makes the most sense.
+
+There's a few exceptions, but we're gonna leave this set to the default where it will show up on the channel page at the same time as our very first live time.
+
+Once again, we wanted to make these links accessible, quick quick grab for you as you are promoting your sermons. And so every time you create an episode, you'll see the option to grab this specific episode's URL and a specific URL to the notes for this episode.
+
+Over here on the left side of the page, we have the summary that we've already updated. There's our series. We're gonna mark this as a part of our Roman series, and we're gonna go ahead and add a speaker from our database.
+
+Our general tab is complete. Let's move over to the media and resources tab. This is where we're gonna going to add the actual links for our livestream. So a couple of things.
+
+The first thing I wanna point out is this links. I keep using the word links. There's it has two meanings. The URLs are what I'm talking about with the livestream.
+
+Links here is that button that's that call to action on the episode.
+
+So this is the default one we created in the channel settings, so it's always there. You don't have to do it over and over. But what's nice is if there's a specific thing, let's say we're highlighting a specific missionary or something like that this particular week, we could add a button for this giving fund that's special to this week or a a form that's specific to this week. So we can add more links for specifically this episode along with what we the default link we added to the channel settings.
+
+Okay.
+
+The watch live setting here, the watch live section here. This default livestream URL is, not selectable. Why? Because that is a channel setting, and we decided not to go with that same URL from week to week setting.
+
+And so that means that we need a URL for this week. So there's two options, a time specific livestream, and that's the most common. It means you're gonna go live on Sunday. We want this to go live the same time you go live.
+
+A prerecorded video is a little bit different in that you already recorded the video, so you're not going live in the traditional sense, but you want that video to go live on church center at a specific time. Most commonly, it's a time specific livestream, so we're gonna go with that option today.
+
+What are the URLs? Good question. I have a test account set up in YouTube right now where I have an upcoming livestream, and I'm just gonna grab that upcoming livestream's shareable link and go ahead and drop it in right here.
+
+Click save. This is for the nine o'clock service.
+
+It's the same link for this eleven o'clock service. We're just gonna go for, you know, four hours straight on the same same live. And and now this episode is ready when I go live on YouTube. I still have to go live on YouTube. Once I do, this is going to follow suit, and it will be ready to rock as well.
+
+Now the on demand settings are not you don't always have what you need for this right away. So you in in some cases, you have to wait until you've gone live or wait until your livestream ends before you have a permanent link to watch that video.
+
+When you have that permanent link, the one that'll last beyond the livestream, that's what goes in here. I'm gonna use the same link for now, and you may be able to as well. You may be able to use the same link as the one generated from your from your live stream. But I just wanna call out that you'll wanna double check that the the the link you wanna use for the permanent video watching in your on demand library isn't always the same one as your livestream.
+
+Same with the audio, that is often something that I'll be coming back to publishing to add after the fact. Maybe on Monday, after the services on Sunday, I'm coming back here to make sure my on demand library is ready to rock. The audio is ready to rock for my podcast, and next Sunday's episode is created and scheduled with the next Sunday's links.
+
+Okay. We did it. We got our livestream set up, and now we are gonna move on to our sermon notes. When you click enable notes outline, it opens up the editor for your sermon notes where you can type in notes for folks to fill in the blanks or something like that. There's lots of, options here for formatting, and you can play around with it. You can copy and paste from another editor and do what you need to do. Just remember to hit save and publish once you get things set up here in your sermon notes.
+
+Okay. Awesome. The last piece that I want to walk you through is is how all of this translates to church center. And if you are, very active and familiar with planning center, you know that all across our administrative pages, there are preview buttons or view on church center buttons to show you what you've been doing, show you what it looks like on the other side. That's the same in publishing. Click this preview button to jump over into, your testing, for us, our test account to see what we just set up. For you, it's your church account to see what you actually set up.
+
+So that preview button took us to the Romans one episode. We just created that episode. It's not live yet. In fact, if I clicked this button, we'd see it's got a got a ways to go.
+
+But I can see the summary that I added to that episode is here in the info. The chat option is there and ready to rock with either the groups that I'm a part of or the general chat, and the notes are here and ready for me to fill in and, interact with. In fact, you'll see that there's some actions that the congregants can take once they have those notes, and here is that that link that we created. It's the button that we created in our channel default settings so that every episode has this check-in button. So you can kind of imagine if we had a donate button or a, form, what what that could look like. Now the other thing you'll see here is so this is the episode.
+
+Here is what our channel looks like on church center. Womp womp. There's not much to see because we just set it up, and there may not be much to see when you first get started. But as you build out your library, this will get filled in.
+
+Two things I wanna call out on this page are this next live on Sunday, date and time, that shows on your channel page when you have another episode scheduled. If there were no episodes for the future, you wouldn't see that even if you have things set up in your channel settings. Only if you actually have an episode created and it's in the future will you see the next live showing up here. The other piece I wanna point out is that listen on Spotify button.
+
+Because I added that share link to the channel settings, my channel has this awesome link to my Spotify show so that congregants can know, hey. You might wanna, you know, listen to this on the go. Well, check out our Spotify.
+
+So those are the two pieces I wanted to show you on the channel page. Now I I don't want to end this training without showing you an example of this a little bit more fleshed out. So let's look at, another test account, but with a few more channels and more episodes to kinda get a feel for this. Here is a channel page.
+
+It's the weekend service channel. We've got a live coming up, and here you can see recent episodes. You can see recent series, and you have options to interact with these, these sermons. You also can see Apple and Spotify, podcasts, references.
+
+And if we were to click on one of these episodes and go onto the episode page, you'll get a feel for what you're what you're really building here in publishing. You're you have this this space to watch the video.
+
+You have more from the series, and you have those links and and buttons that you've created either in your channel or on the episode.
+
+Okay. Well, I think we did it. We created our first channel, our first series, and our first episode, and now you are ready to rock with Planning Center Publishing.
+
+---
+
+
+# Childrens Ministry
+
+## 👋 Welcome! (0:25)
+
+Welcome to our planning center playlist of all things children's ministry. All the videos in this playlist will help you with everything from caring for your volunteers, your families, and for planning your events. If you wanna learn more about any of these things, hit the question mark at the top right corner of any planning center product, where you'll find articles, more videos, and be able to contact our support. Feel free to skip around on these videos as you need, and enjoy.
+
+---
+
+## How to care for your volunteers (35:11)
+
+Hello, and welcome to Planning Center University. My name is Reagan, and I'm over the customer experience teams here at Planning Center. And today, we have a special PCU specifically about children's ministry.
+
+One of the foundational pillars, hopefully, of your children's ministry is your volunteers. And so that's what we're gonna be spending our time on today is how do you care for them with Planning Center? How do we prevent them from being burnt out and frustrated? And how do we proactively communicate with them so that they know what's happening and help you better care for the families that are a part of your ministry.
+
+We're gonna be spending most of our time today in Planning Center People, which is our people database of Planning Center, kind of the hub of all the information about people in your church.
+
+Then we're gonna be spending some time in home talking about some of the features there that can help you stay on the same page with your volunteers. And we're gonna be talking about services because that's the place where volunteers are scheduled in planning center and where a lot of the communication with them is gonna happen. Now this is a special PCU in the sense that we're not really gonna be walking you through, how to set things up. We're just gonna be showing you what you can do with things once they are set up. And so some of the things that we're gonna dive into today might be a little bit overwhelming. That's just because we have some big accounts here that are walking you through lots of different profiles and things. So, the important thing to know is that there are other Planning Center University courses that'll walk you through the how do you set this up, and they're all product specific.
+
+So things about check ins, services, people, they're all gonna walk you through how do you set these features up. But I'm just gonna be talking about the features and how to use them. And you can always click on the question mark if you are lost or you are looking for more about those features.
+
+So let's dive dive in, with how do you build a volunteer pipeline? How do you get volunteers' information into Planning Center? How can you use Planning Center to know who's interested in volunteering with your ministry?
+
+Now the chances are if you already use Planning Center for other things like online giving, online registrations for events, or even if your volunteers are already a part of other teams in your account, then a lot of their information probably is already in Planning Center. But we're gonna talk about it from scratch as if you're just trying to get new volunteers into your account.
+
+So the first thing that we wanna do is we wanna have a way that we can collect that information. Right? And the way that you would do that in Planning Center is through a feature that we call forms in planning center people. So if I'm gonna, click on the forms tab here at the top of planning center people.
+
+And a form is a form just like you fill out on any website for any basically anything these days. It's a way for you to choose what information you wanna collect and the workflow or the processes that people are gonna follow once they get, once they fill that information out. So you can either have a specific form like, hey. This is our children's new children's volunteer form, Or you can use, a more generic form like a connect card, that fires people off into a workflow, which we're gonna talk about in just a second.
+
+And that's what we have set up in this account. So I'm gonna go down here to my connect card form and just show you a feature that's really helpful for this, which is, what we call a workflow field. So on this connect card, it's it's got all the information that we'd wanna collect anytime someone fills it out. So what campus do you go to?
+
+What's your address? As people fill this out and are logged in, this information is gonna be already prefilled for them. But the thing that I wanna call your attention to here is this, this field here, which is what we call a workflow checkbox.
+
+So what basically, what it is is anytime someone checks this box of I'm interested in serving in children's ministry, it's gonna add them to this workflow that I've set up called children's ministry interest workflow. Very creative name.
+
+So that's all I really need to do from the collection side is once these checkboxes are are chosen, something else is going to happen, and I'll click save. So let's talk about a workflow. What happens when someone checks that box? Now a workflow in planning center is a multistep process, something that you either, things that you wanna move people through one step at a time.
+
+So let me go to workflows, and I'll show you what this workflow looks like for my children's ministry interest workflow.
+
+So you can see here when someone checks that box, the first step of that process is that they're gonna get a phone call from Christy. Maybe this step doesn't actually have to happen if Christy already knows them, but this is the first step that that would happen if somebody was coming in from scratch. Once Christy has called them, she can move the card on to me. And my assignment in this workflow is to give someone a background check.
+
+Now this is something that I can do right from planning center. So you can see here, Osborne's on this step. I can just click on his profile, and I can add notes here, send him an email, or I can perform this specific action. So I'm gonna say, hey.
+
+In people, I want to order Osborne a background check. I'd be able to choose what background check package I wanna order, and then click complete step. And that'll move Osborne on to the next step, and I have someone in that step as well. So I'm a close this out.
+
+You can see on the next step, I'm just gonna verify that background check status.
+
+And you can auto snooze cards for a certain number of days. So this is a a way to have a built in timer, basically. It takes a while for background checks to come back. So I just whenever someone moves on to this step, I wait three days. And when once the three days has passed, the card refreshes, and it's ready for me to take action on. And then once I'm done with my part, we're gonna send that person back over to Christie who's gonna have coffee with them and figure out, you know, where do they wanna serve, how often they wanna serve, all those other details.
+
+So that's a cool way that you can once you've collected that information and that interest, you can move people through that process. Let's talk about what happens when they get to the end of that process because there's also something called an automation.
+
+And automations are a way to automatically do something in planning center with certain people.
+
+So we're gonna go over to lists. Lists are a way that you can kind of generate a report of, anyone in your account that meets a certain criteria. So I'm going to go to this list here that I've made called children's ministry workflow is finished. Again, super creative with the naming convention here. But, so right now, there are only two people in the account that have finished that workflow, me and Christy, which is, you know, we gotta get moving. We gotta get some people ready for volunteering.
+
+So what I'm looking for in this list, I've just got a rule that is looking for anyone that has ever completed the children's ministry workflow.
+
+And this is gonna refresh every night. So, whenever somebody completes that workflow, the next day, they're in this list.
+
+And what's cool about that is automations because automations can fire off whenever someone is added to or removed from a list. And so what I can say here is, hey. You know, once somebody has coffee with Christy and and figures out they wanna be a part of the team, we are gonna finish that workflow, and we're gonna add them to a position on the children's ministry team. And we're just gonna have them shadow for a a few weeks to figure out what group they wanna be in.
+
+So what I can do here is create an automation that says whenever someone's added to this list, we are gonna perform an action in services, And that action is gonna be we're gonna add them to a team. So I would pick the team and the position I wanna add them to, and then everything's set, and they're ready to go. So that's a cool way that you can build that volunteer pipeline. Right?
+
+You collect the information with a form.
+
+You then, move them through that workflow and go through a multistep process, whatever that is. And then at the end of that process, you can either manually do some things with them, or you can automatically do things with them with a list and automations.
+
+So while we're in, on this page here, let me go to home, and I'm gonna show you a feature that, is pretty new to Planning Center in the last year or so called Tasks. This is a way that you can, ahead of your event, or even with your team, keep people on task of what needs to be done and, things that have to that need your attention. Right? So Tasks lives in a few different places. The primary place that lives where you can edit it is in home. But on every planning center page in the right sidebar here, you have a little notification icon, that shows you everything that you need that needs your attention in planning center, and then you have this little clipboard here that are your tasks.
+
+And tasks can be one off things that you create as a note for yourself, like, hey. I I need to talk to Hunter's dad about how he's acting out in class. I'm sure you've never had to do that as a children's ministry leader. And then I have some some weekend prep things that I have to do.
+
+The thing that I wanna point out here is we were just on workflows and talking about how Osborne had something that needed to be done and Peter had something that had to be done. Those show up here for me as well. So on this workflows tab, I can click on that and go right to that workflow where I can do those steps that I just showed you. So it's a really helpful place for you to keep track of everything that demands your attention in planning center.
+
+But let's go over to my, my tasks one more time, and I'm gonna go manage tasks in home. That's just gonna take me to this tasks, section here in home.
+
+And so you can see at the top of the list, these are my tasks. These are the things that I have to get done.
+
+But, what I wanna call your attention to is this lists section here. So a list is a way for you to create tasks that are shared amongst a group of people or maybe just a template that you need to follow for certain things. So I've got this weekend prep list here, and it's the things that we always have to do on a Sunday. We gotta unlock the doors. We gotta wipe down the tables. We gotta set up the the check-in stations. We've gotta empty the trash, and we share those tasks among all three of us who are on the children's team.
+
+But what's cool about this is that once you get this written down and you set it up to recur every week or however often you have that list happen, you can assign these tasks to really anybody in your account. So, you know, I'm sure that you never had you never get sick or you have to take a vacation or anything like that where you might have all these things that you do every Sunday, and it'd be nice to just hand those off to somebody else. That's what tasks would be helpful for is making sure that all those things get done even when you're not there. And this isn't just for things that are on a Sunday.
+
+It could be for you can create a task list for really any type of event that you pull off. So, you know, maybe, hey. If we do baptisms that involve children, these are the steps that we have to do or the things that we have to get set up. If we do, you know, every Christmas or Easter, maybe there's special circumstances.
+
+Or, hey. We have a Harvest Fun Fair. And when we do a Harvest Fun Fair, these are the things that we have to get done. So sky's the limit with tasks on what you wanna do with those lists or even for your personal inbox.
+
+The final thing about tasks that I wanna show you is that you also have the ability with this notification, sidebar here. You can actually create a task right from here. So this is gonna show me all the things that are I'm getting alerted about in planning center. And I'm in charge of the gym at our church, so you can see here that there's a conflict between, the kids' karate and the open basketball league.
+
+And what I can actually do is right from here, click this little menu icon and choose to create a task. So, you know, maybe I don't need to resolve that. Maybe I do. But what I would do is I would just from this task, I actually don't wanna resolve it.
+
+I just wanna pop some popcorn and watch watch that play out.
+
+Maybe sell some tickets.
+
+So we've now created that task, and it's linked right to that event where I can, manage that in calendar, all joking aside. So that's really helpful, again, for all the things that you have to get done in Planning Center.
+
+Okay. We're gonna shift gears now and talk about the individual volunteers that make up your team. How can you better care for them and communicate with them proactively? The primary way that you're probably gonna do that is in planning center services, which, again, isn't just for worship teams.
+
+It's for any team that needs to be scheduled in your church. So, the ushers and the greeters, like the hospitality team or the tech team. And chances are, if you, if your children's ministry is like my children's ministry at my church, the people that are volunteering in children's ministry are also probably volunteering in other places like those other teams. If you get all those teams scheduling in one place, then services gets even more powerful with Planning Center because you're able to see conflicts and block out dates and everything's all shared in one spot.
+
+So before we jump in, I do wanna let you know we're jumping into a fully set up services account.
+
+It's probably gonna be a lot to see, especially if you're seeing it for the first time. But, again, there are other planning center universities that you can get to by clicking on the question mark in the sidebar here in planning center, and, they'll walk you through how to set all these things up. I'm gonna give you an overview. I'm gonna make sure that we're not lost, but I just wanna let you know it's gonna look like a lot of stuff. So we're gonna click on the navigation icon here in the top left, and we're gonna go over to services.
+
+And the first thing I wanna show you is just a volunteer profile. Like, what's it look like for somebody who, is serving on a weekly basis? How do we how do we monitor, their overall health and burnout and all that stuff? So I'm gonna click on this little, magnifying glass here and actually pull up Ashley's profile because she's our example person here.
+
+So you can see on Ashley's profile, I kinda have just a little dashboard of how of her as an individual. So you can see here, in her schedule, this is I can filter this to be an upcoming schedule or, a period of time. So I'm just viewing the last year so you can see what things kinda look like. But we can see here, these are all the dates and times and teams that Ashley has been scheduled to and even dates that she's declined.
+
+And then if I'm going down here to upcoming plans, I can see even that she has some blockout dates. So these are ways that volunteers can proactively communicate with you. I'm gonna be unavailable to be scheduled across the account for these types of things. I'm on vacation. I'm sick. I gotta watch the kids. All that type of stuff.
+
+So that's that's one helpful way you can do this. And, obviously, you can create lists or workflows or automations that fire off whenever some of these, things are in line. Right? Like, if Ashley's declined too many plans, you can set off an automation to give her a phone call, that type of a thing.
+
+The other thing that your volunteers have on their profile that might be helpful for you is that you can set up preferences for household members. So you can see here, Ashley has specified that whenever her daughter Lisa is scheduled, she wants to be scheduled in the same plan. So maybe Lisa is an older child that is starting to volunteer in children's ministries with her mom, and so her mom wants to be put on the schedule whenever she is. That's one way that she can communicate that.
+
+She also doesn't wanna be scheduled with her husband, Marshall. And we see this a lot, especially in children's ministries because, typically, there are kids involved. And so when Marshall's on the tech team, Ashley doesn't wanna be scheduled so that she can watch the kids. Or maybe it's the opposite where, you know, maybe the family when they're they both wanna serve at the same time so that because one of them is in kids. So this is a way that Ashley can communicate some of those preferences ahead of time. And then, also, Ashley has the ability to set a preference for each of the teams that she's assigned to in my services account. So, again, you're probably sharing your volunteers with lots of other ministries, and so your volunteers can communicate overall, here's here's how often I want to serve in each of these different areas.
+
+And that's really great because then you're all on the same page with where Ashley's at, with her schedule without having to talk to any of those other ministry heads and and communicate that ahead of time.
+
+Okay. So that's the that's the volunteer snapshot.
+
+Let's jump over to a plan. And very quickly and, hopefully, not confusingly, I'm going to walk you through all the different ways that services can help you schedule your children's ministry.
+
+So this is what a plan looks like. A plan is a particular day for a service, so it's typically weekly.
+
+And inside of a plan, you can have what we call needed positions. So this is the first and probably easiest way that you can schedule, which is just manually. So you can say, these are how many people I need, and you can just fill those empty positions with a person.
+
+What's cool with needed positions is that they allow you to do two other methods of scheduling that are helpful for children's ministries. You can either auto schedule, which is just it's gonna fill all the empty positions that you have with the person who hasn't served on that team in the longest, or you can use what we call a sign up sheet. And a sign up sheet is you can, have these needed positions, and your volunteers that are assigned to those positions will be able to put themselves on the schedule for the dates and times that work best for them. So those are two helpful ways to schedule in children's ministries is maybe you can turn on a sign up sheet for a month or a quarter and say, hey, guys. Choose your own dates. And then once those dates get closer, you can either auto schedule the rest of the empty positions that you have, or you can manually schedule people to the empty spots.
+
+Now the last way that well, second to last way because I have one more, special way to schedule. But the the last way in an individual weekend that you can schedule people in children's ministries that I hear a lot is a fixed list of people. Like, these are my week one volunteers. These are my week three volunteers.
+
+So I'm gonna show you how you can do that with a template. So inside of this plan here, this is our third week of March. So I'm going to, go up to this team actions button here, and I'm going to say import a template. Now I've already gone in and set up a a week three template.
+
+So these are all the volunteers that serve on week three, and I can choose which teams I want to import. So I'm gonna say import all the teams just to this plan, just this one weekend. Maybe if it was the third week of April, I can import them there too. But I'm gonna say submit.
+
+And now any of the volunteers that are in that template just get added to my plan, and I can email them right from here.
+
+Now, again, that was a lot. There's gonna be a there's a planning center university that walks you through each of those methods that I talked about and how to use them in in full.
+
+But this sets me up for what I wanted to talk about next, which is how do you communicate to your volunteers and make sure that they are opening the emails and that they are accepting and declining the dates that they're serving.
+
+Obviously, if you have volunteers that are serving regularly and consistently, that gets kinda tough because you you're not the only one emailing them. Right? Like we said, there's probably the tech teams emailing them, the worship teams emailing them. And so the first thing that I wanna say is you probably wanna get on the same page with those people and maybe set up a communication strategy or a scheduling window, for, hey.
+
+How how often are we gonna email these people? Is it gonna be at the beginning of the month? Is it at the beginning of the quarter? Is it every six months?
+
+Is it annually? You know? Alright. If you do annually, props to you. You you can turn the video off.
+
+You don't have to do any of this stuff. So but let's talk about how how do we how do we communicate proactively with them and give them a good strategy. So the first thing that I wanna talk about is you can load an entire span of time in planning center services for scheduling and then send one email for that entire span of time. And that's a feature that we call the matrix.
+
+So the matrix allows you to load lots of different plans either from a single ministry or multiple ministries like I've kind of implied. Right? Let's load all the worship schedules, all the children's schedules, all the hospitality schedules in one window, let's just say quarter one of twenty twenty five. And we're gonna send out one big email that lets all those volunteers know, hey.
+
+Here are all the dates that that you're gonna serve in the next three months.
+
+So how do we do that? In services, there is, typically at the top of every plans page, there is a matrix button. When you click that matrix button, it's gonna load different things depending on where you clicked it, but you can always get to other stuff. So let's just click the matrix button here.
+
+And for the sake of the example, I'm just gonna stick in children's ministries. That's what I know. So we are in children's ministries. We've loaded plans from March ninth to April thirteenth, and we can always load more plans, just by clicking these buttons, or you can change the default of this to be a month or a quarter at a time depending on the day that you clicked it.
+
+So what's cool about this is all the features I've already talked about, the auto scheduling, manually scheduling, those are all available from here too. So if you just wanna get all of your dates scheduled in a in a period of time, you can do that. But the important thing is is this email button at the top. So once you've loaded all those dates and you've got everybody on the schedule, when you click this email button, they are going to get one email that lets them know here are all the dates and all the teams and all the times that you've been scheduled for. They can click a button and accept and decline each of those dates in services.
+
+So, again, that's really powerful when, again, you're wanting to avoid notification fatigue. Right? You want volunteers when they get that email to open it and to do their actions on it so that you know what you need to do ahead of time.
+
+The further out in the future that you are, the easier it is to pivot as you all probably know. Right? So as people have plans or get sick or whatever, you're able to to do what you need to do in services because those volunteers are accepting and declining their dates.
+
+Really quickly, before we move on from this strategy, I do wanna talk about two features that that help you enable this strategy. The first one is that before you send this giant email out of, hey. Here's the here's all of quarter one, for you to accept and decline for. You can actually send out a proactive email asking your volunteers to block out dates that they know they're unavailable. So let me show you how to do that. That we're gonna switch over to the people tab, so the the more database part of services.
+
+And by default, this page loads any of the teams I lead. So I'm just emailing children's people. These are the people I'm in charge of. So I click on this email button, and I'm gonna actually choose this Planning Center block out request. So what this is is it's just gonna, you can type this up to be whatever you want, but, basically, what it is is it's just letting the volunteers know, hey, guys. I'm getting ready to do my next block of scheduling, whether that's monthly or quarterly.
+
+And before I do that, could you please log on to services and let me know any dates that you know you're gonna be unavailable? Kids' birthdays, sporting events, all that type of stuff. So they have two options in that email. The first one is they can say block out dates, and that's gonna take them into services or into the app, and they can set the dates that they're unavailable.
+
+The other thing is they can say, I have no block outs. And what that just does is it gives you a timestamp to know, okay. Cool. Someone's actually said, I'm free for that entire period of time that you just listed.
+
+So that's really helpful to, again, be a part of that strategy so that before you even start putting people onto the plans for that month or that quarter, you know who is and isn't available.
+
+The last feature I wanna talk about is just, what to do when people, decline a position. So on each of the teams that you can schedule in here, you can set up a default for whether it uses a sign up sheet to fill that empty slot. So if somebody is, if somebody declines, it just lets the rest of the team know that's a date they can pick from. Or, you can actually use auto scheduling too so that when somebody declines, it puts the next available person in that position.
+
+But by default, it just lets you as a scheduler know, hey. That's a slot that needs to be filled. So it's up to you how you wanna do that. And, again, if we're talking about email fatigue, you might wanna keep that limited to not so that whenever somebody if I'm on a large team of a hundred people, I don't wanna get emailed every time someone declines.
+
+Like, hey. Here's another day you can serve. Hey. Here's another day you can serve. But if you're on a small team of, like, four or five and, that's easier for you so that when someone declines, it just lets everybody else know, hey.
+
+We got an empty spot. We need someone to fill it. Then that is an option that you can do too with auto declines. So that's great.
+
+Okay. We've been talking a lot about the the, like, front end of communication with your volunteers. How do you proactively and have them proactively let you know when they are and aren't available. But let's talk about the other type of communication that has to happen with this, which is just regular correspondence. Right? Maybe we need to talk to a set of team members about a specific thing, or we wanna kinda send out a newsletter and update to the entire team about something.
+
+There you can do that with an email. That's totally fine. But, again, we wanna make sure that when people get planks in our emails, they open them. So there is another feature that might be helpful for you in your communication strategy with your teams, and that's a feature called chat.
+
+And chat is available in a few places. I've already talked about this this right sidebar in services, or in any planning center page where you can open up a chat with any of the the existing teams that you're a part of or groups, really. But I'm gonna walk you through how do you do this with, with a specific team. So I'm gonna go back to my elementary service here, and we, have chat in a few different places. So we have chat for, the entire plan of March sixteenth. So maybe there's something special happening on that day, that we want the entire team to know. Like, hey, guys.
+
+Services might run a little long today because we have, baby dedications or personal testimonies or something like that that we don't really have time over. We just want the volunteers to know that ahead of time.
+
+There's also the ability to chat with a specific team or a specific instance of a team. So I'm gonna show you an example of that. So here on, my check I have a team that runs my check-in stations on a Sunday. And when I click on this little, down arrow here, I can actually boot up a chat with just them. And so what's helpful with that is, like, we just have something happening on this one Sunday just for this one team. I'm gonna be like, hey, guys.
+
+We got new printers.
+
+Yay.
+
+And whoop. I can type. And if you can just come a little early so that we can set those up, that'd be great.
+
+And now that chat just goes out to those, four people that are scheduled to this team. What's really cool is that there you can see here I've got some needed positions. So as I add people to be scheduled for that team, they're also gonna see this chat. And, again, this is just a way to to streamline communication with your teams.
+
+We've all had that text thread where somebody gets on added to the team, somebody gets removed from the team, and now it's a new text thread with new information. And we gotta, like, keep track of all that stuff that's happening. You don't have to do any of that with chat because as people get added to or come off of these teams, they get added to the visibility of the chat. So you could just have a chat that is literally the entire elementary service, everybody that's a volunteer in there, and give them regular updates or postings about what's going on.
+
+And that people will will be be up to date on that information within the chat. It lives in one spot.
+
+The final thing that I wanna talk about as far as communicating proactively with your volunteers is these files sections.
+
+So with children's ministries especially, we have a lot of curriculum or things that we need to reference. And so there's a handy place for you to put all of that in services.
+
+You can either have files attached to the service type. So these would be files that are true regardless of the date. Things like this volunteer handbook. Right?
+
+If I wanted volunteers to be able to get to that quickly, they could get to it right from here. And then you can also have files that are specific to a certain day. Like, we're going through, Daniel in the lion's den this weekend, and so I've added the the lesson to that right here. So my volunteers, if they know where to look for it, they can, proactively get to that information.
+
+You also have this notes section here, which, again, is just a way for you to convey information ahead of time to your volunteers, maybe something that isn't in a chat, but just is true for the service. So, like, a general note or what we're gonna do at game time or story time, you can create those types of note categories and even assign them to specific teams so that they're the only ones that see those notes.
+
+So that is all the different ways that you can proactively communicate with your volunteers in services.
+
+And, hopefully, some of those those, tips and tricks are a little helpful for you. And, again, if you have a question, you can always click on the question mark in the top right corner of any planning center page and get to that information.
+
+I wanna talk about the final thing in this course, which is how do you, how do you follow-up with volunteers or let them know successes and wins and and anything that they might need to know as a volunteer.
+
+So the first way that we can do that is in Planning Center Home. Planning Center Home has a newer feature called shared dashboards. And so you can load, a dashboard here. So right here, you can see this children's ministry dashboard.
+
+I have shared that with everybody that's a key member of our children's team. And it can have information on it like you see here, all my upcoming volunteer birthdays, people that are filling out that that interest workflow, the attendance of our children's ministry, and then, any tasks or first time guests that we're seeing in the church, and even, what what my upcoming plans look like as far as accepting and declining. So if you have, like, power volunteers, right, people that that are either investor or maybe they're like a team lead, then this would be a cool feature for you to seamlessly communicate some of that information to them, just in a dashboard form. You can also, like, obviously take snapshots of this and email it out to your all your volunteers if you wanted to send them some some, information to celebrate the past month or past quarter, for example.
+
+Let me talk about, the other thing that you can do, which we've already kind of touched on in the first part of this course with the volunteer pipeline, but I just wanna talk about the back end of that, which would be how do you follow-up with volunteers that are either maybe falling through the cracks or how do you celebrate people's birthdays and those types of things. So let's go back over to people really quick. I'm gonna show you how to build some lists.
+
+So we're gonna click on lists in the top here.
+
+And I always tell people when they're starting out with Planning Center, I I hear a lot of people ask questions like, how do I get a report of blank?
+
+A lot of the time in other software, you you're used to wanting a report to do something with those people. Right? How do I get a how do I get a report of all the people that came to this event or a report of, people who have upcoming birthdays? I always tell you tell people, substitute the word report in your head with a list.
+
+Typically, that's what you're wanting. So in in this you know, you can create a list of anything in planning center as long as someone's taking an action on that thing or maybe not taking an action on that thing. So let's let's talk about two two of these options. The first one is just my children's volunteers.
+
+So this is a basic list. I'm gonna click into this. And, whenever you're generating a list, you tell it what types of rules you're looking for, what what qualifies or disqualifies somebody from being a part of this list of people.
+
+So in my rules here, I've just said I'm looking for anybody who's assigned to any children's ministry team in services. So this is all my active children's volunteers, basically.
+
+So what what the results are is fifty two people are assigned to some of those teams in planning center. And, again, from here, from this list, I can do certain things like an automation or add them to a workflow, but I can also just communicate with them. Right? Maybe we send out a monthly update or a newsletter or something like that.
+
+I can do that by just clicking on that little send icon here. We have lots of different options. You can send them an email, and you can do that through Planning Center or through an integration like Mailchimp if you have, like, a newsletter that you send out. You can send out a church center notification.
+
+So just it gives them a push notification on their phone. No text, no email, no nothing. Just, hey, guys. Check the app for this thing.
+
+And then you also have text messages and integrations with text messaging services as well from here. So that's a cool way that you can, keep in touch with your volunteers outside of services is just and outside of chat is just through these types of lists.
+
+But the final thing I wanna say is just, how do we keep track of volunteers that maybe are slipping away? So I'm gonna show you a little more advanced list now, but, we're gonna go into this list. And in these rules, it's the same rules that I set up in the previous list of I wanna see any volunteers that are assigned to a children's ministry service in services.
+
+But what I also want is that they're the last time that they were scheduled to anything was three months ago. So this might be a little bit long of a window, but just for the sake of an example, we haven't they haven't been scheduled to or haven't served on anything in an entire quarter.
+
+And what's cool with lists is that you can have them refresh automatically. So this list refreshes every night. And because that list refreshes every night, anytime someone's added to this list, we can do an automation. And so maybe it's as simple as a one step, process of, I'm just gonna give them a phone call and see what's up. We can set up an automation here that, whenever someone's added to this list, it's going to, create a task for me in home that's just, hey. Give give so and so a call, because they've they've qualified for this list. Now the thing that I hear a lot with people that are signing up is like, well, we don't wanna use Planning Center for things too much because it might become impersonal.
+
+We don't want automations happening or workflows happening that we just kinda handle ourselves. And I always just like to say, it's it's as impersonal or personal as you choose to make it. So, like, in this example, they don't know that that they're in a list or that I'm watching for certain things, and that they fire off, and then I I get a a task to give them a phone call. They just know they're getting a phone call from me.
+
+And so there's a lot of this stuff that is is set it and forget it. Right? Because I'm not maybe my team is so big. I can't keep tabs on on everybody in the account, But I do wanna be alerted whenever somebody meets a certain criteria so that I know to check-in with them.
+
+So that's that's a way that you can handle this stuff is that Von the software, Planning Center, it's just a piece of the puzzle. The way that you do your ministry is up to you. But we're trying to enable all the things that you don't have to keep track of so that you can do the things that matter, which is those personal touches, time for coffee, knowing when you need to send them an email or when when their birthday is, all those types of things that, again, you're taking care of kids, you're taking care of families, and you're taking care of a group of volunteers. So we wanna make sure that you're able to to know who in those buckets you you need your attention the most.
+
+So
+
+I hope that this was helpful for you. Again, this is a this was a lot today, but there's always courses that you can access to talk to that walks you through the specifics of a particular, planning center software, services, check ins, people. You can get to those by clicking the question mark in the top right corner of any planning center page. You can also view our documentation there and talk to our support team. A lot of them come from ministry backgrounds just like yours, and so you can reach out to us asking for specific, questions to how is it best for you to set this stuff up, and we'll be happy to help you. That's all we have for you today, but we'll see you next time. And thanks for watching Planning Center University.
+
+---
+
+## How to care for your families (24:06)
+
+Hello, and welcome to Planning Center University. My name is Reagan, and I'm over all of the customer experience teams here at Planning Center. And today, we have a special PCU, about children's ministry and specifically about how to take care of your families. They're the reason why you're doing what you're doing.
+
+And so we're gonna talk through some strategies today of how do you better take care of them? How do you make sure that none of them fall through the cracks? How do you make sure that they get into planning center easily? And what do you do with them and their information once it's in planning center?
+
+So where we're gonna be today is primarily in Planning Center people, but we are gonna hop over really quickly to the front side of Planning Center and look at Church Center and registrations when we're talking through some of these examples today. The The primary thing to know is that today, we are gonna be talking about what you can do, not necessarily how you can set it up. So these examples are for to give you ideas of things that you can do, but we have other Planning Center University courses that'll walk you through how to set up your People account, how to set up Church Center, and how to use those things, from scratch. So we're gonna see a lot of a lot of data today and a lot of examples, but it's all intentional. And I'll make sure that we go through it at a good good pace.
+
+So the very first thing that we're gonna talk about is how do plan how do families come into your planning center account? Well, if you already use planning center for other things like volunteer scheduling, online giving, community events and registrations, and those types of things, then chances are they're probably already in your account. But let's talk about, new families first. Like, how would we get new families into our planning center account, or what would be some strategies around that?
+
+So we're gonna pop over here to planning center people, which is our people database. Right? This is where all of the information about profiles live. And we're gonna explore forms for a second.
+
+Forms are just like any other online, form that people can fill out. This would be the primary way that new families are gonna add themselves to your account is through a form.
+
+So let's click forms here at the top. And there are two ways that you can kinda go about this. The first way is you can have a generic form for lots of different ministries in your church, like a connect card, right, a digital connect card that you call people's attention to, or you can have a specific form that is, just for your new families.
+
+I'm gonna do that because I think that one of the strategies around this is you want as frictionless of an experience as possible. Right? So we don't wanna ask them a ton of questions to get them into the account. We just wanna ask them the bare essentials so that they can get up and running or get their kids checked in really quickly. So we're gonna scroll down here to new family.
+
+And, basically, what I've done here on this new family form is just generic information. Right? So we just need to know who are you, what's your phone number, and then, the ability to add household numbers from here. So any new kids, new kids?
+
+I don't have any new kids. I have the same kids I've always had. But, you can add all of your kids here. And then, once you filled out their information and collect and collected what you need to know, you just click submit, and then people could get checked in.
+
+Now the cool thing about all of these public facing pages of Planning Center is that you can actually get a QR code, for these pages. So you can see down here at the bottom of every public page, there's this little shareable code link. And when you click on that, it's just gonna open up this QR code, and you can actually download it, to your computer. Now why would you wanna do that?
+
+Well, chances are that when you have new families coming into your church, they are probably gonna be interacting with, like, walking through a lobby or, maybe there's stuff on the screen that you want them to see. And so you can have them just proactively add their information, by calling it out. You can either print it out on, like, a poster like this where, you know, they would just scan that, and then it would just take them to that same form where they can log in. Or you can even put it on, like, a digital slide like this where, you know, maybe that's going through your kiosk or it's on on a screen on, one of the devices in your lobby where they can just scan it and, add their family quickly from there.
+
+That's what my church does. We don't even have, a manned station for check ins. We just have this this QR code that people can scan, and then they can they can click it, or they can fill out their information on their own on their phone. And that's typically pretty fast, right, because they already have lot of information already on their device.
+
+So they just click boom, boom, boom, boom, boom, and then they're set to go, and we check their kids in.
+
+This is also a public link. Right? So you can have it as a banner on your website, like plan a visit or something like that so that people can just have that information proactively added into their account. So that's the first way that people are probably gonna add themselves to your planning center account is through a public page like a connect card or a form and through those QR codes.
+
+Let's talk about the other way that people might add themselves to your planning center account, and that would be through an event that you're putting on, like, VBS, for example. So in registrations is the is the way that you would do that. It's at the the the event plan or the the way for people to register for events in your church, right, hence the name.
+
+So I'm gonna show you an example of what that looks like publicly.
+
+So here you can see all of your events in registrations have a really nice page where you can, see any of the upcoming dates and times, and then you can, click the register button here.
+
+And when people click the register button, it's gonna look a lot like what we just saw on that people form, which is that they're able to choose, who they wanna register. So I'm gonna volunteer, and I'm gonna register, my son. And then when I click next, I'd be able to choose who's attending, each of those things. So I'm the the volunteer here, and Silas is gonna be the the attendee.
+
+And so your families would be able to choose all those different options. Right? So this is great if you have things like, you wanna collect, church sizes or, you have a curriculum that people are gonna buy and those types of things, then that would be the other way that that families are gonna add themselves to your planning center account. So those are the two methods that you would have.
+
+As far as them adding themselves, you can also always add your own families, to your planning center account.
+
+But, let's talk really quickly about what that kinda looks like.
+
+So let's go over to people again. So in planning center people, every person has a profile page. So you can see here I've got Zoe's profile page pulled up, and I can see some some different information about her. I can fill out that information myself.
+
+But then you also have here on the right Zoe's household. So these would be, people that she that she lives with. Right? Siblings and parents.
+
+And what's great about this or the benefit of this is that this is obviously gonna be how you're primarily going to sort through or find particular parents that you're going to talk to. And I'm gonna talk to you about that in just a second. But you can see here on Zoe on anyone's profile, I can click the edit to edit their household, and I can choose who the primary adult is.
+
+I can add more people like, maybe they live with grandparents as well. I can add them.
+
+Or maybe they bring their cousin to church. We can add them as well. So households are kind of however you wanna use them, but the primary use for them is to group families together so that you can either find and identify who to talk to, right, the the parents of those kids, or find specific kids themselves that you might want to, promote certain events to or things like that.
+
+And then you can obviously remove the householder. And people can be a part of multiple households too. That's important to know. So, like, if if the grandparents and the parents are there and they don't live in the same house, you can Zoe can be in both houses. And you can actually promote things to to both of Zoe's households.
+
+Okay. So now we've talked about how do people get in and how do you keep them together as a family unit.
+
+Let's talk about ways that you can, promote things or communicate with those families. So in Planning Center, we in People specifically, we have a feature that we call lists. And whenever people are signing up for Planning Center or, are moving from another system to Planning Center, I typically hear this question a lot, which is, how do I get a report of blank? How do I get a report of all the families in my account? Or how do I get a report of any of the parents of kids six and under?
+
+I always encourage people, whenever you're thinking about the word report from another system, substitute it in Planning Center with the word list, and that's probably what you're looking for. A list is a way for you to find specific people in your Planning Center account and then take action on them. So let's go over to lists in people, and I'm gonna show you a few different examples of a list and how it would help you take better care of your family. So we're gonna start with our basic list.
+
+Now our basic list here is, it has some rules set up. So let's talk about what rules are. Rules are the things that are going to qualify or disqualify somebody from this list. And so in this particular case, I'm just looking for any profile, any person in my account who is, under the age of twelve years old.
+
+Now that list is only gonna be so helpful for me because a lot of those kids probably don't have email addresses, phone numbers, and probably don't know how to spell very well yet or read very well yet. And so instead, what I'm looking for are the parents of those kids. So you can see here, now that I've found the kids, right, that's what this rule is for, underneath at the very bottom, it's my list should include, and I'm choosing the household adults of the matches. So instead of, it's finding all of the kids, but then it's giving me in the list all of their parents.
+
+Now you can swap that out to be exact matches, which would give you the actual kids.
+
+You can also say all household members, which would be kids and their siblings and their parents, and then primary. So if if you wanted to just be talking to one parent, you could also do that because every household has a primary contact. But in this case, I wanna talk to mom and dad. My wife handles the schedule all the time. So even though I'm the primary contact, she's the one that's doing the that's reading those emails. So we're gonna say all household adults.
+
+And then when when I click submit, that list is gonna run, and it's gonna give me this result, which would be, the parents of those kids. And so this is the the first way that you can kinda care for your families is creating a list like this that then you would just be able to contact them whenever you need to. So, to do that, you can just go to this list and click on this little send icon here. And there are a few different features of how you can contact these parents.
+
+The first one would be just an email. Right? So maybe we send out, a newsletter to all the parents of our kids. You can send an email from planning center itself, which is more of a plain text email.
+
+You can also send a email of, from an integration like Mailchimp where you would be able to actually create a nice banner and, like, some buttons and all those types of things more for, like, a newsletter, that was going out to the parents.
+
+You can also send a church center announcement. So this is church center is our free app. I've already kinda shown you the the public pages of that on the website, but there's an app as well where families can can view all the information that's public facing of your planning center account. And so you can just send out a push notification to all of your families.
+
+So it's not gonna send them an email or a text. It's just gonna notify them through the app if they've got the app installed. And then you can send a text message. And, again, through planning center, that would be just a basic text message.
+
+But there's also two integrations with our friends from Clearstream and from Text in Church that would allow you to do, more of a short code system and back and forth and all that type of stuff. So that those are some really helpful ways that you can connect with your families, through just a basic list.
+
+Let's really quickly talk about, other communication methods that you can do with an advanced list. So we're gonna go back to lists really quick. I'm gonna paint you a scenario. So let's say that we got VBS coming up, and maybe for VBS, we wanna be promoting that, you know, starting at the beginning of the year.
+
+Like, hey, guys. Sign up for VBS before April first, and you're gonna get an early bird discount and, you know, all all these different promotional things. One of the things that we want in Planning Center, and hopefully you want too, is, like, we wanna prevent notification fatigue. We wanna make sure that when when people are getting an email from Planning Center that they open it and they read it.
+
+And so maybe what we wanna do in the case of this VBS is we want to make sure that as people sign up for VBS, they don't get those emails anymore because they've already taken action on that thing. So this is this would be an example for an advanced list like this. So I'm gonna go into this advanced list, which is people who are not yet signed up for VBS, and I'm gonna walk you through the rules. The rules are gonna look like what I just did, which is I'm looking for people who, in my database are under the age of twelve years old.
+
+That's gonna give me all the kids that we have. Right? But then I'm actually only including kids that have attended an event in the last twelve months, so if they've come to church in the last year. So I'm not gonna email people that, maybe have moved away or, don't don't live in the area.
+
+They just visit every once in a while.
+
+And then I'm going to exclude people, from the list who have already signed up for VBS, either as a volunteer or as a an attender.
+
+And so what what's cool about that is that as people hopefully sign up for this this email list or as people sign up for VBS, they fall off of this email list. Right? So they're not gonna get notifications about the about VBS or the the promotional part of VBS.
+
+And, again, I'm including the household adults that match the children in this list. Right? And I don't wanna include, exact matches, which would give me children if there were no parents.
+
+So when I submit that, that list is going to give me, hopefully, a more filtered result. So you could see my old list had sixty parents in it, and this list only has twenty two parents. So these are just the parents who haven't yet signed up their kids for VBS.
+
+And with, lists like this, you can set them up to refresh. So I could say, hey. I'm gonna send out that promotional, email maybe at the beginning of every month. So, what I can do is just refresh the list to be monthly.
+
+So every night on the first, it's gonna run, and parents will come off of this list if they've already signed up their kid for VBS. And so that way, it would ensure that, again, only the people that the email is relevant to are getting the email. Right? And you can obviously do the reverse for this of, like, maybe there's things about VBS that you wanna tell parents, but only parents that have signed up for VBS. You can have as many lists in your account as you want, and they can all have as simple or as complex rules as you want.
+
+So that would be a way that you could you could, communicate with the right group of people always through your planning center account.
+
+Let me talk about, one more cool thing that I've seen some people do, which is that they in addition in in maybe in addition to or instead of sending an email blast every time you have an update for parents, They use Church Center for that. So in Church Center, you can create custom pages.
+
+And, so in Church Center, I've seen people create something like this, which is, just a family hub. This is a custom page that I've set up that is all the things relevant to families in my church. So we have, our upcoming events in registrations that are all children's based. Right?
+
+So baptisms, VBS, we do an angel tree in at Christmas time. So that list, it that block is what we call call it. It's a a section of information. It's gonna automatically update whenever there's a new event that's relevant to families.
+
+Similarly, we've got all of our youth group small groups in here so that parents with older kids could just, see those from there. And then we've got, a recent update section, which is just kinda like a little mini blog that we run. And, again, with custom pages, you can have as many pages as you want. And so I can set up a new page every time I've done maybe it's just a hard copy of that newsletter that I send out to parents as well, but that people could read the past, issues of that from here.
+
+So this is a cool way that you can, again, kinda streamline all the communication to your families in one place. Right? And instead of maybe sending out a newsletter, I can just send out a push notification to to all the parents that are using the app, and they would know that there's something new on this page for them to check out. So that's a cool communication tip for you there.
+
+Okay. We have one more stop today on caring for your families. We've talked about how they get in. We've talked about what do you how do you communicate with them when they're in there. Let's also talk about ways that you can identify families that might need more assistance or might need your help and what you can do with them. So we're gonna talk about workflows.
+
+A workflow in Planning Center is a multistep process that you wanna move individual people through. So let's say we have, new families. Right? We we do something with new families whenever, we see them in our account.
+
+So first, what we wanna do is, we're gonna wanna find out who are those new families. We would use a list for that. I've already shown you a few examples of lists today, but I'm gonna show you one more, which is first time families. I'm gonna show you two more, actually.
+
+I lied. So we're gonna, we're gonna look at first time families here. And the rule for a first time family is just I wanna see all of the parents of any new kid that has first attended an event. Right?
+
+So if you're if you're onboarding new families through the Church Center app, then you're gonna know, when it's a the you're gonna have all those families grouped together. Right? Because they they fill out their information and then any child, information. And so what this is gonna do is it's gonna return any adults.
+
+Right? So we've got Joe and Terry. They're both in the same family, but they get added to this list. And, again, with those, refresh settings, I can make sure that every week on Monday, this list refreshes, with new, new information.
+
+So anytime we see a new family in the database, boom, they're gonna show up in this list. What I can do with that is that I can set up an automation.
+
+Automations are this tab here, and it's a way for whenever somebody's added to or removed from a list, we need to do something with them. And so I can say whenever a new person is added to this list, we are going to perform an action. In people, we are going to add them to a workflow, and we're gonna add them to our first time families workflow.
+
+So now that I've set that up, I don't have to do anything with this. Every time new families show up, boom, they're gonna get added to that workflow. So now, let's talk about what is that workflow. The workflow would be something like this, where, it's gonna be me.
+
+I'm just gonna connect with them again. So maybe we've we've already talked in person, or maybe they they gave me their number, but I'm just gonna reach out to them again. I'm gonna introduce them to Christie, who is the children's ministry director. And then Christie might wanna set up a ask them if they wanna set up a next steps meeting where she talks about, either programs for the kids or classes for the families or small groups that they can be a part of, and then she's gonna complete them from that workflow.
+
+So that's an example of something that we might wanna do that steps families through a particular thing as they join our church or as they visit.
+
+The the more advanced example of that would be something like if families were slipping away. Right? So I'm just gonna walk you through the list of that.
+
+So we'll go back to lists here.
+
+And I've got family slipping away.
+
+And in this rule, I'm looking again for the same thing that, that I've kinda looked for for the new families, which is, hey, I'm looking for anybody that's checked in to check ins for the first time. This one I'm saying, hey, they haven't they haven't signed up for or they haven't attended anything in check ins for two months.
+
+So eight weeks of inactivity in check ins, or, they've also missed their small group, activities. So, either part of a youth group or maybe we have family small groups, those types of things, they're they aren't attending those either. So it would it would give you results for either thing. Right?
+
+Either they haven't checked in on a Sunday morning or they haven't been a part of their small group that they're that they're a part of. And again, that would be refreshing probably every Monday or maybe every night if I really wanted to take immediate action on that type of a thing. And you can set that up through the settings. But the other automation that you can do is you can just create a one step process, which is what we call a task.
+
+So tasks live in planning center home. So I'm just gonna set that up really quickly, which is, I'm gonna say whenever someone's added to this list, so they haven't checked in in the last eight weeks or they haven't been a part of their small group for the last six events, whether that's a weekly event or a monthly event, then I'm going to in planning center home, I'm gonna add a task, and I would add that task to myself. And it might just be call this family or connect with these people or see what's up. So those are the two actions that you can take off of the list would be either a workflow, which is lots of different steps that we're gonna go through, with different people assigned to them, or a single process, which would be a task just assigned to a particular person like myself of, hey.
+
+Just give that family a call.
+
+And one of the things that I hear a lot when people are signing up for planning center is, hey. We don't we're hesitant to use some of this stuff because we don't want it to seem too impersonal.
+
+And software's software is just a piece of that puzzle. Right?
+
+It can be as personal or impersonal as you want it to be. So in both of those examples, you know, if we have a new family joining on, that might be multiple people that that need to make a personal touch, whether that's a phone call or a coffee meeting or just seeing them on a Sunday and making sure that they're that they're not, that they're touching base with them, and feeling welcome. Or it might be something as simple as, hey. I I don't I can't keep tabs of where everybody's at all the time.
+
+There might be a family that I haven't noticed hasn't come for a while, or maybe they have been coming. I just haven't noticed them. Right? But once I set those things, I can kinda forget them, and I just get notified whenever someone meets that criteria.
+
+Right? So that task could be impersonal in the sense of I just shoot them an email automatically whenever, whenever I get assigned to them, or I can even set up an automation that just sends them an email, and I don't even have to touch it. But you can also make it very personal in saying, hey. I'm just gonna connect with them in the way that makes the most sense, whether I see them again or we're friends or whatever.
+
+So, those are the ways that you can help that planning center can help you take care of your families is that those lists can be very specific, and they can be looking for either people that meet certain criteria or don't meet certain criteria and be doing certain actions depending on on all those things. So Planning Center takes care of the hard part of making sure that nobody slips through the cracks as long as your lists are accurate.
+
+And then you do the part that actually matters and that cares for your families, which is connecting with them on a personal level or moving them through a process or a system to get help.
+
+So those are the the things that we have for you today. I hope that that was helpful. I hope it gives you some fun ideas. If you, need any more information or, you wanna see the the how to set some of these things up, you can click on the question mark in the top right of any planning center page, get access to our full courses of videos, our documentation, or even connect with our support team. A lot of them come from a ministry background just like yours, and so they're happy to help you troubleshoot or think through creative ways that you can help take care of your families in Planning Center, which is what it's all about. And we hope that you have a great rest of your day.
+
+---
+
+## How to plan for your events (34:43)
+
+Hey, everyone. Scott here. And today, we're gonna talk about how you can plan your children's ministry events through Planning Center. So what we're gonna talk about today is, first, helping you get organized with your team through tasks.
+
+We're gonna talk about creating an event through registrations, picking the event through calendar, and lastly, promoting, the event once it's ready to be promoted. And, of course, there's gonna be a few tips and tricks, like, towards the end about some, like, advanced things that you could do for your events. So let's get started.
+
+And the place that we get started is actually in home, and I wanna point out tasks and why tasks matters.
+
+First of all, what tasks is is just a collection of tasks that you need to get done.
+
+So, for example, here's a list of things that I need to do. But you might be asking, why would I use planning center tasks instead of any any of the other tasks, systems that I have outside of Planning Center? I think there's two reasons. One is because it keeps the work that you're doing into one system. But two, most importantly, is that you have collaborators with tasks, and you can assign certain tasks to other people. So as your team puts on an event, you can, you know, do all the things together to make sure you're all on the same page.
+
+So, other things to point out very quickly with tasks is that you can have recurring tasks. So I have a list here of Sunday prep of all the things that I need to do every Sunday. But it's not just me. Anybody from our team in these collaborators up here can do these things as well.
+
+But what I wanna show you is because we're creating an event, I wanna show you that you can create a template and use the template to create a task list. So the event I wanna create is what I'm gonna call a summer celebration. It's just like a one day event where anybody, like, in the community is welcome to come over. We're gonna have some food.
+
+We're, going to, also have some childcare as well. So I'm gonna I'm gonna create that event today. So I'm gonna use this task template here, new event details.
+
+And, let's see. I'm just gonna call it something new. So let's just call it, you know, summer celebration, twenty five, and hit save. And you can see that it pulled all of the tasks that I have for basically every one of the events that's going on.
+
+You can see also, like, there are some things that I automatically already have apply, you know, assigned to one of the people. So for example, I always want Brian to handle the ordering the food of the events that I have too. Some things aren't assigned, and they're just, like, up here in the with the collaborator collaborators who can help, get things done.
+
+The greatest thing about tasks, though, is that they all exist on the sidebar over here. So I, what I mean by that is when you're in any other product in Planning Center, you always have this sidebar here, and you can pull up your tasks, the things that are specific to you. Or you can even jump down to, like, the thing I just created and see how that specific event is going on. I can click on any one of these and add some more details if I want and all the things that you might expect from a task list.
+
+The other neat thing that I wanna point in point out about tasks is here. I'm gonna jump over here to my task just so you can see how this happens. Is if you got any notification from any one of the products, you can see, for example, I have Blackwell Life Group has too many members. That's the small group that I lead as well. Too many members, that means I need to do something, but not now. I wanna do that later. So I wanna make that a task.
+
+And I either want to, I don't know, like, create a new group for these people or consider, like, you know, making the capacity a little bit more. So I can click on the dots here, go to create a task, and it then creates it here. It looks like I already did that earlier, but you can see that it created another one for me. So, and what's neat about that is it has a link based on that thing.
+
+So if I click on the link, it'll pop me over straight to that event, that Blackwell Life group event, for me to handle what that needs to do. So that's really cool. Okay. So that is tasks.
+
+That's how you get prepared. You start working with your team about creating an event. Let's now go into calendar and start to choose the right day and communicate all the things around that.
+
+So I'm jump to calendar, and there is a lot going on here.
+
+So let me show you how to help you make better decisions. Of course, there are, like, tags that you can filter these down to. Like, I could consider filtering it down just to, like, the kids or the elementary or something like that. But you know what?
+
+This because it's like a community event, I kinda do want to know everything that's going on. But what I really wanna know is what's happening at that specific campus. So I'm gonna add a room because I might use a room, and I could search for gym. But more importantly is I can search for a folder, if I spell it correctly, any rooms that are in the San Diego campus.
+
+There. It's filtered down to any of the San Diego campus rooms.
+
+Now let's say I want to create things in, like, June or so. Let me just see what's going on. It looks like we have a men's breakfast. We have weekend services, like usual, at six PM. There's something going on here. So I'm gonna just say that maybe this twenty first is the best day to do this. It looks like we they cleaned and did some maintenance the day before, so that's a perfect time to make more of a mess.
+
+So let's go. I can click new here, or I can double click and start creating my event, summer celebration.
+
+And we'll say that it is from ten AM to two PM. It doesn't repeat.
+
+And there's a lot of other things that I can add to this, and I do need to I have some required tags. However, because I have a children's ministry event, I'm gonna, like, automatically choose this event template, and it's going to choose specific rooms. It's gonna add a location. It's gonna add my church church center visibility and the tags that happen with this event. I can add some more, but that is a very fast way to do things. I'm gonna click more options, and it jumps to this page in an edit state. And it's in an edit state because this is where you can add setup times because you might wanna book rooms and resources not just during the event of ten, but, like, between nine and, like, three PM.
+
+So, this is where you could do that. Also, if I had questions, like, if I needed to if I was gonna book, like, the sanctuary and I needed to ask if I need, like, the projector or anything like that, it would pop up here on the right side in the rooms and resources section for me to, do to answer those questions. I can add rooms if I need to, but let's just say I've got three rooms. That's for my childcare. I have a front lawn. All of these things were stored in that one template, by the way. So let's go ahead and book it.
+
+And it does always every time you save something, it it shows you what it was before and what it is now and shows you all the green things are the new things. But it is a new event, so everything's new, and it doesn't have the before. So we'll go ahead and create that event, and there we go. Now I wanna I wanna jump over to something else that's really useful for especially for children's ministry, and that's these connections.
+
+And, this is kinda cool. So in with connections, you're connecting this one event that lives in calendar with any of the other events that exist in, in planning center. So you can connect a sign up, for example. If this is the first time you're creating it, you can actually create a sign it assignment or sorry, a sign up straight from here.
+
+But I've already created one of these things just for the sake of this, you know, talk that I'm doing here. So I'm just gonna connect that summer celebration sign up, and we're gonna add a connection just because I wanna show you what it does, which what it does is it shows you all the attendees. It shows you the three types of selection types I have, how many people are regular, how many are volunteers, how many need childcare, and has the total attendees. And I could keep this going too.
+
+Like, if I want to connect a check ins event, I can search for that as well. Summer celebration, all assignments, we'll add that connection. And as I build these out, like, if I was using, services to also schedule my volunteers in services, I can connect that. For this one time event, I probably don't need that.
+
+But when you're creating events that might be recurring, you might want all of this information.
+
+You can even connect that task list that I had, for summer celebration as well. So I have everything that I need all in one spot, which is pretty cool. Looks like we've done none of the things that I just created too. So this is, like, the best way to to kinda look at an overarching view of what's going on in your event with Planning Center, once you connect all those kind of things.
+
+Sounds pretty rad.
+
+Now let's go ahead and jump over to registrations, and I wanna show you some of those things. I'm just gonna because I wanna be quick about it, click on summer celebration, and it's gonna pop right over to that event, which is kinda nice.
+
+Alright. So I'm gonna jump over this is something that we already created just for the sake of this, you know, conversation that we're having. So because I wanna show you how it's set up. So if I'm gonna jump over to config configuration, and I'm gonna start at selection types.
+
+Basically, from here down to about the confirmation message or forms, if you have it, this is the order in which people sign up. These are the questions that they ask in the order that they're asking. So the first thing they get asked is what, selection type do you want? So, you can see let me just walk you through.
+
+I have for this event, I have a regular event that costs no money. And there is no, capacity limit in there. Anybody can sign up. I just wanna know how many people are there so that I can know how much food that we need to prepare.
+
+We do have childcare, which does cost some money, if you wanted to. Right? Where you can, you can, you know, charge money and do that. And then there was also have volunteers.
+
+We just need a different selection type to figure out how to, orchestrate all of the volunteers. Let me go into the childcare, and I wanna point out a couple neat things. First of all, you can have filters on every one of the selection types. So genders, maybe it's ages, maybe it's grades.
+
+For this specific example, we're gonna say anybody five years and younger. That's what's happening here. But what I really wanna point out here is the information you wanna collect versus the information you required.
+
+So these are the this is the information that you want to collect. And what I want to say as, like, the best practice is sometimes the tendency is to say, I wanna collect all the information I possibly can. But I wanna encourage you not to do that. The reason is because when you're doing a registration, people need to register as fast as possible. So the less questions that you ask them, the the faster it's gonna be. So if you ask the most minimum amount of questions that you need for this specific event and not just for your whole database, then it's gonna be a lot faster for them.
+
+So I want to for example, for the, for childcare, I want we split up our groups into different genders, and I want to, collect the gender. But I'm not gonna require it. We can figure it out when we're there, and that's totally fine. Birth date, I can't change this. The reason being is because I've set up a filter.
+
+Any filter that you set up, we're automatically going to require that information, so they have to fill it out.
+
+So if you set up a grade filter, that would switch to grade over here. And then emergency contact. So with these children, because they're gonna be separated from their families, I wanna make sure I know who to contact, and I'm gonna require that. And lastly, I wanna make sure that I know if they have any allergy or medical notes or anything like that because they might, like, print out some labels that has that information on there. But that can never be required. The only reason that is true is because, like, some people might not have any medical notes, and you don't wanna encourage them to write something like not applicable because then it would literally say that on the tag, themselves. So you can't require that.
+
+Alright. So, and let me just make I'm just looking at my notes here. Now I think that's it for selection types. I'm gonna go on to add on options.
+
+This is kind of basic, but it's like I have an add on that I want to, allow them to select a t shirt. They can choose a size of the t shirt, which we call a variation. And if you want to put a a cost on something, they can do it there too. Volunteer shirts are free, though, however.
+
+And then we have attendee questions. And I wanna point out the difference between attendee questions and registration questions.
+
+Attendee questions are ones that you ask per attendee, which means if you have three people signing up in your household, you're gonna ask these three questions three times. So each person's gonna get those three questions. And if you jump to registration questions and you have three people, it's gonna ask this one question only once.
+
+So, yep, that is the difference between attendee questions and registration questions. Of course, there is also discounts if you want. So, for example, if you want, like, an early bird discount or, like, multi child discount, you can do any of that kind of stuff, right there. There's also scholarships. If you wanna track that kind of information, you're you're welcome to do that. And then you can change the confirmation, message at the end there as well.
+
+Alright. That is the basics of, creating an event for children's ministry. But I wanna point out a couple other advanced things. I'm gonna jump up to settings here and just tell you the difference between church center availability and registration status.
+
+So church center availability is basically like when do you want this thing to be visible on church center. So you can say now. You can say on a specific date or time I wanna do this. Or you can say, direct link only, which is which that's like if you have an a seeking event that you only wanna invite some people to and it's not searchable on Church Center, you would do a direct link only.
+
+That's the default state though. So if you want it to be public, make sure you change this.
+
+Registration status, however, is when do you want to allow them to sign up. So this one is when is it visible, and registration is it status is when do you want them to sign up. And the idea there is, like, you might want to market that, this event is happening six months beforehand just to let them know that it's coming, but they can't yet sign up until a specific date. So this, like, creates anticipation, and then when the sign up happens, they can actually sign up.
+
+Alright. That we've created an event. And just to show you kinda what that looks like, I'm gonna click view on church center up at the top right. And you can see once I got information, if I put details, which I didn't, I should have, but details would be here.
+
+That's why that looks pretty blank right now. But that would show all the details of your event. But when I hit view registration, you can see when it loads that it'll ask oh, it looks like I already created one. So it just pulls up something that I had.
+
+So but basically, it would ask all the things that we wanted it to ask in order to sign up.
+
+So let me close these out and go back to, registrations here. I think it's registrations.
+
+Yes. Because I wanted to show one more thing about that summer celebration here, And that is, reminders. So I'm gonna go to configuration and tell you about reminders. If you remember, we have those three selection types, regular, childcare, and volunteers.
+
+You can create a reminder that they signed up for that event, in whatever, like, time frame that you want, one week before or two days before per thing, and you can have a different statement, for that. So you would go to reminders, set up the reminders, and they can change all of that kind of information, which is pretty cool.
+
+So now speaking of reminders, let's start promoting. Let's start telling people about the event itself.
+
+So and that is all done in Planning Center People.
+
+Let me, yeah.
+
+So I and I wanna show you about I wanna talk about lists specifically. Lists are incredibly powerful, and you can do a whole lot of really neat things in lists. Honestly, for children's ministry, you can run almost half of your, like, automations and all that kind of stuff with lists and workflows and forms. So I definitely encourage you to get to know planning center people for children's ministry. So let me show you a couple examples, specifically around creating an event in planning center.
+
+So I have this I've created these lists, summer celebration twenty five list. But let me show you I have this list of marketing of people who are active and not registered yet. Let me show you what the rules are for this event.
+
+And this looks like it's a lot of information.
+
+That's because it is, and it might seem complex, but it's not that hard. Let me kind of walk you through what we what we've got doing. The idea here is that we want to collect a list of people that we want to advertise this event to. So here's how we're doing it. I wanna collect a list of everybody whose age is between five and twelve years old.
+
+And they've checked in any event, any location, anytime since twelve months ago. So it's a year ago. So, basically, this is pulling a list of everybody who's between five and twelve and who have been active in the last year.
+
+But I wanna exclude people who have registered for the events that we're, that we're asking them to sign up for. Because I don't want to, say, like, hey. You just signed up for the event. Do you wanna sign up for this event? Right? So I wanna exclude those people.
+
+So I wanna pull a list of those people, or that's this big guy over here. I want to collect a a list of people who registered for this event last year. So it's pulling a list of anybody who's been active in the last year who's five or twelve or came last year. And then this also has that same exclude, of who's actually signed up for this summer celebration.
+
+That will pull a list of all the kids that are in, in that age bracket who fit those rules. We don't want a list of kids if we're marketing. We want a list of their adults. So at the very bottom, my list should include, usually, it's exact matches, but I want to choose the primary context of the matches or even all of the household adults of the matches.
+
+So I can I can submit that, and it's going to, yep, it's gonna fire that off? It's doing all the math, and it finds all your list of twenty seven household adults of the matches of that ruling. And here's where you can do a whole bunch of things with them. You can email them.
+
+Here, let me just show you here. We can email them. You can send a church center announcement. So if you're using church center, the app itself, you can send a push notification through that.
+
+You can send text messages to these people. Or if you've connected with Clearstream or Textinchurch, both which are texting platforms, it'll pull up straight from Planning Center for you to use them as well. So you can mark it that way. Or, you know, if you want, you can print a list of these people, and you could even print, you know, like name tags, so you with the stickers if you're sending out postcards or something like that.
+
+Now that was quite complicated. Maybe. If you were intimidated by that, what I wanna encourage you is that, these rules, all these things, like, don't get too intimidated. Please reach out to support.
+
+Please hit that question mark at the top right corner of planning center. This is where you can contact your support, and you don't have to know everything about lists. You don't just have to contact them because something went wrong or you don't understand them. Just contact them to let them know.
+
+It's like, hey. I want to send out this thing. Can you help me set it up? Most of the people that work at our support, have worked in churches.
+
+We know what's going on, and all we really wanna do is help, make these things go a lot smoother if we can.
+
+Okay. So that is the basics of creating an event. That is where I organize myself, with tasks. I've create I found the best date. I've made all the connections with the events. I've set up my registration.
+
+I I could, and I've I've started marketing that registration as well. Now I wanna talk about some more advanced features that we have, that you might wanna know about. So it's not maybe, maybe it doesn't work for this specific example of a one day event that only happens one time, but I wanna show you just so you know how you could do events in Planning Center as a whole. I'm gonna jump back over into registrations.
+
+One of the more complex events I think happens, in children's ministry is probably vacation bible school. If you do a vacation bible school, there's a lot of complexities around there. One of those is that, like, at least in my VBS, we have this thing. I'm gonna jump over to assignments, and I'm gonna go to classes.
+
+So we have these groups of people, like, usually about five, kids to each, you know, grouping where, you know, like our junior high and our high schoolers lead this team of people. So they're not location based. It's just like I have an orange group, I have a blue group, green group, you know, what they could be elephants. They could, you know, be whatever you might have.
+
+But I need to assign certain children to those things. You can use registrations to do that. And how I would usually do that is I would come over to this area, and I would choose, the best location for those people.
+
+But I don't wanna do that manually for everybody.
+
+What I really wanna do is do that for only the people that have a request. Right? Like, you know some of the people need to be with their best friend at this age or something. So this is where you can come in and assign as many different people, to whatever location or whatever grouping class that they need to be in.
+
+Once you've done those specific people, then you can go to auto assign. And you've got two options. You've got waterfall and you got balanced. So, let's say you have two locations here. One, both of them are saved for the first grade.
+
+Waterfall is where it would fill up all that first location first, and then once that's full, it'll move to the next one and fill up that one.
+
+Balanced, however, is where it goes from it adds one person here, one person here, and then just two people here, then two people here. So, this is where you get to choose. So for me, I'm just gonna choose waterfall, and you can see that it'll auto assign everybody that allows any kind of sort certain assignment.
+
+Yeah. So that is the best way to kinda get your crew organized. What's cool about this is that then if you set up you can set up a check ins event that links to these assignments.
+
+So, basically, what that does is whatever you assigned here will be a location in check ins. So when they come to check-in, it's already gonna put them into the right room based on that assignment. It'll I already have, you know, that assignment on the name tag too, which is kinda cool.
+
+So that's an advanced tip with connecting registrations and check ins. Another advanced tip is, a feature we call wait lists.
+
+So in VBS, let's pretend here I have a selection type, and I have a capacity limit of thirty people for child.
+
+So I can then choose to turn on a wait list. Now this won't let me turn it off because I already have people in the wait list, so I can't turn off a wait list when there's people already in. But for you, it would look like this, and you can just turn on the wait list like that.
+
+How that works is well, there's two different ways that you can resolve a wait wait list thing. One of them is you can come over here, and if there's, like, you know, fifty people on a wait list, you can say, you know what? We need another room, and we got another room. And you can just change the capacities.
+
+That's one way to, to resolve wait lists. The other way well, actually, let me show you that way. I'm gonna stick on that. So in registrations over here, if you go to wait lists, if you just opened up a bunch of different capacities, what you can do is this would show up, notify wait lists of available capacities.
+
+And that's just like sending out an email to everybody who is on the wait list to say, hey. There's more. First come, first serve. Go.
+
+That's what that does.
+
+But let's say another way that, something happens is someone, like, cancels or something like that and opens up a spot. Thing to notice to know about wait list is, once a wait list starts, nobody can register for that event. They're only gonna be registering for the wait list. You have to manually resolve the wait list at that time. Why I'm saying that is, let's say, like, on without your knowledge, five people canceled, that that does not mean that people can just register for those five things and these people are still on the wait list. Anybody still registering that time, they're just gonna be added to the wait list too in order of when they, were added.
+
+So now back to this is if I can click on if you're doing it just, like, one at a time because there's a cancellation, I can click on a person right here, and I can hit, promote. Well, I would select their name and then hit promote. It's gonna tell me that there's an alert that they can do that, that it's still over capacity. If there was a spot, that alert wouldn't be there. So I can promote them right there. If this registration had, like, four people in it, that's why I would select, you know, the four people and then hit promote.
+
+But, yeah, that's how you promote them. Other thing to note here is that as an admin, you can promote people to the registration, even over the capacity limit. That's why it's letting me do this, but it's just warning me about that. So be careful with that power.
+
+Okay. So that's wait lists. Next, I wanna talk about a little advanced feature that we do at my church for volunteers.
+
+So let's pretend, that someone signs up for an event as a volunteer.
+
+I wanna make sure that volunteer goes through all the things that they need to go through. So that means, we have, like, a whole volunteer workflow where people we need to get, like, a background check and, you know, look into some things and talk to them and that kind of stuff.
+
+So let's, what you could do is you can set up an automation to make that process super smooth. So this is advanced tip, is these automations. So let me show you. When a new person is registered for an event for the volunteer selection type, with the status of active, this is basically only shows up if wait list is another option.
+
+So you don't wanna add people if they're on a wait list for it. Then what I wanna do is perform an action in people. I can do I can do any app here, but, let's say I wanna add them to a workflow. And I've already created a workflow of, let's see.
+
+What did I call it? Oh, yeah. Kids event volunteer onboarding.
+
+I'm gonna create this automation.
+
+Now anytime somebody says they want to be a volunteer, it'll automatically put them in that workflow in People.
+
+What is that workflow in People? Let me show you. Let's jump over to People.
+
+Let's go to workflows, and let's go to this kids event volunteer onboarding. So workflows is basically like a process queue. This is basically I have four things that I wanna do when somebody is requesting to be a volunteer. First, I wanna send them a thank you email, and that email really kind of explains all the the process, explains the process about the background check, and explains, like, what they're kind of getting into and all that kind of stuff. It might also have, like, a link to a form, asking if they have a preference of, like, certain age groups or something like that. You can do whatever you want there. And then the second step is send a background check request.
+
+So it'll send them an email that asks, ask them to fill out a background, check. And then we, after that sometimes that takes a couple days. So after a couple days, you can check the background status, and then I can assign them to a team, or I can put them, you know, on the certain list or, you know, whatever you might want to do after they've gone through everything. So I've got a couple people here.
+
+Oh, and by the way, with process queues, with with workflows here, you can assign each one of these steps to a different person. So I'm handling the first step, but looks like I'm also handling the second step. There we go. Amy is handling that third step, check background status.
+
+So, but let me go in here. I'm gonna view this card, and I wanna show you just what you can do with this. You can add an internal note. Meaning, like, if this person's interested, I can say, you know, they're interested in this, you know, grade or whatever, you know, it is. I can also send an email for them.
+
+Or I can perform an action. Now some people ask the question, like, I wanna send an email of a template that I already have, which includes, like, the form and all that kind of stuff. You can do that too by performing an action and send an email from a template as well. That's one cool tip.
+
+The other one is that directly from here, I can set, sorry, not background check. Order background check is what I mean, where I can choose the package level I want. Now don't pay too much attention to the prices here. This is a test org, and and all of those things vary by state and sometimes county.
+
+So, ignore that question. That might be different for you. But we've connected to Checkr to, to have those values right there. Anyway, you can do all of that right through your action. And once you've done it, I can hit complete step, and it moves to the second thing.
+
+So that is workflows.
+
+And you can kinda handle all the things that you want right there.
+
+Okay. Now I wanna talk about, a couple other things for advanced features. It's just yeah. Honestly, yes, two more things. One is about how to communicate to prepare your volunteers before the event starts. And there's two ways to do that. One of them is in registrations.
+
+Just so you know, if you go into your summer celebration, and then you can add a filter over here. Here, let's let that load. Sometimes I want it to be faster than, than it is, which yeah. Okay.
+
+So I can say I wanna filter by the selection type of volunteers. I add that filter, and this is where I can, perform actions. I can send a general email or, you know, kinda whatever you wanna do. So this is how you can contact your people.
+
+You can also, in people, create a list of all of your volunteers for the summer celebration as well.
+
+But what I really wanna do with this volunteers one so let's let's say that I have some volunteers or no.
+
+Let me, let me completely scratch that. What I really wanna do is I I have people who are volunteers who didn't sign up to be all volunteers, but they're just helping with the food prep. They're they don't need to know anything about planning center. I don't need their information. They're just gonna kinda show up and, like, help us organize the food. I wanna get them information about the, like, medical notes and stuff of those people. So what I can do is I can have a list of all the people who are attendees, and I can, so these are all the kids that are, you know, are showing are showing up to that event.
+
+What I wanna point out is that you can add columns here. So I can add a column of medical notes, and then those medical notes show up. And then when I print anything that I've I've shown a column to, it will print that column also.
+
+So for that volunteer team who is preparing your food, you can come in here, print this out, and they can just they can see who all the special people are that have, you know, a medical note that they need to do something with. So, yeah, those are the advanced tips, for creating events. So we've, we've done all the things. I think, most of the things that you can do with Planning Center around your event, we've helped you stay organized.
+
+We've chosen the right date. We've created a registration. We may be linked to that registration to check ins, and we've also, like, promoted and announced it and, like, prepared our volunteers for it. So those are all the things that we talked about.
+
+If you have any questions about anything that we talked about or if you just wanna learn more about something, please don't hesitate to hit that question mark at the top right of every one of our products. This is where you can con you can look at, suggested articles. You can watch some more videos of this, and, of course, you can contact our support right there. Thanks for watching, guys.
+
+---
+
+## How to manage attendance during your events (9:02)
+
+Hey, everyone. Scott here. And today, I wanna show you real quickly how to manage attendance during an event. What we're gonna talk about is, first of all, just like the stations that you use during an event, with check ins, we're we're gonna talk mostly about a roster station, and then what to do if people show up who have not yet registered for that event.
+
+So I'm gonna talk about all of those things. I'm gonna be diving into an account that is already created, though, because I really I really wanna show you what's possible, not how to set everything up. So if you do need some help setting things up, don't hesitate to hit that question mark at the top right corner of all of our products. This is where there's gonna be articles that talk about it, some more videos, and of course, you can contact our support team through there.
+
+So let's get started. I first wanna talk about the types of stations that are normal during event. And we have three different types of stations. There's first a self station.
+
+You want mostly self stations at your event. These are for the people who know what they're doing. They've been here before. They just type in their phone number, and they check people in, and it prints out a label.
+
+Secondly, is a manned station. And this is more for your volunteers to, you know, be behind the station. And, that's like for usually, this would be like at a kiosk or something where people are you're welcoming new people, so you can add and edit people. And lastly is the roster station. And that's really what I wanna focus on is the roster station. Because, ideally, you have a roster station in the hands, with their phone, maybe, or like an iPad, or anything like that, of every one of the teachers that are helping you, you know, orchestrate that event. So I'm gonna show you this roster station here.
+
+And I wanna show you just a couple things that really help. First of all, there are three different tabs up here at the top. There's ready, there's here, as you can see, and then there is checked out. So ready is all the people that are just wanting to be checked in.
+
+If if you have one of those situations where, like, people check-in in the lobby and they come back to the room later, then the teacher doesn't need to see the ready tab at all. And you can actually hide that ready tab for them so that all that they see is the hear tab. But in this particular case, I've got all three tabs shown, and people are just showing up to that specific classroom. And you can just click on their names here.
+
+And I wanna point out that as long as you're moving, we're not, like, changing anything for you. But once you wait a couple moments, then they move over. So that is basically how you check-in. If you had, labels set to print, it would connect to the printer and print those labels immediately too.
+
+That brings us to the Here tab. And I wanna point out two things that you can do with the Here tab. This is really like well, I'm gonna point out more than two, actually. We're gonna print out we're gonna talk about three, things.
+
+The this is really for your teacher to, be able to handle things if there's an emergency or just so they can see what's going on with their classroom. So first thing I wanna point out is this, texting feature over here. So if you if there's anything that is happening with any of the kids in your classroom, you can hit this texting option. It'll pull up all of the, like, parents or the adults in the household, so you can choose which number, you want to send it to.
+
+This one has an invalid or missing, number, so we would have to add it. But if it was there, it would you can select everybody. And basically, you get to choose out of these options some of the things that you wanna, say to them. Just like, hey, I need I need some attention.
+
+Could you come please come to this location?
+
+Or if you need some feeding, or diaper, or if there's an emergency, or if you just wanna say, hey, things are great, and send them a text that way. The second thing that I wanna point out is medical notes. So Aubrey has this little line, this medical line over here. And if I tap on that, I can see what her medical notes are here.
+
+It says, Allergic to grass. I don't know if that's real, but, that means we should not go outside with Aubrey. But, basically, we kinda hide those normally because if it's the same kids over and over, you kinda know what their medical notes is. But if you do need to know, you can toggle that, information right there.
+
+Lastly, the thing I wanna point out is that we could there's an option to show the security code. So if you do want your teachers to have the security codes attached to that person that day, it's right there for you on the here tab, which is pretty rad.
+
+Lastly, there, the the fourth thing out of the three I was gonna talk about is that if somebody had there isn't a good example here. But if somebody had someone who is not authorized for pickup, it would also tell you that here. And you can click on a button there to show who that not authorized person is. So here tab, really made for teachers, That's the best, that you can do.
+
+And, of course, there is a checked out tab. So if I move them, the arrow's kinda, you know, pointing to the right to say that they're checked out, and I move them over there, then little baby Erin Stewart is checked out right there. Alright. So what happens?
+
+That is all for the roster station. I wanna then talk about what happens when, someone shows up to your event, and they have not registered, and you want them to register. What can you do with that? And, I wanna point out one of the coolest things that we have, and that is, on every single page on Church Center, at the so let's say this is the event that we're putting on this summer celebration, and what I really want is people to have a quick access so that they can register.
+
+On every one of these pages, there is this shareable code at the very bottom right that you can maybe barely read. If I click on that, there is a QR code that people can scan. So what you can do is you could download this QR code, print it out, and what I've seen is people have that QR code, like, taped to the desk of, if you haven't registered, you can register right there.
+
+So there's four options here, to get people registered. One is that QR code. Two is if you just have someone, like, at your help desk or something like that, they can register for them through Church Center. So you're basically walking through this page right here.
+
+Or you can have them register on the admin side as well. But that's like the manual way to get them registered. But let's say that it's like super busy, and what you really wanna care about is getting people safely through the door.
+
+Then if you're using, the check ins and registration connection, what what needs to happen is you have to use a manned station, and you can just check them in really quickly.
+
+So that won't register from the event, but if you prefer to get them through the door safely and securely as quickly as possible, you can just check them in and then follow-up later to get them registered if they if they need to do that. And, of course, you can do a combo of all of these things. Like, as it as, like, if it is, you can add them as a manned station, and then you can send, like, an automation or an email afterwards, to ask them to register if they're coming back, like, the next day or something like that.
+
+So that's that's it.
+
+I do also wanna point out one thing, that people that you can do during a live event. Let's pretend that you have a self station, and your church is using the Church Center app. So those people who, you know, download the app, they know what's going on, they're here all the time.
+
+What you can do is you can create, the all your check ins and registrations events will show up on the Church Center app, and they can pre check from there. And when they pre check, it is the fastest way to get them to the door. So what I've seen is there's, like, a special self station that people have. It's almost like a TSA pre check where there's a line that just moves a lot faster than the other lines.
+
+And what that does is it kinda markets the, Church Center app too because it's because people are like, how do I get in that faster line? And you're like, oh, just download this app. And then they they're connected with the church a lot more there. So, that is basically everything of what you can do during a live event for children's ministry.
+
+We talked about, like, managing your classroom, getting people through the door, and, and also having people register if they haven't yet registered. Thanks for watching.
+
+---
+
+## How to follow up after your event (8:40)
+
+Everyone, Scott here, and I wanna talk to you very briefly on how to follow-up after your events for your children's ministry.
+
+And what we're gonna do is basically talk about, how to thank your attendees, the people who attended, follow-up your first timers, and then follow-up with your volunteers. And then we'll show you a couple tips on cleaning everything up in planning center. But if I'm gonna kinda walk through a a a thing account, sorry, that has already existed, that already has information. But if you need help, like, setting up, learning how to set all of these things up, hit that question mark at the top right of every one of our products, and, you can see articles, you can see videos, and you can contact our support through there. So let's talk about follow-up, and that is all in people, I believe.
+
+So first, I wanna talk about following up with your attendees. So these are, basically, I just have a list of everybody who, has attended. And let me show you real quick. I'm gonna click into this list, and I'm gonna pop over to the rules tab.
+
+This one is really simple. It's just saying, show me everybody who has registered for this specific event. If you're using check ins, you can also add a condition of and checked in if you'd like, to that specific event. But, basically, that gives me the list of everybody and their contact information.
+
+Oh, sorry. One thing else to point out here is that this would give everybody who's registered, but you not might not want that because that might be kids, for your children's ministry. Instead, you might want to get all the household adults of these people. Because when you want to follow-up, you wanna follow-up with those adults, not with those kids because they probably don't have emails. So this is gonna take a few moments to follow-up, or sorry, to, fire up your list is what it takes. It's, and it's basically, it's doing all the math of all the people who have, all the adults of everybody who has registered for that event.
+
+And we'll give that a moment, and then we will do something. There we go. Okay. Now, there's a bunch of different things that you can do.
+
+You can send emails, announcements, all the things that you can normally do here. But what I really would just wanna encourage you is, what's normal is is, like, send an email just saying, hey. Thanks for attending. Here's a couple stats about the event, the people that came, and then here are more events that are happening with our church.
+
+So that is what you can do with with that list right there.
+
+Now let's go back to list. I wanna then talk about following up with your first time guests. This gets a little bit more advanced here.
+
+We're gonna jump into summer celebration first time guests. I'm gonna go to the rules, and it says anybody who has registered for this event, but exclude the people who have checked in since twelve months ago. Basically, exclude everybody who has attended in the last year. That's basically what that's saying.
+
+That's probably your first time guess. You can make that rule whatever you want. If you wanna extend that or make it shorter or whatever you want, you could you can do that. But with this list of kids, it looks like there are none at the moment, but you can, you can create an automation.
+
+And this is really powerful. With automations, like, I have, for example, an automation for first time guests to make sure that we do a couple steps. So, basically, anybody who shows up in this list, it'll automatically add them to a first time guest's workflow. So let me show you that workflow.
+
+I'll jump over to workflows. We'll go to first time guests, and there is, you can see that I have four steps specifically, where I wanna send them a postcard. And then, like, you know, a couple weeks later, I want to send them an email with a coffee voucher. That might not be the best example for children's ministry.
+
+You don't wanna give children coffee, but maybe, like, a a prize pack or something like that to come to, like, you know, get a prize or, you know, free Bible or whatever your steps are. And then, of course, follow-up texts about small groups to get them, involved for the parents, and then, one month follow-up phone call after that. So that is you can set up that workflow however you would like to set up the workflow, but you can do that with first time guests, which is pretty cool. The last thing I wanna talk about, when it comes to lists is, celebrating with your volunteer.
+
+So this is where you can pull up a list of all the people who have, registered as a volunteer for that event.
+
+And, that one's kinda basic, but what you what I really believe is that when people understand the impact that they're making, it encourages them, and it wants them to be more involved because they know what they're doing and all that kind of stuff. So with these volunteers, I would make sure you include all the people who showed up, even just, like, because they were helping with food prep or something like that. But the question is, how do I celebrate? Let me give you some options of data you can pull from planning center to help them know the impact that was made with your event. The first one is actually here in, well, actually, I'm gonna go back. I'm gonna go to home, and I've created a children's ministry dashboard where I can create widgets, on each one of these things of, like, attendance, maybe first time visitors, maybe head counts. So this is a good place to to connect with Make Widgets on the impact that you're making with children's ministry.
+
+Another place that you can grab some information is with check ins. And I specifically want to jump into an event. Let's say it's that like, in a specific event that we did, like summer celebration, for example. You could have head counts, or you can track whatever you might want to track.
+
+So you can track if you're not taking attendance of everybody and you're just trying to, see how many people are, like, showed up. You can track the people. You can track attendance through just through a custom head count. You can also track other things, like how many people, you know, did, like, wanted to be baptized or something like that, or maybe other silly things, like how many times did your pastor get dunked in the dunk tank.
+
+Or, you know, whatever thing that you kinda wanna track, you can track it here in check ins. And the last thing that I wanna encourage you that you could put in this, celebratory email for your volunteers is, like, quotes and stories.
+
+These aren't things necessarily you can grab with planning center, but I know when I've, participated in an event and somebody shared quotes and stories, I just felt the impact more, and I just wanted to be more involved. And I love that.
+
+Last thing I wanna point out though is, cleanup tasks. So, in people, I have, I've created a whole bunch of different lists that I use specifically for summer celebration twenty twenty five. The question is, how do I clean that up? What I could encourage you to do is you can, well, first of all, let me put it this way. There's a lot of lists. You guys are gonna create a ton more lists, and you should create a lot of them.
+
+But I always have this filtered down to my starred lists. So when I'm done with an event, I can just simply unstar those four, and then I don't have to think about them. But what's a nice tip about this is next year, in twenty twenty six, when I wanna do another summer celebration, I can go to my all list, find that one, and just edit the rules to make it, for twenty twenty six instead twenty twenty five. So it's a lot faster way to pull up all the lists that you want.
+
+So I encourage you, don't archive them or delete them. Just leave them in the ether, and then just find them when you need them and change them at that point. Alright. So that's about everything that you can do after an event.
+
+If you want to learn more about anything with Planning Center, don't hit, don't hesitate to hit that, question mark at the top right. Otherwise, thanks for watching.
+
+---
+
