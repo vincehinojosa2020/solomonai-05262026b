@@ -1,0 +1,141 @@
+PLANNING CENTER KNOWLEDGE BASE — COMPETITIVE INTELLIGENCE FOR ASK SOLOMON
+Source: 173 training videos from Planning Center University (planningcenter.com/university)
+Last updated: March 2026
+
+=== PRODUCT OVERVIEW ===
+Planning Center is a suite of separate products, each sold individually:
+- People: Member database, lists, workflows, forms, directory, background checks
+- Services: Worship planning, team scheduling, song library, chord charts, Music Stand
+- Check-Ins: Kids/volunteer check-in with label printing (Brother, Dymo, Zebra printers)
+- Giving: Online donations, batch entry for cash/checks, pledge campaigns, year-end statements
+- Groups: Small group management, leader tools, group chat via Church Center
+- Calendar: Room/resource booking, event scheduling, approvals, conflict resolution
+- Registrations: Event signups, payments, add-ons, waitlists, assignments
+- Publishing: Church Center app customization, custom pages, sermon hosting, themes
+- Home: Dashboards for leadership, task management across all PC products
+
+=== HOW PLANNING CENTER WORKS ===
+Admin Side: Staff use planningcenter.com for all backend management. Each product has its own admin interface.
+Church Center: The member-facing app is called "Church Center" — NOT the church's own brand. Members see "Church Center" branding, not their church name.
+Pricing: Each product is priced separately based on usage tiers. A multi-campus church needs to pay for each product across all campuses. Typical cost: $700-$2,400/month for a mid-size church using all products.
+Integration: Products share a common People database but have separate interfaces. Switching between products requires navigating to different admin sections.
+
+=== PEOPLE (Member Management) ===
+- CSV import for new members (manual field mapping process)
+- Profile pages with custom fields, notes, background checks
+- Lists: rule-based smart lists and static lists for segmentation
+- Workflows: multi-step follow-up processes (e.g., new visitor follow-up, baptism class)
+- Forms: collect information from members, auto-create profiles
+- Directory: opt-in member directory shared via Church Center
+- Automations: trigger actions based on profile changes
+- Households: group family members together
+- Grade promotion: annual grade updates for children
+
+=== SERVICES (Worship Planning) ===
+- Service Types: organize different service styles (Sunday AM, Wednesday Night, etc.)
+- Plans: build service order with items (songs, media, custom items)
+- Teams: create volunteer teams with positions (Worship Leader, Guitar, Camera, etc.)
+- Scheduling: assign volunteers to plans, handle conflicts, send notifications
+- Matrix scheduling: visual grid for scheduling across multiple weeks
+- Auto-scheduling: automated volunteer assignment based on preferences/blockouts
+- Song library: add songs with arrangements, chord charts, files
+- Chord Chart Editor: built-in chord chart editing tool
+- Music Stand: mobile app for musicians to view charts during rehearsal
+- Song integrations: import from CCLI, SongSelect
+- Templates: reuse plan structures across weeks
+- Keyboard shortcuts for power users
+- Signup sheets: let volunteers sign up for open positions
+- Secure teams: require background checks for sensitive ministry areas
+
+=== CHECK-INS ===
+- Station types: Self (touchscreen kiosk), Manned (staff-operated), Roster (classroom list)
+- Label printing: supports Brother (WiFi/Bluetooth/USB), Citizen, Dymo, Zebra printers
+- Quick Station: simplified check-in mode for volunteers
+- Location hierarchy: campus > building > room with folders
+- Time slots: configure check-in windows for different services
+- Security codes: parent pickup codes on printed labels
+- Reports: attendance tracking by event, location, time
+- No geofencing, no QR code check-in (label-based only)
+- No AI-powered attendance insights
+
+=== GIVING ===
+- Church Center: members donate through the Church Center app or web
+- Payment sources: credit card, debit card, ACH bank transfer
+- Funds: create designated funds (General, Building, Missions, etc.)
+- Batches: manual entry for cash and check donations
+- In-kind donations: track non-monetary gifts
+- Joint donors: link spouses for combined giving statements
+- Pledge campaigns: track commitments against a goal
+- Year-end statements: generate tax receipts (PDF, email, or print)
+- Refunds and adjustments: modify donation records
+- Reporting: giving reports by date range, fund, donor
+- No AI giving insights, no giving nudges, no real-time dashboards
+- Transaction fees apply (standard credit card processing rates)
+
+=== GROUPS ===
+- Group Types: categorize groups (Small Groups, Bible Studies, Serving Teams, etc.)
+- Enrollment: open, request-to-join, or invite-only
+- Leader tools: leaders manage their group via Church Center
+- Events: create recurring group meetings
+- Chat: group messaging through Church Center app
+- Resources: share files and links with group members
+- Tags: organize groups by topic, campus, day of week
+- Automations: auto-add people to groups based on conditions
+- Campus filtering: multi-campus groups management
+
+=== CALENDAR ===
+- Events: create one-time or recurring events
+- Rooms & Resources: book shared spaces (Fellowship Hall, Projector, Van, etc.)
+- Approvals: request/approve workflow for room bookings
+- Conflict resolution: detect double-booked rooms and let admins decide
+- Event templates: reuse common event configurations
+- Sharing: publish events to Church Center, website embed, or kiosk display
+- Import: bring events from external calendars
+- Tags: organize events by ministry area
+
+=== REGISTRATIONS ===
+- Signups: create events with capacity limits, waitlists
+- Selection types: choose options (T-shirt size, meal preference, etc.)
+- Add-ons: additional items members can purchase
+- Questions/Forms: collect custom information during registration
+- Payments: collect fees, apply discounts and scholarships
+- Assignments: assign registrants to groups (cabins, teams, etc.)
+- Reminders: automated email reminders before events
+- Confirmation messages: custom post-registration communication
+- Waitlist management: promote from waitlist when spots open
+
+=== PUBLISHING (Church Center App) ===
+- Church Center app: the member-facing mobile app (branded as "Church Center", NOT white-label)
+- Custom pages: build pages with text, images, buttons
+- Navigation: customize the app navigation menu
+- Themes: change colors and fonts (limited customization)
+- Sermons: host sermon audio/video (basic hosting, no MasterClass-quality experience)
+- Page analytics: view page visit statistics
+- Plans/pricing: Publishing is a separate paid product
+
+=== HOME (Dashboards) ===
+- Dashboards: customizable widgets pulling data from all PC products
+- Tasks: assign and track tasks across staff
+- Role-based views: different dashboards for executive leadership, worship leaders, children's ministry leaders
+- Cross-product visibility: see giving, attendance, and volunteer data in one place
+- No real-time war room, no AI insights, no geofencing data
+
+=== KEY LIMITATIONS OF PLANNING CENTER (vs Solomon AI) ===
+1. NOT white-label: Members see "Church Center" not your church's name
+2. Sold as separate products: each module costs extra
+3. No AI assistant: no chat, no insights, no automated recommendations
+4. No cafe/merch ordering: churches need a separate POS system
+5. No geofencing: check-in requires physical kiosk stations
+6. No real-time war room: dashboards update on refresh, not live
+7. No sermon library with MasterClass-quality streaming
+8. Multi-campus = multiple bills: each campus on each product
+9. Built in 2006 architecture: modern features are bolt-ons, not native
+10. No giving nudges or AI-driven engagement tools
+
+=== SOLOMON AI ADVANTAGES FOR MIGRATION CONVERSATIONS ===
+When a pastor asks about switching from Planning Center:
+- "We can import your entire member database via CSV — same process, but then you get AI, cafe, sermons, and everything else included."
+- "Your volunteers already know how check-in works. Solomon AI just adds QR codes and geofencing on top."
+- "Your groups, events, and attendance data can all migrate. But now they're powered by AI insights."
+- "Instead of paying for People + Services + Check-Ins + Giving + Groups + Calendar + Publishing separately, Solomon AI includes everything in one price."
+- "Your members will download YOUR church's app — not Church Center."

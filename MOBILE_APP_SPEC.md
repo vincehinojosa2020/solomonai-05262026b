@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://solomon-demo-mvp.preview.emergentagent.com/api
+https://solomon-demo-2.preview.emergentagent.com/api
 ```
 
 ### Authentication

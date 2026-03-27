@@ -8666,6 +8666,24 @@ async def cancel_event_registration(request: Request, event_id: str):
 # Store active chat sessions
 solomon_sessions: Dict[str, LlmChat] = {}
 
+# Load competitor knowledge base for migration conversations
+COMPETITOR_KNOWLEDGE = ""
+def _load_competitor_knowledge():
+    global COMPETITOR_KNOWLEDGE
+    knowledge_path = "/app/planning_center_transcripts/competitor_knowledge_combined.txt"
+    try:
+        with open(knowledge_path, "r") as f:
+            COMPETITOR_KNOWLEDGE = f.read()
+        print(f"[Solomon AI] Loaded competitor knowledge base: {len(COMPETITOR_KNOWLEDGE):,} chars")
+    except FileNotFoundError:
+        print(f"[Solomon AI] Warning: Competitor knowledge file not found at {knowledge_path}")
+        COMPETITOR_KNOWLEDGE = ""
+    except Exception as e:
+        print(f"[Solomon AI] Warning: Failed to load competitor knowledge: {e}")
+        COMPETITOR_KNOWLEDGE = ""
+
+_load_competitor_knowledge()
+
 SOLOMON_SYSTEM_PROMPT = """You are Solomon, an intelligent AI assistant for the Solomon AI Church Management System. You help both church administrators AND church members.
 
 **For Church Members (portal users), you assist with:**
@@ -8703,7 +8721,21 @@ SOLOMON_SYSTEM_PROMPT = """You are Solomon, an intelligent AI assistant for the 
 - Suggest with grace: "Just a thought 🙏" or "If you feel led..."
 - Never pressure - always frame as an invitation
 
-You are serving a multi-tenant church management platform with multiple churches."""
+You are serving a multi-tenant church management platform with multiple churches.
+
+**For Migration & Competitor Questions, you are an expert on:**
+1. **Planning Center**: Deep knowledge of all 9 products (People, Services, Check-Ins, Giving, Groups, Calendar, Registrations, Publishing, Home) from 173 training videos
+2. **SecureGive**: Complete pricing, features, strengths, and weaknesses
+3. **Pushpay/ChurchStaq**: Full product suite, pricing structure, contract requirements
+
+**When answering migration/comparison questions:**
+- First acknowledge the competitor's approach (show you genuinely understand their product)
+- Then explain Solomon AI's equivalent or superior feature
+- Highlight Solomon AI's key advantages: all-in-one pricing, AI-native, no contracts, white-label, transparent pricing
+- Be honest about features still in development (e.g., Solomon Pay for live transaction processing)
+- Provide specific pricing comparisons when relevant
+- Never bash competitors — be respectful but confident
+- Use the detailed competitor knowledge provided in your context to give specific, informed answers"""
 
 async def get_church_context(user=None) -> str:
     """Gather current church data for Solomon's context"""
@@ -8817,8 +8849,9 @@ async def solomon_chat(request: Request, payload: SolomonChatRequest):
         # Get church context
         church_context = await get_church_context(user)
         
-        # Build system prompt with context
-        full_system_prompt = f"{SOLOMON_SYSTEM_PROMPT}\n\n{church_context}"
+        # Build system prompt with context and competitor knowledge
+        competitor_context = f"\n\n{COMPETITOR_KNOWLEDGE}" if COMPETITOR_KNOWLEDGE else ""
+        full_system_prompt = f"{SOLOMON_SYSTEM_PROMPT}{competitor_context}\n\n{church_context}"
         
         # Create or get chat instance
         if session_id not in solomon_sessions:

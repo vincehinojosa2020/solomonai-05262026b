@@ -1,0 +1,597 @@
+SOLOMON AI — COMPETITOR KNOWLEDGE BASE
+Last updated: March 2026
+Purpose: Enable Ask Solomon to answer migration, comparison, and pricing questions during demos.
+
+================================================================================
+PART 1: PLANNING CENTER DEEP ANALYSIS (from 173 training videos)
+================================================================================
+
+PLANNING CENTER KNOWLEDGE BASE — COMPETITIVE INTELLIGENCE FOR ASK SOLOMON
+Source: 173 training videos from Planning Center University (planningcenter.com/university)
+Last updated: March 2026
+
+=== PRODUCT OVERVIEW ===
+Planning Center is a suite of separate products, each sold individually:
+- People: Member database, lists, workflows, forms, directory, background checks
+- Services: Worship planning, team scheduling, song library, chord charts, Music Stand
+- Check-Ins: Kids/volunteer check-in with label printing (Brother, Dymo, Zebra printers)
+- Giving: Online donations, batch entry for cash/checks, pledge campaigns, year-end statements
+- Groups: Small group management, leader tools, group chat via Church Center
+- Calendar: Room/resource booking, event scheduling, approvals, conflict resolution
+- Registrations: Event signups, payments, add-ons, waitlists, assignments
+- Publishing: Church Center app customization, custom pages, sermon hosting, themes
+- Home: Dashboards for leadership, task management across all PC products
+
+=== HOW PLANNING CENTER WORKS ===
+Admin Side: Staff use planningcenter.com for all backend management. Each product has its own admin interface.
+Church Center: The member-facing app is called "Church Center" — NOT the church's own brand. Members see "Church Center" branding, not their church name.
+Pricing: Each product is priced separately based on usage tiers. A multi-campus church needs to pay for each product across all campuses. Typical cost: $700-$2,400/month for a mid-size church using all products.
+Integration: Products share a common People database but have separate interfaces. Switching between products requires navigating to different admin sections.
+
+=== PEOPLE (Member Management) ===
+- CSV import for new members (manual field mapping process)
+- Profile pages with custom fields, notes, background checks
+- Lists: rule-based smart lists and static lists for segmentation
+- Workflows: multi-step follow-up processes (e.g., new visitor follow-up, baptism class)
+- Forms: collect information from members, auto-create profiles
+- Directory: opt-in member directory shared via Church Center
+- Automations: trigger actions based on profile changes
+- Households: group family members together
+- Grade promotion: annual grade updates for children
+
+=== SERVICES (Worship Planning) ===
+- Service Types: organize different service styles (Sunday AM, Wednesday Night, etc.)
+- Plans: build service order with items (songs, media, custom items)
+- Teams: create volunteer teams with positions (Worship Leader, Guitar, Camera, etc.)
+- Scheduling: assign volunteers to plans, handle conflicts, send notifications
+- Matrix scheduling: visual grid for scheduling across multiple weeks
+- Auto-scheduling: automated volunteer assignment based on preferences/blockouts
+- Song library: add songs with arrangements, chord charts, files
+- Chord Chart Editor: built-in chord chart editing tool
+- Music Stand: mobile app for musicians to view charts during rehearsal
+- Song integrations: import from CCLI, SongSelect
+- Templates: reuse plan structures across weeks
+- Keyboard shortcuts for power users
+- Signup sheets: let volunteers sign up for open positions
+- Secure teams: require background checks for sensitive ministry areas
+
+=== CHECK-INS ===
+- Station types: Self (touchscreen kiosk), Manned (staff-operated), Roster (classroom list)
+- Label printing: supports Brother (WiFi/Bluetooth/USB), Citizen, Dymo, Zebra printers
+- Quick Station: simplified check-in mode for volunteers
+- Location hierarchy: campus > building > room with folders
+- Time slots: configure check-in windows for different services
+- Security codes: parent pickup codes on printed labels
+- Reports: attendance tracking by event, location, time
+- No geofencing, no QR code check-in (label-based only)
+- No AI-powered attendance insights
+
+=== GIVING ===
+- Church Center: members donate through the Church Center app or web
+- Payment sources: credit card, debit card, ACH bank transfer
+- Funds: create designated funds (General, Building, Missions, etc.)
+- Batches: manual entry for cash and check donations
+- In-kind donations: track non-monetary gifts
+- Joint donors: link spouses for combined giving statements
+- Pledge campaigns: track commitments against a goal
+- Year-end statements: generate tax receipts (PDF, email, or print)
+- Refunds and adjustments: modify donation records
+- Reporting: giving reports by date range, fund, donor
+- No AI giving insights, no giving nudges, no real-time dashboards
+- Transaction fees apply (standard credit card processing rates)
+
+=== GROUPS ===
+- Group Types: categorize groups (Small Groups, Bible Studies, Serving Teams, etc.)
+- Enrollment: open, request-to-join, or invite-only
+- Leader tools: leaders manage their group via Church Center
+- Events: create recurring group meetings
+- Chat: group messaging through Church Center app
+- Resources: share files and links with group members
+- Tags: organize groups by topic, campus, day of week
+- Automations: auto-add people to groups based on conditions
+- Campus filtering: multi-campus groups management
+
+=== CALENDAR ===
+- Events: create one-time or recurring events
+- Rooms & Resources: book shared spaces (Fellowship Hall, Projector, Van, etc.)
+- Approvals: request/approve workflow for room bookings
+- Conflict resolution: detect double-booked rooms and let admins decide
+- Event templates: reuse common event configurations
+- Sharing: publish events to Church Center, website embed, or kiosk display
+- Import: bring events from external calendars
+- Tags: organize events by ministry area
+
+=== REGISTRATIONS ===
+- Signups: create events with capacity limits, waitlists
+- Selection types: choose options (T-shirt size, meal preference, etc.)
+- Add-ons: additional items members can purchase
+- Questions/Forms: collect custom information during registration
+- Payments: collect fees, apply discounts and scholarships
+- Assignments: assign registrants to groups (cabins, teams, etc.)
+- Reminders: automated email reminders before events
+- Confirmation messages: custom post-registration communication
+- Waitlist management: promote from waitlist when spots open
+
+=== PUBLISHING (Church Center App) ===
+- Church Center app: the member-facing mobile app (branded as "Church Center", NOT white-label)
+- Custom pages: build pages with text, images, buttons
+- Navigation: customize the app navigation menu
+- Themes: change colors and fonts (limited customization)
+- Sermons: host sermon audio/video (basic hosting, no MasterClass-quality experience)
+- Page analytics: view page visit statistics
+- Plans/pricing: Publishing is a separate paid product
+
+=== HOME (Dashboards) ===
+- Dashboards: customizable widgets pulling data from all PC products
+- Tasks: assign and track tasks across staff
+- Role-based views: different dashboards for executive leadership, worship leaders, children's ministry leaders
+- Cross-product visibility: see giving, attendance, and volunteer data in one place
+- No real-time war room, no AI insights, no geofencing data
+
+=== KEY LIMITATIONS OF PLANNING CENTER (vs Solomon AI) ===
+1. NOT white-label: Members see "Church Center" not your church's name
+2. Sold as separate products: each module costs extra
+3. No AI assistant: no chat, no insights, no automated recommendations
+4. No cafe/merch ordering: churches need a separate POS system
+5. No geofencing: check-in requires physical kiosk stations
+6. No real-time war room: dashboards update on refresh, not live
+7. No sermon library with MasterClass-quality streaming
+8. Multi-campus = multiple bills: each campus on each product
+9. Built in 2006 architecture: modern features are bolt-ons, not native
+10. No giving nudges or AI-driven engagement tools
+
+=== SOLOMON AI ADVANTAGES FOR MIGRATION CONVERSATIONS ===
+When a pastor asks about switching from Planning Center:
+- "We can import your entire member database via CSV — same process, but then you get AI, cafe, sermons, and everything else included."
+- "Your volunteers already know how check-in works. Solomon AI just adds QR codes and geofencing on top."
+- "Your groups, events, and attendance data can all migrate. But now they're powered by AI insights."
+- "Instead of paying for People + Services + Check-Ins + Giving + Groups + Calendar + Publishing separately, Solomon AI includes everything in one price."
+- "Your members will download YOUR church's app — not Church Center."
+
+
+================================================================================
+PART 2: PLANNING CENTER MODULE WORKFLOW MAPPING (Solomon AI Equivalents)
+================================================================================
+
+=== CALENDAR MODULE ===
+Planning Center Calendar Workflows:
+- Create events (one-time or recurring) with rooms/resources
+- Approval workflow: requests go to approvers, conflicts detected automatically
+- Room conflict resolution: admin picks winner, rejected party gets email notification
+- Share events via Church Center app, website embed, iCal feed, or lobby kiosk display
+- Event templates for recurring configurations
+- Tags for organizing by ministry area
+- Import external calendars
+- Registration feeds connect to Registrations product
+
+Solomon AI Calendar Equivalent:
+- Full event creation with room booking and conflict detection
+- Multi-campus calendar with campus filtering
+- QR code event check-in (Planning Center doesn't have this)
+- AI-powered scheduling suggestions (Planning Center doesn't have this)
+- One interface for everything vs PC's separate Calendar product
+
+=== SERVICES/WORSHIP MODULE ===
+Planning Center Services Workflows:
+- Create Service Types (Sunday AM, Wednesday, etc.)
+- Build plans with ordered items: songs, media, custom items, headers
+- Song library with arrangements, chord charts, keys, BPM
+- Team scheduling: create teams with positions (Worship Leader, Guitar, Camera)
+- Matrix scheduling: visual grid for scheduling volunteers across weeks
+- Auto-scheduling: automated volunteer placement based on preferences and blockout dates
+- Music Stand app: musicians view chord charts on tablets during rehearsal
+- SongSelect/CCLI integration for importing songs
+- Signup sheets: volunteers self-select open positions
+- Notifications: email/push when scheduled, with accept/decline
+- Plan notes and rehearsal times
+- Live mode: real-time plan execution during service
+
+Solomon AI Services Equivalent:
+- Full worship planning with drag-drop service order builder
+- Song library with key/BPM management
+- Team scheduling with availability tracking
+- AI suggests optimal volunteer rotation (PC doesn't have this)
+- Integrated with Solomon AI sermon library (MasterClass-quality, PC's is basic)
+- Everything in one platform, not a separate product
+
+=== PEOPLE/MEMBER MANAGEMENT MODULE ===
+Planning Center People Workflows:
+- CSV import with manual field mapping
+- Profile pages: custom fields, notes, background checks, giving history
+- Households: group family members, link addresses
+- Lists: rule-based "smart lists" (auto-updating) and static lists
+- Workflows: multi-step follow-up processes (new visitor → welcome email → connect call → group invite)
+- Forms: collect info, auto-create profiles in database
+- Directory: opt-in, shared via Church Center
+- Automations: trigger actions on profile changes (field updated → add to list)
+- Grade promotion: annual grade-level updates for children
+- Duplicate resolution: merge duplicate profiles
+- Background checks: integrated with third-party providers
+
+Solomon AI People Equivalent:
+- CSV import with intelligent field mapping
+- Rich member profiles with custom fields and notes
+- AI-powered member insights and engagement scoring (PC doesn't have this)
+- Smart directory with search
+- Automated follow-up workflows
+- Everything included in base price, not a separate product
+
+=== GROUPS MODULE ===
+Planning Center Groups Workflows:
+- Group Types: categorize (Small Groups, Bible Studies, Serving Teams)
+- Enrollment options: open, request-to-join, invite-only
+- Leader tools: leaders manage via Church Center (attendance, communication)
+- Group events: create recurring meetings, bulk-create events
+- Chat: group messaging in Church Center app
+- Resources: share files/links with members
+- Tags: organize by topic, campus, day of week
+- Automations: auto-add people to groups based on conditions
+- Multi-campus filtering
+- Reports: group health metrics
+
+Solomon AI Groups Equivalent:
+- Full small group management with all enrollment types
+- Built-in group communication
+- AI recommends groups to members based on interests (PC doesn't have this)
+- Group health scoring with AI insights (PC doesn't have this)
+- Integrated with attendance, not siloed
+
+=== GIVING MODULE ===
+Planning Center Giving Workflows:
+- Church Center: members donate via app or web
+- Payment sources: credit card, debit card, ACH bank transfer
+- Funds: create designated funds (General, Building, Missions)
+- Batches: manual entry for cash/check donations
+- In-kind donations: track non-monetary gifts
+- Joint donors: link spouses for combined statements
+- Pledge campaigns: set goals, track commitments
+- Year-end statements: generate tax receipts (PDF/email/print)
+- Refunds and adjustments
+- Reporting by date range, fund, donor
+- No AI insights, no real-time dashboards, no giving nudges
+
+Solomon AI Giving Equivalent:
+- Currently scaffolded with Solomon Pay integration coming
+- Multiple giving platform integration (Pushpay, SecureGive, or native Solomon Pay)
+- AI-powered giving insights and trends (PC doesn't have this)
+- Real-time giving dashboard in War Room (PC doesn't have this)
+- Giving nudges and engagement tools (coming soon)
+- One price includes everything — PC charges separately for Giving
+
+================================================================================
+PART 3: SECUREGIVE COMPETITIVE ANALYSIS
+================================================================================
+
+SECUREGIVE COMPETITIVE ANALYSIS — SOLOMON AI
+Source: securegive.com (scraped March 2026)
+Prepared for: Solomon AI competitive positioning
+
+=== COMPANY OVERVIEW ===
+SecureGive: "The complete Donation Management Platform built for the Church"
+Founded: ~2006 (20 years in operation as of 2026)
+Focus: GIVING ONLY — they are a donation platform, not a full ChMS
+Notable Clients: James River Church, Prestonwood Baptist, New Life Church, Celebration Church, Dream City Church, Woodstock
+Key Differentiator: Ministry-Minded Processing (effective rate ~2%), giving kiosks, and SecureGive Tap (NFC)
+
+=== PRODUCT SUITE ===
+1. Digital Giving (7-in-1): Online, Mobile, Text-to-Give, Kiosk, Check Scanning, Crypto/Stock, Campaigns
+2. Donation Management: Dashboard, reporting, donor management, ChMS integrations
+3. Church Apps: Custom branded apps ($200-$300/mo extra)
+4. SecureGive Tap: NFC tap-to-give hardware (call for quote)
+5. Giving Kiosks: iPad ($1,199), Classic ($2,699), Modern ($3,799), Signature ($5,799)
+
+=== PRICING (CONFIRMED FROM WEBSITE) ===
+Basic: $149/mo (or $135/mo annual)
+  - Online OR Kiosk only (not both)
+  - 1 campus, 3 kiosk licenses, 2,000 transactions/mo
+  - Donations, purchases, recurring, ACH
+  - ChMS manual export + API integration
+
+Premium: $299/mo (or $270/mo annual)
+  - Online + Mobile + Text + Kiosk + Check Scanning
+  - Up to 5 campuses, 5 kiosk licenses, 2,000 transactions/mo
+  - Virtual terminal, auto card updater, API access
+
+Enterprise: Call for quote
+  - Everything in Premium + unlimited campuses/transactions/kiosks
+  - Crypto, stock, campaigns included
+  - Custom transition plan
+
+Add-Ons:
+  - Non-Cash Giving: $99/mo
+  - Campaigns: $49/mo
+  - Church Apps: $200/mo (with SecureGive) or $300/mo (standalone) + $500 setup
+  - SecureGive Tap: Call for quote
+
+Transaction Rates:
+  - DEBIT: 1.75% + $0.30
+  - CREDIT: 2.5% + $0.30
+  - Crypto/Stock: 4.0%
+  - "Most churches see effective rate of 2% or less"
+
+=== WHAT SECUREGIVE DOES WELL ===
+1. 20 years of church giving expertise
+2. Physical kiosk hardware lineup (iPad to custom steel)
+3. Ministry-Minded Processing rates (competitive but not free)
+4. NFC Tap-to-Give (innovative hardware play)
+5. 99.999% uptime claim (AWS auto-scaling)
+6. Spanish + Portuguese translations
+7. Donor covers fees option
+8. Auto card updater (reduces failed recurring)
+9. No long-term contracts (they advertise this)
+
+=== SECUREGIVE WEAKNESSES (SOLOMON AI ADVANTAGES) ===
+1. GIVING ONLY: No member management, no check-in, no groups, no events, no sermons, no volunteers
+   → Solomon AI: Full platform replacing 5-6 tools
+2. TRANSACTION FEES: 1.75-2.5% + $0.30 per transaction
+   → A church processing $100K/mo pays ~$2,500/mo in fees ALONE
+   → Solomon Pay vision: lowest fees in industry
+3. CHURCH APPS COST EXTRA: $200-$500/mo on top of giving
+   → Solomon AI: App included in every plan
+4. KIOSK HARDWARE: $1,199-$5,799 per unit
+   → Solomon AI: QR code check-in from any phone (no hardware)
+5. NO AI: Zero AI capabilities
+   → Solomon AI: Ask Solomon AI assistant
+6. NO REAL-TIME ANALYTICS: Dashboard updates, not live
+   → Solomon AI: War Room with real-time KPIs
+7. 2,000 TRANSACTION CAP on Basic/Premium: Forces upgrade
+   → Solomon AI: No transaction caps
+8. SEPARATE CAMPUS BILLING: Enterprise needed for unlimited
+   → Solomon AI: All campuses included in one price
+
+=== COST COMPARISON SCENARIO ===
+Mid-size church (2,000 members, 3 campuses, $150K/mo giving):
+
+SecureGive:
+  - Premium plan: $299/mo (max 5 campuses)
+  - Transaction fees (2% effective): $3,000/mo
+  - Church Apps: $200/mo
+  - Total: ~$3,500/mo ($42,000/year)
+  - Plus kiosks: $3,600-$17,400 one-time
+
+Solomon AI:
+  - Growth plan: $1,499/mo (all features, all campuses)
+  - Currently: Stripe standard rates (Solomon Pay coming)
+  - Total: $1,499/mo ($17,988/year) + transaction fees
+  - No hardware costs (QR-based check-in)
+
+=== KEY QUOTES FROM THEIR CUSTOMERS ===
+- "For the last 4 years, our digital giving has averaged 30% growth year over year." - Joe Champion, Celebration Church
+- "We experienced more than double increase in online giving." - Natacha Clesca, Christ Church
+- "Selecting SecureGive as our online giving platform was one of the best decisions we made five years ago." - Danita Matthews, Shiloh Metropolitan Baptist
+
+=== HOW TO WIN AGAINST SECUREGIVE ===
+1. "SecureGive is excellent at giving. But giving is just ONE piece of your church's technology. You still need Planning Center for members, a separate check-in system, a sermon platform, and more. Solomon AI replaces all of it."
+2. "SecureGive charges transaction fees on every gift. A $100K/month church pays $24,000-$30,000/year just in fees. Solomon Pay is coming with the lowest rates in the industry."
+3. "SecureGive's church app is a $200-$500/month add-on. With Solomon AI, the app is built in."
+4. "SecureGive kiosks cost $1,200-$5,800 each. Solomon AI uses QR codes from any phone — zero hardware cost."
+5. Don't bash them: "SecureGive has been a faithful partner to churches for 20 years. We're building on that foundation — and going further."
+
+
+================================================================================
+PART 4: PUSHPAY COMPETITIVE ANALYSIS
+================================================================================
+
+PUSHPAY COMPETITIVE ANALYSIS — SOLOMON AI
+Source: pushpay.com (scraped March 2026)
+Prepared for: Solomon AI competitive positioning
+
+=== COMPANY OVERVIEW ===
+Pushpay: "The church engagement platform that grows generosity and deepens connection"
+Trusted by: 14,000+ churches (their claim)
+Notable Clients: Elevation Church, North Point, Austin Stone, Hosanna
+Parent Company: Acquired by BGH Capital (PE firm) — now privately held
+Key Stats: "$235M in at-risk donations secured annually" via Everygift technology
+Key Differentiator: Full ChMS + Giving + App in one platform (ChurchStaq bundle)
+
+=== PRODUCT SUITE ===
+1. Giving (Now powered by Everygift):
+   - QuickGive with Apple Pay (under 6 seconds)
+   - Everygift: proprietary tech to recover failed transactions, update expired cards
+   - AI for Giving Data: ask data questions, get real-time giving insights
+   - Tap-to-Give: VisitorTap NFC partnership
+   - Stock & Crypto via Engiven partnership
+
+2. ChMS (Church Management Software):
+   - AI for People Search
+   - Process Queues (automated follow-up)
+   - LEAD App (mobile ChMS for staff)
+   - Customizable Forms
+   - Reporting & Insights
+   - SacramentTracker (Catholic-focused)
+
+3. Apps:
+   - In-App Giving
+   - Groups with Built-In Messaging
+   - Volunteer Scheduling
+   - Touchless Check-In (pre-check from car, barcode)
+   - Sermon Content (live stream + on-demand)
+
+4. Insights:
+   - Engagement analytics (giving + attendance + serving)
+   - Attendance snapshots (at-risk, new, churned)
+   - Giving trends (year-over-year, per-attendee)
+   - Serving trends (volunteer engagement)
+
+5. Resi (Video/Streaming):
+   - Live streaming platform (separate product/company)
+   - AI-powered features for content
+
+=== PRICING STRUCTURE ===
+Pushpay does NOT publish specific dollar amounts — "Book a demo" for pricing.
+They use 1, 2, and 3-year CONTRACTS (cancellation requires paying contract balance).
+
+Three tiers across each product:
+- Core: Essential features
+- Advanced: Enhanced tools, integrations, API, branded experience
+- Complete: Multi-site, per-campus everything, metric dashboards
+
+Product Combinations:
+- Giving only
+- Giving + Apps
+- ChMS only
+- ChurchStaq (Giving + ChMS + Apps + Insights) — their flagship bundle
+
+For Churches vs For Parishes (Catholic-specific features like SacramentTracker)
+
+Payment: ACH auto-debit, monthly or annual
+Setup fees: None for plans, optional paid coaching
+Check scanning: $0.29/check additional
+
+Key Pricing Intel:
+- They require CONTRACTS (1-3 years)
+- No public pricing = likely $500-$2,000+/month depending on size
+- Industry reports suggest ChurchStaq (full bundle) runs $800-$3,000/mo for mid-large churches
+- Transaction fees are not disclosed publicly
+
+=== WHAT PUSHPAY DOES WELL ===
+1. Everygift Technology: Recovers failed transactions, updates expired cards automatically
+   → Claims $235M in at-risk donations secured annually
+2. AI Features: AI for People Search, AI for Giving Data (they're investing in AI)
+3. QuickGive with Apple Pay: 6-second giving (impressive UX)
+4. Full Platform (ChurchStaq): Giving + ChMS + Apps + Insights combined
+5. 14,000+ churches: Massive market penetration
+6. Catholic Focus: ParishStaq, SacramentTracker (unique niche)
+7. Insights Dashboard: Engagement analytics across giving/attendance/serving
+8. 100+ Integrations: Huge integration ecosystem
+9. LEAD App: Mobile ChMS for staff on the go
+10. Resi Streaming: Professional live streaming (separate acquisition)
+
+=== PUSHPAY WEAKNESSES (SOLOMON AI ADVANTAGES) ===
+1. CONTRACTS REQUIRED: 1-3 year commitments, early cancellation = pay full balance
+   → Solomon AI: No contracts, cancel anytime
+2. NO PUBLIC PRICING: Opaque, negotiated pricing
+   → Solomon AI: Transparent pricing on website ($499-$2,999)
+3. PRIVATE EQUITY OWNED: BGH Capital acquisition means profit-driven, not mission-driven
+   → Solomon AI: Built BY church leaders FOR church leaders
+4. NO CAFE/MERCH: No ordering capabilities
+   → Solomon AI: Built-in cafe and merch ordering
+5. NO WAR ROOM: No real-time operational dashboard
+   → Solomon AI: Real-time War Room with live KPIs
+6. COMPLEXITY: Multiple products, tiers, and add-ons create confusion
+   → Solomon AI: One plan, every feature, every campus
+7. NO GEOFENCING: Check-in requires pre-check or barcode, not geofenced
+   → Solomon AI: Geofence auto-detection when arriving at church
+8. SERMON EXPERIENCE: Basic content hosting via Resi (separate product)
+   → Solomon AI: MasterClass-quality sermon library built in
+9. SEPARATE CATHOLIC PRODUCT: ParishStaq vs ChurchStaq = different products
+   → Solomon AI: One platform for all denominations
+
+=== COST COMPARISON SCENARIO ===
+Mid-size church (2,000 members, 3 campuses):
+
+Pushpay ChurchStaq (estimated):
+  - Advanced tier: ~$1,500-$2,500/mo (estimated, not public)
+  - Transaction fees: Not disclosed (likely 1-3%)
+  - Contract: 2-3 year commitment required
+  - Resi streaming: Additional cost
+  - Total estimated: $2,000-$3,500/mo locked in for years
+
+Solomon AI:
+  - Growth plan: $1,499/mo (all features, up to 3 campuses)
+  - No contract, cancel anytime
+  - Sermon library, cafe, war room, AI included
+  - Total: $1,499/mo with full flexibility
+
+=== KEY QUOTES FROM THEIR CUSTOMERS ===
+- "We have everything from our livestream to giving to small group signups to prayer concerns. It has become our single most important resource for communicating our mission." - Jim White, First UMC Palmdale
+- "Before Pushpay, we were less than $100,000 a year. After the first year, giving jumped to $120,000, then $200,000, then $360,000, and this last year, over $500,000." - Chris Kozlowski, St. Isidore Church
+- "Not only is all of our content through Resi now available 24/7, but we have a lot more flexibility to curate a rich experience." - Brandon Rees, Connection Pointe
+
+=== HOW TO WIN AGAINST PUSHPAY ===
+1. "Pushpay requires a 1-3 year contract. Solomon AI doesn't. If we earn your business every month, that's how it should be."
+2. "Pushpay doesn't publish their pricing. We do. $499, $1,499, or $2,999. No surprises. No negotiation games."
+3. "Pushpay was acquired by a private equity firm. Solomon AI was built by people who understand your Sunday morning."
+4. "Pushpay's ChurchStaq is powerful. But it doesn't have a cafe, merch store, war room, or geofencing. Solomon AI does."
+5. "Pushpay's AI is new. Ask Solomon has been AI-native from day one — not bolted on after the fact."
+6. Don't bash them: "Pushpay serves 14,000 churches well. If you're happy there, God bless it. But if you want more innovation, more transparency, and more ministry per dollar — we're building that."
+
+=== PUSHPAY'S AI STRATEGY (COMPETITIVE WATCH) ===
+Pushpay is investing in AI:
+- AI for People Search: natural language people queries
+- AI for Giving Data: conversational giving analytics
+- AI Policy Generator: helps churches create AI usage policies
+They are positioning AI as a differentiator. Solomon AI must stay ahead here with:
+- Ask Solomon (conversational AI for everything, not just data queries)
+- AI-powered giving nudges (future)
+- AI attendance insights (future)
+- AI sermon recommendations (future)
+
+
+================================================================================
+PART 5: MIGRATION CONVERSATION GUIDE
+================================================================================
+
+=== RESPONSE FRAMEWORK FOR MIGRATION QUESTIONS ===
+
+When a pastor or church admin asks about migrating FROM Planning Center/Pushpay/SecureGive TO Solomon AI:
+
+Step 1: ACKNOWLEDGE their current platform genuinely
+  "Planning Center is a solid tool that's served many churches well."
+  "Pushpay has been a leader in church giving for years."
+  "SecureGive has 20 years of experience in church donations."
+
+Step 2: EXPLAIN Solomon AI's equivalent feature
+  Use specific workflow details from the knowledge above.
+  Show you understand THEIR current workflow before proposing the alternative.
+
+Step 3: HIGHLIGHT Solomon AI's advantages
+  - Price: Everything included vs separate products
+  - AI: Native AI assistant, insights, and recommendations
+  - White-label: Their church brand, not "Church Center"
+  - No contracts: Cancel anytime (vs Pushpay's 1-3 year contracts)
+  - Transparent pricing: Published prices, no negotiation games
+
+Step 4: BE HONEST about current status
+  - Giving is scaffolded, not yet processing live transactions
+  - Solomon Pay is coming with industry-lowest rates
+  - Core features (People, Groups, Calendar, Services, Check-In, Media) are fully operational
+  - Cafe and Merch ordering are unique to Solomon AI
+
+Step 5: PROVIDE migration guidance
+  - "We can import your member database via CSV"
+  - "Your volunteer teams and schedules can transition seamlessly"
+  - "We offer hands-on migration support"
+
+=== PRICING COMPARISON CHEAT SHEET ===
+
+Planning Center (mid-size church, all products):
+- People: $99/mo, Services: $49/mo, Check-Ins: $49/mo, Giving: $99/mo
+- Groups: $49/mo, Calendar: $49/mo, Publishing: $49/mo, Registrations: $49/mo
+- Total: $300-$500+/month for all products
+- Multi-campus multiplies costs
+
+SecureGive (giving only):
+- Premium: $299/mo + transaction fees (2%+) + Church Apps ($200-$300/mo)
+- Kiosk hardware: $1,199-$5,799 per unit
+- Total for a giving-only solution: $500-$3,500+/mo
+
+Pushpay ChurchStaq (full platform):
+- Estimated: $800-$3,000+/mo (no public pricing)
+- 1-3 year contract REQUIRED
+- Transaction fees not disclosed
+
+Solomon AI:
+- Starter: $99/mo (single campus, core features)
+- Growth: $1,499/mo (multi-campus, all features)
+- Enterprise: $2,999/mo (unlimited everything)
+- NO contracts, cancel anytime
+- Transparent pricing, no hidden fees
+- ALL features included in every plan (no per-product billing)
+
+=== COMMON OBJECTION HANDLING ===
+
+"Planning Center works fine for us."
+→ "And that's great! But are you paying for 5+ separate products? Solomon AI gives you everything in one price — plus AI insights that Planning Center doesn't offer."
+
+"We've invested years in Planning Center's data."
+→ "Your data migrates with you. CSV export from Planning Center, CSV import to Solomon AI. Your member history, giving records, and volunteer data come along."
+
+"Pushpay has the best giving platform."
+→ "Pushpay is strong at giving. But they require 1-3 year contracts and don't publish pricing. Solomon AI includes giving PLUS member management, check-in, groups, sermons, cafe ordering, and an AI assistant — all for a transparent price."
+
+"I've never heard of Solomon AI."
+→ "We're the new generation of church technology — AI-native from day one. Built by church leaders who got tired of paying for 6 different tools that don't talk to each other."
+
+"Is Solomon AI ready for my church?"
+→ "Our core platform is fully operational: member management, groups, events, check-in, worship planning, sermon library, and AI assistant. Giving processing is coming soon with Solomon Pay. We're actively onboarding churches right now."

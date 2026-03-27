@@ -1,0 +1,104 @@
+SECUREGIVE COMPETITIVE ANALYSIS — SOLOMON AI
+Source: securegive.com (scraped March 2026)
+Prepared for: Solomon AI competitive positioning
+
+=== COMPANY OVERVIEW ===
+SecureGive: "The complete Donation Management Platform built for the Church"
+Founded: ~2006 (20 years in operation as of 2026)
+Focus: GIVING ONLY — they are a donation platform, not a full ChMS
+Notable Clients: James River Church, Prestonwood Baptist, New Life Church, Celebration Church, Dream City Church, Woodstock
+Key Differentiator: Ministry-Minded Processing (effective rate ~2%), giving kiosks, and SecureGive Tap (NFC)
+
+=== PRODUCT SUITE ===
+1. Digital Giving (7-in-1): Online, Mobile, Text-to-Give, Kiosk, Check Scanning, Crypto/Stock, Campaigns
+2. Donation Management: Dashboard, reporting, donor management, ChMS integrations
+3. Church Apps: Custom branded apps ($200-$300/mo extra)
+4. SecureGive Tap: NFC tap-to-give hardware (call for quote)
+5. Giving Kiosks: iPad ($1,199), Classic ($2,699), Modern ($3,799), Signature ($5,799)
+
+=== PRICING (CONFIRMED FROM WEBSITE) ===
+Basic: $149/mo (or $135/mo annual)
+  - Online OR Kiosk only (not both)
+  - 1 campus, 3 kiosk licenses, 2,000 transactions/mo
+  - Donations, purchases, recurring, ACH
+  - ChMS manual export + API integration
+
+Premium: $299/mo (or $270/mo annual)
+  - Online + Mobile + Text + Kiosk + Check Scanning
+  - Up to 5 campuses, 5 kiosk licenses, 2,000 transactions/mo
+  - Virtual terminal, auto card updater, API access
+
+Enterprise: Call for quote
+  - Everything in Premium + unlimited campuses/transactions/kiosks
+  - Crypto, stock, campaigns included
+  - Custom transition plan
+
+Add-Ons:
+  - Non-Cash Giving: $99/mo
+  - Campaigns: $49/mo
+  - Church Apps: $200/mo (with SecureGive) or $300/mo (standalone) + $500 setup
+  - SecureGive Tap: Call for quote
+
+Transaction Rates:
+  - DEBIT: 1.75% + $0.30
+  - CREDIT: 2.5% + $0.30
+  - Crypto/Stock: 4.0%
+  - "Most churches see effective rate of 2% or less"
+
+=== WHAT SECUREGIVE DOES WELL ===
+1. 20 years of church giving expertise
+2. Physical kiosk hardware lineup (iPad to custom steel)
+3. Ministry-Minded Processing rates (competitive but not free)
+4. NFC Tap-to-Give (innovative hardware play)
+5. 99.999% uptime claim (AWS auto-scaling)
+6. Spanish + Portuguese translations
+7. Donor covers fees option
+8. Auto card updater (reduces failed recurring)
+9. No long-term contracts (they advertise this)
+
+=== SECUREGIVE WEAKNESSES (SOLOMON AI ADVANTAGES) ===
+1. GIVING ONLY: No member management, no check-in, no groups, no events, no sermons, no volunteers
+   → Solomon AI: Full platform replacing 5-6 tools
+2. TRANSACTION FEES: 1.75-2.5% + $0.30 per transaction
+   → A church processing $100K/mo pays ~$2,500/mo in fees ALONE
+   → Solomon Pay vision: lowest fees in industry
+3. CHURCH APPS COST EXTRA: $200-$500/mo on top of giving
+   → Solomon AI: App included in every plan
+4. KIOSK HARDWARE: $1,199-$5,799 per unit
+   → Solomon AI: QR code check-in from any phone (no hardware)
+5. NO AI: Zero AI capabilities
+   → Solomon AI: Ask Solomon AI assistant
+6. NO REAL-TIME ANALYTICS: Dashboard updates, not live
+   → Solomon AI: War Room with real-time KPIs
+7. 2,000 TRANSACTION CAP on Basic/Premium: Forces upgrade
+   → Solomon AI: No transaction caps
+8. SEPARATE CAMPUS BILLING: Enterprise needed for unlimited
+   → Solomon AI: All campuses included in one price
+
+=== COST COMPARISON SCENARIO ===
+Mid-size church (2,000 members, 3 campuses, $150K/mo giving):
+
+SecureGive:
+  - Premium plan: $299/mo (max 5 campuses)
+  - Transaction fees (2% effective): $3,000/mo
+  - Church Apps: $200/mo
+  - Total: ~$3,500/mo ($42,000/year)
+  - Plus kiosks: $3,600-$17,400 one-time
+
+Solomon AI:
+  - Growth plan: $1,499/mo (all features, all campuses)
+  - Currently: Stripe standard rates (Solomon Pay coming)
+  - Total: $1,499/mo ($17,988/year) + transaction fees
+  - No hardware costs (QR-based check-in)
+
+=== KEY QUOTES FROM THEIR CUSTOMERS ===
+- "For the last 4 years, our digital giving has averaged 30% growth year over year." - Joe Champion, Celebration Church
+- "We experienced more than double increase in online giving." - Natacha Clesca, Christ Church
+- "Selecting SecureGive as our online giving platform was one of the best decisions we made five years ago." - Danita Matthews, Shiloh Metropolitan Baptist
+
+=== HOW TO WIN AGAINST SECUREGIVE ===
+1. "SecureGive is excellent at giving. But giving is just ONE piece of your church's technology. You still need Planning Center for members, a separate check-in system, a sermon platform, and more. Solomon AI replaces all of it."
+2. "SecureGive charges transaction fees on every gift. A $100K/month church pays $24,000-$30,000/year just in fees. Solomon Pay is coming with the lowest rates in the industry."
+3. "SecureGive's church app is a $200-$500/month add-on. With Solomon AI, the app is built in."
+4. "SecureGive kiosks cost $1,200-$5,800 each. Solomon AI uses QR codes from any phone — zero hardware cost."
+5. Don't bash them: "SecureGive has been a faithful partner to churches for 20 years. We're building on that foundation — and going further."

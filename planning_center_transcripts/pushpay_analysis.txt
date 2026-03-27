@@ -1,0 +1,144 @@
+PUSHPAY COMPETITIVE ANALYSIS — SOLOMON AI
+Source: pushpay.com (scraped March 2026)
+Prepared for: Solomon AI competitive positioning
+
+=== COMPANY OVERVIEW ===
+Pushpay: "The church engagement platform that grows generosity and deepens connection"
+Trusted by: 14,000+ churches (their claim)
+Notable Clients: Elevation Church, North Point, Austin Stone, Hosanna
+Parent Company: Acquired by BGH Capital (PE firm) — now privately held
+Key Stats: "$235M in at-risk donations secured annually" via Everygift technology
+Key Differentiator: Full ChMS + Giving + App in one platform (ChurchStaq bundle)
+
+=== PRODUCT SUITE ===
+1. Giving (Now powered by Everygift):
+   - QuickGive with Apple Pay (under 6 seconds)
+   - Everygift: proprietary tech to recover failed transactions, update expired cards
+   - AI for Giving Data: ask data questions, get real-time giving insights
+   - Tap-to-Give: VisitorTap NFC partnership
+   - Stock & Crypto via Engiven partnership
+
+2. ChMS (Church Management Software):
+   - AI for People Search
+   - Process Queues (automated follow-up)
+   - LEAD App (mobile ChMS for staff)
+   - Customizable Forms
+   - Reporting & Insights
+   - SacramentTracker (Catholic-focused)
+
+3. Apps:
+   - In-App Giving
+   - Groups with Built-In Messaging
+   - Volunteer Scheduling
+   - Touchless Check-In (pre-check from car, barcode)
+   - Sermon Content (live stream + on-demand)
+
+4. Insights:
+   - Engagement analytics (giving + attendance + serving)
+   - Attendance snapshots (at-risk, new, churned)
+   - Giving trends (year-over-year, per-attendee)
+   - Serving trends (volunteer engagement)
+
+5. Resi (Video/Streaming):
+   - Live streaming platform (separate product/company)
+   - AI-powered features for content
+
+=== PRICING STRUCTURE ===
+Pushpay does NOT publish specific dollar amounts — "Book a demo" for pricing.
+They use 1, 2, and 3-year CONTRACTS (cancellation requires paying contract balance).
+
+Three tiers across each product:
+- Core: Essential features
+- Advanced: Enhanced tools, integrations, API, branded experience
+- Complete: Multi-site, per-campus everything, metric dashboards
+
+Product Combinations:
+- Giving only
+- Giving + Apps
+- ChMS only
+- ChurchStaq (Giving + ChMS + Apps + Insights) — their flagship bundle
+
+For Churches vs For Parishes (Catholic-specific features like SacramentTracker)
+
+Payment: ACH auto-debit, monthly or annual
+Setup fees: None for plans, optional paid coaching
+Check scanning: $0.29/check additional
+
+Key Pricing Intel:
+- They require CONTRACTS (1-3 years)
+- No public pricing = likely $500-$2,000+/month depending on size
+- Industry reports suggest ChurchStaq (full bundle) runs $800-$3,000/mo for mid-large churches
+- Transaction fees are not disclosed publicly
+
+=== WHAT PUSHPAY DOES WELL ===
+1. Everygift Technology: Recovers failed transactions, updates expired cards automatically
+   → Claims $235M in at-risk donations secured annually
+2. AI Features: AI for People Search, AI for Giving Data (they're investing in AI)
+3. QuickGive with Apple Pay: 6-second giving (impressive UX)
+4. Full Platform (ChurchStaq): Giving + ChMS + Apps + Insights combined
+5. 14,000+ churches: Massive market penetration
+6. Catholic Focus: ParishStaq, SacramentTracker (unique niche)
+7. Insights Dashboard: Engagement analytics across giving/attendance/serving
+8. 100+ Integrations: Huge integration ecosystem
+9. LEAD App: Mobile ChMS for staff on the go
+10. Resi Streaming: Professional live streaming (separate acquisition)
+
+=== PUSHPAY WEAKNESSES (SOLOMON AI ADVANTAGES) ===
+1. CONTRACTS REQUIRED: 1-3 year commitments, early cancellation = pay full balance
+   → Solomon AI: No contracts, cancel anytime
+2. NO PUBLIC PRICING: Opaque, negotiated pricing
+   → Solomon AI: Transparent pricing on website ($499-$2,999)
+3. PRIVATE EQUITY OWNED: BGH Capital acquisition means profit-driven, not mission-driven
+   → Solomon AI: Built BY church leaders FOR church leaders
+4. NO CAFE/MERCH: No ordering capabilities
+   → Solomon AI: Built-in cafe and merch ordering
+5. NO WAR ROOM: No real-time operational dashboard
+   → Solomon AI: Real-time War Room with live KPIs
+6. COMPLEXITY: Multiple products, tiers, and add-ons create confusion
+   → Solomon AI: One plan, every feature, every campus
+7. NO GEOFENCING: Check-in requires pre-check or barcode, not geofenced
+   → Solomon AI: Geofence auto-detection when arriving at church
+8. SERMON EXPERIENCE: Basic content hosting via Resi (separate product)
+   → Solomon AI: MasterClass-quality sermon library built in
+9. SEPARATE CATHOLIC PRODUCT: ParishStaq vs ChurchStaq = different products
+   → Solomon AI: One platform for all denominations
+
+=== COST COMPARISON SCENARIO ===
+Mid-size church (2,000 members, 3 campuses):
+
+Pushpay ChurchStaq (estimated):
+  - Advanced tier: ~$1,500-$2,500/mo (estimated, not public)
+  - Transaction fees: Not disclosed (likely 1-3%)
+  - Contract: 2-3 year commitment required
+  - Resi streaming: Additional cost
+  - Total estimated: $2,000-$3,500/mo locked in for years
+
+Solomon AI:
+  - Growth plan: $1,499/mo (all features, up to 3 campuses)
+  - No contract, cancel anytime
+  - Sermon library, cafe, war room, AI included
+  - Total: $1,499/mo with full flexibility
+
+=== KEY QUOTES FROM THEIR CUSTOMERS ===
+- "We have everything from our livestream to giving to small group signups to prayer concerns. It has become our single most important resource for communicating our mission." - Jim White, First UMC Palmdale
+- "Before Pushpay, we were less than $100,000 a year. After the first year, giving jumped to $120,000, then $200,000, then $360,000, and this last year, over $500,000." - Chris Kozlowski, St. Isidore Church
+- "Not only is all of our content through Resi now available 24/7, but we have a lot more flexibility to curate a rich experience." - Brandon Rees, Connection Pointe
+
+=== HOW TO WIN AGAINST PUSHPAY ===
+1. "Pushpay requires a 1-3 year contract. Solomon AI doesn't. If we earn your business every month, that's how it should be."
+2. "Pushpay doesn't publish their pricing. We do. $499, $1,499, or $2,999. No surprises. No negotiation games."
+3. "Pushpay was acquired by a private equity firm. Solomon AI was built by people who understand your Sunday morning."
+4. "Pushpay's ChurchStaq is powerful. But it doesn't have a cafe, merch store, war room, or geofencing. Solomon AI does."
+5. "Pushpay's AI is new. Ask Solomon has been AI-native from day one — not bolted on after the fact."
+6. Don't bash them: "Pushpay serves 14,000 churches well. If you're happy there, God bless it. But if you want more innovation, more transparency, and more ministry per dollar — we're building that."
+
+=== PUSHPAY'S AI STRATEGY (COMPETITIVE WATCH) ===
+Pushpay is investing in AI:
+- AI for People Search: natural language people queries
+- AI for Giving Data: conversational giving analytics
+- AI Policy Generator: helps churches create AI usage policies
+They are positioning AI as a differentiator. Solomon AI must stay ahead here with:
+- Ask Solomon (conversational AI for everything, not just data queries)
+- AI-powered giving nudges (future)
+- AI attendance insights (future)
+- AI sermon recommendations (future)
