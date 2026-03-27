@@ -3,7 +3,7 @@ import { useOutletContext, Link } from 'react-router-dom';
 import {
   Music, Plus, Calendar, Clock, Users, ChevronDown, ChevronUp,
   GripVertical, Trash2, Edit2, Save, ListMusic, Mic2, BookOpen,
-  Copy, Bookmark, ExternalLink
+  Copy, Bookmark, ExternalLink, UserPlus, X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,6 +44,8 @@ export default function ServicesPage() {
   const [itemForm, setItemForm] = useState({ title: '', type: 'song', duration: '', notes: '', leader: '' });
   const [templates, setTemplates] = useState([]);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [assignForm, setAssignForm] = useState({ position: '', volunteer_name: '' });
+  const [showAssignForm, setShowAssignForm] = useState(null);
 
   const token = localStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
@@ -161,6 +163,34 @@ export default function ServicesPage() {
       });
       if (res.ok) { toast.success('Plan created from template'); setShowTemplates(false); fetchPlans(); }
     } catch { toast.error('Failed to create from template'); }
+  };
+
+  const addTeamAssignment = async (planId) => {
+    if (!assignForm.position || !assignForm.volunteer_name) { toast.error('Position and name are required'); return; }
+    const plan = plans.find(p => p.id === planId);
+    if (!plan) return;
+    const newAssignment = { id: crypto.randomUUID(), position: assignForm.position, volunteer_name: assignForm.volunteer_name, status: 'confirmed' };
+    const updated = [...(plan.team_assignments || []), newAssignment];
+    try {
+      const res = await fetch(`${API_URL}/admin/services/plans/${planId}`, {
+        method: 'PUT', headers: authHeaders,
+        body: JSON.stringify({ team_assignments: updated })
+      });
+      if (res.ok) { toast.success('Team member assigned'); setAssignForm({ position: '', volunteer_name: '' }); setShowAssignForm(null); fetchPlans(); }
+    } catch { toast.error('Failed to assign'); }
+  };
+
+  const removeTeamAssignment = async (planId, assignmentId) => {
+    const plan = plans.find(p => p.id === planId);
+    if (!plan) return;
+    const updated = (plan.team_assignments || []).filter(a => a.id !== assignmentId);
+    try {
+      await fetch(`${API_URL}/admin/services/plans/${planId}`, {
+        method: 'PUT', headers: authHeaders,
+        body: JSON.stringify({ team_assignments: updated })
+      });
+      toast.success('Assignment removed'); fetchPlans();
+    } catch { toast.error('Failed to remove'); }
   };
 
   const getItemIcon = (type) => {
@@ -386,6 +416,71 @@ export default function ServicesPage() {
                         Add Item
                       </Button>
                     )}
+
+                    {/* Team Assignments Section */}
+                    <div className="border-t border-slate-100 pt-4 mt-2" data-testid={`team-assignments-${plan.id}`}>
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
+                          <Users className="w-3.5 h-3.5" /> Team Assignments
+                        </p>
+                        <Button size="sm" variant="outline" onClick={() => setShowAssignForm(showAssignForm === plan.id ? null : plan.id)}
+                          className="text-xs" data-testid={`assign-team-btn-${plan.id}`}>
+                          <UserPlus className="w-3.5 h-3.5 mr-1" /> Assign
+                        </Button>
+                      </div>
+
+                      {(plan.team_assignments || []).length === 0 && !showAssignForm && (
+                        <p className="text-sm text-slate-400 py-2">No team members assigned to this service yet.</p>
+                      )}
+
+                      {(plan.team_assignments || []).length > 0 && (
+                        <div className="space-y-1.5 mb-3">
+                          {(plan.team_assignments || []).map((a, idx) => (
+                            <div key={a.id || idx} className="flex items-center justify-between p-2.5 bg-purple-50/60 rounded-lg group" data-testid={`team-assignment-${a.id || idx}`}>
+                              <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 rounded-full bg-purple-100 flex items-center justify-center">
+                                  <Users className="w-3.5 h-3.5 text-purple-600" />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-slate-800">{a.volunteer_name}</p>
+                                  <p className="text-xs text-slate-500">{a.position}</p>
+                                </div>
+                              </div>
+                              <button className="p-1 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() => removeTeamAssignment(plan.id, a.id)}
+                                data-testid={`remove-assignment-${a.id || idx}`}>
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {showAssignForm === plan.id && (
+                        <div className="border border-purple-200 bg-purple-50/30 rounded-lg p-3 space-y-2" data-testid="assign-team-form">
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <Label className="text-xs text-slate-500 mb-1 block">Position / Role</Label>
+                              <Input placeholder="e.g. Lead Vocals, Drums, Sound" value={assignForm.position}
+                                onChange={e => setAssignForm({ ...assignForm, position: e.target.value })}
+                                data-testid="assign-position-input" className="text-sm" />
+                            </div>
+                            <div>
+                              <Label className="text-xs text-slate-500 mb-1 block">Volunteer Name</Label>
+                              <Input placeholder="e.g. John Smith" value={assignForm.volunteer_name}
+                                onChange={e => setAssignForm({ ...assignForm, volunteer_name: e.target.value })}
+                                data-testid="assign-name-input" className="text-sm" />
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button size="sm" onClick={() => addTeamAssignment(plan.id)} data-testid="save-assignment-btn">
+                              <Save className="w-3.5 h-3.5 mr-1" /> Assign
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => setShowAssignForm(null)}>Cancel</Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -438,6 +533,30 @@ export default function ServicesPage() {
             <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
             <Button onClick={createPlan} data-testid="save-plan-btn">Create Plan</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Templates Dialog */}
+      <Dialog open={showTemplates} onOpenChange={setShowTemplates}>
+        <DialogContent className="sm:max-w-[480px]" data-testid="templates-dialog">
+          <DialogHeader>
+            <DialogTitle>Plan Templates</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 py-2 max-h-[400px] overflow-y-auto">
+            {templates.length === 0 ? (
+              <p className="text-sm text-slate-400 text-center py-6">No templates saved yet. Save a plan as a template first.</p>
+            ) : templates.map(t => (
+              <div key={t.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors" data-testid={`template-${t.id}`}>
+                <div>
+                  <p className="text-sm font-medium text-slate-800">{t.name}</p>
+                  <p className="text-xs text-slate-500">{(t.items || []).length} items &middot; {t.service_type}</p>
+                </div>
+                <Button size="sm" onClick={() => createFromTemplate(t.id)} data-testid={`use-template-${t.id}`}>
+                  Use Template
+                </Button>
+              </div>
+            ))}
+          </div>
         </DialogContent>
       </Dialog>
     </div>

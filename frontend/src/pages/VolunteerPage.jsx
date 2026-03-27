@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
   HandHeart, Plus, Users, Calendar, Shield, Search,
-  ChevronDown, ChevronUp, UserPlus, Trash2
+  ChevronDown, ChevronUp, UserPlus, Trash2, CalendarOff
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,17 +22,20 @@ export default function VolunteerPage() {
   const [teams, setTeams] = useState([]);
   const [schedule, setSchedule] = useState([]);
   const [scheduleRoles, setScheduleRoles] = useState([]);
+  const [blockouts, setBlockouts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedTeam, setExpandedTeam] = useState(null);
   const [showCreateTeam, setShowCreateTeam] = useState(false);
   const [showCreateSchedule, setShowCreateSchedule] = useState(false);
+  const [showCreateBlockout, setShowCreateBlockout] = useState(false);
   const [teamForm, setTeamForm] = useState({ team_name: '', ministry: '', description: '' });
   const [scheduleForm, setScheduleForm] = useState({ date: '', role: '', user_name: '', user_id: '' });
+  const [blockoutForm, setBlockoutForm] = useState({ user_name: '', start_date: '', end_date: '', reason: '' });
 
   const token = localStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
-  useEffect(() => { fetchTeams(); fetchSchedule(); }, []);
+  useEffect(() => { fetchTeams(); fetchSchedule(); fetchBlockouts(); }, []);
 
   const fetchTeams = async () => {
     try {
@@ -88,6 +91,42 @@ export default function VolunteerPage() {
     } catch (err) { toast.error('Failed to create schedule entry'); }
   };
 
+  const fetchBlockouts = async () => {
+    try {
+      const res = await fetch(`${API_URL}/admin/volunteers/blockout-dates`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setBlockouts(data.blockout_dates || []);
+      }
+    } catch (err) { console.error('Failed to fetch blockouts:', err); }
+  };
+
+  const createBlockout = async () => {
+    if (!blockoutForm.start_date || !blockoutForm.user_name) { toast.error('Volunteer name and start date are required'); return; }
+    try {
+      const res = await fetch(`${API_URL}/admin/volunteers/blockout-dates`, {
+        method: 'POST', headers: authHeaders,
+        body: JSON.stringify(blockoutForm),
+      });
+      if (res.ok) {
+        toast.success('Blockout date added');
+        setShowCreateBlockout(false);
+        setBlockoutForm({ user_name: '', start_date: '', end_date: '', reason: '' });
+        fetchBlockouts();
+      }
+    } catch (err) { toast.error('Failed to add blockout date'); }
+  };
+
+  const deleteBlockout = async (blockoutId) => {
+    try {
+      await fetch(`${API_URL}/admin/volunteers/blockout-dates/${blockoutId}`, {
+        method: 'DELETE', headers: authHeaders
+      });
+      toast.success('Blockout date removed');
+      fetchBlockouts();
+    } catch (err) { toast.error('Failed to remove blockout date'); }
+  };
+
   const getInitials = (name) => {
     if (!name) return '?';
     return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -126,6 +165,10 @@ export default function VolunteerPage() {
           <TabsTrigger value="schedule" data-testid="tab-schedule">
             <Calendar className="w-4 h-4 mr-2" />
             Schedule
+          </TabsTrigger>
+          <TabsTrigger value="blockouts" data-testid="tab-blockouts">
+            <CalendarOff className="w-4 h-4 mr-2" />
+            Blockout Dates
           </TabsTrigger>
         </TabsList>
 
@@ -264,6 +307,57 @@ export default function VolunteerPage() {
             </div>
           )}
         </TabsContent>
+
+        {/* Blockout Dates Tab */}
+        <TabsContent value="blockouts" className="space-y-4">
+          <div className="flex items-center justify-end">
+            <Button className="btn-primary" onClick={() => setShowCreateBlockout(true)} data-testid="create-blockout-btn">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Blockout Date
+            </Button>
+          </div>
+
+          {blockouts.length === 0 ? (
+            <div className="bg-white border border-slate-200 rounded-xl p-12 text-center" data-testid="blockouts-empty">
+              <CalendarOff className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-slate-900 mb-1">No blockout dates</h3>
+              <p className="text-sm text-slate-500 mb-4">Add dates when volunteers are unavailable to prevent scheduling conflicts.</p>
+              <Button className="btn-primary" onClick={() => setShowCreateBlockout(true)} data-testid="blockouts-empty-create-btn">
+                <Plus className="w-4 h-4 mr-2" />Add Blockout Date
+              </Button>
+            </div>
+          ) : (
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+              <table className="data-table w-full" data-testid="blockouts-table">
+                <thead>
+                  <tr>
+                    <th className="text-left p-3 text-xs font-semibold text-slate-500 uppercase">Volunteer</th>
+                    <th className="text-left p-3 text-xs font-semibold text-slate-500 uppercase">Start Date</th>
+                    <th className="text-left p-3 text-xs font-semibold text-slate-500 uppercase">End Date</th>
+                    <th className="text-left p-3 text-xs font-semibold text-slate-500 uppercase">Reason</th>
+                    <th className="text-right p-3 text-xs font-semibold text-slate-500 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {blockouts.map((b, idx) => (
+                    <tr key={b.id || idx} className="border-t border-slate-100" data-testid={`blockout-row-${idx}`}>
+                      <td className="p-3 text-sm font-medium text-slate-700">{b.user_name || '-'}</td>
+                      <td className="p-3 text-sm text-slate-700">{formatDate(b.start_date)}</td>
+                      <td className="p-3 text-sm text-slate-700">{formatDate(b.end_date)}</td>
+                      <td className="p-3 text-sm text-slate-500">{b.reason || '-'}</td>
+                      <td className="p-3 text-right">
+                        <Button size="sm" variant="outline" className="text-red-500 hover:text-red-700"
+                          onClick={() => deleteBlockout(b.id)} data-testid={`delete-blockout-${idx}`}>
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </TabsContent>
       </Tabs>
 
       {/* Create Team Dialog */}
@@ -342,6 +436,57 @@ export default function VolunteerPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCreateSchedule(false)}>Cancel</Button>
             <Button onClick={createScheduleEntry} data-testid="save-schedule-btn">Add Entry</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Blockout Date Dialog */}
+      <Dialog open={showCreateBlockout} onOpenChange={setShowCreateBlockout}>
+        <DialogContent data-testid="create-blockout-dialog">
+          <DialogHeader><DialogTitle>Add Blockout Date</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label>Volunteer Name</Label>
+              <Input
+                placeholder="Name of the volunteer"
+                value={blockoutForm.user_name}
+                onChange={(e) => setBlockoutForm({ ...blockoutForm, user_name: e.target.value })}
+                data-testid="blockout-name-input"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Start Date</Label>
+                <Input
+                  type="date"
+                  value={blockoutForm.start_date}
+                  onChange={(e) => setBlockoutForm({ ...blockoutForm, start_date: e.target.value })}
+                  data-testid="blockout-start-input"
+                />
+              </div>
+              <div>
+                <Label>End Date</Label>
+                <Input
+                  type="date"
+                  value={blockoutForm.end_date}
+                  onChange={(e) => setBlockoutForm({ ...blockoutForm, end_date: e.target.value })}
+                  data-testid="blockout-end-input"
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Reason (optional)</Label>
+              <Input
+                placeholder="e.g. Vacation, Family event"
+                value={blockoutForm.reason}
+                onChange={(e) => setBlockoutForm({ ...blockoutForm, reason: e.target.value })}
+                data-testid="blockout-reason-input"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateBlockout(false)}>Cancel</Button>
+            <Button onClick={createBlockout} data-testid="save-blockout-btn">Add Blockout</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
