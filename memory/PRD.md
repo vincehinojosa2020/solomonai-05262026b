@@ -1,88 +1,75 @@
 # Solomon AI — Product Requirements Document
 
 ## Original Problem Statement
-Build a church management SaaS platform (Solomon AI) to replace Planning Center. Multi-tenant architecture supporting organizations with multiple campuses. Features include giving, check-in, groups, events, sermons, prayer, member management, cafe ordering, and AI-powered assistance.
+Solomon AI is a full-featured, multi-tenant SaaS church management system designed to replace Planning Center. Built with React frontend, FastAPI backend, and MongoDB. The platform features member management, groups, events, worship planning, check-in, giving (scaffolded), media library, cafe/merch ordering, and an AI assistant (Ask Solomon) powered by Claude Sonnet via Emergent LLM Key.
 
-## User Personas
-- **Platform Admin**: God Mode oversight across all churches (admin@solomonai.us)
-- **Church Admin**: Manages a single church or multi-campus org (shannonnieman1030@gmail.com)
-- **Church Member**: Portal access for giving, groups, events, prayer, cafe, directory, courses
-- **Kids Volunteer**: Check-in/checkout of children
-
-## Core Architecture
-- **Backend**: FastAPI monolith (`server.py`) with MongoDB
-- **Frontend**: React + Tailwind + Shadcn/UI
+## Architecture
+- **Frontend**: React + Shadcn UI (port 3000)
+- **Backend**: FastAPI monolith `server.py` ~16K lines (port 8001)
+- **Database**: MongoDB Atlas
+- **AI**: Claude Sonnet 4.5 via Emergent LLM Key (emergentintegrations)
 - **Multi-Tenant**: Organizations -> Campuses (tenants) -> Members
-- **Billing Model**: 1 Account = Multiple Campuses (per-org billing)
 
-## Completed Features
+## Key Files
+- `/app/backend/server.py` — All API endpoints
+- `/app/frontend/src/pages/LandingPage.jsx` — Public marketing page
+- `/app/frontend/src/pages/GivingDashboard.jsx` — Giving module UI
+- `/app/planning_center_transcripts/` — Competitor knowledge files
 
-### Phase A — Frontend Pages (DONE)
-- `/pricing` — Pricing page
-- `/services` — Services management
-- `/households` — Household management
-- `/portal/directory` — Member directory (25+ seeded profiles with search)
-- `/portal/volunteer` — Volunteer portal
+## Completed Features (All Sessions)
+- Full member management (People module) with CSV import
+- Groups module with enrollment, chat, events
+- Calendar/Events with room booking and conflict detection
+- Worship/Services planning with song library and team scheduling
+- Check-in system with QR codes
+- Media library (Watch) with MasterClass-quality streaming
+- Abundant Cafe and Merch Store ordering
+- Pastoral meeting scheduling
+- Solomon Academy (Abundant Pathways) discipleship courses
+- War Room real-time dashboard
+- Multi-campus management
+- Ask Solomon AI chat assistant
+- Member portal with giving, groups, events, media access
+- Landing page with Frank Luntz-style copywriting
+- Snyk-style respectful competitor comparison section
+- Mobile hamburger nav and responsive design
+- OG tags with Gemini-generated image for iMessage previews
+- Quality seed data (12-week attendance streaks, 25 named members, 14 accounts)
+- Giving platform scaffold (Solomon Pay/Pushpay/SecureGive toggles)
+- **Competitor Knowledge Base injection into Ask Solomon** (173 PC video transcripts + SecureGive + Pushpay analysis) — COMPLETED March 2026
 
-### Solomon Academy — LMS (DONE)
-- Course builder: Modules, Lessons (Video/Text/Quiz/Download)
-- Admin: `/admin/courses` with editors
-- Portal: `/portal/courses` with lesson viewer
+## Competitor Knowledge Integration (Latest)
+- Scraped 173 Planning Center University training videos
+- Created analysis files: `knowledge_base.txt`, `securegive_analysis.txt`, `pushpay_analysis.txt`
+- Combined into `competitor_knowledge_combined.txt` (30,516 chars / ~7,600 tokens)
+- Loaded at server startup and injected into Solomon Chat system prompt
+- Ask Solomon can now answer detailed migration, comparison, and pricing questions
+- Verified with testing agent (Iteration 53: 8/10 pass, 2 failures due to LLM budget limit)
 
-### Pre-Demo Features A-F (DONE — March 26, 2026)
-- **A. Campus Switcher "All Campuses"**: Aggregate view in dashboard
-- **B. Platform God Mode Visual Upgrade**: Enhanced header, 6 KPI cards
-- **C. Manual Kids Check-In**: Blue [+ Manual Check-In] button
-- **D. Cafe Enterprise Redesign**: Stripe/Notion-style aesthetic
-- **E. CSV Member Import**: 4-step wizard
-- **F. Communications Page**: Compose, Sent, Scheduled, Templates, Segments
+## Pricing Tiers (Solomon AI)
+- Starter: $99/mo (single campus, core features)
+- Growth: $1,499/mo (multi-campus, all features)
+- Enterprise: $2,999/mo (unlimited everything)
 
-### Public Pages (DONE — March 26, 2026)
-- `/` — Marketing Landing Page (clean white, Frank Luntz copy)
-- `/login` — Login with "Your church. Elevated." tagline
-- `/signup` — Church Onboarding Wizard
-- `/demo` — Demo Request Page
+## 3rd Party Integrations
+- Anthropic Claude Sonnet 4.5 (Ask Solomon) — Emergent LLM Key
+- Gemini Image Gen (OG Tags) — Emergent LLM Key
+- Stripe/Pushpay/SecureGive — MOCKED
 
-### War Room Mission Control (DONE)
-- `/war-room` — Dark navy dashboard with real-time KPIs
+## Test Credentials
+- Platform Admin: `admin@solomonai.us` / `Demo2026!`
+- Church Admin: `shannonnieman1030@gmail.com` / `Demo2026!`
+- Church Admin: `jacobpacheco@abundanteast.com` / `Demo2026!`
 
-### Quality Improvements (DONE — March 26, 2026)
-- **7C: Member Directory Seed**: 25+ realistic member profiles
-- **7D: Solomon Chat Context**: Live church data injected
-- **7E: Attendance Streaks**: Shannon & Jacob with 12-week streaks
+## Upcoming Tasks (Post-Demo)
+- P1: Modular monolith refactor of `server.py` (extract domains into routers) — DEFERRED
+- P2: N+1 query optimization in `courses.py`
+- P2: Real Pushpay/SecureGive API integration
+- P2: Excel (.xlsx) support for Member Import
+- P2: PDF Certificate generation for Solomon Academy
+- P2: Real Twilio SMS / Stripe integration
 
-### Giving Platform Scaffold (DONE — March 26, 2026)
-- Admin UI with Solomon Pay, Pushpay, SecureGive cards
-- Backend: GET/POST connect/disconnect processors (MOCKED)
-
-### Landing Page Refinements (DONE — March 26, 2026)
-- Clean white hero: "Your Church. One App. Zero Compromise."
-- 3 stats only: 64,500 Members / $151M+ Given / 140+ Small Groups
-- Frank Luntz copy on all sections
-- Mobile responsive with hamburger menu nav
-- OG preview tile for gorgeous iMessage/SMS link sharing
-- Nav: Pricing | Watch Demo | Login (hamburger on mobile)
-- Footer: "Built on Google Cloud Platform · Powered by Anthropic"
-
-## Final QA Status
-- **Iteration 52**: 100% pass (20/20 backend, all frontend pages verified)
-- **Deployment Check**: PASS - No blockers
-
-## Mocked Integrations
-- Stripe/Pushpay/SecureGive — Payment processing (MOCKED)
-- Twilio — Communications send (STUBBED)
-
-## Credentials
-- Platform Admin: admin@solomonai.us / Demo2026!
-- Church Admin: shannonnieman1030@gmail.com / Demo2026!
-- Church Admin: jacobpacheco@abundanteast.com / Demo2026!
-- Church Member: member@abundant.church / Demo2026!
-
-## Post-Demo Backlog
-- P1: Modular monolith refactor of server.py
-- P1: Real Pushpay/SecureGive API integration
-- P2: Excel (.xlsx) Member Import
-- P2: PDF Certificate generation
-- P2: Real Stripe integration for Solomon Pay
-- P2: Real Twilio SMS integration
-- P2: N+1 query optimization in courses.py
+## Known Constraints
+- LLM budget may need top-up (Profile -> Universal Key -> Add Balance)
+- `server.py` is ~16K lines — refactor deferred until after demo
+- Giving module is scaffolded/mocked, not processing live transactions
