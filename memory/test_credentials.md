@@ -12,5 +12,9 @@
 - Email: jacobpacheco@abundanteast.com
 - Password: Demo2026!
 
+## Church Member
+- Email: member@abundant.church
+- Password: Demo2026!
+
 ## API URL
 - Preview: https://solomon-demo-2.preview.emergentagent.com
