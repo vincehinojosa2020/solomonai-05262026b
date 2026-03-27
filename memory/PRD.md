@@ -1,117 +1,109 @@
 # Solomon AI — Product Requirements Document
 
 ## Original Problem Statement
-Solomon AI is a full-featured, multi-tenant SaaS church management system competing directly with Planning Center. Built with React frontend, FastAPI backend, and MongoDB. The platform features member management, groups, events, worship planning, check-in, giving (SolomonPay scaffolded), media library, cafe/merch ordering, and an AI assistant (Ask Solomon) powered by Claude Sonnet via Emergent LLM Key.
+Solomon AI is a full-featured, multi-tenant SaaS church management system competing directly with Planning Center. Built with React frontend, FastAPI backend, and MongoDB. Target: 100% Planning Center feature parity at 1/3 the price ($99/mo).
 
 ## Architecture
 - **Frontend**: React + Shadcn UI (port 3000)
-- **Backend**: FastAPI monolith `server.py` ~16K lines (port 8001)
+- **Backend**: FastAPI monolith `server.py` (port 8001)
 - **Database**: MongoDB Atlas
-- **AI**: Claude Sonnet 4.5 via Emergent LLM Key (emergentintegrations)
-- **Multi-Tenant**: Organizations -> Campuses (tenants) -> Members
+- **AI**: Claude Sonnet 4.5 via Emergent LLM Key
+- **Multi-Tenant**: Organizations -> Campuses -> Members
+- **Mobile**: React Native (separate Emergent project, calls our APIs)
 
-## Key Files
-- `/app/backend/server.py` — All API endpoints
-- `/app/frontend/src/pages/LandingPage.jsx` — Public marketing page with lead capture
-- `/app/frontend/src/pages/GivingDashboard.jsx` — Admin giving module
-- `/app/frontend/src/components/SolomonPayForm.jsx` — Reusable SolomonPay payment component
-- `/app/frontend/src/components/modals/DonationCheckout.jsx` — Admin donation with SolomonPay
-- `/app/frontend/src/pages/portal/PortalGive.jsx` — Member portal giving with SolomonPay
-- `/app/frontend/src/pages/portal/PortalCafe.jsx` — Cafe checkout with SolomonPay
-- `/app/frontend/src/pages/portal/PortalMerch.jsx` — Merch checkout with SolomonPay
-- `/app/planning_center_transcripts/` — Competitor knowledge files
+## Current Parity Status: ~82%
 
-## Completed Features (All Sessions)
-- Full member management (People module) with CSV import
-- Groups module with enrollment, chat, events
-- Calendar/Events with room booking and conflict detection
-- Worship/Services planning with song library and team scheduling
-- Check-in system with QR codes
-- Media library (Watch) with MasterClass-quality streaming
-- Abundant Cafe and Merch Store ordering
-- Pastoral meeting scheduling
-- Solomon Academy (Abundant Pathways) discipleship courses
-- War Room real-time dashboard
-- Multi-campus management
-- Ask Solomon AI chat assistant
-- Member portal with giving, groups, events, media access
-- Landing page with Frank Luntz-style copywriting
-- Snyk-style respectful competitor comparison section
-- Mobile hamburger nav and responsive design
-- OG tags with Gemini-generated image for iMessage previews
-- Quality seed data (12-week attendance streaks, 25 named members, 14 accounts)
-- **Competitor Knowledge Base** injection into Ask Solomon (173 PC transcripts + SecureGive + Pushpay)
-- **SolomonPay UI Scaffolding** — Payment form component, backend endpoints, integrated into Giving/Cafe/Merch (MOCKED - all transactions pending)
-- **Landing Page Lead Capture** — Invicti-style "Request a Demo" modal with lead storage in MongoDB
-- **Lead Management** — POST /api/leads/capture (public) + GET /api/admin/leads (admin view)
+## Completed Features
 
-## SolomonPay Integration Points
-- **Giving Module** (Admin + Portal) — Full SolomonPay form replaces old Stripe/PayPal/Venmo/Zelle
-- **Cafe Checkout** — SolomonPay payment step before order placement
-- **Merch Checkout** — SolomonPay payment step before order placement
-- **Status**: ALL transactions stay "pending" — no real payment processing yet
+### Phase 0: Core Platform (Pre-existing)
+- Member management (People module) with CSV import
+- Groups, Calendar/Events, Worship/Services, Check-in, Media Library
+- Abundant Cafe, Merch Store, Solomon Academy (Abundant Pathways)
+- War Room, Multi-campus, Ask Solomon AI, Member Portal
+- Landing page with Frank Luntz copywriting
+- OG tags, quality seed data, 14 accounts, 11 tenants
 
-## Pricing Tiers (Solomon AI)
-- Starter: $499/mo (up to 500 members, 1 campus)
-- Growth: $1,499/mo (up to 5,000 members, 3 campuses)
+### Phase 1: SolomonPay + Lead Capture (March 2026) ✅
+- SolomonPay UI scaffolding (payment form, backend models, all "pending")
+- Integrated into Giving, Cafe checkout, Merch checkout
+- Landing page Invicti-style lead capture modal
+- Lead management (POST /api/leads/capture + GET /api/admin/leads)
+- Competitor knowledge base injected into Ask Solomon AI (173 PC transcripts)
+
+### Phase 2: Calendar Approvals + People Workflows (March 2026) ✅
+- Calendar room booking approval system with conflict detection
+- Rooms management (10 seeded rooms)
+- Approve/reject individual + bulk with status tracking
+- Conflict resolution UI (side-by-side overlapping bookings)
+- People workflow builder (5 step types: email, task, call, add_to_group, wait)
+- Workflow enrollments with step tracking
+- Form builder with configurable field types (9 types)
+- Public form URLs with auto-profile creation for visitors
+- Form submissions viewer
+- Duplicate detection (fuzzy name matching + email/phone scoring)
+- Profile merge with data consolidation
+- Smart Lists with rule-based filtering (5 operators: equals, not_equals, contains, exists, not_exists)
+
+## Test Results
+- Iteration 53: Competitor AI knowledge (8/10 pass - 2 LLM budget)
+- Iteration 54: SolomonPay + Lead Capture (Backend 92%, Frontend 100%)
+- Iteration 55: Calendar Approvals + People Workflows (Backend 97%, Frontend 100%)
+
+## Planning Center Parity Roadmap
+
+### Phase 3: Services Module (NEXT - Weeks 3-4)
+- Plan templates, team/position management
+- Song library (title, artist, CCLI, arrangements)
+- Scheduling system with blockout dates
+- Music Stand chord chart viewer
+- Matrix scheduling (may need consultant, 4-6 hours)
+
+### Phase 4: Groups Module Enhancement (Week 5-6)
+- Group types/categories, tag organization
+- Enrollment workflows (open/closed/request-to-join)
+- Group events, RSVP, chat scaffolding (WebSocket, ~3 hours consultant)
+
+### Phase 5: Registrations Module (Week 7-8)
+- Signup wizard, selection types, add-ons
+- Custom questions, discounts, scholarships
+- SolomonPay integration for event payments, waitlists
+
+### Phase 6: Check-Ins Module Enhancement (Week 9-10)
+- Station modes, label design interface
+- Medical/allergy alerts, guardian verification
+- Printer support (~6 hours hardware consultant)
+
+### Phase 7: Publishing + Home Dashboards (Week 11-12)
+- Custom page builder, theme customization
+- Role-based dashboards (executive, worship leader, children's ministry)
+- Pledge campaigns, year-end giving statements
+
+### Phase 8: Church Center Mobile API (Week 13-14)
+- Push notification endpoints, offline data sync
+- Mobile-optimized API responses
+
+## Pricing Tiers
+- Starter: $99/mo (single campus, core features)
+- Growth: $1,499/mo (multi-campus, all features)
 - Enterprise: $2,999/mo (unlimited everything)
 
 ## 3rd Party Integrations
 - Anthropic Claude Sonnet 4.5 (Ask Solomon) — Emergent LLM Key
 - Gemini Image Gen (OG Tags) — Emergent LLM Key
-- Stripe/Pushpay/SecureGive — MOCKED (SolomonPay scaffolded)
+- SolomonPay — MOCKED (all transactions pending)
+- Workflow notifications — MOCKED (no actual emails sent)
 
 ## Test Credentials
-- Platform Admin: `admin@solomonai.us` / `Demo2026!`
-- Church Admin: `shannonnieman1030@gmail.com` / `Demo2026!`
-- Church Admin: `jacobpacheco@abundanteast.com` / `Demo2026!`
-- Church Member: `member@abundant.church` / `Demo2026!`
+- Platform Admin: admin@solomonai.us / Demo2026!
+- Church Admin: shannonnieman1030@gmail.com / Demo2026!
+- Church Admin: jacobpacheco@abundanteast.com / Demo2026!
 
-## Planning Center Parity Roadmap (12 weeks)
-
-### Phase 1: COMPLETE ✅
-- SolomonPay UI Scaffolding
-- Landing Page + Lead Capture
-- Competitor Knowledge in AI Chat
-
-### Phase 2: Calendar & People (Week 2) — NEXT
-- Calendar approval workflows + conflict resolution UI
-- People workflows & forms
-- Duplicate detection improvements
-- Advanced list filtering
-
-### Phase 3: Services Module (Weeks 3-4)
-- Plan templates, team/position management
-- Song library (without CCLI initially)
-- Scheduling system with blockout dates
-- Music Stand chord chart viewer
-
-### Phase 4: Groups Module (Week 5)
-- Group types/categories, tag organization
-- Enrollment workflows (open/closed/request)
-- Group events, RSVP, chat scaffolding
-
-### Phase 5: Registrations Module (Week 6)
-- Signup wizard, selection types
-- Add-ons, custom questions, discounts
-- SolomonPay integration for event payments
-
-### Phase 6: Check-Ins Module (Weeks 7-8)
-- Station modes, label design
-- Medical/allergy alerts, guardian verification
-- Printer support (Brother, Citizen, Dymo, Zebra)
-
-### Phase 7: Publishing + Home + Giving Polish (Weeks 9-10)
-- Custom page builder, theme customization
-- Role-based dashboards
-- Pledge campaigns, year-end statements
-
-### Phase 8: Church Center Mobile (Weeks 11-12)
-- Event browsing, directory, giving
-- Group chat, profile management, push notifications
-
-## Known Constraints
-- LLM budget may need top-up (Profile -> Universal Key -> Add Balance)
-- `server.py` is ~16K lines — refactor deferred until after demo
-- SolomonPay is scaffolded/mocked — not processing live transactions
-- 2 test failures in iteration 54 are CloudFlare proxy behavior, not code bugs
+## Key Files
+- /app/backend/server.py — All API endpoints (~16K+ lines)
+- /app/frontend/src/pages/CalendarApprovals.jsx
+- /app/frontend/src/pages/WorkflowsPage.jsx
+- /app/frontend/src/pages/FormsPage.jsx
+- /app/frontend/src/pages/DuplicatesPage.jsx
+- /app/frontend/src/pages/SmartListsPage.jsx
+- /app/frontend/src/components/SolomonPayForm.jsx
+- /app/frontend/src/pages/LandingPage.jsx
