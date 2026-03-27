@@ -11,7 +11,7 @@ Solomon AI is a full-featured, multi-tenant SaaS church management system compet
 - **Multi-Tenant**: Organizations -> Campuses -> Members
 - **Mobile**: React Native (separate Emergent project, calls our APIs)
 
-## Current Parity Status: ~88%
+## Current Parity Status: ~92%
 
 ## Completed Features
 
@@ -55,22 +55,29 @@ Solomon AI is a full-featured, multi-tenant SaaS church management system compet
 - Volunteer scheduling integration with service plans
 - Service Types configuration (Sunday Morning, Sunday Evening, Wednesday, Special)
 
+### Phase 4: Groups Module Enhancement (March 2026) ✅
+- Enrollment workflows: open (anyone joins), request_to_join (approval required), closed (invite only)
+- Category field for group organization (discipleship, fellowship, outreach, prayer, study, etc.)
+- Join Request approval system with pending/approved/rejected tracking
+- Group Events with RSVP tracking (attending/maybe/declined), CRUD, date/time/location
+- Resources & file sharing (links, documents, videos) with group-level sharing
+- Group Chat scaffolding with HTTP-based messaging (send/receive, auto-scroll)
+- Portal join endpoint handles request_to_join by creating approval request
+- Admin Groups page has tabs: Groups + Join Requests with badge count
+- GroupDetail page has tabs: Roster, Attendance, Events, Resources, Chat, About, Settings
+
 ## Test Results
 - Iteration 53: Competitor AI knowledge (8/10 pass - 2 LLM budget)
 - Iteration 54: SolomonPay + Lead Capture (Backend 92%, Frontend 100%)
 - Iteration 55: Calendar Approvals + People Workflows (Backend 97%, Frontend 100%)
 - Iteration 56: Phase 3 Services - Songs, Plans, Templates, Music Stand (Backend 100% 20/20, Frontend 100%)
 - Iteration 57: Phase 3 Services - Team Assignments, Blockout Dates (Backend 100% 14/14, Frontend 100%)
+- Iteration 58: Phase 4 Groups - Enrollment, Join Requests, Events, Resources, Chat (Backend 100% 18/18, Frontend 100%)
 
 ## Planning Center Parity Roadmap
 
-### Phase 3: Services Module ✅ COMPLETE
+### Phase 4: Groups Module Enhancement ✅ COMPLETE
 - All features implemented and tested
-
-### Phase 4: Groups Module Enhancement (NEXT)
-- Group types/categories, tag organization
-- Enrollment workflows (open/closed/request-to-join)
-- Group events, RSVP, chat scaffolding (WebSocket, ~3 hours consultant)
 
 ### Phase 5: Registrations Module (Week 7-8)
 - Signup wizard, selection types, add-ons
@@ -108,11 +115,13 @@ Solomon AI is a full-featured, multi-tenant SaaS church management system compet
 - Church Admin: jacobpacheco@abundanteast.com / Demo2026!
 
 ## Key Files
-- /app/backend/server.py — All API endpoints (~17K+ lines)
+- /app/backend/server.py — All API endpoints (~17.5K+ lines)
 - /app/frontend/src/pages/ServicesPage.jsx (Phase 3 - Service Plans + Team Assignments)
 - /app/frontend/src/pages/SongLibraryPage.jsx (Phase 3 - Song Library)
 - /app/frontend/src/pages/MusicStandPage.jsx (Phase 3 - Music Stand)
 - /app/frontend/src/pages/VolunteerPage.jsx (Phase 3 - Teams, Schedule, Blockout Dates)
+- /app/frontend/src/pages/GroupsManagerPage.jsx (Phase 4 - Admin Groups + Join Requests)
+- /app/frontend/src/pages/GroupDetail.jsx (Phase 4 - Events, Resources, Chat)
 - /app/frontend/src/pages/CalendarApprovals.jsx
 - /app/frontend/src/pages/WorkflowsPage.jsx
 - /app/frontend/src/pages/FormsPage.jsx
