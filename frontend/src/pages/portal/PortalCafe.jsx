@@ -3,6 +3,7 @@ import { Search, Plus, Minus, X, ArrowRight, Clock, ShoppingCart, MapPin, Chevro
 import { useOutletContext } from 'react-router-dom';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
+import SolomonPayForm from '@/components/SolomonPayForm';
 
 const parseTime = (value) => {
   if (!value) return null;
@@ -38,6 +39,7 @@ export default function PortalCafe() {
   const [pickupTime, setPickupTime] = useState('');
   const [orderNotes, setOrderNotes] = useState('');
   const [offeringAmount, setOfferingAmount] = useState(0);
+  const [showPaymentStep, setShowPaymentStep] = useState(false);
 
   useEffect(() => {
     const fetchCafe = async () => {
@@ -117,7 +119,23 @@ export default function PortalCafe() {
   const placeOrder = async () => {
     if (!pickupTime) { toast.error('Select a pickup time'); return; }
     if (cartItems.length === 0) { toast.error('Your cart is empty'); return; }
+    setShowPaymentStep(true);
+  };
+
+  const handleCafePaymentSuccess = async (cardData) => {
     try {
+      const payRes = await fetch(`${API_URL}/solomonpay/process`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...cardData,
+          amount: orderTotal,
+          context: 'cafe_order',
+          description: `Cafe order - ${cartItems.map(i => i.name).join(', ')}`,
+        }),
+      });
+      if (!payRes.ok) throw new Error('Payment failed');
+
       const res = await fetch(`${API_URL}/portal/cafe/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -133,10 +151,11 @@ export default function PortalCafe() {
       if (res.ok) {
         toast.success('Order placed successfully');
         setCartItems([]); setCartOpen(false); setPickupTime(''); setOrderNotes('');
+        setShowPaymentStep(false); setOfferingAmount(0);
       } else {
-        toast.error('Unable to place order');
+        throw new Error('Order failed');
       }
-    } catch { toast.error('Unable to place order'); }
+    } catch { toast.error('Unable to place order'); setShowPaymentStep(false); }
   };
 
   return (
@@ -429,17 +448,28 @@ export default function PortalCafe() {
                 </div>
               </div>
 
-              <button
-                onClick={placeOrder}
-                style={{
-                  width: '100%', padding: '14px 0', background: '#111827', color: '#ffffff',
-                  border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 700,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
-                }}
-                data-testid="cafe-checkout-btn"
-              >
-                Place Order <ChevronRight style={{ width: 16, height: 16 }} />
-              </button>
+              {showPaymentStep ? (
+                <div style={{ marginTop: 8 }}>
+                  <SolomonPayForm
+                    amount={orderTotal}
+                    onSuccess={handleCafePaymentSuccess}
+                    onCancel={() => setShowPaymentStep(false)}
+                    context="cafe_order"
+                  />
+                </div>
+              ) : (
+                <button
+                  onClick={placeOrder}
+                  style={{
+                    width: '100%', padding: '14px 0', background: '#111827', color: '#ffffff',
+                    border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 700,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
+                  }}
+                  data-testid="cafe-checkout-btn"
+                >
+                  Pay with SolomonPay <ChevronRight style={{ width: 16, height: 16 }} />
+                </button>
+              )}
             </div>
           </div>
         </>

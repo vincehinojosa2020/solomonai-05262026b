@@ -6387,6 +6387,168 @@ async def set_default_payment_method(request: Request, method_id: str):
     
     return {"message": "Default payment method updated"}
 
+
+# ============== SOLOMONPAY ENDPOINTS ==============
+
+class SolomonPayProcessRequest(BaseModel):
+    card_last_four: str
+    card_brand: str
+    card_exp_month: str
+    card_exp_year: str
+    cardholder_name: str
+    billing_zip: str
+    save_card: bool = False
+    amount: float
+    context: str = "donation"
+    fund_id: Optional[str] = None
+    fund_name: Optional[str] = None
+    frequency: Optional[str] = "one-time"
+    description: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+@api_router.post("/solomonpay/process")
+async def solomonpay_process(request: Request, payload: SolomonPayProcessRequest):
+    """Process a SolomonPay payment (beta - all transactions stay pending)"""
+    user = None
+    user_id = "anonymous"
+    tenant_id = DEFAULT_TENANT_ID
+    try:
+        user = await get_current_user(request)
+        if user:
+            user_id = user.get("user_id", "anonymous")
+            tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    except Exception:
+        pass
+
+    if payload.amount <= 0:
+        raise HTTPException(status_code=400, detail="Amount must be positive")
+    if len(payload.card_last_four) != 4:
+        raise HTTPException(status_code=400, detail="Invalid card data")
+
+    payment_method_id = None
+    if payload.save_card and user_id != "anonymous":
+        if payload.save_card:
+            await db.payment_methods.update_many(
+                {"user_id": user_id}, {"$set": {"is_default": False}}
+            )
+        pm = {
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "tenant_id": tenant_id,
+            "card_last_four": payload.card_last_four,
+            "card_brand": payload.card_brand,
+            "card_exp_month": payload.card_exp_month,
+            "card_exp_year": payload.card_exp_year,
+            "cardholder_name": payload.cardholder_name,
+            "billing_zip": payload.billing_zip,
+            "is_default": True,
+            "is_active": True,
+            "provider": "solomonpay",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.payment_methods.insert_one(pm)
+        payment_method_id = pm["id"]
+
+    txn_id = f"sp_txn_{uuid.uuid4().hex[:12]}"
+    transaction = {
+        "id": txn_id,
+        "tenant_id": tenant_id,
+        "user_id": user_id,
+        "amount": round(payload.amount, 2),
+        "currency": "USD",
+        "status": "pending",
+        "payment_method_id": payment_method_id,
+        "card_last_four": payload.card_last_four,
+        "card_brand": payload.card_brand,
+        "cardholder_name": payload.cardholder_name,
+        "description": payload.description or f"SolomonPay {payload.context}",
+        "context": payload.context,
+        "fund_id": payload.fund_id,
+        "fund_name": payload.fund_name,
+        "frequency": payload.frequency,
+        "metadata": payload.metadata or {},
+        "provider": "solomonpay",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.solomonpay_transactions.insert_one(transaction)
+
+    if payload.context == "donation" and user_id != "anonymous":
+        donation = {
+            "id": str(uuid.uuid4()),
+            "tenant_id": tenant_id,
+            "person_id": user_id,
+            "person_name": payload.cardholder_name,
+            "amount": round(payload.amount, 2),
+            "fund": payload.fund_name or "General Fund",
+            "fund_id": payload.fund_id or "general",
+            "frequency": payload.frequency or "one-time",
+            "donation_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            "payment_method": "solomonpay",
+            "transaction_id": txn_id,
+            "status": "pending",
+            "source": "solomonpay",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.donations.insert_one(donation)
+
+    return {
+        "success": True,
+        "transaction_id": txn_id,
+        "status": "pending",
+        "amount": round(payload.amount, 2),
+        "message": "Payment recorded. Transaction will be processed when SolomonPay goes live."
+    }
+
+@api_router.get("/solomonpay/transactions")
+async def get_solomonpay_transactions(request: Request, limit: int = 50):
+    """Get SolomonPay transactions for admin view"""
+    user = await get_current_user(request)
+    if not user or user.get("role") not in ["church_admin", "platform_admin"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    txns = await db.solomonpay_transactions.find(
+        {"tenant_id": tenant_id}, {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    return {"transactions": txns}
+
+# ============== LEAD CAPTURE ==============
+
+class LeadCaptureRequest(BaseModel):
+    church_name: str
+    name: str
+    email: str
+    phone: Optional[str] = None
+    current_software: Optional[str] = None
+    church_size: Optional[str] = None
+
+@api_router.post("/leads/capture")
+async def capture_lead(payload: LeadCaptureRequest):
+    """Capture lead from landing page"""
+    lead = {
+        "id": str(uuid.uuid4()),
+        "church_name": payload.church_name,
+        "name": payload.name,
+        "email": payload.email,
+        "phone": payload.phone,
+        "current_software": payload.current_software,
+        "church_size": payload.church_size,
+        "status": "new",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.leads.insert_one(lead)
+    return {"success": True, "message": "Thank you! We'll be in touch within 24 hours."}
+
+@api_router.get("/admin/leads")
+async def get_leads(request: Request, limit: int = 100):
+    """Get captured leads (admin only)"""
+    user = await get_current_user(request)
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+    leads = await db.leads.find({}, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    return {"leads": leads, "total": len(leads)}
+
+
 # ============== SMS ROUTES ==============
 
 class SMSRequest(BaseModel):
@@ -15014,11 +15176,12 @@ class GivingDonateRequest(BaseModel):
 
 @api_router.post("/portal/giving/donate")
 async def portal_giving_donate(request: Request, payload: GivingDonateRequest):
-    """Process a donation from the member portal."""
+    """Process a donation from the member portal via SolomonPay."""
     user = await get_current_member_user(request)
     tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
     if payload.amount <= 0:
         raise HTTPException(status_code=400, detail="Amount must be positive")
+    txn_id = f"sp_txn_{uuid.uuid4().hex[:12]}"
     donation = {
         "id": str(uuid.uuid4()),
         "tenant_id": tenant_id,
@@ -15026,19 +15189,24 @@ async def portal_giving_donate(request: Request, payload: GivingDonateRequest):
         "person_name": user.get("name", ""),
         "amount": round(payload.amount, 2),
         "fund": payload.fund,
+        "fund_id": payload.fund_id if hasattr(payload, 'fund_id') else "general",
         "frequency": payload.frequency,
+        "donation_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "payment_method": "solomonpay",
         "payment_method_id": payload.payment_method_id,
-        "source": payload.source,
-        "status": "completed",
+        "transaction_id": txn_id,
+        "source": "solomonpay",
+        "status": "pending",
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     await db.donations.insert_one(donation)
     return {
         "donation_id": donation["id"],
+        "transaction_id": txn_id,
         "amount": donation["amount"],
         "fund": donation["fund"],
-        "status": "completed",
-        "message": f"Thank you for your ${donation['amount']:.2f} gift!"
+        "status": "pending",
+        "message": f"Thank you for your ${donation['amount']:.2f} gift! Transaction will be processed when SolomonPay goes live."
     }
 
 

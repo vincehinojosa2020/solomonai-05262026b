@@ -4,6 +4,7 @@ import { ShoppingBag, Search, Plus, Minus, X, ArrowRight, Heart } from 'lucide-r
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import MerchRecommender from '@/components/MerchRecommender';
+import SolomonPayForm from '@/components/SolomonPayForm';
 
 export default function PortalMerch() {
   const { tenant } = useOutletContext();
@@ -14,6 +15,7 @@ export default function PortalMerch() {
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [offeringAmount, setOfferingAmount] = useState(0);
+  const [showPaymentStep, setShowPaymentStep] = useState(false);
 
   useEffect(() => {
     const fetchMerch = async () => {
@@ -78,32 +80,43 @@ export default function PortalMerch() {
       toast.error('Your cart is empty');
       return;
     }
+    setShowPaymentStep(true);
+  };
+
+  const handleMerchPaymentSuccess = async (cardData) => {
     try {
+      const payRes = await fetch(`${API_URL}/solomonpay/process`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...cardData,
+          amount: orderTotal,
+          context: 'merch_order',
+          description: `Merch order - ${cartItems.map(i => i.name).join(', ')}`,
+        }),
+      });
+      if (!payRes.ok) throw new Error('Payment failed');
+
       const res = await fetch(`${API_URL}/portal/merch/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        
         body: JSON.stringify({
           items: cartItems.map((item) => ({
-            product_id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            image_url: item.image_url
+            product_id: item.id, name: item.name, price: item.price,
+            quantity: item.quantity, image_url: item.image_url
           })),
           offering_amount: offeringAmount
         })
       });
       if (res.ok) {
         toast.success(offeringAmount > 0 ? 'Order placed with offering! God bless!' : 'Order placed!');
-        setCartItems([]);
-        setOfferingAmount(0);
-        setCartOpen(false);
+        setCartItems([]); setOfferingAmount(0); setCartOpen(false); setShowPaymentStep(false);
       } else {
-        toast.error('Unable to place order');
+        throw new Error('Order failed');
       }
     } catch (error) {
       toast.error('Unable to place order');
+      setShowPaymentStep(false);
     }
   };
 
@@ -279,13 +292,24 @@ export default function PortalMerch() {
               <span>Total</span>
               <strong data-testid="merch-cart-total">{formatCurrency(orderTotal)}</strong>
             </div>
-            <button
-              className="portal-merch-checkout"
-              onClick={checkout}
-              data-testid="merch-checkout-btn"
-            >
-              {offeringAmount > 0 ? 'Place Order & Give' : 'Place Order'}
-            </button>
+            {showPaymentStep ? (
+              <div style={{ padding: '0 4px' }}>
+                <SolomonPayForm
+                  amount={orderTotal}
+                  onSuccess={handleMerchPaymentSuccess}
+                  onCancel={() => setShowPaymentStep(false)}
+                  context="merch_order"
+                />
+              </div>
+            ) : (
+              <button
+                className="portal-merch-checkout"
+                onClick={checkout}
+                data-testid="merch-checkout-btn"
+              >
+                {offeringAmount > 0 ? 'Pay with SolomonPay & Give' : 'Pay with SolomonPay'}
+              </button>
+            )}
           </div>
         </div>
       )}

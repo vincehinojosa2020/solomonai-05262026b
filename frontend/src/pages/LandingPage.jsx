@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Check, X, Tv, Baby, Heart, Users, Calendar, Zap, Play, DollarSign, Menu } from 'lucide-react';
+import { ArrowRight, Check, X, Tv, Baby, Heart, Users, Calendar, Zap, Play, DollarSign, Menu, Loader2 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -16,6 +16,12 @@ export default function LandingPage() {
   const [waitlistChurch, setWaitlistChurch] = useState('');
   const [waitlistSent, setWaitlistSent] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showLeadForm, setShowLeadForm] = useState(false);
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
+  const [leadLoading, setLeadLoading] = useState(false);
+  const [leadData, setLeadData] = useState({
+    church_name: '', name: '', email: '', phone: '', current_software: '', church_size: ''
+  });
 
   const submitWaitlist = async () => {
     if (!waitlistEmail) return;
@@ -28,6 +34,22 @@ export default function LandingPage() {
       toast.success("You're on the waitlist!");
     } catch { toast.error('Failed to join waitlist'); }
   };
+
+  const submitLeadForm = async (e) => {
+    e.preventDefault();
+    if (!leadData.church_name || !leadData.name || !leadData.email) return;
+    setLeadLoading(true);
+    try {
+      await fetch(`${API_URL}/leads/capture`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(leadData)
+      });
+      setLeadSubmitted(true);
+    } catch { toast.error('Something went wrong. Please try again.'); }
+    finally { setLeadLoading(false); }
+  };
+
+  const openLeadForm = (e) => { e?.preventDefault(); setShowLeadForm(true); };
 
   return (
     <div style={{ background: S.white, color: S.textDark, fontFamily: "'Inter',-apple-system,BlinkMacSystemFont,sans-serif" }} data-testid="landing-page">
@@ -107,9 +129,9 @@ export default function LandingPage() {
             From Sunday morning to Monday morning &mdash; everything your congregation needs, in the palm of their hand.
           </p>
           <div className="lp-hero-btns" style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/demo" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '16px 36px', background: S.blue, color: '#fff', fontSize: 16, fontWeight: 700, borderRadius: 10, textDecoration: 'none', transition: 'transform 0.15s' }} data-testid="hero-cta-demo">
+            <button onClick={openLeadForm} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '16px 36px', background: S.blue, color: '#fff', fontSize: 16, fontWeight: 700, borderRadius: 10, border: 'none', cursor: 'pointer', transition: 'transform 0.15s' }} data-testid="hero-cta-demo">
               Request a Demo <ArrowRight style={{ width: 18, height: 18 }} />
-            </Link>
+            </button>
             <Link to="/demo" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 28px', border: `2px solid ${S.border}`, color: S.textDark, fontSize: 16, fontWeight: 600, borderRadius: 10, textDecoration: 'none' }} data-testid="hero-cta-watch">
               <Play style={{ width: 16, height: 16 }} /> Watch Demo
             </Link>
@@ -240,7 +262,7 @@ export default function LandingPage() {
               </p>
               <p style={{ fontSize: 14, color: S.textGray, lineHeight: 1.6, margin: 0 }}>
                 Today, Solomon AI works alongside your church's current giving provider &mdash; Pushpay, SecureGive, Tithe.ly, or whoever you trust.
-                We're building <strong style={{ color: S.textDark }}>Solomon Pay</strong>, our own giving platform with the lowest transaction fees in the industry. It launches later this year. <Link to="/demo" style={{ color: S.blue, fontWeight: 600, textDecoration: 'none' }}>Request a demo</Link> to learn more.
+                We're building <strong style={{ color: S.textDark }}>Solomon Pay</strong>, our own giving platform with the lowest transaction fees in the industry. It launches later this year. <a href="#" onClick={openLeadForm} style={{ color: S.blue, fontWeight: 600, textDecoration: 'none' }}>Request a demo</a> to learn more.
               </p>
             </div>
           </div>
@@ -362,9 +384,9 @@ export default function LandingPage() {
           <p style={{ fontSize: 16, color: '#94a3b8', lineHeight: 1.7, maxWidth: 540, margin: '0 auto 36px auto' }} data-testid="final-cta-sub">
             Join the churches that are giving more, growing faster, and leading with confidence. Solomon AI handles the platform. You handle the mission.
           </p>
-          <Link to="/demo" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '18px 40px', background: S.gold, color: '#fff', fontSize: 18, fontWeight: 800, borderRadius: 12, textDecoration: 'none' }} data-testid="final-cta-btn">
+          <button onClick={openLeadForm} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '18px 40px', background: S.gold, color: '#fff', fontSize: 18, fontWeight: 800, borderRadius: 12, border: 'none', cursor: 'pointer' }} data-testid="final-cta-btn">
             Request a Demo <ArrowRight style={{ width: 20, height: 20 }} />
-          </Link>
+          </button>
           <p style={{ fontSize: 13, color: '#64748b', marginTop: 16 }}>No credit card required &middot; 30-day free trial &middot; Cancel anytime</p>
         </div>
       </section>
@@ -411,6 +433,117 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* ── LEAD CAPTURE MODAL ── */}
+      {showLeadForm && (
+        <div
+          onClick={() => { if (!leadSubmitted) setShowLeadForm(false); }}
+          style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+          data-testid="lead-capture-overlay"
+        >
+          <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 20, maxWidth: 480, width: '100%', padding: '40px 36px', position: 'relative', boxShadow: '0 24px 64px rgba(0,0,0,0.2)' }}>
+            {!leadSubmitted && (
+              <button onClick={() => setShowLeadForm(false)} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: 4 }} data-testid="lead-form-close">
+                <X style={{ width: 20, height: 20 }} />
+              </button>
+            )}
+
+            {leadSubmitted ? (
+              <div style={{ textAlign: 'center', padding: '20px 0' }} data-testid="lead-form-success">
+                <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                  <Check style={{ width: 32, height: 32, color: '#16a34a' }} />
+                </div>
+                <h2 style={{ fontSize: 24, fontWeight: 800, color: S.textDark, margin: '0 0 12px 0' }}>Thank You!</h2>
+                <p style={{ fontSize: 15, color: S.textGray, lineHeight: 1.6, margin: '0 0 8px 0' }}>
+                  We've received your request and will contact you within 24 hours.
+                </p>
+                <p style={{ fontSize: 14, color: S.textGray, lineHeight: 1.6 }}>
+                  Our team is excited to show you how Solomon AI can transform your church management.
+                </p>
+                <button onClick={() => setShowLeadForm(false)} style={{ marginTop: 24, padding: '12px 32px', background: S.navy, color: '#fff', border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: 'pointer' }} data-testid="lead-form-done-btn">Done</button>
+              </div>
+            ) : (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: 28 }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, justifyContent: 'center', marginBottom: 8 }}>
+                    <span style={{ fontSize: 16, fontWeight: 200, letterSpacing: 6, color: S.navy }}>SOLOMON</span>
+                    <span style={{ fontSize: 16, fontWeight: 700, color: S.blue }}>AI</span>
+                  </div>
+                  <h2 style={{ fontSize: 22, fontWeight: 800, color: S.textDark, margin: '0 0 6px 0' }}>Request a Demo</h2>
+                  <p style={{ fontSize: 14, color: S.textGray, margin: 0 }}>See how Solomon AI can serve your church</p>
+                </div>
+                <form onSubmit={submitLeadForm} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <input
+                    required value={leadData.church_name}
+                    onChange={e => setLeadData({ ...leadData, church_name: e.target.value })}
+                    placeholder="Church name *"
+                    style={{ padding: '12px 16px', border: '1px solid #d1d5db', borderRadius: 10, fontSize: 15, outline: 'none' }}
+                    data-testid="lead-church-name"
+                  />
+                  <input
+                    required value={leadData.name}
+                    onChange={e => setLeadData({ ...leadData, name: e.target.value })}
+                    placeholder="Your name *"
+                    style={{ padding: '12px 16px', border: '1px solid #d1d5db', borderRadius: 10, fontSize: 15, outline: 'none' }}
+                    data-testid="lead-name"
+                  />
+                  <input
+                    required type="email" value={leadData.email}
+                    onChange={e => setLeadData({ ...leadData, email: e.target.value })}
+                    placeholder="Email address *"
+                    style={{ padding: '12px 16px', border: '1px solid #d1d5db', borderRadius: 10, fontSize: 15, outline: 'none' }}
+                    data-testid="lead-email"
+                  />
+                  <input
+                    type="tel" value={leadData.phone}
+                    onChange={e => setLeadData({ ...leadData, phone: e.target.value })}
+                    placeholder="Phone number"
+                    style={{ padding: '12px 16px', border: '1px solid #d1d5db', borderRadius: 10, fontSize: 15, outline: 'none' }}
+                    data-testid="lead-phone"
+                  />
+                  <select
+                    value={leadData.current_software}
+                    onChange={e => setLeadData({ ...leadData, current_software: e.target.value })}
+                    style={{ padding: '12px 16px', border: '1px solid #d1d5db', borderRadius: 10, fontSize: 15, color: leadData.current_software ? S.textDark : '#9ca3af', outline: 'none', background: '#fff' }}
+                    data-testid="lead-current-software"
+                  >
+                    <option value="">Current software</option>
+                    <option value="planning-center">Planning Center</option>
+                    <option value="ccb">Church Community Builder</option>
+                    <option value="breeze">Breeze ChMS</option>
+                    <option value="fellowshipone">FellowshipOne</option>
+                    <option value="pushpay">Pushpay</option>
+                    <option value="other">Other</option>
+                    <option value="none">None</option>
+                  </select>
+                  <select
+                    value={leadData.church_size}
+                    onChange={e => setLeadData({ ...leadData, church_size: e.target.value })}
+                    style={{ padding: '12px 16px', border: '1px solid #d1d5db', borderRadius: 10, fontSize: 15, color: leadData.church_size ? S.textDark : '#9ca3af', outline: 'none', background: '#fff' }}
+                    data-testid="lead-church-size"
+                  >
+                    <option value="">Church size</option>
+                    <option value="<100">Under 100 members</option>
+                    <option value="100-500">100 - 500 members</option>
+                    <option value="500-1000">500 - 1,000 members</option>
+                    <option value="1000-5000">1,000 - 5,000 members</option>
+                    <option value="5000+">5,000+ members</option>
+                  </select>
+                  <button
+                    type="submit"
+                    disabled={leadLoading}
+                    style={{ padding: '14px 24px', background: leadLoading ? '#94a3b8' : S.blue, color: '#fff', border: 'none', borderRadius: 10, fontSize: 16, fontWeight: 700, cursor: leadLoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 4 }}
+                    data-testid="lead-submit-btn"
+                  >
+                    {leadLoading ? <><Loader2 style={{ width: 18, height: 18, animation: 'spin 1s linear infinite' }} /> Submitting...</> : <>Request Demo <ArrowRight style={{ width: 16, height: 16 }} /></>}
+                  </button>
+                </form>
+                <p style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', marginTop: 16 }}>11 churches already trust Solomon AI</p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

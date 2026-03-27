@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
-import { CreditCard, Building2, DollarSign, Download, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { CreditCard, DollarSign, Download, CheckCircle } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
+import SolomonPayForm from '@/components/SolomonPayForm';
 
 export default function PortalGive() {
   const { user, memberData, refreshData } = useOutletContext();
@@ -10,13 +11,13 @@ export default function PortalGive() {
   const [amount, setAmount] = useState('');
   const [fund, setFund] = useState('general');
   const [frequency, setFrequency] = useState('one-time');
-  const [paymentMethod, setPaymentMethod] = useState('card');
   const [funds, setFunds] = useState([]);
   const [givingHistory, setGivingHistory] = useState([]);
   const [savedCards, setSavedCards] = useState([]);
   const [selectedSavedCard, setSelectedSavedCard] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
 
   const quickAmounts = [25, 50, 100, 250];
 
@@ -24,19 +25,6 @@ export default function PortalGive() {
     fetchFunds();
     fetchGivingHistory();
     fetchSavedPaymentMethods();
-    
-    // Handle Stripe redirect
-    const status = searchParams.get('status');
-    const sessionId = searchParams.get('session_id');
-    
-    if (status === 'success' && sessionId) {
-      // Confirm payment and create donation record
-      confirmPayment(sessionId);
-    } else if (status === 'cancelled') {
-      toast.error('Donation was cancelled');
-      // Clear URL params
-      setSearchParams({});
-    }
   }, []);
 
   const fetchSavedPaymentMethods = async () => {
@@ -54,45 +42,8 @@ export default function PortalGive() {
   useEffect(() => {
     fetchFunds();
     fetchGivingHistory();
-    
-    // Handle Stripe redirect
-    const status = searchParams.get('status');
-    const sessionId = searchParams.get('session_id');
-    
-    if (status === 'success' && sessionId) {
-      // Confirm payment and create donation record
-      confirmPayment(sessionId);
-    } else if (status === 'cancelled') {
-      toast.error('Donation was cancelled');
-      // Clear URL params
-      setSearchParams({});
-    }
+    fetchSavedPaymentMethods();
   }, []);
-
-  const confirmPayment = async (sessionId) => {
-    try {
-      const res = await fetch(`${API_URL}/payments/status/${sessionId}`, {
-        
-      });
-      
-      if (res.ok) {
-        const data = await res.json();
-        if (data.payment_status === 'paid') {
-          setShowSuccessMessage(true);
-          toast.success('Thank you for your generous donation!');
-          // Refresh giving history
-          setTimeout(() => {
-            fetchGivingHistory();
-          }, 1000);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to confirm payment:', error);
-    } finally {
-      // Clear URL params
-      setSearchParams({});
-    }
-  };
 
   const fetchFunds = async () => {
     try {
@@ -119,42 +70,39 @@ export default function PortalGive() {
     }
   };
 
-  const handleGive = async () => {
+  const handleGive = () => {
     if (!amount || parseFloat(amount) <= 0) {
       toast.error('Please enter a valid amount');
       return;
     }
+    setShowPayment(true);
+  };
 
-    setIsLoading(true);
-    try {
-      // Use the donate endpoint (mocked payment processing)
-      const response = await fetch(`${API_URL}/portal/giving/donate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: parseFloat(amount),
-          fund_id: fund,
-          fund_name: funds.find(f => f.id === fund)?.name || 'General Fund',
-          frequency: frequency,
-          payment_method: selectedSavedCard ? 'saved_card' : paymentMethod,
-          payment_method_id: selectedSavedCard || null,
-          donor_name: user?.name
-        })
-      });
-
-      if (response.ok) {
-        setShowSuccessMessage(true);
-        toast.success(`Thank you for your generous gift of $${amount}!`);
-        setAmount('');
-        setTimeout(() => fetchGivingHistory(), 500);
-      } else {
-        throw new Error('Failed to process donation');
-      }
-    } catch (error) {
-      toast.error('Unable to process donation. Please try again.');
-    } finally {
-      setIsLoading(false);
+  const handleSolomonPaySuccess = async (cardData) => {
+    const fundObj = funds.find(f => f.id === fund);
+    const response = await fetch(`${API_URL}/solomonpay/process`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...cardData,
+        amount: parseFloat(amount),
+        context: 'donation',
+        fund_id: fund,
+        fund_name: fundObj?.name || 'General Fund',
+        frequency,
+        description: `${frequency === 'one-time' ? 'One-time' : frequency} gift to ${fundObj?.name || 'General Fund'}`,
+      }),
+    });
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.detail || 'Payment failed');
     }
+    setShowPayment(false);
+    setShowSuccessMessage(true);
+    toast.success(`Thank you for your generous gift of $${amount}!`);
+    setAmount('');
+    setTimeout(() => fetchGivingHistory(), 500);
+    setTimeout(() => fetchSavedPaymentMethods(), 500);
   };
 
   const ytdGiving = memberData?.giving?.ytd_total || 0;
@@ -251,48 +199,35 @@ export default function PortalGive() {
 
           {/* Payment Method */}
           <div className="portal-form-section">
-            <label className="portal-form-label">PAYMENT METHOD</label>
+            <label className="portal-form-label">PAYMENT</label>
             
             {/* Saved Cards */}
-            {savedCards.length > 0 && (
+            {savedCards.length > 0 && !showPayment && (
               <div className="portal-saved-cards" style={{ marginBottom: '12px' }}>
                 <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '8px' }}>Saved Cards</p>
                 {savedCards.map((card) => (
                   <button
                     key={card.id}
-                    onClick={() => {
-                      setSelectedSavedCard(card.id);
-                      setPaymentMethod('saved');
-                    }}
+                    onClick={() => setSelectedSavedCard(card.id === selectedSavedCard ? null : card.id)}
                     className={`portal-saved-card ${selectedSavedCard === card.id ? 'active' : ''}`}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
+                      display: 'flex', alignItems: 'center', gap: '10px',
                       padding: '10px 14px',
-                      border: selectedSavedCard === card.id ? '2px solid #3b82f6' : '1px solid #e2e8f0',
+                      border: selectedSavedCard === card.id ? '2px solid #0f172a' : '1px solid #e2e8f0',
                       borderRadius: '8px',
-                      background: selectedSavedCard === card.id ? '#eff6ff' : 'white',
-                      width: '100%',
-                      marginBottom: '8px',
-                      cursor: 'pointer',
+                      background: selectedSavedCard === card.id ? '#f8fafc' : 'white',
+                      width: '100%', marginBottom: '8px', cursor: 'pointer',
                       transition: 'all 0.15s ease'
                     }}
                     data-testid={`saved-card-${card.id}`}
                   >
-                    <CreditCard className="w-4 h-4" style={{ color: '#3b82f6' }} />
+                    <CreditCard className="w-4 h-4" style={{ color: '#0f172a' }} />
                     <span style={{ fontWeight: '500' }}>{card.card_brand} •••• {card.card_last_four}</span>
                     <span style={{ fontSize: '12px', color: '#94a3b8', marginLeft: 'auto' }}>
                       Exp {card.card_exp_month}/{card.card_exp_year}
                     </span>
                     {card.is_default && (
-                      <span style={{ 
-                        fontSize: '10px', 
-                        background: '#dcfce7', 
-                        color: '#16a34a', 
-                        padding: '2px 6px', 
-                        borderRadius: '10px' 
-                      }}>
+                      <span style={{ fontSize: '10px', background: '#dcfce7', color: '#16a34a', padding: '2px 6px', borderRadius: '10px' }}>
                         Default
                       </span>
                     )}
@@ -301,63 +236,33 @@ export default function PortalGive() {
               </div>
             )}
             
-            <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '8px' }}>
-              {savedCards.length > 0 ? 'Or use a new payment method' : 'Choose payment method'}
-            </p>
-            <div className="portal-payment-methods">
-              <button
-                onClick={() => {
-                  setPaymentMethod('card');
-                  setSelectedSavedCard(null);
-                }}
-                className={`portal-payment-method ${paymentMethod === 'card' && !selectedSavedCard ? 'active' : ''}`}
-                data-testid="payment-method-card"
-              >
-                <CreditCard className="w-4 h-4" />
-                Card / ACH
-              </button>
-              <button
-                onClick={() => {
-                  setPaymentMethod('paypal');
-                  setSelectedSavedCard(null);
-                }}
-                className={`portal-payment-method ${paymentMethod === 'paypal' ? 'active' : ''}`}
-              >
-                <span className="text-blue-600 font-bold text-sm">P</span>
-                PayPal
-              </button>
-              <button
-                onClick={() => {
-                  setPaymentMethod('venmo');
-                  setSelectedSavedCard(null);
-                }}
-                className={`portal-payment-method ${paymentMethod === 'venmo' ? 'active' : ''}`}
-              >
-                <span className="text-blue-500 font-bold text-sm">V</span>
-                Venmo
-              </button>
-              <button
-                onClick={() => {
-                  setPaymentMethod('zelle');
-                  setSelectedSavedCard(null);
-                }}
-                className={`portal-payment-method ${paymentMethod === 'zelle' ? 'active' : ''}`}
-              >
-                <span className="text-purple-600 font-bold text-sm">Z</span>
-                Zelle
-              </button>
-            </div>
+            {showPayment ? (
+              <div style={{ marginTop: 8 }}>
+                <SolomonPayForm
+                  amount={parseFloat(amount)}
+                  onSuccess={handleSolomonPaySuccess}
+                  onCancel={() => setShowPayment(false)}
+                  context="donation"
+                />
+              </div>
+            ) : (
+              <p style={{ fontSize: '13px', color: '#64748b' }}>
+                Secure payment powered by SolomonPay
+              </p>
+            )}
           </div>
 
           {/* Submit Button */}
-          <button
-            onClick={handleGive}
-            disabled={isLoading || !amount}
-            className="portal-give-btn"
-            data-testid="give-submit-btn"
-          >
-            {isLoading ? 'Processing...' : `Give ${amount ? `$${amount}` : ''} →`}
-          </button>
+          {!showPayment && (
+            <button
+              onClick={handleGive}
+              disabled={isLoading || !amount}
+              className="portal-give-btn"
+              data-testid="give-submit-btn"
+            >
+              {isLoading ? 'Processing...' : `Give ${amount ? `$${amount}` : ''} with SolomonPay`}
+            </button>
+          )}
         </div>
 
         {/* Giving Summary */}
