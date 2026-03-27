@@ -485,6 +485,9 @@ class GroupBase(BaseModel):
     leader_id: Optional[str] = None
     tags: List[str] = []
     group_type_id: Optional[str] = None
+    enrollment_type: str = "open"
+    campus_id: Optional[str] = None
+    category: Optional[str] = None
 
 class Group(GroupBase):
     model_config = ConfigDict(extra="ignore")
@@ -7913,6 +7916,9 @@ class GroupCreate(BaseModel):
     capacity: Optional[int] = None
     is_open: bool = True
     leader_name: Optional[str] = None
+    enrollment_type: str = "open"
+    campus_id: Optional[str] = None
+    category: Optional[str] = None
 
 @api_router.get("/admin/groups")
 async def get_admin_groups(
@@ -7979,7 +7985,10 @@ async def create_group(request: Request, group_data: GroupCreate):
         location=group_data.location,
         capacity=group_data.capacity,
         is_open=group_data.is_open,
-        is_active=True
+        is_active=True,
+        enrollment_type=group_data.enrollment_type,
+        campus_id=group_data.campus_id,
+        category=group_data.category,
     )
     
     await db.groups.insert_one(new_group.model_dump())
@@ -8003,7 +8012,8 @@ async def update_group(request: Request, group_id: str, updates: dict):
     
     allowed_fields = [
         "name", "description", "group_type", "meeting_day", "meeting_time",
-        "location", "capacity", "is_open", "leader_id"
+        "location", "capacity", "is_open", "leader_id", "enrollment_type",
+        "campus_id", "category", "tags"
     ]
     
     update_data = {k: v for k, v in updates.items() if k in allowed_fields}
@@ -8093,6 +8103,8 @@ async def request_to_join_group(request: Request, group_id: str):
     if not group.get("is_open", True):
         raise HTTPException(status_code=400, detail="This group is not accepting new members")
     
+    enrollment_type = group.get("enrollment_type", "open")
+    
     # Check capacity
     if group.get("capacity"):
         current_count = await db.group_members.count_documents({"group_id": group_id, "is_active": True})
@@ -8113,7 +8125,31 @@ async def request_to_join_group(request: Request, group_id: str):
     if existing:
         raise HTTPException(status_code=400, detail="You are already a member of this group")
     
-    # Add to group
+    # Check for pending join request
+    pending_request = await db.group_join_requests.find_one({
+        "group_id": group_id,
+        "person_id": person["id"],
+        "status": "pending"
+    })
+    if pending_request:
+        raise HTTPException(status_code=400, detail="You already have a pending join request")
+    
+    # Handle request_to_join enrollment
+    if enrollment_type == "request_to_join":
+        join_request = {
+            "id": str(uuid.uuid4()),
+            "tenant_id": tenant_id,
+            "group_id": group_id,
+            "person_id": person["id"],
+            "person_name": f"{person.get('first_name', '')} {person.get('last_name', '')}".strip(),
+            "person_email": person.get("email", ""),
+            "status": "pending",
+            "requested_at": datetime.now(timezone.utc).isoformat(),
+        }
+        await db.group_join_requests.insert_one(join_request)
+        return {"message": f"Your request to join {group['name']} has been submitted for approval", "status": "pending"}
+    
+    # Add to group directly for open enrollment
     new_membership = GroupMember(
         tenant_id=tenant_id,
         group_id=group_id,
@@ -8376,6 +8412,299 @@ async def log_member_outreach(request: Request, group_id: str):
     await db.group_outreach_logs.insert_one(outreach_log)
     
     return {"message": "Outreach logged", "id": outreach_log["id"]}
+
+# ============== PHASE 4: GROUP JOIN REQUESTS ==============
+
+@api_router.get("/admin/groups/{group_id}/join-requests")
+async def get_group_join_requests(request: Request, group_id: str, status: Optional[str] = None):
+    """Get join requests for a group"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    query = {"group_id": group_id, "tenant_id": tenant_id}
+    if status:
+        query["status"] = status
+    requests_list = await db.group_join_requests.find(query, {"_id": 0}).sort("requested_at", -1).to_list(100)
+    return {"requests": requests_list, "total": len(requests_list)}
+
+@api_router.get("/admin/groups/join-requests/all")
+async def get_all_join_requests(request: Request):
+    """Get all pending join requests across all groups"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    requests_list = await db.group_join_requests.find(
+        {"tenant_id": tenant_id, "status": "pending"}, {"_id": 0}
+    ).sort("requested_at", -1).to_list(200)
+    # Enrich with group names
+    for req in requests_list:
+        group = await db.groups.find_one({"id": req["group_id"]}, {"_id": 0, "name": 1})
+        req["group_name"] = group.get("name", "Unknown") if group else "Unknown"
+    return {"requests": requests_list, "total": len(requests_list)}
+
+@api_router.put("/admin/groups/{group_id}/join-requests/{request_id}")
+async def handle_join_request(request: Request, group_id: str, request_id: str, payload: dict):
+    """Approve or reject a join request"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    action = payload.get("action", "approve")
+    
+    join_req = await db.group_join_requests.find_one(
+        {"id": request_id, "group_id": group_id, "tenant_id": tenant_id}, {"_id": 0}
+    )
+    if not join_req:
+        raise HTTPException(status_code=404, detail="Join request not found")
+    
+    if action == "approve":
+        # Add member to group
+        membership = {
+            "id": str(uuid.uuid4()),
+            "tenant_id": tenant_id,
+            "group_id": group_id,
+            "person_id": join_req["person_id"],
+            "role": "member",
+            "joined_at": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            "is_active": True,
+            "approved_by": user.get("user_id"),
+        }
+        await db.group_members.insert_one(membership)
+        await db.groups.update_one({"id": group_id}, {"$inc": {"member_count": 1}})
+        await db.group_join_requests.update_one(
+            {"id": request_id},
+            {"$set": {"status": "approved", "handled_at": datetime.now(timezone.utc).isoformat(), "handled_by": user.get("user_id")}}
+        )
+        return {"message": f"Approved {join_req.get('person_name', 'member')}'s request"}
+    else:
+        await db.group_join_requests.update_one(
+            {"id": request_id},
+            {"$set": {"status": "rejected", "handled_at": datetime.now(timezone.utc).isoformat(), "handled_by": user.get("user_id"), "rejection_reason": payload.get("reason", "")}}
+        )
+        return {"message": f"Rejected {join_req.get('person_name', 'member')}'s request"}
+
+# ============== PHASE 4: GROUP EVENTS + RSVP ==============
+
+@api_router.get("/admin/groups/{group_id}/events")
+async def get_group_events(request: Request, group_id: str):
+    """Get events for a specific group"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    events = await db.group_events.find(
+        {"group_id": group_id, "tenant_id": tenant_id}, {"_id": 0}
+    ).sort("event_date", -1).to_list(100)
+    # Enrich with RSVP counts
+    for evt in events:
+        rsvps = await db.group_event_rsvps.find({"event_id": evt["id"]}, {"_id": 0}).to_list(200)
+        evt["rsvp_counts"] = {
+            "attending": len([r for r in rsvps if r.get("response") == "attending"]),
+            "maybe": len([r for r in rsvps if r.get("response") == "maybe"]),
+            "declined": len([r for r in rsvps if r.get("response") == "declined"]),
+        }
+        evt["total_rsvps"] = len(rsvps)
+    return {"events": events, "total": len(events)}
+
+@api_router.post("/admin/groups/{group_id}/events")
+async def create_group_event(request: Request, group_id: str, payload: dict):
+    """Create a group event"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    event = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "group_id": group_id,
+        "title": payload.get("title", ""),
+        "description": payload.get("description", ""),
+        "event_date": payload.get("event_date", ""),
+        "event_time": payload.get("event_time", ""),
+        "location": payload.get("location", ""),
+        "created_by": user.get("user_id"),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.group_events.insert_one(event)
+    return {"event": {k: v for k, v in event.items() if k != "_id"}}
+
+@api_router.put("/admin/groups/{group_id}/events/{event_id}")
+async def update_group_event(request: Request, group_id: str, event_id: str, payload: dict):
+    """Update a group event"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    updates = {}
+    for field in ["title", "description", "event_date", "event_time", "location"]:
+        if field in payload:
+            updates[field] = payload[field]
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.group_events.update_one(
+        {"id": event_id, "group_id": group_id, "tenant_id": tenant_id}, {"$set": updates}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return {"message": "Event updated"}
+
+@api_router.delete("/admin/groups/{group_id}/events/{event_id}")
+async def delete_group_event(request: Request, group_id: str, event_id: str):
+    """Delete a group event"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    result = await db.group_events.delete_one({"id": event_id, "group_id": group_id, "tenant_id": tenant_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    await db.group_event_rsvps.delete_many({"event_id": event_id})
+    return {"message": "Event deleted"}
+
+@api_router.post("/admin/groups/{group_id}/events/{event_id}/rsvp")
+async def rsvp_group_event(request: Request, group_id: str, event_id: str, payload: dict):
+    """RSVP to a group event (admin on behalf of member)"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    person_id = payload.get("person_id")
+    response = payload.get("response", "attending")
+    
+    existing = await db.group_event_rsvps.find_one({"event_id": event_id, "person_id": person_id})
+    if existing:
+        await db.group_event_rsvps.update_one(
+            {"event_id": event_id, "person_id": person_id},
+            {"$set": {"response": response, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+    else:
+        rsvp = {
+            "id": str(uuid.uuid4()),
+            "tenant_id": tenant_id,
+            "event_id": event_id,
+            "group_id": group_id,
+            "person_id": person_id,
+            "person_name": payload.get("person_name", ""),
+            "response": response,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+        await db.group_event_rsvps.insert_one(rsvp)
+    return {"message": f"RSVP recorded as {response}"}
+
+@api_router.get("/admin/groups/{group_id}/events/{event_id}/rsvps")
+async def get_event_rsvps(request: Request, group_id: str, event_id: str):
+    """Get RSVPs for a group event"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    rsvps = await db.group_event_rsvps.find(
+        {"event_id": event_id, "tenant_id": tenant_id}, {"_id": 0}
+    ).to_list(200)
+    return {"rsvps": rsvps, "total": len(rsvps)}
+
+# ============== PHASE 4: GROUP RESOURCES ==============
+
+@api_router.get("/admin/groups/{group_id}/resources")
+async def get_group_resources(request: Request, group_id: str):
+    """Get shared resources for a group"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    resources = await db.group_resources.find(
+        {"group_id": group_id, "tenant_id": tenant_id}, {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    return {"resources": resources, "total": len(resources)}
+
+@api_router.post("/admin/groups/{group_id}/resources")
+async def add_group_resource(request: Request, group_id: str, payload: dict):
+    """Add a resource to a group"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    resource = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "group_id": group_id,
+        "title": payload.get("title", ""),
+        "description": payload.get("description", ""),
+        "resource_type": payload.get("resource_type", "link"),
+        "url": payload.get("url", ""),
+        "created_by": user.get("user_id"),
+        "created_by_name": user.get("name", "Admin"),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.group_resources.insert_one(resource)
+    return {"resource": {k: v for k, v in resource.items() if k != "_id"}}
+
+@api_router.delete("/admin/groups/{group_id}/resources/{resource_id}")
+async def delete_group_resource(request: Request, group_id: str, resource_id: str):
+    """Delete a group resource"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    result = await db.group_resources.delete_one({"id": resource_id, "group_id": group_id, "tenant_id": tenant_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Resource not found")
+    return {"message": "Resource deleted"}
+
+# ============== PHASE 4: GROUP CHAT (Scaffolding) ==============
+
+@api_router.get("/admin/groups/{group_id}/messages")
+async def get_group_messages(request: Request, group_id: str, limit: int = 50, before: Optional[str] = None):
+    """Get chat messages for a group"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    query = {"group_id": group_id, "tenant_id": tenant_id}
+    if before:
+        query["created_at"] = {"$lt": before}
+    messages = await db.group_messages.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    messages.reverse()
+    return {"messages": messages, "total": len(messages)}
+
+@api_router.post("/admin/groups/{group_id}/messages")
+async def send_group_message(request: Request, group_id: str, payload: dict):
+    """Send a message in group chat"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    message = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "group_id": group_id,
+        "sender_id": user.get("user_id"),
+        "sender_name": user.get("name", "Admin"),
+        "content": payload.get("content", ""),
+        "message_type": payload.get("message_type", "text"),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.group_messages.insert_one(message)
+    return {"message": {k: v for k, v in message.items() if k != "_id"}}
+
+@api_router.get("/portal/groups/{group_id}/messages")
+async def get_portal_group_messages(request: Request, group_id: str, limit: int = 50):
+    """Portal: Get group messages for member"""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    tenant_id = user.get("tenant_id")
+    messages = await db.group_messages.find(
+        {"group_id": group_id, "tenant_id": tenant_id}, {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    messages.reverse()
+    return {"messages": messages}
+
+@api_router.post("/portal/groups/{group_id}/messages")
+async def send_portal_group_message(request: Request, group_id: str, payload: dict):
+    """Portal: Send message in group chat"""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    tenant_id = user.get("tenant_id")
+    person = await db.people.find_one({"email": user["email"], "tenant_id": tenant_id}, {"_id": 0})
+    # Verify membership
+    membership = await db.group_members.find_one({"group_id": group_id, "person_id": person["id"], "is_active": True})
+    if not membership:
+        raise HTTPException(status_code=403, detail="You must be a member of this group to send messages")
+    message = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "group_id": group_id,
+        "sender_id": user.get("user_id"),
+        "sender_name": f"{person.get('first_name', '')} {person.get('last_name', '')}".strip(),
+        "content": payload.get("content", ""),
+        "message_type": "text",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.group_messages.insert_one(message)
+    return {"message": {k: v for k, v in message.items() if k != "_id"}}
 
 # Group messaging routes extracted to routes/messaging.py
 

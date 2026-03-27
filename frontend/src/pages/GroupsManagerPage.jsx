@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Users, Plus, Search, Edit, Trash2, UserPlus, MapPin, Clock,
   Calendar, ChevronRight, MoreVertical, CheckCircle, XCircle,
-  Loader2, X, BarChart3
+  Loader2, X, BarChart3, Inbox, Check, Ban
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
   DialogContent,
@@ -40,9 +42,15 @@ export default function GroupsManagerPage() {
   const [editingGroup, setEditingGroup] = useState(null);
   const [viewingGroup, setViewingGroup] = useState(null);
   const [stats, setStats] = useState({ total: 0, open: 0, members: 0 });
+  const [activeTab, setActiveTab] = useState('groups');
+  const [joinRequests, setJoinRequests] = useState([]);
+
+  const token = localStorage.getItem('session_token');
+  const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   useEffect(() => {
     fetchGroups();
+    fetchJoinRequests();
   }, [searchQuery, filterType]);
 
   // Real-time polling every 30 seconds
@@ -75,6 +83,30 @@ export default function GroupsManagerPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchJoinRequests = async () => {
+    try {
+      const res = await fetch(`${API_URL}/admin/groups/join-requests/all`, { headers: authHeaders });
+      if (res.ok) {
+        const data = await res.json();
+        setJoinRequests(data.requests || []);
+      }
+    } catch (err) { console.error('Failed to fetch join requests:', err); }
+  };
+
+  const handleJoinRequest = async (groupId, requestId, action) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/groups/${groupId}/join-requests/${requestId}`, {
+        method: 'PUT', headers: authHeaders,
+        body: JSON.stringify({ action }),
+      });
+      if (res.ok) {
+        toast.success(action === 'approve' ? 'Request approved' : 'Request rejected');
+        fetchJoinRequests();
+        fetchGroups();
+      }
+    } catch (err) { toast.error('Failed to process request'); }
   };
 
   const handleDeleteGroup = async (groupId) => {
@@ -157,61 +189,122 @@ export default function GroupsManagerPage() {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="groups-filters-bar">
-        <div className="groups-search">
-          <Search className="w-4 h-4 text-slate-400" />
-          <Input
-            type="text"
-            placeholder="Search groups..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="groups-search-input"
-          />
-        </div>
+      {/* Tabs: Groups + Join Requests */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
+        <TabsList className="bg-white border border-slate-200 p-1">
+          <TabsTrigger value="groups" data-testid="tab-groups">
+            <Users className="w-4 h-4 mr-2" />
+            Groups
+          </TabsTrigger>
+          <TabsTrigger value="requests" data-testid="tab-join-requests">
+            <Inbox className="w-4 h-4 mr-2" />
+            Join Requests
+            {joinRequests.length > 0 && (
+              <Badge className="ml-1.5 bg-amber-100 text-amber-700 border-amber-200 text-xs px-1.5">{joinRequests.length}</Badge>
+            )}
+          </TabsTrigger>
+        </TabsList>
 
-        <select
-          value={filterType}
-          onChange={(e) => setFilterType(e.target.value)}
-          className="groups-type-select"
-        >
-          <option value="all">All Types</option>
-          {GROUP_TYPES.map(type => (
-            <option key={type.id} value={type.name}>{type.icon} {type.name}</option>
-          ))}
-        </select>
-      </div>
+        <TabsContent value="groups" className="mt-4">
+          {/* Filters */}
+          <div className="groups-filters-bar">
+            <div className="groups-search">
+              <Search className="w-4 h-4 text-slate-400" />
+              <Input
+                type="text"
+                placeholder="Search groups..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="groups-search-input"
+              />
+            </div>
 
-      {/* Groups List */}
-      {loading ? (
-        <div className="groups-loading">
-          <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
-          <p>Loading groups...</p>
-        </div>
-      ) : groups.length === 0 ? (
-        <div className="groups-empty-state">
-          <Users className="w-16 h-16 text-slate-300" />
-          <h2>No groups yet</h2>
-          <p>Create groups for members to discover and join.</p>
-          <Button onClick={() => setShowAddModal(true)} className="groups-add-btn">
-            <Plus className="w-4 h-4" />
-            Create Your First Group
-          </Button>
-        </div>
-      ) : (
-        <div className="groups-grid" data-testid="groups-grid">
-          {groups.map(group => (
-            <GroupCard 
-              key={group.id} 
-              group={group}
-              onEdit={() => setEditingGroup(group)}
-              onDelete={() => handleDeleteGroup(group.id)}
-              onToggleOpen={() => handleToggleOpen(group)}
-              onViewMembers={() => setViewingGroup(group)}
-            />
-          ))}
-        </div>
-      )}
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="groups-type-select"
+            >
+              <option value="all">All Types</option>
+              {GROUP_TYPES.map(type => (
+                <option key={type.id} value={type.name}>{type.icon} {type.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Groups List */}
+          {loading ? (
+            <div className="groups-loading">
+              <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+              <p>Loading groups...</p>
+            </div>
+          ) : groups.length === 0 ? (
+            <div className="groups-empty-state">
+              <Users className="w-16 h-16 text-slate-300" />
+              <h2>No groups yet</h2>
+              <p>Create groups for members to discover and join.</p>
+              <Button onClick={() => setShowAddModal(true)} className="groups-add-btn">
+                <Plus className="w-4 h-4" />
+                Create Your First Group
+              </Button>
+            </div>
+          ) : (
+            <div className="groups-grid" data-testid="groups-grid">
+              {groups.map(group => (
+                <GroupCard 
+                  key={group.id} 
+                  group={group}
+                  onEdit={() => setEditingGroup(group)}
+                  onDelete={() => handleDeleteGroup(group.id)}
+                  onToggleOpen={() => handleToggleOpen(group)}
+                  onViewMembers={() => setViewingGroup(group)}
+                />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="requests" className="mt-4">
+          {joinRequests.length === 0 ? (
+            <div className="bg-white border border-slate-200 rounded-xl p-12 text-center" data-testid="requests-empty">
+              <Inbox className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-slate-900 mb-1">No pending requests</h3>
+              <p className="text-sm text-slate-500">When members request to join groups with approval required, they'll appear here.</p>
+            </div>
+          ) : (
+            <div className="space-y-3" data-testid="join-requests-list">
+              {joinRequests.map((req) => (
+                <div key={req.id} className="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between" data-testid={`join-request-${req.id}`}>
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center">
+                      <UserPlus className="w-5 h-5 text-amber-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800">{req.person_name || 'Unknown'}</p>
+                      <p className="text-xs text-slate-500">
+                        Wants to join <span className="font-medium text-slate-700">{req.group_name || 'Unknown Group'}</span>
+                        {req.person_email && <span className="ml-2 text-slate-400">{req.person_email}</span>}
+                      </p>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        Requested {req.requested_at ? new Date(req.requested_at).toLocaleDateString() : 'Recently'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50"
+                      onClick={() => handleJoinRequest(req.group_id, req.id, 'reject')} data-testid={`reject-request-${req.id}`}>
+                      <Ban className="w-3.5 h-3.5 mr-1" /> Reject
+                    </Button>
+                    <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                      onClick={() => handleJoinRequest(req.group_id, req.id, 'approve')} data-testid={`approve-request-${req.id}`}>
+                      <Check className="w-3.5 h-3.5 mr-1" /> Approve
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
 
       {/* Add Group Modal */}
       <AddGroupModal 
@@ -256,9 +349,14 @@ function GroupCard({ group, onEdit, onDelete, onToggleOpen, onViewMembers }) {
     <div className={`group-card ${!group.is_open ? 'closed' : ''}`} data-testid={`group-card-${group.id}`}>
       <div className="group-card-header">
         <span className="group-type-badge">{typeInfo.icon} {group.group_type || 'Small Group'}</span>
-        <span className={`group-status-badge ${group.is_open ? 'open' : 'closed'}`}>
-          {group.is_open ? 'Open' : 'Closed'}
-        </span>
+        <div className="flex items-center gap-1.5">
+          {group.enrollment_type === 'request_to_join' && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold bg-amber-50 text-amber-700 rounded-full border border-amber-200">Approval Required</span>
+          )}
+          <span className={`group-status-badge ${group.is_open ? 'open' : 'closed'}`}>
+            {group.enrollment_type === 'closed' ? 'Invite Only' : group.is_open ? 'Open' : 'Closed'}
+          </span>
+        </div>
       </div>
       
       <h3 className="group-card-title">{group.name}</h3>
@@ -316,6 +414,8 @@ function AddGroupModal({ open, onClose, onSuccess }) {
   const [location, setLocation] = useState('');
   const [capacity, setCapacity] = useState('');
   const [isOpen, setIsOpen] = useState(true);
+  const [enrollmentType, setEnrollmentType] = useState('open');
+  const [category, setCategory] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -339,22 +439,18 @@ function AddGroupModal({ open, onClose, onSuccess }) {
           meeting_time: meetingTime || null,
           location: location || null,
           capacity: capacity ? parseInt(capacity) : null,
-          is_open: isOpen
+          is_open: enrollmentType !== 'closed',
+          enrollment_type: enrollmentType,
+          category: category || null,
         })
       });
 
       if (res.ok) {
         toast.success('Group created!');
         onSuccess();
-        // Reset form
-        setName('');
-        setDescription('');
-        setGroupType('Small Group');
-        setMeetingDay('');
-        setMeetingTime('');
-        setLocation('');
-        setCapacity('');
-        setIsOpen(true);
+        setName(''); setDescription(''); setGroupType('Small Group');
+        setMeetingDay(''); setMeetingTime(''); setLocation('');
+        setCapacity(''); setIsOpen(true); setEnrollmentType('open'); setCategory('');
       } else {
         const data = await res.json();
         toast.error(data.detail || 'Failed to create group');
@@ -470,6 +566,43 @@ function AddGroupModal({ open, onClose, onSuccess }) {
             Open for new members to join
           </label>
 
+          <div className="form-row">
+            <div className="form-group">
+              <label>Enrollment Type</label>
+              <select
+                value={enrollmentType}
+                onChange={(e) => setEnrollmentType(e.target.value)}
+                className="form-select"
+                data-testid="enrollment-type-select"
+              >
+                <option value="open">Open — Anyone can join</option>
+                <option value="request_to_join">Request to Join — Requires approval</option>
+                <option value="closed">Closed — Invite only</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Category (optional)</label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="form-select"
+                data-testid="category-select"
+              >
+                <option value="">No category</option>
+                <option value="discipleship">Discipleship</option>
+                <option value="fellowship">Fellowship</option>
+                <option value="outreach">Outreach</option>
+                <option value="prayer">Prayer</option>
+                <option value="study">Bible Study</option>
+                <option value="youth">Youth</option>
+                <option value="women">Women's Ministry</option>
+                <option value="men">Men's Ministry</option>
+                <option value="recovery">Recovery</option>
+                <option value="serving">Serving Teams</option>
+              </select>
+            </div>
+          </div>
+
           <div className="modal-actions">
             <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
             <Button type="submit" disabled={loading || !name}>
@@ -491,6 +624,8 @@ function EditGroupModal({ group, open, onClose, onSuccess }) {
   const [meetingTime, setMeetingTime] = useState(group.meeting_time || '');
   const [location, setLocation] = useState(group.location || '');
   const [capacity, setCapacity] = useState(group.capacity?.toString() || '');
+  const [enrollmentType, setEnrollmentType] = useState(group.enrollment_type || 'open');
+  const [category, setCategory] = useState(group.category || '');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -509,7 +644,10 @@ function EditGroupModal({ group, open, onClose, onSuccess }) {
           meeting_day: meetingDay || null,
           meeting_time: meetingTime || null,
           location: location || null,
-          capacity: capacity ? parseInt(capacity) : null
+          capacity: capacity ? parseInt(capacity) : null,
+          enrollment_type: enrollmentType,
+          category: category || null,
+          is_open: enrollmentType !== 'closed',
         })
       });
 
@@ -576,6 +714,33 @@ function EditGroupModal({ group, open, onClose, onSuccess }) {
           <div className="form-group">
             <label>Description</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="form-textarea" rows={2} />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Enrollment Type</label>
+              <select value={enrollmentType} onChange={(e) => setEnrollmentType(e.target.value)} className="form-select" data-testid="edit-enrollment-type">
+                <option value="open">Open</option>
+                <option value="request_to_join">Request to Join</option>
+                <option value="closed">Closed / Invite Only</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Category</label>
+              <select value={category} onChange={(e) => setCategory(e.target.value)} className="form-select" data-testid="edit-category">
+                <option value="">No category</option>
+                <option value="discipleship">Discipleship</option>
+                <option value="fellowship">Fellowship</option>
+                <option value="outreach">Outreach</option>
+                <option value="prayer">Prayer</option>
+                <option value="study">Bible Study</option>
+                <option value="youth">Youth</option>
+                <option value="women">Women's Ministry</option>
+                <option value="men">Men's Ministry</option>
+                <option value="recovery">Recovery</option>
+                <option value="serving">Serving Teams</option>
+              </select>
+            </div>
           </div>
 
           <div className="modal-actions">

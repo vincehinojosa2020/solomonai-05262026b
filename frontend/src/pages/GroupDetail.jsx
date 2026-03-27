@@ -1,11 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Edit, UserPlus, Mail, MoreHorizontal, MapPin, Clock, Users } from 'lucide-react';
+import { ArrowLeft, Edit, UserPlus, Mail, MoreHorizontal, MapPin, Clock, Users,
+  CalendarDays, LinkIcon, MessageCircle, Plus, Trash2, Send, FileText, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { API_URL, formatDate, getInitials } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export default function GroupDetail() {
   const { groupId } = useParams();
@@ -15,9 +21,24 @@ export default function GroupDetail() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('roster');
+  const [events, setEvents] = useState([]);
+  const [resources, setResources] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [showEventForm, setShowEventForm] = useState(false);
+  const [showResourceForm, setShowResourceForm] = useState(false);
+  const [newMessage, setNewMessage] = useState('');
+  const [eventForm, setEventForm] = useState({ title: '', description: '', event_date: '', event_time: '', location: '' });
+  const [resourceForm, setResourceForm] = useState({ title: '', description: '', resource_type: 'link', url: '' });
+  const chatEndRef = useRef(null);
+
+  const token = localStorage.getItem('session_token');
+  const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   useEffect(() => {
     fetchGroupData();
+    fetchEvents();
+    fetchResources();
+    fetchMessages();
   }, [groupId]);
 
   const fetchGroupData = async () => {
@@ -25,7 +46,7 @@ export default function GroupDetail() {
     try {
       const [groupRes, membersRes] = await Promise.all([
         fetch(`${API_URL}/groups/${groupId}`),
-        fetch(`${API_URL}/groups/${groupId}/members`),
+        fetch(`${API_URL}/groups/${groupId}/members/list`),
       ]);
 
       const [groupData, membersData] = await Promise.all([
@@ -34,12 +55,89 @@ export default function GroupDetail() {
       ]);
 
       setGroup(groupData);
-      setMembers(membersData);
+      // Ensure members is always an array
+      setMembers(Array.isArray(membersData) ? membersData : (membersData.members || []));
     } catch (error) {
       console.error('Failed to fetch group data:', error);
+      setMembers([]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchEvents = async () => {
+    try {
+      const res = await fetch(`${API_URL}/admin/groups/${groupId}/events`, { headers: authHeaders });
+      if (res.ok) { const d = await res.json(); setEvents(d.events || []); }
+    } catch (e) { console.error('Failed to fetch events:', e); }
+  };
+
+  const createEvent = async () => {
+    if (!eventForm.title || !eventForm.event_date) { toast.error('Title and date required'); return; }
+    try {
+      const res = await fetch(`${API_URL}/admin/groups/${groupId}/events`, {
+        method: 'POST', headers: authHeaders, body: JSON.stringify(eventForm)
+      });
+      if (res.ok) { toast.success('Event created'); setShowEventForm(false); setEventForm({ title: '', description: '', event_date: '', event_time: '', location: '' }); fetchEvents(); }
+    } catch (e) { toast.error('Failed to create event'); }
+  };
+
+  const deleteEvent = async (eventId) => {
+    try {
+      await fetch(`${API_URL}/admin/groups/${groupId}/events/${eventId}`, { method: 'DELETE', headers: authHeaders });
+      toast.success('Event deleted'); fetchEvents();
+    } catch (e) { toast.error('Failed to delete event'); }
+  };
+
+  const rsvpEvent = async (eventId, personId, personName, response) => {
+    try {
+      await fetch(`${API_URL}/admin/groups/${groupId}/events/${eventId}/rsvp`, {
+        method: 'POST', headers: authHeaders,
+        body: JSON.stringify({ person_id: personId, person_name: personName, response })
+      });
+      toast.success(`RSVP: ${response}`); fetchEvents();
+    } catch (e) { toast.error('Failed to RSVP'); }
+  };
+
+  const fetchResources = async () => {
+    try {
+      const res = await fetch(`${API_URL}/admin/groups/${groupId}/resources`, { headers: authHeaders });
+      if (res.ok) { const d = await res.json(); setResources(d.resources || []); }
+    } catch (e) { console.error('Failed to fetch resources:', e); }
+  };
+
+  const addResource = async () => {
+    if (!resourceForm.title) { toast.error('Title required'); return; }
+    try {
+      const res = await fetch(`${API_URL}/admin/groups/${groupId}/resources`, {
+        method: 'POST', headers: authHeaders, body: JSON.stringify(resourceForm)
+      });
+      if (res.ok) { toast.success('Resource added'); setShowResourceForm(false); setResourceForm({ title: '', description: '', resource_type: 'link', url: '' }); fetchResources(); }
+    } catch (e) { toast.error('Failed to add resource'); }
+  };
+
+  const deleteResource = async (resourceId) => {
+    try {
+      await fetch(`${API_URL}/admin/groups/${groupId}/resources/${resourceId}`, { method: 'DELETE', headers: authHeaders });
+      toast.success('Resource removed'); fetchResources();
+    } catch (e) { toast.error('Failed to delete resource'); }
+  };
+
+  const fetchMessages = async () => {
+    try {
+      const res = await fetch(`${API_URL}/admin/groups/${groupId}/messages`, { headers: authHeaders });
+      if (res.ok) { const d = await res.json(); setMessages(d.messages || []); }
+    } catch (e) { console.error('Failed to fetch messages:', e); }
+  };
+
+  const sendMessage = async () => {
+    if (!newMessage.trim()) return;
+    try {
+      const res = await fetch(`${API_URL}/admin/groups/${groupId}/messages`, {
+        method: 'POST', headers: authHeaders, body: JSON.stringify({ content: newMessage.trim() })
+      });
+      if (res.ok) { setNewMessage(''); fetchMessages(); setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 200); }
+    } catch (e) { toast.error('Failed to send message'); }
   };
 
   if (loading) {
@@ -169,6 +267,17 @@ export default function GroupDetail() {
         <TabsList className="bg-white border border-slate-200 p-1">
           <TabsTrigger value="roster" data-testid="tab-roster">Roster</TabsTrigger>
           <TabsTrigger value="attendance" data-testid="tab-attendance">Attendance</TabsTrigger>
+          <TabsTrigger value="events" data-testid="tab-events">
+            <CalendarDays className="w-4 h-4 mr-1" />Events
+            {events.length > 0 && <Badge className="ml-1 text-xs px-1.5" variant="secondary">{events.length}</Badge>}
+          </TabsTrigger>
+          <TabsTrigger value="resources" data-testid="tab-resources">
+            <FileText className="w-4 h-4 mr-1" />Resources
+          </TabsTrigger>
+          <TabsTrigger value="chat" data-testid="tab-chat">
+            <MessageCircle className="w-4 h-4 mr-1" />Chat
+            {messages.length > 0 && <Badge className="ml-1 text-xs px-1.5" variant="secondary">{messages.length}</Badge>}
+          </TabsTrigger>
           <TabsTrigger value="about" data-testid="tab-about">About</TabsTrigger>
           <TabsTrigger value="settings" data-testid="tab-settings">Settings</TabsTrigger>
         </TabsList>
@@ -258,7 +367,134 @@ export default function GroupDetail() {
           </div>
         </TabsContent>
 
-        {/* About Tab */}
+        {/* Events Tab */}
+        <TabsContent value="events" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-slate-700">Group Events</h3>
+            <Button size="sm" onClick={() => setShowEventForm(true)} data-testid="create-event-btn">
+              <Plus className="w-3.5 h-3.5 mr-1" /> New Event
+            </Button>
+          </div>
+          {events.length === 0 ? (
+            <div className="bg-white border border-slate-200 rounded-xl p-10 text-center" data-testid="events-empty">
+              <CalendarDays className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+              <p className="text-sm text-slate-500">No events yet. Create your first group event.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {events.map(evt => (
+                <div key={evt.id} className="bg-white border border-slate-200 rounded-xl p-4" data-testid={`event-${evt.id}`}>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-800">{evt.title}</h4>
+                      {evt.description && <p className="text-xs text-slate-500 mt-1">{evt.description}</p>}
+                      <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                        <span className="flex items-center gap-1"><CalendarDays className="w-3.5 h-3.5" />{formatDate(evt.event_date)}</span>
+                        {evt.event_time && <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{evt.event_time}</span>}
+                        {evt.location && <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{evt.location}</span>}
+                      </div>
+                      {evt.rsvp_counts && (
+                        <div className="flex items-center gap-3 mt-2">
+                          <Badge variant="outline" className="text-emerald-600 border-emerald-200 text-xs">{evt.rsvp_counts.attending} attending</Badge>
+                          <Badge variant="outline" className="text-amber-600 border-amber-200 text-xs">{evt.rsvp_counts.maybe} maybe</Badge>
+                          <Badge variant="outline" className="text-slate-500 border-slate-200 text-xs">{evt.rsvp_counts.declined} declined</Badge>
+                        </div>
+                      )}
+                    </div>
+                    <Button size="sm" variant="ghost" className="text-red-400 hover:text-red-600"
+                      onClick={() => deleteEvent(evt.id)} data-testid={`delete-event-${evt.id}`}>
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Resources Tab */}
+        <TabsContent value="resources" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-slate-700">Shared Resources</h3>
+            <Button size="sm" onClick={() => setShowResourceForm(true)} data-testid="add-resource-btn">
+              <Plus className="w-3.5 h-3.5 mr-1" /> Add Resource
+            </Button>
+          </div>
+          {resources.length === 0 ? (
+            <div className="bg-white border border-slate-200 rounded-xl p-10 text-center" data-testid="resources-empty">
+              <FileText className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+              <p className="text-sm text-slate-500">No resources shared yet. Add study guides, links, or documents.</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {resources.map(res => (
+                <div key={res.id} className="bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between group" data-testid={`resource-${res.id}`}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center">
+                      {res.resource_type === 'link' ? <LinkIcon className="w-4 h-4 text-blue-600" /> : <FileText className="w-4 h-4 text-blue-600" />}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-800">{res.title}</p>
+                      {res.description && <p className="text-xs text-slate-500">{res.description}</p>}
+                      <p className="text-xs text-slate-400 mt-0.5">Added by {res.created_by_name} &middot; {formatDate(res.created_at)}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {res.url && (
+                      <a href={res.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
+                    <button onClick={() => deleteResource(res.id)} className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" data-testid={`delete-resource-${res.id}`}>
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Chat Tab */}
+        <TabsContent value="chat" className="space-y-0">
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden" data-testid="group-chat">
+            <div className="p-3 border-b border-slate-100 bg-slate-50">
+              <p className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                <MessageCircle className="w-4 h-4" /> Group Chat
+              </p>
+            </div>
+            <div className="h-[400px] overflow-y-auto p-4 space-y-3" data-testid="chat-messages">
+              {messages.length === 0 ? (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-sm text-slate-400">No messages yet. Start the conversation!</p>
+                </div>
+              ) : messages.map(msg => (
+                <div key={msg.id} className="flex items-start gap-2.5" data-testid={`message-${msg.id}`}>
+                  <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                    <span className="text-xs font-semibold text-emerald-600">{(msg.sender_name || 'U').charAt(0)}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-slate-700">{msg.sender_name}</span>
+                      <span className="text-[10px] text-slate-400">{msg.created_at ? new Date(msg.created_at).toLocaleString() : ''}</span>
+                    </div>
+                    <p className="text-sm text-slate-600 mt-0.5 break-words">{msg.content}</p>
+                  </div>
+                </div>
+              ))}
+              <div ref={chatEndRef} />
+            </div>
+            <div className="p-3 border-t border-slate-100 flex items-center gap-2">
+              <Input placeholder="Type a message..." value={newMessage} onChange={e => setNewMessage(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }}}
+                className="flex-1" data-testid="chat-input" />
+              <Button size="sm" onClick={sendMessage} disabled={!newMessage.trim()} data-testid="send-message-btn">
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </TabsContent>
+
         <TabsContent value="about" className="space-y-4">
           <div className="bg-white border border-slate-200 rounded-lg p-5">
             <h3 className="font-semibold text-slate-900 mb-4">Group Details</h3>
@@ -300,6 +536,84 @@ export default function GroupDetail() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Create Event Dialog */}
+      <Dialog open={showEventForm} onOpenChange={setShowEventForm}>
+        <DialogContent data-testid="create-event-dialog">
+          <DialogHeader><DialogTitle>New Group Event</DialogTitle></DialogHeader>
+          <div className="space-y-3 py-2">
+            <div>
+              <Label>Title</Label>
+              <Input placeholder="e.g. Bible Study Night" value={eventForm.title}
+                onChange={e => setEventForm({ ...eventForm, title: e.target.value })} data-testid="event-title-input" />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Input placeholder="What's this event about?" value={eventForm.description}
+                onChange={e => setEventForm({ ...eventForm, description: e.target.value })} data-testid="event-desc-input" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Date</Label>
+                <Input type="date" value={eventForm.event_date}
+                  onChange={e => setEventForm({ ...eventForm, event_date: e.target.value })} data-testid="event-date-input" />
+              </div>
+              <div>
+                <Label>Time</Label>
+                <Input type="time" value={eventForm.event_time}
+                  onChange={e => setEventForm({ ...eventForm, event_time: e.target.value })} data-testid="event-time-input" />
+              </div>
+            </div>
+            <div>
+              <Label>Location</Label>
+              <Input placeholder="Where?" value={eventForm.location}
+                onChange={e => setEventForm({ ...eventForm, location: e.target.value })} data-testid="event-location-input" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEventForm(false)}>Cancel</Button>
+            <Button onClick={createEvent} data-testid="save-event-btn">Create Event</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Resource Dialog */}
+      <Dialog open={showResourceForm} onOpenChange={setShowResourceForm}>
+        <DialogContent data-testid="add-resource-dialog">
+          <DialogHeader><DialogTitle>Add Resource</DialogTitle></DialogHeader>
+          <div className="space-y-3 py-2">
+            <div>
+              <Label>Title</Label>
+              <Input placeholder="e.g. Week 1 Study Guide" value={resourceForm.title}
+                onChange={e => setResourceForm({ ...resourceForm, title: e.target.value })} data-testid="resource-title-input" />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Input placeholder="Brief description" value={resourceForm.description}
+                onChange={e => setResourceForm({ ...resourceForm, description: e.target.value })} data-testid="resource-desc-input" />
+            </div>
+            <div>
+              <Label>Type</Label>
+              <select className="w-full rounded-md border border-slate-200 p-2 text-sm" value={resourceForm.resource_type}
+                onChange={e => setResourceForm({ ...resourceForm, resource_type: e.target.value })} data-testid="resource-type-select">
+                <option value="link">Link / URL</option>
+                <option value="document">Document</option>
+                <option value="video">Video</option>
+                <option value="audio">Audio</option>
+              </select>
+            </div>
+            <div>
+              <Label>URL</Label>
+              <Input placeholder="https://..." value={resourceForm.url}
+                onChange={e => setResourceForm({ ...resourceForm, url: e.target.value })} data-testid="resource-url-input" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowResourceForm(false)}>Cancel</Button>
+            <Button onClick={addResource} data-testid="save-resource-btn">Add Resource</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
