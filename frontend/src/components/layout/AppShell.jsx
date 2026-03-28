@@ -506,6 +506,30 @@ export default function AppShell() {
         userName={user?.name?.split(' ')[0] || 'there'}
         onNavigate={navigate}
       />
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="admin-bottom-nav" data-testid="mobile-bottom-nav">
+        <NavLink to="/dashboard" className={({isActive}) => `admin-bottom-nav-item ${isActive ? 'active' : ''}`} data-testid="mobile-nav-dashboard">
+          <LayoutDashboard size={20} />
+          <span>Home</span>
+        </NavLink>
+        <NavLink to="/people" className={({isActive}) => `admin-bottom-nav-item ${isActive ? 'active' : ''}`} data-testid="mobile-nav-people">
+          <Users size={20} />
+          <span>People</span>
+        </NavLink>
+        <NavLink to="/services" className={({isActive}) => `admin-bottom-nav-item ${isActive ? 'active' : ''}`} data-testid="mobile-nav-services">
+          <Music size={20} />
+          <span>Services</span>
+        </NavLink>
+        <NavLink to="/admin/groups" className={({isActive}) => `admin-bottom-nav-item ${isActive ? 'active' : ''}`} data-testid="mobile-nav-groups">
+          <UsersRound size={20} />
+          <span>Groups</span>
+        </NavLink>
+        <NavLink to="/giving" className={({isActive}) => `admin-bottom-nav-item ${isActive ? 'active' : ''}`} data-testid="mobile-nav-giving">
+          <DollarSign size={20} />
+          <span>Giving</span>
+        </NavLink>
+      </nav>
     </div>
   );
 }

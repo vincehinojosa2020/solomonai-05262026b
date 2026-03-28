@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="9" time="1.572" timestamp="2026-03-28T03:52:39.101817+00:00" hostname="agent-env-7129ce9b-84c8-40f8-befa-cc54345ce9e2"><testcase classname="backend.tests.test_iter61_security.TestAPIHealth" name="test_api_health" time="0.198" /><testcase classname="backend.tests.test_iter61_security.TestCrossTenantIsolation" name="test_login_church_admin_1" time="0.120" /><testcase classname="backend.tests.test_iter61_security.TestCrossTenantIsolation" name="test_login_church_admin_2" time="0.144" /><testcase classname="backend.tests.test_iter61_security.TestCrossTenantIsolation" name="test_cross_tenant_groups_isolation" time="0.510" /><testcase classname="backend.tests.test_iter61_security.TestPlatformAdminIsolation" name="test_platform_admin_login" time="0.102" /><testcase classname="backend.tests.test_iter61_security.TestPlatformAdminIsolation" name="test_platform_admin_groups_empty" time="0.098"><failure message="assert 429 == 200&#10; +  where 429 = &lt;Response [429]&gt;.status_code">backend/tests/test_iter61_security.py:114: in test_platform_admin_groups_empty
+    assert response.status_code == 200
+E   assert 429 == 200
+E    +  where 429 = &lt;Response [429]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_iter61_security.TestPlatformAdminIsolation" name="test_platform_admin_checkin_locations_empty" time="0.100"><failure message="assert 429 == 200&#10; +  where 429 = &lt;Response [429]&gt;.status_code">backend/tests/test_iter61_security.py:141: in test_platform_admin_checkin_locations_empty
+    assert response.status_code == 200
+E   assert 429 == 200
+E    +  where 429 = &lt;Response [429]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_iter61_security.TestAuthenticationFlow" name="test_login_returns_user_data" time="0.122"><failure message="assert 429 == 200&#10; +  where 429 = &lt;Response [429]&gt;.status_code">backend/tests/test_iter61_security.py:204: in test_login_returns_user_data
+    assert response.status_code == 200
+E   assert 429 == 200
+E    +  where 429 = &lt;Response [429]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_iter61_security.TestAuthenticationFlow" name="test_invalid_credentials_returns_401" time="0.100"><failure message="AssertionError: Expected 401, got 429&#10;assert 429 == 401&#10; +  where 429 = &lt;Response [429]&gt;.status_code">backend/tests/test_iter61_security.py:224: in test_invalid_credentials_returns_401
+    assert response.status_code == 401, f"Expected 401, got {response.status_code}"
+E   AssertionError: Expected 401, got 429
+E   assert 429 == 401
+E    +  where 429 = &lt;Response [429]&gt;.status_code</failure></testcase></testsuite></testsuites>
