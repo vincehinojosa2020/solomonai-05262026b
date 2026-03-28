@@ -11,7 +11,7 @@ Solomon AI is a full-featured, multi-tenant SaaS church management system compet
 - **Multi-Tenant**: Organizations -> Campuses -> Members
 - **Mobile**: React Native (separate Emergent project, calls our APIs)
 
-## Current Parity Status: ~92%
+## Current Parity Status: ~94%
 
 ## Completed Features
 
@@ -66,6 +66,18 @@ Solomon AI is a full-featured, multi-tenant SaaS church management system compet
 - Admin Groups page has tabs: Groups + Join Requests with badge count
 - GroupDetail page has tabs: Roster, Attendance, Events, Resources, Chat, About, Settings
 
+### Phase 5: Registrations Module (March 2026) ✅
+- Registration Config per event: pricing (enabled/amount/currency), add-ons, custom questions, promo codes
+- Add-ons system: optional extras with names, prices, descriptions (T-shirts, meals, parking)
+- Custom registration questions: text, select, checkbox types with required flag
+- Promo/discount codes: percentage or fixed amount, max uses tracking, auto-increment
+- Public registration page: shareable /register/{eventId} link with event details, form, total calculation
+- Waitlist auto-management: auto-waitlist when capacity reached, admin can promote to confirmed
+- Admin registrations dashboard: events list, expand to view registrants, status management
+- Registration config editor: pricing toggle, add-on builder, question builder, promo code manager
+- Total calculation: base price + selected add-ons, promo code application
+- SolomonPay integration for payments (MOCKED — all payment_status "pending")
+
 ## Test Results
 - Iteration 53: Competitor AI knowledge (8/10 pass - 2 LLM budget)
 - Iteration 54: SolomonPay + Lead Capture (Backend 92%, Frontend 100%)
@@ -73,6 +85,7 @@ Solomon AI is a full-featured, multi-tenant SaaS church management system compet
 - Iteration 56: Phase 3 Services - Songs, Plans, Templates, Music Stand (Backend 100% 20/20, Frontend 100%)
 - Iteration 57: Phase 3 Services - Team Assignments, Blockout Dates (Backend 100% 14/14, Frontend 100%)
 - Iteration 58: Phase 4 Groups - Enrollment, Join Requests, Events, Resources, Chat (Backend 100% 18/18, Frontend 100%)
+- Iteration 59: Phase 5 Registrations - Config, Add-ons, Questions, Promo Codes, Public Form (Backend 100% 13/13, Frontend 100%)
 
 ## Planning Center Parity Roadmap
 
@@ -115,13 +128,15 @@ Solomon AI is a full-featured, multi-tenant SaaS church management system compet
 - Church Admin: jacobpacheco@abundanteast.com / Demo2026!
 
 ## Key Files
-- /app/backend/server.py — All API endpoints (~17.5K+ lines)
+- /app/backend/server.py — All API endpoints (~18K+ lines)
 - /app/frontend/src/pages/ServicesPage.jsx (Phase 3 - Service Plans + Team Assignments)
 - /app/frontend/src/pages/SongLibraryPage.jsx (Phase 3 - Song Library)
 - /app/frontend/src/pages/MusicStandPage.jsx (Phase 3 - Music Stand)
 - /app/frontend/src/pages/VolunteerPage.jsx (Phase 3 - Teams, Schedule, Blockout Dates)
 - /app/frontend/src/pages/GroupsManagerPage.jsx (Phase 4 - Admin Groups + Join Requests)
 - /app/frontend/src/pages/GroupDetail.jsx (Phase 4 - Events, Resources, Chat)
+- /app/frontend/src/pages/RegistrationsPage.jsx (Phase 5 - Admin Registrations)
+- /app/frontend/src/pages/PublicRegistrationPage.jsx (Phase 5 - Public Registration Form)
 - /app/frontend/src/pages/CalendarApprovals.jsx
 - /app/frontend/src/pages/WorkflowsPage.jsx
 - /app/frontend/src/pages/FormsPage.jsx
