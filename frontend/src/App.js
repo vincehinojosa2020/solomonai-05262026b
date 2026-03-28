@@ -72,6 +72,7 @@ import SongLibraryPage from "@/pages/SongLibraryPage";
 import MusicStandPage from "@/pages/MusicStandPage";
 import RegistrationsPage from "@/pages/RegistrationsPage";
 import PublicRegistrationPage from "@/pages/PublicRegistrationPage";
+import CheckInSetupPage from "@/pages/CheckInSetupPage";
 import PortalCourses from "@/pages/portal/PortalCourses";
 import PortalCourseDetail from "@/pages/portal/PortalCourseDetail";
 import PortalLessonViewer from "@/pages/portal/PortalLessonViewer";
@@ -144,6 +145,7 @@ function AppRouter() {
         <Route path="/smart-lists" element={<SmartListsPage />} />
         <Route path="/songs" element={<SongLibraryPage />} />
         <Route path="/registrations" element={<RegistrationsPage />} />
+        <Route path="/checkin-setup" element={<CheckInSetupPage />} />
       </Route>
       <Route path="/music-stand/:planId" element={<MusicStandPage />} />
       

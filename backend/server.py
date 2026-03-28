@@ -5336,6 +5336,332 @@ async def register_new_family(request: Request, payload: RegisterFamilyPayload):
         "new_user": not existing_user
     }
 
+# ============== PHASE 6: CHECK-IN ENHANCEMENT ==============
+
+# --- Check-in Locations ---
+@api_router.get("/admin/checkin/locations")
+async def get_checkin_locations(request: Request):
+    """Get all check-in locations/rooms"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    locations = await db.checkin_locations.find({"tenant_id": tenant_id}, {"_id": 0}).sort("name", 1).to_list(100)
+    if not locations:
+        # Seed default locations
+        defaults = [
+            {"name": "Nursery", "room": "Room 100", "age_range": "0-2", "capacity": 15, "folder": "Early Childhood"},
+            {"name": "Toddlers", "room": "Room 101", "age_range": "2-3", "capacity": 20, "folder": "Early Childhood"},
+            {"name": "Pre-K", "room": "Room 102", "age_range": "3-5", "capacity": 25, "folder": "Preschool"},
+            {"name": "K-1st Grade", "room": "Room 201", "age_range": "5-7", "capacity": 30, "folder": "Elementary"},
+            {"name": "2nd-3rd Grade", "room": "Room 202", "age_range": "7-9", "capacity": 30, "folder": "Elementary"},
+            {"name": "4th-5th Grade", "room": "Room 203", "age_range": "9-11", "capacity": 30, "folder": "Elementary"},
+            {"name": "Middle School", "room": "Youth Center", "age_range": "11-14", "capacity": 40, "folder": "Youth"},
+            {"name": "Special Needs", "room": "Room 105", "age_range": "All", "capacity": 10, "folder": "Specialized"},
+        ]
+        for loc in defaults:
+            loc["id"] = str(uuid.uuid4())
+            loc["tenant_id"] = tenant_id
+            loc["is_active"] = True
+            loc["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.checkin_locations.insert_one(loc)
+        locations = await db.checkin_locations.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(100)
+    return {"locations": locations}
+
+@api_router.post("/admin/checkin/locations")
+async def create_checkin_location(request: Request, payload: dict):
+    """Create a check-in location"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    location = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "name": payload.get("name", ""),
+        "room": payload.get("room", ""),
+        "age_range": payload.get("age_range", ""),
+        "capacity": payload.get("capacity", 30),
+        "folder": payload.get("folder", "General"),
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.checkin_locations.insert_one(location)
+    return {"location": {k: v for k, v in location.items() if k != "_id"}}
+
+@api_router.put("/admin/checkin/locations/{location_id}")
+async def update_checkin_location(request: Request, location_id: str, payload: dict):
+    """Update a check-in location"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    updates = {}
+    for f in ["name", "room", "age_range", "capacity", "folder", "is_active"]:
+        if f in payload:
+            updates[f] = payload[f]
+    updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.checkin_locations.update_one({"id": location_id, "tenant_id": tenant_id}, {"$set": updates})
+    return {"message": "Location updated"}
+
+@api_router.delete("/admin/checkin/locations/{location_id}")
+async def delete_checkin_location(request: Request, location_id: str):
+    """Delete a check-in location"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    await db.checkin_locations.delete_one({"id": location_id, "tenant_id": tenant_id})
+    return {"message": "Location deleted"}
+
+# --- Check-in Station Config ---
+@api_router.get("/admin/checkin/stations")
+async def get_checkin_stations(request: Request):
+    """Get check-in station configurations"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    stations = await db.checkin_stations.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(20)
+    if not stations:
+        defaults = [
+            {"name": "Main Lobby Kiosk", "mode": "self", "location_ids": [], "description": "Self check-in at lobby entrance"},
+            {"name": "Front Desk", "mode": "manned", "location_ids": [], "description": "Staffed check-in station"},
+        ]
+        for st in defaults:
+            st["id"] = str(uuid.uuid4())
+            st["tenant_id"] = tenant_id
+            st["is_active"] = True
+            st["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.checkin_stations.insert_one(st)
+        stations = await db.checkin_stations.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(20)
+    return {"stations": stations}
+
+@api_router.post("/admin/checkin/stations")
+async def create_checkin_station(request: Request, payload: dict):
+    """Create a check-in station"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    station = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "name": payload.get("name", ""),
+        "mode": payload.get("mode", "self"),
+        "location_ids": payload.get("location_ids", []),
+        "description": payload.get("description", ""),
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.checkin_stations.insert_one(station)
+    return {"station": {k: v for k, v in station.items() if k != "_id"}}
+
+@api_router.put("/admin/checkin/stations/{station_id}")
+async def update_checkin_station(request: Request, station_id: str, payload: dict):
+    """Update a check-in station"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    updates = {}
+    for f in ["name", "mode", "location_ids", "description", "is_active"]:
+        if f in payload:
+            updates[f] = payload[f]
+    await db.checkin_stations.update_one({"id": station_id, "tenant_id": tenant_id}, {"$set": updates})
+    return {"message": "Station updated"}
+
+@api_router.delete("/admin/checkin/stations/{station_id}")
+async def delete_checkin_station(request: Request, station_id: str):
+    """Delete a check-in station"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    await db.checkin_stations.delete_one({"id": station_id, "tenant_id": tenant_id})
+    return {"message": "Station deleted"}
+
+# --- Label Templates ---
+@api_router.get("/admin/checkin/labels")
+async def get_label_templates(request: Request):
+    """Get label templates"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    templates = await db.checkin_labels.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(50)
+    if not templates:
+        defaults = [
+            {
+                "name": "Standard Name Tag",
+                "type": "name_tag",
+                "width": 4, "height": 2,
+                "fields": ["child_name", "classroom", "allergies_icon", "security_code"],
+                "layout": {"font_size": 18, "show_allergies": True, "show_barcode": True, "show_logo": True},
+                "is_default": True,
+            },
+            {
+                "name": "Security Label (Parent)",
+                "type": "security",
+                "width": 4, "height": 1,
+                "fields": ["child_name", "security_code", "classroom"],
+                "layout": {"font_size": 14, "show_allergies": False, "show_barcode": True, "show_logo": False},
+                "is_default": False,
+            },
+            {
+                "name": "Allergy Alert Tag",
+                "type": "allergy",
+                "width": 4, "height": 2,
+                "fields": ["child_name", "classroom", "allergies_detail", "medical_notes", "security_code"],
+                "layout": {"font_size": 16, "show_allergies": True, "show_barcode": True, "show_logo": True, "allergy_highlight": True},
+                "is_default": False,
+            },
+        ]
+        for t in defaults:
+            t["id"] = str(uuid.uuid4())
+            t["tenant_id"] = tenant_id
+            t["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.checkin_labels.insert_one(t)
+        templates = await db.checkin_labels.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(50)
+    return {"templates": templates}
+
+@api_router.post("/admin/checkin/labels")
+async def create_label_template(request: Request, payload: dict):
+    """Create a label template"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    template = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "name": payload.get("name", ""),
+        "type": payload.get("type", "name_tag"),
+        "width": payload.get("width", 4),
+        "height": payload.get("height", 2),
+        "fields": payload.get("fields", ["child_name", "classroom", "security_code"]),
+        "layout": payload.get("layout", {}),
+        "is_default": payload.get("is_default", False),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.checkin_labels.insert_one(template)
+    return {"template": {k: v for k, v in template.items() if k != "_id"}}
+
+@api_router.put("/admin/checkin/labels/{label_id}")
+async def update_label_template(request: Request, label_id: str, payload: dict):
+    """Update a label template"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    updates = {}
+    for f in ["name", "type", "width", "height", "fields", "layout", "is_default"]:
+        if f in payload:
+            updates[f] = payload[f]
+    await db.checkin_labels.update_one({"id": label_id, "tenant_id": tenant_id}, {"$set": updates})
+    return {"message": "Label template updated"}
+
+@api_router.delete("/admin/checkin/labels/{label_id}")
+async def delete_label_template(request: Request, label_id: str):
+    """Delete a label template"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    await db.checkin_labels.delete_one({"id": label_id, "tenant_id": tenant_id})
+    return {"message": "Label template deleted"}
+
+# --- Medical/Allergy Alerts ---
+@api_router.get("/admin/checkin/medical-alerts")
+async def get_medical_alerts(request: Request):
+    """Get all children with medical/allergy alerts"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    children = await db.children.find(
+        {"tenant_id": tenant_id, "$or": [
+            {"allergies": {"$exists": True, "$ne": ""}},
+            {"medical_notes": {"$exists": True, "$ne": ""}},
+        ]}, {"_id": 0}
+    ).to_list(500)
+    return {"alerts": children, "total": len(children)}
+
+@api_router.put("/admin/checkin/children/{child_id}/medical")
+async def update_child_medical(request: Request, child_id: str, payload: dict):
+    """Update medical/allergy info for a child"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    updates = {}
+    for f in ["allergies", "medical_notes", "medical_severity", "authorized_guardians"]:
+        if f in payload:
+            updates[f] = payload[f]
+    updates["medical_updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.children.update_one({"id": child_id, "tenant_id": tenant_id}, {"$set": updates})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Child not found")
+    return {"message": "Medical info updated"}
+
+# --- Guardian Verification ---
+@api_router.get("/admin/checkin/children/{child_id}/guardians")
+async def get_child_guardians(request: Request, child_id: str):
+    """Get authorized guardians for a child"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    child = await db.children.find_one({"id": child_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not child:
+        raise HTTPException(status_code=404, detail="Child not found")
+    return {"guardians": child.get("authorized_guardians", []), "child_name": child.get("name")}
+
+@api_router.post("/admin/checkin/children/{child_id}/guardians")
+async def add_guardian(request: Request, child_id: str, payload: dict):
+    """Add an authorized guardian for a child"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    guardian = {
+        "id": str(uuid.uuid4()),
+        "name": payload.get("name", ""),
+        "relationship": payload.get("relationship", ""),
+        "phone": payload.get("phone", ""),
+        "photo_url": payload.get("photo_url", ""),
+        "pin_code": payload.get("pin_code", ""),
+        "added_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.children.update_one(
+        {"id": child_id, "tenant_id": tenant_id},
+        {"$push": {"authorized_guardians": guardian}}
+    )
+    return {"guardian": guardian}
+
+@api_router.delete("/admin/checkin/children/{child_id}/guardians/{guardian_id}")
+async def remove_guardian(request: Request, child_id: str, guardian_id: str):
+    """Remove an authorized guardian"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    await db.children.update_one(
+        {"id": child_id, "tenant_id": tenant_id},
+        {"$pull": {"authorized_guardians": {"id": guardian_id}}}
+    )
+    return {"message": "Guardian removed"}
+
+# --- Check-in Reports ---
+@api_router.get("/admin/checkin/reports/trends")
+async def get_checkin_trends(request: Request, days: int = 30):
+    """Get check-in attendance trends"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    checkins = await db.checkins.find(
+        {"tenant_id": tenant_id, "checked_in_at": {"$gte": cutoff}}, {"_id": 0, "checked_in_at": 1, "classroom": 1}
+    ).to_list(5000)
+    # Group by date
+    daily = {}
+    by_room = {}
+    for c in checkins:
+        date = c.get("checked_in_at", "")[:10]
+        daily[date] = daily.get(date, 0) + 1
+        room = c.get("classroom", "Unknown")
+        by_room[room] = by_room.get(room, 0) + 1
+    sorted_daily = sorted(daily.items(), key=lambda x: x[0])
+    return {
+        "daily_trend": [{"date": d, "count": c} for d, c in sorted_daily],
+        "by_room": [{"room": r, "count": c} for r, c in sorted(by_room.items(), key=lambda x: -x[1])],
+        "total_checkins": len(checkins),
+        "period_days": days,
+    }
+
+@api_router.get("/admin/checkin/reports/first-timers")
+async def get_first_time_visitors(request: Request, days: int = 30):
+    """Get first-time check-in visitors"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    # Find children who had their first check-in within the period
+    pipeline = [
+        {"$match": {"tenant_id": tenant_id}},
+        {"$group": {"_id": "$child_id", "first_checkin": {"$min": "$checked_in_at"}, "child_name": {"$first": "$child_name"}, "total_checkins": {"$sum": 1}}},
+        {"$match": {"first_checkin": {"$gte": cutoff}}},
+        {"$sort": {"first_checkin": -1}},
+        {"$limit": 100},
+    ]
+    results = await db.checkins.aggregate(pipeline).to_list(100)
+    first_timers = [{"child_id": r["_id"], "child_name": r.get("child_name", "Unknown"), "first_checkin": r["first_checkin"], "total_checkins": r["total_checkins"]} for r in results]
+    return {"first_timers": first_timers, "total": len(first_timers)}
+
 # ============== CAFE ROUTES ==============
 
 @api_router.get("/admin/cafe/settings")

@@ -46,6 +46,7 @@ const navItems = [
     { name: 'Registrations', path: '/registrations', icon: ClipboardList },
     { name: 'Approvals', path: '/calendar/approvals', icon: CheckSquare },
     { name: 'Kids Check-in', path: '/kids-checkin', icon: Baby },
+    { name: 'Check-In Setup', path: '/checkin-setup', icon: Settings },
     { name: 'Attendance', path: '/attendance', icon: CheckSquare },
   ]},
   { section: 'STEWARDSHIP', items: [
