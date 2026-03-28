@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://phase3-preview-2.preview.emergentagent.com/api
+https://qa-security-ux.preview.emergentagent.com/api
 ```
 
 ### Authentication

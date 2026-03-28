@@ -17,4 +17,4 @@
 - Password: Demo2026!
 
 ## API URL
-- Preview: https://phase3-preview-2.preview.emergentagent.com
+- Preview: https://qa-security-ux.preview.emergentagent.com

@@ -3221,10 +3221,14 @@ async def email_password_login(request: Request, payload: EmailLoginRequest, res
     # Normalize email
     login_email = payload.email.strip().lower()
     
-    # Rate limiting: 5 attempts per minute per IP
-    client_ip = request.client.host or "unknown"
-    if not check_rate_limit_v2(f"login:{client_ip}", 30, 300):
-        raise HTTPException(status_code=429, detail="Too many login attempts. Try again in 1 minute.")
+    # Rate limiting: 5 attempts per IP per 60 seconds
+    client_ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or request.headers.get("x-real-ip", "") or request.client.host or "unknown"
+    if not check_rate_limit_v2(f"login_ip:{client_ip}", 5, 60):
+        raise HTTPException(status_code=429, detail="Too many login attempts from this IP. Try again in 1 minute.")
+    
+    # Rate limiting: 10 attempts per email per hour
+    if not check_rate_limit_v2(f"login_email:{login_email}", 10, 3600):
+        raise HTTPException(status_code=429, detail="Too many login attempts for this account. Try again in 1 hour.")
     
     user_doc = await db.users.find_one({"email": login_email}, {"_id": 0})
     if not user_doc:
@@ -4210,9 +4214,7 @@ async def get_admin_pathways_courses(request: Request):
     # Ensure demo data exists for Abundant Church
     await ensure_abundant_pathways_data(tenant_id)
     
-    query = {}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"tenant_id": tenant_id}
 
     courses = await db.pathways_courses.find(query, {"_id": 0}).sort("created_at", -1).to_list(200)
     course_ids = [c["id"] for c in courses]
@@ -5344,6 +5346,8 @@ async def get_checkin_locations(request: Request):
     """Get all check-in locations/rooms"""
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        return {"locations": []}
     locations = await db.checkin_locations.find({"tenant_id": tenant_id}, {"_id": 0}).sort("name", 1).to_list(100)
     if not locations:
         # Seed default locations
@@ -5412,6 +5416,8 @@ async def get_checkin_stations(request: Request):
     """Get check-in station configurations"""
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        return {"stations": []}
     stations = await db.checkin_stations.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(20)
     if not stations:
         defaults = [
@@ -7904,6 +7910,10 @@ async def get_current_admin_user(request: Request):
     if user.get("role") not in ["admin", "church_admin", "platform_admin"]:
         raise HTTPException(status_code=403, detail="Admin access required")
     
+    # Enforce tenant_id for non-platform admins (prevents cross-tenant data leaks)
+    if user.get("role") != "platform_admin" and not user.get("tenant_id"):
+        raise HTTPException(status_code=403, detail="Tenant context required for admin access")
+    
     return user
 
 async def get_current_member_user(request: Request):
@@ -7979,9 +7989,7 @@ async def get_admin_media_videos(
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id")
     
-    query = {}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"tenant_id": tenant_id}
     
     if category_id:
         query["category_id"] = category_id
@@ -8066,9 +8074,7 @@ async def update_media_video(request: Request, video_id: str, updates: dict):
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id")
     
-    query = {"id": video_id}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"id": video_id, "tenant_id": tenant_id}
     
     # Allowed fields to update
     allowed_fields = [
@@ -8092,9 +8098,7 @@ async def delete_media_video(request: Request, video_id: str):
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id")
     
-    query = {"id": video_id}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"id": video_id, "tenant_id": tenant_id}
     
     result = await db.media_videos.delete_one(query)
     
@@ -8109,9 +8113,7 @@ async def toggle_video_featured(request: Request, video_id: str):
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id")
     
-    query = {"id": video_id}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"id": video_id, "tenant_id": tenant_id}
     
     video = await db.media_videos.find_one(query, {"_id": 0})
     if not video:
@@ -8131,9 +8133,7 @@ async def get_portal_videos(request: Request, category: Optional[str] = None, li
     
     tenant_id = user.get("tenant_id")
     
-    query = {"is_published": True}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"is_published": True, "tenant_id": tenant_id}
     if category and category != "all":
         query["category_id"] = category
     
@@ -8213,17 +8213,13 @@ async def get_featured_video(request: Request):
     user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
     tenant_id = user.get("tenant_id") if user else None
     
-    query = {"is_published": True, "is_featured": True}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"is_published": True, "is_featured": True, "tenant_id": tenant_id}
     
     featured = await db.media_videos.find_one(query, {"_id": 0})
     
     if not featured:
         # Fall back to most recent video
-        query = {"is_published": True}
-        if tenant_id:
-            query["tenant_id"] = tenant_id
+        query = {"is_published": True, "tenant_id": tenant_id}
         featured = await db.media_videos.find_one(
             query, {"_id": 0}, sort=[("created_at", -1)]
         )
@@ -8258,9 +8254,7 @@ async def get_admin_groups(
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id")
     
-    query = {"is_active": True}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"is_active": True, "tenant_id": tenant_id}
     
     if search:
         query["$or"] = [
@@ -8332,9 +8326,7 @@ async def update_group(request: Request, group_id: str, updates: dict):
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id")
     
-    query = {"id": group_id}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"id": group_id, "tenant_id": tenant_id}
     
     allowed_fields = [
         "name", "description", "group_type", "meeting_day", "meeting_time",
@@ -8357,9 +8349,7 @@ async def delete_group(request: Request, group_id: str):
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id")
     
-    query = {"id": group_id}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"id": group_id, "tenant_id": tenant_id}
     
     # Soft delete - set is_active to False
     result = await db.groups.update_one(query, {"$set": {"is_active": False}})
@@ -8376,9 +8366,7 @@ async def get_group_members(request: Request, group_id: str):
     tenant_id = user.get("tenant_id")
     
     # Verify group exists and belongs to tenant
-    query = {"id": group_id}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"id": group_id, "tenant_id": tenant_id}
     
     group = await db.groups.find_one(query, {"_id": 0})
     if not group:
@@ -8505,18 +8493,14 @@ async def admin_add_member_to_group(request: Request, group_id: str, member_data
     tenant_id = user.get("tenant_id")
     
     # Verify group exists
-    query = {"id": group_id}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"id": group_id, "tenant_id": tenant_id}
     
     group = await db.groups.find_one(query, {"_id": 0})
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
     
     # Verify person exists
-    person_query = {"id": member_data.person_id}
-    if tenant_id:
-        person_query["tenant_id"] = tenant_id
+    person_query = {"id": member_data.person_id, "tenant_id": tenant_id}
     
     person = await db.people.find_one(person_query, {"_id": 0})
     if not person:
@@ -8560,9 +8544,7 @@ async def admin_remove_member_from_group(request: Request, group_id: str, person
     tenant_id = user.get("tenant_id")
     
     # Verify group exists
-    query = {"id": group_id}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"id": group_id, "tenant_id": tenant_id}
     
     group = await db.groups.find_one(query, {"_id": 0})
     if not group:
@@ -8598,9 +8580,7 @@ async def get_available_members_for_group(request: Request, group_id: str, searc
     current_member_ids = [m["person_id"] for m in current_members]
     
     # Build query for available people
-    query = {"id": {"$nin": current_member_ids}}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"id": {"$nin": current_member_ids}, "tenant_id": tenant_id}
     
     if search:
         query["$or"] = [
@@ -9288,9 +9268,7 @@ async def get_event_registrations(request: Request, event_id: str):
     tenant_id = user.get("tenant_id")
     
     # Verify event exists
-    query = {"id": event_id}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"id": event_id, "tenant_id": tenant_id}
     
     event = await db.events.find_one(query, {"_id": 0})
     if not event:
@@ -9321,9 +9299,7 @@ async def admin_register_for_event(request: Request, event_id: str, reg_data: Ad
     tenant_id = user.get("tenant_id")
     
     # Verify event exists
-    query = {"id": event_id}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"id": event_id, "tenant_id": tenant_id}
     
     event = await db.events.find_one(query, {"_id": 0})
     if not event:
@@ -9362,9 +9338,7 @@ async def admin_cancel_registration(request: Request, event_id: str, registratio
     tenant_id = user.get("tenant_id")
     
     # Verify event exists
-    query = {"id": event_id}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"id": event_id, "tenant_id": tenant_id}
     
     event = await db.events.find_one(query, {"_id": 0})
     if not event:
@@ -9509,9 +9483,7 @@ async def get_admin_events(
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id")
     
-    query = {}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"tenant_id": tenant_id}
     
     if upcoming_only:
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -9575,9 +9547,7 @@ async def update_event(request: Request, event_id: str, updates: dict):
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id")
     
-    query = {"id": event_id}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"id": event_id, "tenant_id": tenant_id}
     
     allowed_fields = [
         "name", "description", "event_date", "start_time", "end_time",
@@ -9600,9 +9570,7 @@ async def delete_event(request: Request, event_id: str):
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id")
     
-    query = {"id": event_id}
-    if tenant_id:
-        query["tenant_id"] = tenant_id
+    query = {"id": event_id, "tenant_id": tenant_id}
     
     result = await db.events.delete_one(query)
     

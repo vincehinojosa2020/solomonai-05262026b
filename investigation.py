@@ -6,7 +6,7 @@ import asyncio
 import aiohttp
 import json
 
-BASE_URL = "https://phase3-preview-2.preview.emergentagent.com/api"
+BASE_URL = "https://qa-security-ux.preview.emergentagent.com/api"
 
 async def investigate_data():
     """Get detailed data from key endpoints"""
