@@ -5,7 +5,7 @@ import {
   CheckSquare, DollarSign, Mail, BarChart3, Settings, 
   Building2, Search, Bell, ChevronLeft, Menu, Command,
   LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, MessageSquare, Coffee, Code, Baby, Zap, Shield,
-  ChevronDown, MapPin, Check, Music, HandHeart, GitBranch, FileText, ListFilter, Merge
+  ChevronDown, MapPin, Check, Music, HandHeart, GitBranch, FileText, ListFilter, Merge, ClipboardList
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -43,6 +43,7 @@ const navItems = [
     { name: 'Courses', path: '/admin/courses', icon: GraduationCap },
     { name: 'Groups', path: '/admin/groups', icon: UsersRound },
     { name: 'Events', path: '/admin/events', icon: Calendar },
+    { name: 'Registrations', path: '/registrations', icon: ClipboardList },
     { name: 'Approvals', path: '/calendar/approvals', icon: CheckSquare },
     { name: 'Kids Check-in', path: '/kids-checkin', icon: Baby },
     { name: 'Attendance', path: '/attendance', icon: CheckSquare },

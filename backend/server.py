@@ -8708,6 +8708,251 @@ async def send_portal_group_message(request: Request, group_id: str, payload: di
 
 # Group messaging routes extracted to routes/messaging.py
 
+# ============== PHASE 5: REGISTRATIONS MODULE ==============
+
+@api_router.get("/admin/registrations/events")
+async def get_registration_events(request: Request):
+    """Get all events that have registration enabled"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    events = await db.events.find(
+        {"tenant_id": tenant_id, "registration_required": True}, {"_id": 0}
+    ).sort("start_datetime", -1).to_list(200)
+    # Enrich with registration counts and config
+    for evt in events:
+        reg_count = await db.event_registrations.count_documents({"event_id": evt["id"], "status": {"$ne": "waitlisted"}})
+        waitlist_count = await db.event_registrations.count_documents({"event_id": evt["id"], "status": "waitlisted"})
+        config = await db.registration_configs.find_one({"event_id": evt["id"]}, {"_id": 0})
+        evt["confirmed_count"] = reg_count
+        evt["waitlist_count"] = waitlist_count
+        evt["has_config"] = config is not None
+        evt["pricing"] = config.get("pricing", {}) if config else {}
+    return {"events": events, "total": len(events)}
+
+@api_router.get("/admin/registrations/configs/{event_id}")
+async def get_registration_config(request: Request, event_id: str):
+    """Get registration configuration for an event"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    config = await db.registration_configs.find_one({"event_id": event_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not config:
+        return {"config": None}
+    return {"config": config}
+
+@api_router.post("/admin/registrations/configs/{event_id}")
+async def save_registration_config(request: Request, event_id: str, payload: dict):
+    """Create or update registration configuration for an event"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    # Verify event exists
+    event = await db.events.find_one({"id": event_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    # Mark event as registration-required
+    await db.events.update_one({"id": event_id}, {"$set": {"registration_required": True}})
+    existing = await db.registration_configs.find_one({"event_id": event_id, "tenant_id": tenant_id})
+    config_data = {
+        "event_id": event_id,
+        "tenant_id": tenant_id,
+        "pricing": payload.get("pricing", {"enabled": False, "amount": 0, "currency": "USD"}),
+        "add_ons": payload.get("add_ons", []),
+        "custom_questions": payload.get("custom_questions", []),
+        "promo_codes": payload.get("promo_codes", []),
+        "confirmation_message": payload.get("confirmation_message", "Thank you for registering!"),
+        "max_registrants_per_order": payload.get("max_registrants_per_order", 10),
+        "require_payment": payload.get("require_payment", False),
+        "auto_confirm": payload.get("auto_confirm", True),
+        "waitlist_enabled": payload.get("waitlist_enabled", True),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "updated_by": user.get("user_id"),
+    }
+    if existing:
+        await db.registration_configs.update_one({"event_id": event_id, "tenant_id": tenant_id}, {"$set": config_data})
+        return {"message": "Registration config updated", "config": config_data}
+    else:
+        config_data["id"] = str(uuid.uuid4())
+        config_data["created_at"] = datetime.now(timezone.utc).isoformat()
+        await db.registration_configs.insert_one(config_data)
+        return {"message": "Registration config created", "config": {k: v for k, v in config_data.items() if k != "_id"}}
+
+@api_router.get("/admin/registrations/{event_id}/registrants")
+async def get_event_registrants(request: Request, event_id: str, status: Optional[str] = None):
+    """Get all registrants for a registration event"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    query = {"event_id": event_id, "tenant_id": tenant_id}
+    if status:
+        query["status"] = status
+    registrants = await db.event_registrations.find(query, {"_id": 0}).sort("registered_at", -1).to_list(500)
+    totals = {
+        "confirmed": len([r for r in registrants if r.get("status") != "waitlisted" and r.get("status") != "cancelled"]),
+        "waitlisted": len([r for r in registrants if r.get("status") == "waitlisted"]),
+        "cancelled": len([r for r in registrants if r.get("status") == "cancelled"]),
+    }
+    return {"registrants": registrants, "totals": totals}
+
+@api_router.put("/admin/registrations/{event_id}/registrants/{registration_id}")
+async def update_registrant_status(request: Request, event_id: str, registration_id: str, payload: dict):
+    """Update a registrant's status (confirm waitlisted, cancel, etc)"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    new_status = payload.get("status", "confirmed")
+    result = await db.event_registrations.update_one(
+        {"id": registration_id, "event_id": event_id, "tenant_id": tenant_id},
+        {"$set": {"status": new_status, "updated_at": datetime.now(timezone.utc).isoformat(), "updated_by": user.get("user_id")}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Registration not found")
+    if new_status == "confirmed":
+        await db.events.update_one({"id": event_id}, {"$inc": {"registration_count": 1}})
+    return {"message": f"Registration updated to {new_status}"}
+
+@api_router.post("/admin/registrations/{event_id}/promo-codes")
+async def add_promo_code(request: Request, event_id: str, payload: dict):
+    """Add a promo code to a registration event"""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    code = {
+        "id": str(uuid.uuid4()),
+        "code": payload.get("code", "").upper(),
+        "discount_type": payload.get("discount_type", "percentage"),
+        "discount_value": payload.get("discount_value", 0),
+        "max_uses": payload.get("max_uses"),
+        "uses_count": 0,
+        "is_active": True,
+    }
+    await db.registration_configs.update_one(
+        {"event_id": event_id, "tenant_id": tenant_id},
+        {"$push": {"promo_codes": code}}
+    )
+    return {"promo_code": code}
+
+@api_router.get("/register/{event_id}")
+async def get_public_registration(event_id: str):
+    """Public-facing registration page data"""
+    event = await db.events.find_one({"id": event_id}, {"_id": 0})
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    if not event.get("registration_required"):
+        raise HTTPException(status_code=400, detail="Registration is not enabled for this event")
+    config = await db.registration_configs.find_one({"event_id": event_id}, {"_id": 0})
+    # Strip sensitive data from promo codes
+    safe_config = None
+    if config:
+        safe_config = {
+            "pricing": config.get("pricing", {}),
+            "add_ons": config.get("add_ons", []),
+            "custom_questions": config.get("custom_questions", []),
+            "confirmation_message": config.get("confirmation_message", ""),
+            "max_registrants_per_order": config.get("max_registrants_per_order", 10),
+            "require_payment": config.get("require_payment", False),
+        }
+    current_count = await db.event_registrations.count_documents({"event_id": event_id, "status": {"$ne": "waitlisted"}})
+    spots_left = None
+    if event.get("capacity"):
+        spots_left = max(0, event["capacity"] - current_count)
+    return {
+        "event": {
+            "id": event["id"],
+            "name": event.get("name", ""),
+            "description": event.get("description", ""),
+            "start_datetime": event.get("start_datetime", ""),
+            "end_datetime": event.get("end_datetime", ""),
+            "location": event.get("location", ""),
+            "cover_image_url": event.get("cover_image_url", ""),
+            "capacity": event.get("capacity"),
+        },
+        "config": safe_config,
+        "spots_left": spots_left,
+        "is_full": spots_left == 0 if spots_left is not None else False,
+    }
+
+@api_router.post("/register/{event_id}")
+async def submit_public_registration(event_id: str, payload: dict):
+    """Public registration submission"""
+    event = await db.events.find_one({"id": event_id}, {"_id": 0})
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    tenant_id = event.get("tenant_id")
+    config = await db.registration_configs.find_one({"event_id": event_id}, {"_id": 0})
+    # Check capacity
+    is_waitlisted = False
+    if event.get("capacity"):
+        current = await db.event_registrations.count_documents({"event_id": event_id, "status": {"$ne": "waitlisted"}})
+        if current >= event["capacity"]:
+            if config and config.get("waitlist_enabled", True):
+                is_waitlisted = True
+            else:
+                raise HTTPException(status_code=400, detail="This event is full")
+    # Validate promo code
+    discount = 0
+    promo_code_used = payload.get("promo_code", "").upper()
+    if promo_code_used and config:
+        for pc in config.get("promo_codes", []):
+            if pc["code"] == promo_code_used and pc.get("is_active"):
+                if pc.get("max_uses") and pc["uses_count"] >= pc["max_uses"]:
+                    continue
+                if pc["discount_type"] == "percentage":
+                    discount = pc["discount_value"]
+                else:
+                    discount = pc["discount_value"]
+                # Increment usage
+                await db.registration_configs.update_one(
+                    {"event_id": event_id, "promo_codes.code": promo_code_used},
+                    {"$inc": {"promo_codes.$.uses_count": 1}}
+                )
+                break
+    # Calculate total
+    base_price = 0
+    if config and config.get("pricing", {}).get("enabled"):
+        base_price = config["pricing"].get("amount", 0)
+    add_on_total = 0
+    selected_add_ons = payload.get("add_ons", [])
+    if config:
+        for addon in config.get("add_ons", []):
+            if addon["id"] in selected_add_ons:
+                add_on_total += addon.get("price", 0)
+    subtotal = base_price + add_on_total
+    if discount > 0:
+        if promo_code_used and config:
+            for pc in config.get("promo_codes", []):
+                if pc["code"] == promo_code_used:
+                    if pc["discount_type"] == "percentage":
+                        subtotal = subtotal * (1 - discount / 100)
+                    else:
+                        subtotal = max(0, subtotal - discount)
+                    break
+    # Create registration
+    registrants = payload.get("registrants", [{"name": payload.get("name", ""), "email": payload.get("email", "")}])
+    created_ids = []
+    for registrant in registrants:
+        reg = {
+            "id": str(uuid.uuid4()),
+            "tenant_id": tenant_id,
+            "event_id": event_id,
+            "user_name": registrant.get("name", ""),
+            "user_email": registrant.get("email", ""),
+            "phone": registrant.get("phone", ""),
+            "status": "waitlisted" if is_waitlisted else "confirmed",
+            "custom_answers": payload.get("custom_answers", {}),
+            "selected_add_ons": selected_add_ons,
+            "promo_code": promo_code_used or None,
+            "amount_total": round(subtotal / len(registrants), 2),
+            "payment_status": "pending" if subtotal > 0 else "free",
+            "registered_at": datetime.now(timezone.utc).isoformat(),
+        }
+        await db.event_registrations.insert_one(reg)
+        created_ids.append(reg["id"])
+    if not is_waitlisted:
+        await db.events.update_one({"id": event_id}, {"$inc": {"registration_count": len(registrants)}})
+    status_msg = "waitlisted" if is_waitlisted else "confirmed"
+    return {
+        "message": f"Registration {status_msg}! {len(registrants)} registrant(s).",
+        "status": status_msg,
+        "registration_ids": created_ids,
+        "total_amount": round(subtotal, 2),
+    }
+
 # ============== ADMIN EVENT REGISTRATION MANAGEMENT ==============
 
 @api_router.get("/admin/events/{event_id}/registrations")

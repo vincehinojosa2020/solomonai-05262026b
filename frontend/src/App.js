@@ -70,6 +70,8 @@ import DuplicatesPage from "@/pages/DuplicatesPage";
 import SmartListsPage from "@/pages/SmartListsPage";
 import SongLibraryPage from "@/pages/SongLibraryPage";
 import MusicStandPage from "@/pages/MusicStandPage";
+import RegistrationsPage from "@/pages/RegistrationsPage";
+import PublicRegistrationPage from "@/pages/PublicRegistrationPage";
 import PortalCourses from "@/pages/portal/PortalCourses";
 import PortalCourseDetail from "@/pages/portal/PortalCourseDetail";
 import PortalLessonViewer from "@/pages/portal/PortalLessonViewer";
@@ -93,7 +95,7 @@ function AppRouter() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/demo" element={<DemoPage />} />
-      <Route path="/register" element={<Navigate to="/signup" replace />} />
+      <Route path="/register/:eventId" element={<PublicRegistrationPage />} />
       
       {/* Admin Protected routes */}
       <Route element={
@@ -141,6 +143,7 @@ function AppRouter() {
         <Route path="/people/duplicates" element={<DuplicatesPage />} />
         <Route path="/smart-lists" element={<SmartListsPage />} />
         <Route path="/songs" element={<SongLibraryPage />} />
+        <Route path="/registrations" element={<RegistrationsPage />} />
       </Route>
       <Route path="/music-stand/:planId" element={<MusicStandPage />} />
       
