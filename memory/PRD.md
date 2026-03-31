@@ -1,7 +1,7 @@
 # Solomon AI — Product Requirements Document
 
 ## Original Problem Statement
-Comprehensive church management SaaS platform (M&A due diligence) targeting 100% Planning Center parity. Multi-tenant React/FastAPI/MongoDB application with AI-powered features (Ask Solomon, Whisper transcription, image gen). User requested "Modular Monolith" refactor across 5 phases, plus demo-ready UI polish. Latest: FULL FUNCTIONAL PARITY TEST with CRUD + User Journeys.
+Comprehensive church management SaaS platform (M&A due diligence) targeting 100% Planning Center parity. Multi-tenant React/FastAPI/MongoDB application with AI-powered features (Ask Solomon, Whisper transcription, image gen).
 
 ## Architecture
 - **Frontend**: React + Shadcn UI + Tailwind CSS
@@ -12,44 +12,43 @@ Comprehensive church management SaaS platform (M&A due diligence) targeting 100%
 
 ## What's Been Implemented
 
-### Phase R1-R4: Modular Monolith Refactor (March 31, 2026) - DONE
+### Phase R1-R4: Modular Monolith Refactor — DONE
 - 123 Pydantic models, 492+ routes in 30 domain files
 - server.py: 17,828 -> 255 lines (98.6% reduction)
 
-### Phase R5: OWASP Security Audit - DONE
-### P1: Demo UI Removals - DONE
-### Endpoint Parity Audit - DONE (116 endpoints, 97.4%)
+### Phase R5: OWASP Security Audit — DONE
+### P1: Demo UI Removals — DONE
+### Endpoint Parity Audit — DONE (116 endpoints, 97.4%)
 
-### Full Functional CRUD Parity Test (March 31, 2026) - DONE
-**CRUD Test Results: 127/127 (100%)**
-- Admin CRUD: 86/86 (People, Check-Ins, Giving, Groups, Services, Events, Comms, Media, Cafe, Merch, Courses, Reports, Settings)
-- Portal Journeys: 30/30 (Onboarding, Sunday Morning, Small Groups, Giving, Courses)
-- Ask Solomon: 5/5 (Church data, Events, Pastoral, Biblical, Session persistence)
-- Data Integrity: 6/6 (Tenant isolation, RBAC x3, Consistency, Cross-ref)
+### Full Functional CRUD Parity Test — DONE
+**127/127 tests passed (100%)**
 
-### Recurring Giving Management (March 31, 2026) - DONE
-**Backend (8 new endpoints):**
-- POST /api/portal/recurring-giving — Create recurring schedule
-- GET /api/portal/recurring-giving — List member's schedules
-- PUT /api/portal/recurring-giving/{id} — Edit schedule
-- PUT /api/portal/recurring-giving/{id}/pause — Pause schedule
-- PUT /api/portal/recurring-giving/{id}/resume — Resume schedule
-- DELETE /api/portal/recurring-giving/{id} — Cancel schedule
-- GET /api/admin/recurring-giving — Admin list all with stats
-- PUT /api/admin/recurring-giving/{id}/status — Admin change status
+### Recurring Giving Management (March 31, 2026) — DONE
+- Portal: Create/list/edit/pause/resume/cancel recurring donation schedules
+- Admin: View all recurring schedules with stats, filter by status, change status
+- 8 new backend endpoints, 2 new frontend components
+- **Testing: 25/25 (100%) — Iteration 66**
 
-**Frontend:**
-- RecurringGivingManager component (portal) — create/view/edit/pause/resume/cancel
-- AdminRecurringGiving component (admin) — table with filters and status management
-- Integrated into PortalGive.jsx and GivingDashboard.jsx
+### Giving Goals/Pledges (March 31, 2026) — DONE
+- Portal: Members set annual giving goals with visual progress tracking
+- Progress bar, YTD given, remaining amount, donation count
+- 3 new endpoints (GET/POST/DELETE /portal/giving-goal)
+- **Testing: Passed in Iteration 67**
 
-**Testing: 25/25 (100%)**
+### Custom Fields UI Builder (March 31, 2026) — DONE
+- Admin: Define custom data fields (7 types: text, textarea, number, date, boolean, select, multiselect)
+- Fields organized by category (personal, church, medical, other)
+- Per-field options: name, type, required, options list, active/inactive
+- Reorder support, toggle active/inactive
+- PersonDetail integration: custom fields shown in overview tab
+- 7 new endpoints + Settings tab + PersonCustomFields component
+- **Testing: 31/31 (100%) — Iteration 67**
 
-### Testing Iterations
-- Iteration 63: 100% (14/14 backend, 5/5 frontend) — Post-refactor
-- Iteration 64: 100% (24/24 backend, 5/5 frontend) — Post-endpoint-audit
-- Iteration 65: 99.2% (126/127) — Full CRUD parity (1 LLM budget intermittent)
-- Iteration 66: 100% (25/25) — Recurring Giving CRUD + UI
+### Registration Add-ons UI Enhancement (March 31, 2026) — DONE
+- Admin builder: Enhanced with description, required checkbox, max_qty per add-on
+- Public page: Auto-selects required add-ons, shows "Required" badge, "Free" for $0 items
+- Blue highlight for selected add-ons
+- **Testing: Verified in Iteration 67**
 
 ## 3rd Party Integrations
 - Anthropic Claude (Ask Solomon) — Emergent LLM Key
@@ -59,11 +58,14 @@ Comprehensive church management SaaS platform (M&A due diligence) targeting 100%
 - Emergent Google Auth — Managed Service
 - Twilio (SMS) — Stubbed/DB logging fallback
 
-## Prioritized Backlog
-### P1 (Next)
-- Custom Fields UI Builder (backend supports key-value; needs frontend drag-and-drop)
-- Registration Add-ons UI Builder (config exists; needs rich member-facing UI)
+## Testing Iterations
+- Iteration 63: 100% (14/14 + 5/5) — Post-refactor
+- Iteration 64: 100% (24/24 + 5/5) — Post-endpoint-audit
+- Iteration 65: 99.2% (126/127) — Full CRUD parity
+- Iteration 66: 100% (25/25) — Recurring Giving
+- Iteration 67: 100% (31/31) — Giving Goals + Custom Fields + Registration Add-ons
 
+## Prioritized Backlog
 ### P2 (Backlog)
 - Refactor KidsCheckinAdmin.jsx (1028 lines; split into smaller components)
 
