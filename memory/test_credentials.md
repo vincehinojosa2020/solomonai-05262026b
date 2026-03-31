@@ -23,7 +23,7 @@
 | Member | member@abundant-west.church | Demo2026! | abundant-west-001 |
 
 ## API URL
-- Preview: https://qa-security-ux.preview.emergentagent.com
+- Preview: https://parity-audit-preview.preview.emergentagent.com
 
 ## Rate Limits
 - Login IP: 5 attempts per 60 seconds

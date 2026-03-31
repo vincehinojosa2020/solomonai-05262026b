@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://qa-security-ux.preview.emergentagent.com/api
+https://parity-audit-preview.preview.emergentagent.com/api
 ```
 
 ### Authentication
