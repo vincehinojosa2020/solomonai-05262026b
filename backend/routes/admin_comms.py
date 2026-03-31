@@ -4,7 +4,13 @@ from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 import uuid
 import re
+import os
 import logging
+
+try:
+    from twilio.rest import Client as TwilioClient
+except ImportError:
+    TwilioClient = None
 
 from core import (
     db, DEFAULT_TENANT_ID,

@@ -1,0 +1,255 @@
+{
+  "results": [
+    {
+      "id": "J1a",
+      "name": "View Profile",
+      "status": "PASS",
+      "detail": "Name: N/A"
+    },
+    {
+      "id": "J1b",
+      "name": "Update Profile",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "J1c",
+      "name": "Browse Groups",
+      "status": "PASS",
+      "detail": "100 groups available"
+    },
+    {
+      "id": "J1d",
+      "name": "Join Group",
+      "status": "PASS",
+      "detail": "Already joined"
+    },
+    {
+      "id": "J1e",
+      "name": "Browse Events",
+      "status": "PASS",
+      "detail": "43 events"
+    },
+    {
+      "id": "J1f",
+      "name": "Register for Event",
+      "status": "PASS",
+      "detail": "Already registered"
+    },
+    {
+      "id": "J1g",
+      "name": "Make Donation",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "J1h",
+      "name": "Giving History",
+      "status": "PASS",
+      "detail": "4 entries"
+    },
+    {
+      "id": "J2a",
+      "name": "Browse Sermons",
+      "status": "PASS",
+      "detail": "0 sermons"
+    },
+    {
+      "id": "J2b",
+      "name": "Browse Videos",
+      "status": "PASS",
+      "detail": "4 videos"
+    },
+    {
+      "id": "J2c",
+      "name": "View Cafe Menu",
+      "status": "PASS",
+      "detail": "5 items"
+    },
+    {
+      "id": "J2d",
+      "name": "Place Cafe Order",
+      "status": "PASS",
+      "detail": "200"
+    },
+    {
+      "id": "J3a",
+      "name": "My Groups",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "J3b",
+      "name": "Meetings",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "J4a",
+      "name": "Giving YTD",
+      "status": "PASS",
+      "detail": "Total: $500.0"
+    },
+    {
+      "id": "J4b",
+      "name": "Payment Methods",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "J4c",
+      "name": "Giving Nudge",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "J5a",
+      "name": "Browse Courses",
+      "status": "PASS",
+      "detail": "1 courses"
+    },
+    {
+      "id": "J5b",
+      "name": "Browse Pathways",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "JX1",
+      "name": "Announcements",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "JX2",
+      "name": "Prayer Requests",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "JX3",
+      "name": "Kids Children",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "JX4",
+      "name": "Notifications",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "JX5",
+      "name": "Next Steps",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "JX6",
+      "name": "Merch Products",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "JX7",
+      "name": "Volunteer Opportunities",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "JX8",
+      "name": "Volunteer Leaderboard",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "JX9",
+      "name": "Attendance Streak",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "JX10",
+      "name": "Church Directory",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "JX11",
+      "name": "Portal Bootstrap",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "AS1",
+      "name": "Church Data Context",
+      "status": "PASS",
+      "detail": "Contextual: True"
+    },
+    {
+      "id": "AS2",
+      "name": "Event Context",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "AS5",
+      "name": "Pastoral Guidance",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "AS6",
+      "name": "Biblical Knowledge",
+      "status": "FAIL",
+      "detail": "500"
+    },
+    {
+      "id": "AS7",
+      "name": "Session Persistence",
+      "status": "PASS",
+      "detail": "8 messages in history"
+    },
+    {
+      "id": "DI1",
+      "name": "Tenant Isolation",
+      "status": "PASS",
+      "detail": "All members scoped to tenant"
+    },
+    {
+      "id": "DI2a",
+      "name": "RBAC: Member\u2192Admin",
+      "status": "PASS",
+      "detail": "Correctly rejected (403)"
+    },
+    {
+      "id": "DI2b",
+      "name": "RBAC: Member\u2192Giving",
+      "status": "PASS",
+      "detail": "Correctly rejected (403)"
+    },
+    {
+      "id": "DI2c",
+      "name": "RBAC: Member\u2192Platform",
+      "status": "PASS",
+      "detail": "Correctly rejected (403)"
+    },
+    {
+      "id": "DI3",
+      "name": "Data Consistency (Donation\u2192Summary)",
+      "status": "PASS",
+      "detail": "Donation txn_d141d96f540e4d02 processed, summary reflects"
+    },
+    {
+      "id": "DI4",
+      "name": "Cross-Ref (History\u2194YTD)",
+      "status": "PASS",
+      "detail": "Both endpoints return consistent data"
+    }
+  ],
+  "summary": {
+    "pass": 40,
+    "fail": 1,
+    "total": 41
+  }
+}
