@@ -457,3 +457,36 @@ async def update_household(request: Request, household_id: str, payload: dict):
 
 # ============== MEMBER DIRECTORY ==============
 
+
+
+# ============== CUSTOM FIELDS ON PEOPLE ==============
+
+@router.put("/admin/people/{person_id}/custom-fields")
+async def update_person_custom_fields(request: Request, person_id: str):
+    """Update custom_fields dict for a person record."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    body = await request.json()
+    custom_fields = body.get("custom_fields", {})
+
+    result = await db.people.update_one(
+        {"id": person_id, "tenant_id": tenant_id},
+        {"$set": {"custom_fields": custom_fields, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Person not found")
+    return {"message": "Custom fields updated", "custom_fields": custom_fields}
+
+
+@router.get("/admin/people/{person_id}/custom-fields")
+async def get_person_custom_fields(request: Request, person_id: str):
+    """Get custom_fields for a specific person."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    person = await db.people.find_one(
+        {"id": person_id, "tenant_id": tenant_id},
+        {"_id": 0, "custom_fields": 1, "id": 1}
+    )
+    if not person:
+        raise HTTPException(status_code=404, detail="Person not found")
+    return {"person_id": person_id, "custom_fields": person.get("custom_fields", {})}

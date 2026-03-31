@@ -1,0 +1,70 @@
+{
+  "summary": "Completed testing of 3 new features: Giving Goals/Pledges, Custom Fields UI Builder, and Registration Add-ons Enhancement. All backend APIs (31 tests) pass 100%. All frontend components verified working correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_new_features_iter67.py",
+    "/app/test_reports/pytest/pytest_results_iter67.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Fixed route ordering bug in admin_settings.py - /reorder endpoint was being matched as /{field_id} due to route definition order. Moved /reorder route before /{field_id} routes."
+  ],
+  "updated_files": [
+    "/app/backend/routes/admin_settings.py",
+    "/app/backend/tests/test_new_features_iter67.py"
+  ],
+  "success_rate": {
+    "backend": "100% (31/31 tests passed)",
+    "frontend": "100% (all 3 features verified)"
+  },
+  "test_credentials": {
+    "portal_member": "member@abundant.church / Demo2026!",
+    "church_admin": "shannonnieman1030@gmail.com / Demo2026!"
+  },
+  "seed_data_creation": "None - used existing test data",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Three new features fully tested and working: 1) Giving Goals - portal members can set/edit/delete annual giving goals with progress tracking, 2) Custom Fields Builder - admins can create/edit/delete/reorder custom field definitions (text/select/multiselect/boolean/date/number/textarea), 3) Registration Add-ons - enhanced with description, required checkbox, and max_qty fields. All APIs return correct status codes and data. Frontend components render correctly with proper data-testid attributes.",
+  "features_tested": {
+    "giving_goals": {
+      "endpoints": [
+        "GET /api/portal/giving-goal - Returns goal with progress (ytd_given, progress_pct, remaining)",
+        "POST /api/portal/giving-goal - Set/update goal target amount",
+        "DELETE /api/portal/giving-goal - Remove goal"
+      ],
+      "frontend": "GivingGoalTracker component on Portal Give page shows progress bar, edit/delete buttons, goal amount"
+    },
+    "custom_fields": {
+      "endpoints": [
+        "GET /api/admin/custom-field-definitions - List all field definitions",
+        "POST /api/admin/custom-field-definitions - Create field (all 7 types tested)",
+        "PUT /api/admin/custom-field-definitions/{id} - Update field",
+        "DELETE /api/admin/custom-field-definitions/{id} - Delete field",
+        "PUT /api/admin/custom-field-definitions/reorder - Reorder fields",
+        "GET /api/admin/people/{id}/custom-fields - Get person's custom fields",
+        "PUT /api/admin/people/{id}/custom-fields - Update person's custom fields"
+      ],
+      "frontend": "CustomFieldsBuilder in Settings > Custom Fields tab, PersonCustomFields in PersonDetail Overview tab"
+    },
+    "registration_addons": {
+      "endpoints": [
+        "GET /api/admin/registrations/configs/{event_id} - Get config with enhanced add-ons",
+        "POST /api/admin/registrations/configs/{event_id} - Save config with description/required/max_qty"
+      ],
+      "frontend": "Registration config dialog shows add-on builder with description textarea, required checkbox, max_qty input"
+    }
+  },
+  "bug_fixed": {
+    "issue": "PUT /api/admin/custom-field-definitions/reorder was returning 404",
+    "root_cause": "Route ordering - /reorder was defined after /{field_id} so 'reorder' was being matched as a field_id",
+    "fix": "Moved /reorder route definition before /{field_id} routes in admin_settings.py"
+  }
+}

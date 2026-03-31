@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import PermissionEditor from '@/components/PermissionEditor';
+import PersonCustomFields from '@/components/PersonCustomFields';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -255,6 +256,9 @@ export default function PersonDetail() {
               </div>
             </div>
           </div>
+
+          {/* Custom Fields */}
+          <PersonCustomFields personId={personId} />
         </TabsContent>
 
         {/* Giving Tab */}

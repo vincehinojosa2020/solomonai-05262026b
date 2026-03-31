@@ -5,6 +5,7 @@ import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import SolomonPayForm from '@/components/SolomonPayForm';
 import RecurringGivingManager from '@/components/RecurringGivingManager';
+import GivingGoalTracker from '@/components/GivingGoalTracker';
 
 export default function PortalGive() {
   const { user, memberData, refreshData } = useOutletContext();
@@ -300,6 +301,11 @@ export default function PortalGive() {
             Download Tax Statement
           </button>
         </div>
+      </div>
+
+      {/* Giving Goal Tracker */}
+      <div className="mt-8">
+        <GivingGoalTracker />
       </div>
 
       {/* Recurring Giving Management */}

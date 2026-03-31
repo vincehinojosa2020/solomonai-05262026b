@@ -37,6 +37,9 @@ export default function PublicRegistrationPage() {
         setConfig(d.config);
         setSpotsLeft(d.spots_left);
         setIsFull(d.is_full);
+        // Auto-select required add-ons
+        const requiredIds = (d.config?.add_ons || []).filter(a => a.required).map(a => a.id);
+        if (requiredIds.length > 0) setSelectedAddOns(prev => [...new Set([...prev, ...requiredIds])]);
       }
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
@@ -217,19 +220,39 @@ export default function PublicRegistrationPage() {
           {config?.add_ons?.length > 0 && (
             <div className="space-y-3 border-t border-slate-100 pt-4">
               <h3 className="text-sm font-semibold text-slate-700">Add-ons</h3>
-              {config.add_ons.map(addon => (
-                <label key={addon.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors" data-testid={`addon-${addon.id}`}>
-                  <div className="flex items-center gap-3">
-                    <input type="checkbox" checked={selectedAddOns.includes(addon.id)}
-                      onChange={() => toggleAddOn(addon.id)} className="rounded" />
-                    <div>
-                      <p className="text-sm font-medium text-slate-700">{addon.name}</p>
-                      {addon.description && <p className="text-xs text-slate-400">{addon.description}</p>}
+              {config.add_ons.map(addon => {
+                const isRequired = addon.required;
+                const isSelected = selectedAddOns.includes(addon.id);
+                return (
+                  <label
+                    key={addon.id}
+                    className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all border ${
+                      isSelected ? 'bg-blue-50 border-blue-200' : 'bg-slate-50 border-transparent hover:bg-slate-100'
+                    }`}
+                    data-testid={`addon-${addon.id}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={isSelected || isRequired}
+                        onChange={() => !isRequired && toggleAddOn(addon.id)}
+                        disabled={isRequired}
+                        className="rounded w-4 h-4"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-slate-700">
+                          {addon.name}
+                          {isRequired && <span className="text-[10px] ml-1.5 text-red-500 font-medium uppercase">Required</span>}
+                        </p>
+                        {addon.description && <p className="text-xs text-slate-400 mt-0.5">{addon.description}</p>}
+                      </div>
                     </div>
-                  </div>
-                  <span className="text-sm font-semibold text-slate-700">${addon.price}</span>
-                </label>
-              ))}
+                    <span className="text-sm font-semibold text-slate-700">
+                      {addon.price > 0 ? `$${addon.price}` : 'Free'}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
           )}
 

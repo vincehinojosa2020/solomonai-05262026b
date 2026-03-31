@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Settings, Building2, Palette, Users, DollarSign, Mail, Link2 } from 'lucide-react';
+import { Settings, Building2, Palette, Users, DollarSign, Mail, Link2, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
+import CustomFieldsBuilder from '@/components/CustomFieldsBuilder';
 
 export default function SettingsPage() {
   const [tenant, setTenant] = useState(null);
@@ -110,6 +111,10 @@ export default function SettingsPage() {
           <TabsTrigger value="staff" data-testid="tab-staff">
             <Users className="w-4 h-4 mr-2" />
             Staff & Roles
+          </TabsTrigger>
+          <TabsTrigger value="custom-fields" data-testid="tab-custom-fields">
+            <Settings2 className="w-4 h-4 mr-2" />
+            Custom Fields
           </TabsTrigger>
         </TabsList>
 
@@ -407,6 +412,13 @@ export default function SettingsPage() {
                 </div>
               ))}
             </div>
+          </div>
+        </TabsContent>
+
+        {/* Custom Fields */}
+        <TabsContent value="custom-fields" className="space-y-6">
+          <div className="bg-white border border-slate-200 rounded-lg p-6">
+            <CustomFieldsBuilder />
           </div>
         </TabsContent>
       </Tabs>

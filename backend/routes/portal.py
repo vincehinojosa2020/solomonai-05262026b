@@ -227,6 +227,110 @@ async def get_member_giving_ytd(request: Request):
     }
 
 
+
+# ============== GIVING GOALS / PLEDGES ==============
+
+@router.get("/portal/giving-goal")
+async def get_giving_goal(request: Request, year: int = None):
+    """Get the member's giving goal for the specified year and current progress."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    if not year:
+        year = datetime.now(timezone.utc).year
+
+    person = await db.people.find_one(
+        {"email": user["email"], "tenant_id": tenant_id}, {"_id": 0}
+    )
+    person_id = person["id"] if person else user.get("user_id")
+
+    goal = await db.giving_goals.find_one(
+        {"tenant_id": tenant_id, "person_id": person_id, "year": year},
+        {"_id": 0}
+    )
+
+    # Calculate YTD progress
+    ytd_start = f"{year}-01-01"
+    ytd_end = f"{year}-12-31"
+    pipeline = [
+        {"$match": {"tenant_id": tenant_id, "person_id": person_id, "donation_date": {"$gte": ytd_start, "$lte": ytd_end}}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}, "count": {"$sum": 1}}}
+    ]
+    agg = await db.donations.aggregate(pipeline).to_list(1)
+    ytd_total = round(agg[0]["total"], 2) if agg else 0
+    donation_count = agg[0]["count"] if agg else 0
+
+    target = goal["target_amount"] if goal else 0
+    progress_pct = round((ytd_total / target) * 100, 1) if target > 0 else 0
+
+    return {
+        "year": year,
+        "target_amount": target,
+        "ytd_given": ytd_total,
+        "donation_count": donation_count,
+        "progress_pct": min(progress_pct, 100),
+        "remaining": round(max(target - ytd_total, 0), 2),
+        "has_goal": goal is not None,
+    }
+
+
+@router.post("/portal/giving-goal")
+async def set_giving_goal(request: Request):
+    """Set or update the member's giving goal for the year."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    body = await request.json()
+
+    target_amount = body.get("target_amount")
+    year = body.get("year", datetime.now(timezone.utc).year)
+
+    if target_amount is None or target_amount <= 0:
+        raise HTTPException(status_code=400, detail="Target amount must be positive")
+
+    person = await db.people.find_one(
+        {"email": user["email"], "tenant_id": tenant_id}, {"_id": 0}
+    )
+    person_id = person["id"] if person else user.get("user_id")
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    await db.giving_goals.update_one(
+        {"tenant_id": tenant_id, "person_id": person_id, "year": year},
+        {"$set": {
+            "target_amount": round(float(target_amount), 2),
+            "updated_at": now_iso,
+        }, "$setOnInsert": {
+            "id": f"goal_{uuid.uuid4().hex[:12]}",
+            "tenant_id": tenant_id,
+            "person_id": person_id,
+            "year": year,
+            "created_at": now_iso,
+        }},
+        upsert=True
+    )
+
+    return {"message": f"Giving goal for {year} set to ${target_amount:.2f}", "target_amount": round(float(target_amount), 2), "year": year}
+
+
+@router.delete("/portal/giving-goal")
+async def delete_giving_goal(request: Request, year: int = None):
+    """Remove the member's giving goal."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    if not year:
+        year = datetime.now(timezone.utc).year
+
+    person = await db.people.find_one(
+        {"email": user["email"], "tenant_id": tenant_id}, {"_id": 0}
+    )
+    person_id = person["id"] if person else user.get("user_id")
+
+    result = await db.giving_goals.delete_one(
+        {"tenant_id": tenant_id, "person_id": person_id, "year": year}
+    )
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="No goal found for this year")
+    return {"message": "Giving goal removed"}
+
+
 # ============== RECURRING GIVING MANAGEMENT ==============
 
 def _calculate_next_charge_date(frequency: str, from_date: str = None) -> str:

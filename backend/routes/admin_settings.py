@@ -560,3 +560,138 @@ async def update_api_key(request: Request, key_id: str, payload: dict):
 
 # --- Agent API v1 Endpoints (External Access) ---
 
+
+
+# ============== CUSTOM FIELD DEFINITIONS ==============
+
+FIELD_TYPES = ["text", "number", "select", "multiselect", "date", "boolean", "textarea"]
+FIELD_CATEGORIES = ["personal", "church", "medical", "other"]
+
+
+@router.get("/admin/custom-field-definitions")
+async def list_custom_field_definitions(request: Request):
+    """List all custom field definitions for this tenant."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    fields = await db.custom_field_definitions.find(
+        {"tenant_id": tenant_id}, {"_id": 0}
+    ).sort("sort_order", 1).to_list(200)
+    return {"fields": fields}
+
+
+@router.post("/admin/custom-field-definitions")
+async def create_custom_field_definition(request: Request):
+    """Create a new custom field definition."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    body = await request.json()
+
+    name = body.get("name", "").strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Field name is required")
+
+    field_type = body.get("field_type", "text")
+    if field_type not in FIELD_TYPES:
+        raise HTTPException(status_code=400, detail=f"Invalid field type. Use: {', '.join(FIELD_TYPES)}")
+
+    # Generate key from name
+    field_key = name.lower().replace(" ", "_").replace("-", "_")
+    field_key = "".join(c for c in field_key if c.isalnum() or c == "_")
+
+    # Check for duplicate key
+    existing = await db.custom_field_definitions.find_one(
+        {"tenant_id": tenant_id, "field_key": field_key}, {"_id": 0}
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail=f"Field '{name}' already exists")
+
+    # Get max sort order
+    last = await db.custom_field_definitions.find(
+        {"tenant_id": tenant_id}, {"_id": 0, "sort_order": 1}
+    ).sort("sort_order", -1).limit(1).to_list(1)
+    next_order = (last[0]["sort_order"] + 1) if last else 0
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    field_def = {
+        "id": f"cf_{uuid.uuid4().hex[:12]}",
+        "tenant_id": tenant_id,
+        "name": name,
+        "field_key": field_key,
+        "field_type": field_type,
+        "options": body.get("options", []),
+        "required": body.get("required", False),
+        "category": body.get("category", "other") if body.get("category") in FIELD_CATEGORIES else "other",
+        "sort_order": next_order,
+        "is_active": True,
+        "created_at": now_iso,
+        "updated_at": now_iso,
+    }
+    await db.custom_field_definitions.insert_one(field_def)
+    return {k: v for k, v in field_def.items() if k != "_id"}
+
+
+@router.put("/admin/custom-field-definitions/reorder")
+async def reorder_custom_fields(request: Request):
+    """Reorder custom field definitions. Expects {field_ids: [ordered list]}."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    body = await request.json()
+    field_ids = body.get("field_ids", [])
+
+    for i, fid in enumerate(field_ids):
+        await db.custom_field_definitions.update_one(
+            {"id": fid, "tenant_id": tenant_id},
+            {"$set": {"sort_order": i, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        )
+    return {"message": "Fields reordered", "count": len(field_ids)}
+
+
+@router.put("/admin/custom-field-definitions/{field_id}")
+async def update_custom_field_definition(request: Request, field_id: str):
+    """Update a custom field definition."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    body = await request.json()
+
+    existing = await db.custom_field_definitions.find_one(
+        {"id": field_id, "tenant_id": tenant_id}, {"_id": 0}
+    )
+    if not existing:
+        raise HTTPException(status_code=404, detail="Field definition not found")
+
+    update = {}
+    if "name" in body and body["name"].strip():
+        update["name"] = body["name"].strip()
+    if "field_type" in body and body["field_type"] in FIELD_TYPES:
+        update["field_type"] = body["field_type"]
+    if "options" in body:
+        update["options"] = body["options"]
+    if "required" in body:
+        update["required"] = bool(body["required"])
+    if "category" in body and body["category"] in FIELD_CATEGORIES:
+        update["category"] = body["category"]
+    if "is_active" in body:
+        update["is_active"] = bool(body["is_active"])
+    if "sort_order" in body:
+        update["sort_order"] = int(body["sort_order"])
+
+    update["updated_at"] = datetime.now(timezone.utc).isoformat()
+
+    await db.custom_field_definitions.update_one(
+        {"id": field_id, "tenant_id": tenant_id}, {"$set": update}
+    )
+    updated = await db.custom_field_definitions.find_one({"id": field_id}, {"_id": 0})
+    return updated
+
+
+@router.delete("/admin/custom-field-definitions/{field_id}")
+async def delete_custom_field_definition(request: Request, field_id: str):
+    """Delete a custom field definition."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    result = await db.custom_field_definitions.delete_one(
+        {"id": field_id, "tenant_id": tenant_id}
+    )
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Field definition not found")
+    return {"message": "Custom field deleted"}

@@ -282,20 +282,46 @@ export default function RegistrationsPage() {
                 <div className="flex items-center justify-between">
                   <Label className="text-xs font-semibold text-slate-500 uppercase">Add-ons</Label>
                   <Button size="sm" variant="outline" className="text-xs" onClick={() => {
-                    const addons = [...(config.add_ons || []), { id: `addon_${Date.now()}`, name: '', price: 0, description: '' }];
+                    const addons = [...(config.add_ons || []), { id: `addon_${Date.now()}`, name: '', price: 0, description: '', max_qty: 0, required: false }];
                     setConfig({ ...config, add_ons: addons });
                   }} data-testid="add-addon-btn"><Plus className="w-3 h-3 mr-1" />Add</Button>
                 </div>
+                {(config.add_ons || []).length === 0 && (
+                  <p className="text-xs text-slate-400 text-center py-3">No add-ons yet. Add optional items like t-shirts, meals, or materials.</p>
+                )}
                 {(config.add_ons || []).map((addon, i) => (
-                  <div key={addon.id} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg">
-                    <Input placeholder="Name" className="text-sm" value={addon.name}
-                      onChange={e => { const a = [...config.add_ons]; a[i] = { ...a[i], name: e.target.value }; setConfig({ ...config, add_ons: a }); }}
-                      data-testid={`addon-name-${i}`} />
-                    <Input type="number" placeholder="$" className="w-20 text-sm" value={addon.price}
-                      onChange={e => { const a = [...config.add_ons]; a[i] = { ...a[i], price: parseFloat(e.target.value) || 0 }; setConfig({ ...config, add_ons: a }); }}
-                      data-testid={`addon-price-${i}`} />
-                    <button onClick={() => { const a = config.add_ons.filter((_, idx) => idx !== i); setConfig({ ...config, add_ons: a }); }}
-                      className="text-red-400 hover:text-red-600"><Trash2 className="w-3.5 h-3.5" /></button>
+                  <div key={addon.id} className="p-3 bg-slate-50 rounded-lg space-y-2 border border-slate-100" data-testid={`addon-card-${i}`}>
+                    <div className="flex items-center gap-2">
+                      <Gift className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                      <Input placeholder="Add-on name (e.g. T-Shirt, Lunch)" className="text-sm flex-1" value={addon.name}
+                        onChange={e => { const a = [...config.add_ons]; a[i] = { ...a[i], name: e.target.value }; setConfig({ ...config, add_ons: a }); }}
+                        data-testid={`addon-name-${i}`} />
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-slate-400">$</span>
+                        <Input type="number" placeholder="0" className="w-16 text-sm" value={addon.price}
+                          onChange={e => { const a = [...config.add_ons]; a[i] = { ...a[i], price: parseFloat(e.target.value) || 0 }; setConfig({ ...config, add_ons: a }); }}
+                          data-testid={`addon-price-${i}`} />
+                      </div>
+                      <button onClick={() => { const a = config.add_ons.filter((_, idx) => idx !== i); setConfig({ ...config, add_ons: a }); }}
+                        className="text-red-400 hover:text-red-600 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                    <Input placeholder="Description (shown to registrants)" className="text-xs" value={addon.description || ''}
+                      onChange={e => { const a = [...config.add_ons]; a[i] = { ...a[i], description: e.target.value }; setConfig({ ...config, add_ons: a }); }}
+                      data-testid={`addon-desc-${i}`} />
+                    <div className="flex items-center gap-4">
+                      <label className="flex items-center gap-1.5 text-xs text-slate-500 cursor-pointer">
+                        <input type="checkbox" checked={addon.required || false}
+                          onChange={e => { const a = [...config.add_ons]; a[i] = { ...a[i], required: e.target.checked }; setConfig({ ...config, add_ons: a }); }}
+                          className="rounded w-3.5 h-3.5" />
+                        Required
+                      </label>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs text-slate-400">Max qty:</span>
+                        <Input type="number" min="0" placeholder="0=unlimited" className="w-20 text-xs h-7" value={addon.max_qty || ''}
+                          onChange={e => { const a = [...config.add_ons]; a[i] = { ...a[i], max_qty: parseInt(e.target.value) || 0 }; setConfig({ ...config, add_ons: a }); }}
+                          data-testid={`addon-qty-${i}`} />
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
