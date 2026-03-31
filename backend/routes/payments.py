@@ -8,7 +8,7 @@ import uuid
 import logging
 import os
 
-from core import db, DEFAULT_TENANT_ID, logger
+from core import db, DEFAULT_TENANT_ID, get_session_token_from_request, get_current_portal_user, logger
 from core.helpers import serialize_doc
 from models.schemas import Donation, Fund, User, LeadCaptureRequest, SavePaymentMethodRequest, SolomonPayProcessRequest
 

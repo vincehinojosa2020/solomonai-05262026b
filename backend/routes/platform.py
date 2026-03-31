@@ -13,7 +13,7 @@ import os
 
 from core import (
     db, DEFAULT_TENANT_ID, ROLE_TEMPLATES,
-    get_permissions_for_user, audit_log,
+    get_permissions_for_user, get_session_token_from_request, audit_log,
     logger,
 )
 from core.helpers import serialize_doc, DEFAULT_MERCH_EMBED_URL, compute_health_score

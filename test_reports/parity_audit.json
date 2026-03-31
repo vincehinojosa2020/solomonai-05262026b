@@ -1,0 +1,702 @@
+{
+  "pass": 109,
+  "fail": 7,
+  "details": [
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Members list",
+      "path": "/admin/members"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Members search",
+      "path": "/admin/members?search=shannon"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "People CRUD",
+      "path": "/people"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Person create",
+      "path": "/people"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Households",
+      "path": "/admin/households"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Duplicates",
+      "path": "/admin/people/duplicates"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Notes",
+      "path": "/admin/notes"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Leads",
+      "path": "/admin/leads"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Stations",
+      "path": "/admin/checkin/stations"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Locations",
+      "path": "/admin/checkin/locations"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Labels",
+      "path": "/admin/checkin/labels"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Kids all",
+      "path": "/admin/kids/all"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Kids checkins",
+      "path": "/admin/kids/checkins"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Kids history",
+      "path": "/admin/kids/checkins/history"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Medical alerts",
+      "path": "/admin/checkin/medical-alerts"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "First timers",
+      "path": "/admin/checkin/reports/first-timers"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Trends",
+      "path": "/admin/checkin/reports/trends"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Attendance today",
+      "path": "/admin/attendance/today"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Summary",
+      "path": "/admin/giving/summary"
+    },
+    {
+      "status": "FAIL",
+      "code": 0,
+      "label": "Report",
+      "path": "/admin/giving/report"
+    },
+    {
+      "status": "FAIL",
+      "code": 0,
+      "label": "Export CSV",
+      "path": "/admin/giving/export"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Settings",
+      "path": "/admin/giving/settings"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Processor settings",
+      "path": "/admin/giving/processor-settings"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Integrations",
+      "path": "/admin/giving/integrations"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Processors",
+      "path": "/giving/processors"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Process giving",
+      "path": "/giving/process"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "SolomonPay txns",
+      "path": "/solomonpay/transactions"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Payments config",
+      "path": "/payments/config"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Payment methods",
+      "path": "/payments/methods"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Groups list",
+      "path": "/admin/groups"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Create group",
+      "path": "/admin/groups"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Join requests",
+      "path": "/admin/groups/join-requests/all"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Service plans",
+      "path": "/admin/services/plans"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Create plan",
+      "path": "/admin/services/plans"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Services",
+      "path": "/services"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Service types",
+      "path": "/service-types"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Events",
+      "path": "/admin/events"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Calendar rooms",
+      "path": "/admin/calendar/rooms"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Calendar conflicts",
+      "path": "/admin/calendar/conflicts"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Calendar approvals",
+      "path": "/admin/calendar/approvals"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Registration events",
+      "path": "/admin/registrations/events"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Comms list",
+      "path": "/admin/communications/list"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Send email",
+      "path": "/admin/communications/send"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "SMS templates",
+      "path": "/sms/templates"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Categories",
+      "path": "/admin/media/categories"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Sermons",
+      "path": "/admin/media/sermons"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Videos",
+      "path": "/admin/media/videos"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Uploads",
+      "path": "/admin/media/uploads"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Items",
+      "path": "/admin/cafe/items"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Orders",
+      "path": "/admin/cafe/orders"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Settings",
+      "path": "/admin/cafe/settings"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Summary",
+      "path": "/admin/cafe/summary"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Products",
+      "path": "/admin/merch/products"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Orders",
+      "path": "/admin/merch/orders"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Settings",
+      "path": "/admin/merch/settings"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Summary",
+      "path": "/admin/merch/summary"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Courses",
+      "path": "/admin/courses"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Pathways",
+      "path": "/admin/pathways/courses"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Attendance",
+      "path": "/reports/attendance"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Exec summary",
+      "path": "/reports/executive-summary"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Groups",
+      "path": "/reports/groups"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Membership",
+      "path": "/reports/membership"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Kids",
+      "path": "/reports/kids-history"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Next-steps",
+      "path": "/reports/next-steps"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Cafe",
+      "path": "/reports/cafe"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Merch",
+      "path": "/reports/merch"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Admin exec",
+      "path": "/admin/reports/executive-summary"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Admin attendance",
+      "path": "/admin/reports/attendance/summary"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Dashboard",
+      "path": "/admin/dashboard"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Dashboard agg",
+      "path": "/admin/dashboard/aggregate"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Forms",
+      "path": "/admin/forms"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Workflows",
+      "path": "/admin/workflows"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Audit log",
+      "path": "/admin/audit-log"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Geofence",
+      "path": "/admin/geofence/config"
+    },
+    {
+      "status": "FAIL",
+      "code": 500,
+      "label": "Prayer dash",
+      "path": "/admin/prayer/dashboard"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "API keys",
+      "path": "/admin/api-keys"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Chat",
+      "path": "/solomon/chat"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "History",
+      "path": "/solomon/history/audit-py"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Profile",
+      "path": "/portal/profile"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Bootstrap",
+      "path": "/portal/bootstrap"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Groups",
+      "path": "/portal/groups"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Events",
+      "path": "/portal/events"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Giving history",
+      "path": "/portal/giving/history"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Giving YTD",
+      "path": "/portal/giving/ytd"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Media sermons",
+      "path": "/portal/media/sermons"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Media videos",
+      "path": "/portal/media/videos"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Media featured",
+      "path": "/portal/media/featured"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Announcements",
+      "path": "/portal/announcements"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Prayer requests",
+      "path": "/portal/prayer-requests"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Courses",
+      "path": "/portal/courses"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Pathways",
+      "path": "/portal/pathways/courses"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Kids",
+      "path": "/portal/kids/children"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Notifications",
+      "path": "/portal/notifications"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Next-steps",
+      "path": "/portal/next-steps"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Cafe menu",
+      "path": "/portal/cafe/menu"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Merch",
+      "path": "/portal/merch/products"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Volunteer opps",
+      "path": "/portal/volunteer/opportunities"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Volunteer sched",
+      "path": "/portal/volunteer/schedule"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Volunteer lead",
+      "path": "/portal/volunteer/leaderboard"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Meetings",
+      "path": "/portal/meetings"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Payment methods",
+      "path": "/portal/payment-methods"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Streak",
+      "path": "/portal/attendance-streak"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Directory",
+      "path": "/portal/directory"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Stats",
+      "path": "/platform/stats"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Orgs",
+      "path": "/platform/organizations"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Health",
+      "path": "/platform/health"
+    },
+    {
+      "status": "FAIL",
+      "code": 401,
+      "label": "Agent members",
+      "path": "/v1/agent/members"
+    },
+    {
+      "status": "FAIL",
+      "code": 401,
+      "label": "Agent groups",
+      "path": "/v1/agent/groups"
+    },
+    {
+      "status": "FAIL",
+      "code": 401,
+      "label": "Agent events",
+      "path": "/v1/agent/events"
+    },
+    {
+      "status": "FAIL",
+      "code": 401,
+      "label": "Agent giving",
+      "path": "/v1/agent/giving/summary"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Agent docs",
+      "path": "/v1/agent/docs"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Health",
+      "path": "/health"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Health detailed",
+      "path": "/health/detailed"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Search",
+      "path": "/search?q=test"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Tenant",
+      "path": "/tenant"
+    },
+    {
+      "status": "PASS",
+      "code": 200,
+      "label": "Tenants list",
+      "path": "/tenants/list"
+    }
+  ]
+}

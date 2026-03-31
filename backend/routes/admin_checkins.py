@@ -273,8 +273,6 @@ async def register_new_family(request: Request, payload: RegisterFamilyPayload):
 
 # --- Check-in Locations ---
 @router.get("/admin/checkin/locations")
-
-@router.get("/admin/checkin/locations")
 async def get_checkin_locations(request: Request):
     """Get all check-in locations/rooms"""
     user = await get_current_admin_user(request)
@@ -348,8 +346,6 @@ async def delete_checkin_location(request: Request, location_id: str):
 
 # --- Check-in Station Config ---
 @router.get("/admin/checkin/stations")
-
-@router.get("/admin/checkin/stations")
 async def get_checkin_stations(request: Request):
     """Get check-in station configurations"""
     user = await get_current_admin_user(request)
@@ -413,8 +409,6 @@ async def delete_checkin_station(request: Request, station_id: str):
     return {"message": "Station deleted"}
 
 # --- Label Templates ---
-@router.get("/admin/checkin/labels")
-
 @router.get("/admin/checkin/labels")
 async def get_label_templates(request: Request):
     """Get label templates"""
@@ -501,8 +495,6 @@ async def delete_label_template(request: Request, label_id: str):
 
 # --- Medical/Allergy Alerts ---
 @router.get("/admin/checkin/medical-alerts")
-
-@router.get("/admin/checkin/medical-alerts")
 async def get_medical_alerts(request: Request):
     """Get all children with medical/allergy alerts"""
     user = await get_current_admin_user(request)
@@ -532,8 +524,6 @@ async def update_child_medical(request: Request, child_id: str, payload: dict):
     return {"message": "Medical info updated"}
 
 # --- Guardian Verification ---
-@router.get("/admin/checkin/children/{child_id}/guardians")
-
 @router.get("/admin/checkin/children/{child_id}/guardians")
 async def get_child_guardians(request: Request, child_id: str):
     """Get authorized guardians for a child"""
@@ -578,8 +568,6 @@ async def remove_guardian(request: Request, child_id: str, guardian_id: str):
     return {"message": "Guardian removed"}
 
 # --- Check-in Reports ---
-@router.get("/admin/checkin/reports/trends")
-
 @router.get("/admin/checkin/reports/trends")
 async def get_checkin_trends(request: Request, days: int = 30):
     """Get check-in attendance trends"""

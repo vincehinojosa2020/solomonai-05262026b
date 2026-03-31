@@ -441,8 +441,6 @@ async def update_branding(request: Request, payload: dict):
 
 
 # --- SEARCH ROUTE ---
-@router.get("/search")
-
 @router.get("/admin/api-keys")
 async def list_api_keys(request: Request):
     """List all API keys for the tenant"""

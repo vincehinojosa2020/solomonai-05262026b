@@ -13,6 +13,7 @@ import os
 from core import (
     db, DEFAULT_TENANT_ID,
     get_current_portal_user, get_current_member_user,
+    get_session_token_from_request,
     require_tenant, audit_log, check_idempotency, store_idempotency,
     logger,
 )
@@ -989,8 +990,6 @@ async def get_portal_kids_checkin_history(request: Request, limit: int = 100):
     }
 
 # Admin routes for Kids Check-in
-@router.get("/admin/kids/checkins")
-
 @router.get("/portal/cafe/settings")
 async def get_portal_cafe_settings(request: Request):
     user = await get_current_member_user(request)
@@ -2560,8 +2559,6 @@ async def portal_kids_checkout(request: Request, payload: KidsCheckoutRequest):
     return {"status": "checked_out", "checkout_time": now_iso, "child_name": checkin.get("child_name")}
 
 # --- Kids: Admin /today and checkout ---
-@router.get("/admin/kids/checkins/today")
-
 @router.post("/portal/giving/donate")
 async def portal_giving_donate(request: Request, payload: GivingDonateRequest):
     """Process a donation from the member portal via SolomonPay."""

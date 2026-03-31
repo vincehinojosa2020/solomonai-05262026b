@@ -7,6 +7,8 @@ import uuid
 import logging
 
 from core import db, get_current_admin_user, require_tenant, logger
+
+ROOT_DIR = Path(__file__).parent.parent
 from core.helpers import (
     serialize_doc, transcribe_audio_with_whisper,
     summarize_meeting_with_claude, notify_meeting_event,

@@ -1,5 +1,6 @@
 """Solomon AI — Admin Giving Routes"""
 from fastapi import APIRouter, HTTPException, Request, Response, Header
+from fastapi.responses import StreamingResponse
 from datetime import datetime, timezone, timedelta
 from typing import Optional, List
 import uuid
@@ -14,6 +15,7 @@ from core import (
 )
 from core.helpers import serialize_doc, get_tenant_giving_metrics
 from models.schemas import Fund, Group, Person, Tenant
+from routes.admin_settings import PAYMENT_PROCESSORS
 
 router = APIRouter()
 
@@ -23,9 +25,6 @@ async def get_admin_giving_summary(request: Request):
     user = await get_current_admin_user(request)
     tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
     return await get_tenant_giving_metrics(tenant_id)
-
-# --- PEOPLE ROUTES ---
-@router.get("/people")
 
 @router.get("/admin/giving/report")
 async def get_giving_report(
@@ -368,7 +367,7 @@ async def get_year_end_statement(request: Request, person_id: str, year: int = 2
 @router.get("/admin/giving/processor-settings")
 async def get_processor_settings(request: Request):
     """Get configured payment processor for this tenant."""
-    user = await require_permission(request, "admin.giving")
+    user = await require_permission(request, "admin.giving.view")
     tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
     settings = await db.payment_processor_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
     if not settings:
@@ -385,7 +384,7 @@ async def get_giving_settings_alias(request: Request):
 @router.post("/admin/giving/processor-settings")
 async def update_processor_settings(request: Request, payload: dict):
     """Configure payment processor for this tenant."""
-    user = await require_permission(request, "admin.giving")
+    user = await require_permission(request, "admin.giving.edit")
     tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
     processor_id = payload.get("processor_id")
     action = payload.get("action", "connect")

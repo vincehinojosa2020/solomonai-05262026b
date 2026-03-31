@@ -8,11 +8,22 @@ import logging
 
 from core import (
     db, DEFAULT_TENANT_ID,
-    get_current_admin_user, require_permission, require_tenant,
+    get_current_admin_user, get_current_portal_user, require_permission, require_tenant,
     logger,
 )
 from core.helpers import serialize_doc
 from models.schemas import Communication, Attendance, Event, Group, Tenant, BulkSMSRequest, SMSRequest
+
+PRAYER_CATEGORIES = [
+    {"id": "general", "name": "General", "icon": "prayer"},
+    {"id": "healing", "name": "Healing", "icon": "heart"},
+    {"id": "family", "name": "Family", "icon": "family"},
+    {"id": "financial", "name": "Financial", "icon": "finance"},
+    {"id": "guidance", "name": "Guidance", "icon": "compass"},
+    {"id": "thanksgiving", "name": "Thanksgiving", "icon": "praise"},
+    {"id": "salvation", "name": "Salvation", "icon": "cross"},
+    {"id": "relationships", "name": "Relationships", "icon": "heart"},
+]
 
 router = APIRouter()
 

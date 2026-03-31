@@ -1,9 +1,9 @@
 """Solomon AI — Public API Routes (People, Groups, Events, Tenants, etc.)"""
 from fastapi import APIRouter, HTTPException, Request, Response, Query, Form
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta, date
-from typing import Optional, List, Dict, Any
 import uuid
 import logging
 import json
@@ -14,11 +14,13 @@ import os
 
 from core import (
     db, DEFAULT_TENANT_ID,
-    get_current_admin_user, get_current_member_user,
+    get_current_admin_user, get_current_member_user, get_current_portal_user,
+    get_session_token_from_request,
     get_tenant_by_subdomain, require_tenant, audit_log,
     logger,
 )
 from core.helpers import serialize_doc, DEFAULT_MERCH_EMBED_URL, calculate_attendance_streak, extract_youtube_id
+from routes.admin_settings import PAYMENT_PROCESSORS
 from models.schemas import (
     Attendance, Communication, Donation, DonationBase, DonationBatch,
     Event, Fund, Group, Household, Person, PersonCreate,
@@ -610,8 +612,6 @@ async def get_tenant(request: Request):
 
 # --- DASHBOARD ROUTES ---
 @router.get("/dashboard/stats")
-
-@router.get("/dashboard/stats")
 async def get_dashboard_stats(request: Request):
     """Return tenant-scoped dashboard stats from cache, falling back to defaults."""
     tenant_id = DEFAULT_TENANT_ID
@@ -971,8 +971,6 @@ async def get_person_groups(person_id: str):
 
 # --- HOUSEHOLDS ROUTES ---
 @router.get("/households")
-
-@router.get("/households")
 async def get_households(page: int = 1, per_page: int = 25, search: Optional[str] = None):
     tenant_id = DEFAULT_TENANT_ID
     query = {"tenant_id": tenant_id}
@@ -1022,8 +1020,6 @@ async def get_household(household_id: str):
     return serialize_doc(household)
 
 # --- GROUPS ROUTES ---
-@router.get("/groups")
-
 @router.get("/groups")
 async def get_groups(
     page: int = 1,
@@ -1159,8 +1155,6 @@ async def get_group_types():
 
 # --- ATTENDANCE ROUTES ---
 @router.get("/services")
-
-@router.get("/services")
 async def get_services(date: Optional[str] = None, limit: int = 10):
     tenant_id = DEFAULT_TENANT_ID
     query = {"tenant_id": tenant_id}
@@ -1264,8 +1258,6 @@ async def get_service_attendance(service_id: str):
     return attendance
 
 # --- GIVING ROUTES ---
-@router.get("/funds")
-
 @router.get("/funds")
 async def get_funds():
     funds = await db.funds.find(
@@ -1398,10 +1390,6 @@ async def get_donations(
 
 # ============== GIVING REPORTS & CSV EXPORT ==============
 
-from fastapi.responses import StreamingResponse
-import csv
-import io
-
 
 @router.post("/donations")
 async def create_donation(donation_data: DonationBase):
@@ -1495,8 +1483,6 @@ async def close_batch(batch_id: str):
 
 # --- EVENTS ROUTES ---
 @router.get("/events")
-
-@router.get("/events")
 async def get_events(upcoming: bool = True, limit: int = 20):
     tenant_id = DEFAULT_TENANT_ID
     query = {"tenant_id": tenant_id}
@@ -1526,8 +1512,6 @@ async def get_event(event_id: str):
     return serialize_doc(event)
 
 # --- COMMUNICATIONS ROUTES ---
-@router.get("/communications")
-
 @router.get("/communications")
 async def get_communications(status: Optional[str] = None, limit: int = 20):
     tenant_id = DEFAULT_TENANT_ID
@@ -1559,9 +1543,6 @@ async def create_communication(subject: str, body_html: str, recipient_ids: List
     
     await db.communications.insert_one(doc)
     return serialize_doc(doc)
-
-# --- REPORTS ROUTES ---
-@router.get("/reports/giving-by-fund")
 
 @router.get("/giving/processors")
 async def list_payment_processors():
