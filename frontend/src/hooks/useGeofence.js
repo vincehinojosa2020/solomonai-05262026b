@@ -13,7 +13,7 @@ export function useGeofence() {
     checkedInRef.current = true;
 
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const res = await fetch(`${API_URL}/portal/attendance/geofence-checkin`, {
         method: 'POST',
         headers: {

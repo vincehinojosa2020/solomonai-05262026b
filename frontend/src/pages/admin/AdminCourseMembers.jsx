@@ -13,7 +13,7 @@ export default function AdminCourseMembers() {
   const [loading, setLoading] = useState(true);
   const [courseName, setCourseName] = useState('');
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}` };
 
   useEffect(() => {

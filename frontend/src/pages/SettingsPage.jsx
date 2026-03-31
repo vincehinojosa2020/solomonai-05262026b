@@ -16,7 +16,7 @@ export default function SettingsPage() {
   const [brandingDirty, setBrandingDirty] = useState(false);
   const [savingBranding, setSavingBranding] = useState(false);
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   useEffect(() => {

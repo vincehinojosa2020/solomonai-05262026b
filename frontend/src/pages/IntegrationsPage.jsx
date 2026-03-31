@@ -66,7 +66,7 @@ export default function IntegrationsPage() {
 
   const fetchProcessorSettings = async () => {
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const res = await fetch(`${API_URL}/admin/giving/processor-settings`, {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
@@ -80,7 +80,7 @@ export default function IntegrationsPage() {
   const connectProcessor = async (processorId) => {
     setConnectingId(processorId);
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const res = await fetch(`${API_URL}/admin/giving/processor-settings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
@@ -101,7 +101,7 @@ export default function IntegrationsPage() {
   const disconnectProcessor = async (processorId) => {
     setConnectingId(processorId);
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const res = await fetch(`${API_URL}/admin/giving/processor-settings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },

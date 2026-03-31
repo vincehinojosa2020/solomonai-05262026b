@@ -56,7 +56,7 @@ export default function ChurchOnboardingWizard({ isOpen, onClose, onSuccess }) {
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const res = await fetch(`${API_URL}/platform/churches/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },

@@ -125,7 +125,7 @@ export default function Dashboard() {
   // Fetch aggregate data when in aggregate mode
   useEffect(() => {
     if (aggregateMode) {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       fetch(`${API_URL}/admin/dashboard/aggregate`, { headers })
         .then(r => r.ok ? r.json() : null)

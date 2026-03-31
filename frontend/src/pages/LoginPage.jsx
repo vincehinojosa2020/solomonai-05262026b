@@ -53,8 +53,8 @@ export default function LoginPage() {
 
       // Store session
       if (data.session_token) {
-        localStorage.setItem('session_token', data.session_token);
-        localStorage.setItem('user_data', JSON.stringify(data));
+        sessionStorage.setItem('session_token', data.session_token);
+        sessionStorage.setItem('user_data', JSON.stringify(data));
       }
       
       // Route based on role

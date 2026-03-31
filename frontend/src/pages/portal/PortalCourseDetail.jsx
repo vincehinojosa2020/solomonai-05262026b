@@ -20,7 +20,7 @@ export default function PortalCourseDetail() {
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
 
   useEffect(() => { fetchCourse(); }, [id]);
 

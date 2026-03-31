@@ -4,6 +4,7 @@ import { CreditCard, DollarSign, Download, CheckCircle } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import SolomonPayForm from '@/components/SolomonPayForm';
+import RecurringGivingManager from '@/components/RecurringGivingManager';
 
 export default function PortalGive() {
   const { user, memberData, refreshData } = useOutletContext();
@@ -299,6 +300,11 @@ export default function PortalGive() {
             Download Tax Statement
           </button>
         </div>
+      </div>
+
+      {/* Recurring Giving Management */}
+      <div className="mt-8">
+        <RecurringGivingManager funds={funds} />
       </div>
 
       {/* Giving History */}

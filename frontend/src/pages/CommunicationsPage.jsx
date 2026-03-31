@@ -26,7 +26,7 @@ export default function CommunicationsPage() {
   const fetchCommunications = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       const response = await fetch(`${API_URL}/admin/communications/list`, { headers });
       if (response.ok) {
@@ -47,7 +47,7 @@ export default function CommunicationsPage() {
     }
     setSending(true);
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const headers = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
       const res = await fetch(`${API_URL}/admin/communications/send`, {

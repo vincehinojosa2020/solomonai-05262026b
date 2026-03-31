@@ -77,7 +77,7 @@ export default function PermissionEditor({ userId, userName }) {
   const loadData = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
       const [permsRes, templatesRes] = await Promise.all([
@@ -128,7 +128,7 @@ export default function PermissionEditor({ userId, userName }) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const headers = { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) };
 
       // Update role if template changed

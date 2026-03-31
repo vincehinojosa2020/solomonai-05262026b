@@ -21,7 +21,7 @@ export default function HouseholdsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({ household_name: '', address: { street: '', city: '', state: '', zip: '' } });
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   useEffect(() => { fetchHouseholds(); }, []);

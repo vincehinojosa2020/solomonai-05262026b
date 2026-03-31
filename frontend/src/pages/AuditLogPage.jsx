@@ -59,7 +59,7 @@ export default function AuditLogPage() {
   const fetchLog = useCallback(async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const params = new URLSearchParams({ page: page.toString(), limit: '30' });
       if (activeFilter !== 'all') params.set('action', activeFilter);
       if (dateRange.start) params.set('start_date', dateRange.start);
@@ -85,7 +85,7 @@ export default function AuditLogPage() {
 
   const handleExport = async () => {
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const params = new URLSearchParams();
       if (activeFilter !== 'all') params.set('action', activeFilter);
       if (dateRange.start) params.set('start_date', dateRange.start);

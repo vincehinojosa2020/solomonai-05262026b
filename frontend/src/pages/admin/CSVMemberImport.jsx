@@ -32,7 +32,7 @@ export default function CSVMemberImport() {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const res = await fetch(`${API_URL}/admin/members/import/parse`, {
         method: 'POST',
         headers: token ? { 'Authorization': `Bearer ${token}` } : {},
@@ -70,7 +70,7 @@ export default function CSVMemberImport() {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('mapping', JSON.stringify(mapping));
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const res = await fetch(`${API_URL}/admin/members/import/execute`, {
         method: 'POST',
         headers: token ? { 'Authorization': `Bearer ${token}` } : {},

@@ -29,7 +29,7 @@ export default function RegistrationsPage() {
   const [showPromoDialog, setShowPromoDialog] = useState(false);
   const [promoForm, setPromoForm] = useState({ code: '', discount_type: 'percentage', discount_value: 10, max_uses: '' });
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   useEffect(() => { fetchEvents(); }, []);

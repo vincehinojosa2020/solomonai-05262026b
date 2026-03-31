@@ -37,8 +37,8 @@ export default function SignUpPage() {
       });
       if (res.ok) {
         const data = await res.json();
-        localStorage.setItem('session_token', data.token);
-        localStorage.setItem('user_data', JSON.stringify(data));
+        sessionStorage.setItem('session_token', data.token);
+        sessionStorage.setItem('user_data', JSON.stringify(data));
         toast.success('Welcome to Solomon AI!');
         navigate('/dashboard', { state: { user: data } });
       } else {

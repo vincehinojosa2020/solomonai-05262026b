@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://parity-audit-1.preview.emergentagent.com/api
+https://church-crud-verified.preview.emergentagent.com/api
 ```
 
 ### Authentication

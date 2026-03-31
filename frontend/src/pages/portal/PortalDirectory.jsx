@@ -20,7 +20,7 @@ export default function PortalDirectory() {
   const [search, setSearch] = useState('');
   const [total, setTotal] = useState(0);
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
 
   useEffect(() => { fetchDirectory(); }, []);
 
@@ -117,7 +117,7 @@ export default function PortalDirectory() {
             const status = STATUS_STYLES[member.membership_status] || STATUS_STYLES.visitor;
             return (
               <div
-                key={idx}
+                key={member.user_id || member.id || idx}
                 className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-100 hover:border-slate-200 transition-colors"
                 data-testid={`directory-member-${idx}`}
               >

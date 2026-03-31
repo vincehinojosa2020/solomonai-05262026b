@@ -137,7 +137,7 @@ export default function WarRoom() {
 
   const fetchData = useCallback(async () => {
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       const res = await fetch(`${API_URL}/admin/war-room`, { headers });
       if (res.ok) {

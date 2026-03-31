@@ -58,7 +58,7 @@ export default function CheckInSetupPage() {
   const [guardians, setGuardians] = useState([]);
   const [guardianForm, setGuardianForm] = useState({ name: '', relationship: '', phone: '', pin_code: '' });
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   useEffect(() => {

@@ -502,5 +502,82 @@ async def disconnect_giving_processor(request: Request):
     return {"success": True, "message": f"{processor.replace('_', ' ').title()} disconnected"}
 
 
+# ============== ADMIN RECURRING GIVING ==============
+
+@router.get("/admin/recurring-giving")
+async def get_all_recurring_giving(
+    request: Request,
+    status: Optional[str] = None,
+    page: int = 1,
+    per_page: int = 50,
+):
+    """Get all recurring giving schedules for this tenant (admin view)."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    query = {"tenant_id": tenant_id}
+    if status and status in ("active", "paused", "cancelled"):
+        query["status"] = status
+
+    total = await db.recurring_giving.count_documents(query)
+    schedules = await db.recurring_giving.find(
+        query, {"_id": 0}
+    ).sort("created_at", -1).skip((page - 1) * per_page).limit(per_page).to_list(per_page)
+
+    # Aggregate stats
+    stats_pipeline = [
+        {"$match": {"tenant_id": tenant_id}},
+        {"$group": {
+            "_id": "$status",
+            "count": {"$sum": 1},
+            "total_amount": {"$sum": "$amount"},
+        }}
+    ]
+    stats_raw = await db.recurring_giving.aggregate(stats_pipeline).to_list(10)
+    stats = {s["_id"]: {"count": s["count"], "total_amount": s["total_amount"]} for s in stats_raw}
+
+    return {
+        "schedules": schedules,
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+        "stats": {
+            "active": stats.get("active", {"count": 0, "total_amount": 0}),
+            "paused": stats.get("paused", {"count": 0, "total_amount": 0}),
+            "cancelled": stats.get("cancelled", {"count": 0, "total_amount": 0}),
+        }
+    }
+
+
+@router.put("/admin/recurring-giving/{schedule_id}/status")
+async def admin_update_recurring_status(request: Request, schedule_id: str, payload: dict):
+    """Admin: change status of a recurring giving schedule."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    new_status = payload.get("status")
+    if new_status not in ("active", "paused", "cancelled"):
+        raise HTTPException(status_code=400, detail="Invalid status. Use: active, paused, cancelled")
+
+    schedule = await db.recurring_giving.find_one(
+        {"id": schedule_id, "tenant_id": tenant_id}, {"_id": 0}
+    )
+    if not schedule:
+        raise HTTPException(status_code=404, detail="Recurring schedule not found")
+
+    update_fields = {
+        "status": new_status,
+        "is_active": new_status == "active",
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    if new_status == "cancelled":
+        update_fields["cancelled_at"] = datetime.now(timezone.utc).isoformat()
+
+    await db.recurring_giving.update_one(
+        {"id": schedule_id}, {"$set": update_fields}
+    )
+    return {"message": f"Schedule status updated to {new_status}", "status": new_status}
+
+
 # ============== DEMO QUALITY DATA SEED ==============
 

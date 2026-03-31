@@ -87,7 +87,7 @@ export default function AppShell() {
   const navigate = useNavigate();
 
   const switchCampus = async (tenantId) => {
-    const token = localStorage.getItem('session_token');
+    const token = sessionStorage.getItem('session_token');
     if (!token) return;
     setCampusSwitching(true);
     try {
@@ -132,7 +132,7 @@ export default function AppShell() {
       .catch(err => console.error('Failed to fetch tenant:', err));
     
     // Fetch current user
-    const token = localStorage.getItem('session_token');
+    const token = sessionStorage.getItem('session_token');
     const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
     fetch(`${API_URL}/auth/me`, { headers })
       .then(res => res.ok ? res.json() : null)
@@ -159,7 +159,7 @@ export default function AppShell() {
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       await fetch(`${API_URL}/auth/logout`, {
         method: 'POST',
@@ -169,8 +169,8 @@ export default function AppShell() {
     } catch (err) {
       console.error('Logout failed:', err);
     }
-    localStorage.removeItem('session_token');
-    localStorage.removeItem('user_data');
+    sessionStorage.removeItem('session_token');
+    sessionStorage.removeItem('user_data');
     navigate('/login');
   };
 

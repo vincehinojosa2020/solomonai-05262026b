@@ -15,7 +15,7 @@ window.fetch = function(input, init) {
   delete opts.credentials;
 
   const url = typeof input === 'string' ? input : (input instanceof Request ? input.url : '');
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   if (token && url.includes('/api/')) {
     opts.headers = new Headers(opts.headers || {});
     if (!opts.headers.has('Authorization')) {

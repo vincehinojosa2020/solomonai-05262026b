@@ -47,7 +47,7 @@ export default function ServicesPage() {
   const [assignForm, setAssignForm] = useState({ position: '', volunteer_name: '' });
   const [showAssignForm, setShowAssignForm] = useState(null);
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   useEffect(() => { fetchPlans(); fetchTemplates(); }, []);

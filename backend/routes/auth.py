@@ -8,6 +8,7 @@ import logging
 import os
 import re
 import httpx
+import bcrypt
 
 from core import (
     db, DEFAULT_TENANT_ID, ROLE_TEMPLATES, check_rate_limit_v2,
@@ -599,7 +600,7 @@ async def register_church(payload: dict):
     })
     user_id = str(uuid.uuid4())
     await db.users.insert_one({
-        "user_id": user_id, "email": email, "password_hash": __import__("bcrypt").hashpw(password.encode("utf-8"), __import__("bcrypt").gensalt()).decode("utf-8"),
+        "user_id": user_id, "email": email, "password_hash": bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8"),
         "name": f"{first_name} {last_name}".strip(), "first_name": first_name, "last_name": last_name,
         "role": "church_admin", "role_title": payload.get("role_title", "Lead Pastor"),
         "tenant_id": tenant_id, "is_first_login": True, "created_at": datetime.now(timezone.utc).isoformat()

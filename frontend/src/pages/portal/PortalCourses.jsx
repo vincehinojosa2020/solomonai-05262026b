@@ -21,7 +21,7 @@ export default function PortalCourses() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('all');
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
 
   useEffect(() => { fetchCourses(); }, []);
 

@@ -82,7 +82,7 @@ function QuizLesson({ lesson, courseId, onComplete }) {
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
 
   // If already passed, show result
   useEffect(() => {
@@ -222,7 +222,7 @@ export default function PortalLessonViewer() {
   const [loading, setLoading] = useState(true);
   const [completing, setCompleting] = useState(false);
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
 
   useEffect(() => { fetchLesson(); }, [courseId, lessonId]);
 

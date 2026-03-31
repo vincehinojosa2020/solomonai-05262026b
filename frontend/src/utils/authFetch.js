@@ -2,12 +2,13 @@ const API_URL = '/api';
 
 /**
  * Authenticated fetch — sends both cookies AND Bearer token.
- * This ensures auth works in all scenarios:
- * - Same-origin web (cookies)
- * - Cross-origin / mobile (Bearer token from localStorage)
+ * sessionStorage used instead of localStorage for security:
+ * - Clears on tab close (limits XSS token theft window)
+ * - Primary auth is via httpOnly cookies (same-origin)
+ * - Bearer token is fallback for cross-origin / mobile webview
  */
 export async function authFetch(path, options = {}) {
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   const headers = { ...(options.headers || {}) };
 
   if (token) {
@@ -27,7 +28,7 @@ export async function authFetch(path, options = {}) {
  */
 export function getStoredUser() {
   try {
-    const data = localStorage.getItem('user_data');
+    const data = sessionStorage.getItem('user_data');
     return data ? JSON.parse(data) : null;
   } catch {
     return null;
@@ -38,6 +39,6 @@ export function getStoredUser() {
  * Clear stored auth.
  */
 export function clearAuth() {
-  localStorage.removeItem('session_token');
-  localStorage.removeItem('user_data');
+  sessionStorage.removeItem('session_token');
+  sessionStorage.removeItem('user_data');
 }

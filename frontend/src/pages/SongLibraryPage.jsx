@@ -24,7 +24,7 @@ export default function SongLibraryPage() {
     title: '', artist: '', ccli_number: '', default_key: 'G', bpm: '', lyrics: '', tags: []
   });
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   const fetchSongs = async (q) => {

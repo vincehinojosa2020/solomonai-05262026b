@@ -368,7 +368,7 @@ export default function PortalEvents() {
                     <h4 style={{ fontSize: '13px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' }}>Ticket Options</h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       {selectedEvent.ticket_tiers.map((tier, i) => (
-                        <div key={i} style={{
+                        <div key={tier.name || tier.id || i} style={{
                           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                           padding: '10px 12px', borderRadius: '8px',
                           border: '1px solid #e5e7eb', background: '#fff',

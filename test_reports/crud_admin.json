@@ -4,7 +4,7 @@
       "id": "P1",
       "name": "Create Person",
       "status": "PASS",
-      "detail": "id=a2a90636-6fe0-4dc6-9907-c0ed93779c49"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "P2",
@@ -28,7 +28,7 @@
       "id": "P5a",
       "name": "Create Household",
       "status": "PASS",
-      "detail": "id=39c6e3f2-ee6f-4b58-9507-09243f410390"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "P5b",
@@ -46,7 +46,7 @@
       "id": "P10a",
       "name": "Create Form",
       "status": "PASS",
-      "detail": "id=5c8846e3-c9bb-4549-891c-418dfc7184fb"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "P10b",
@@ -58,7 +58,7 @@
       "id": "C1a",
       "name": "Create Location",
       "status": "PASS",
-      "detail": "id=d2a719d7-9acb-459b-b880-93a7ff60aed0"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "C1b",
@@ -76,13 +76,13 @@
       "id": "C2a",
       "name": "Create Station",
       "status": "PASS",
-      "detail": "id=7d3e0fa5-2f87-4ba4-ae10-efdda7941cbf"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "C3",
       "name": "Create Label",
       "status": "PASS",
-      "detail": "id=e884c425-2d3a-4357-b08f-45a44a641394"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "C4a",
@@ -166,7 +166,7 @@
       "id": "GR2a",
       "name": "Create Group",
       "status": "PASS",
-      "detail": "id=f9b6125f-d774-483c-a89f-6c9b83473a39"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "GR2b",
@@ -220,7 +220,7 @@
       "id": "S2a",
       "name": "Create Service Plan",
       "status": "PASS",
-      "detail": "id=0eb505ff-d712-4588-808c-4172df852400"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "S2b",
@@ -244,7 +244,7 @@
       "id": "E1a",
       "name": "Create Event",
       "status": "PASS",
-      "detail": "id=a74d3740-b9c2-4469-97fe-e66c3fe6de62"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "E1b",
@@ -310,7 +310,7 @@
       "id": "M2a",
       "name": "Create Sermon",
       "status": "PASS",
-      "detail": "id=505e8da7-8c7e-4755-94b6-93fee783c51b"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "M2b",
@@ -328,7 +328,7 @@
       "id": "M1a",
       "name": "Create Video",
       "status": "PASS",
-      "detail": "id=eef18495-e41f-444b-91a7-8d7b8f31319e"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "M1b",
@@ -346,7 +346,7 @@
       "id": "CAF1a",
       "name": "Create Cafe Item",
       "status": "PASS",
-      "detail": "id=d606de97-2e1e-4803-8529-f7a80c461fb9"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "CAF1b",
@@ -376,7 +376,7 @@
       "id": "MER1a",
       "name": "Create Product",
       "status": "PASS",
-      "detail": "id=0d083ff5-3ea2-4837-8bb4-9a29826cee5f"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "MER1b",
@@ -406,7 +406,7 @@
       "id": "COU1a",
       "name": "Create Course",
       "status": "PASS",
-      "detail": "id=9804391b-1f88-4bba-96ca-a668cde0a943"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "COU1b",
@@ -424,7 +424,7 @@
       "id": "COU2",
       "name": "Create Pathway",
       "status": "PASS",
-      "detail": "id=a5ef7e32-05b0-41ed-9c75-7e6c1fd5e986"
+      "detail": "id=church-crud-verified"
     },
     {
       "id": "R-Executiv",

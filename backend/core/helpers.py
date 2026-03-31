@@ -358,8 +358,8 @@ def extract_youtube_id(url: str) -> Optional[str]:
 
 def generate_pickup_code():
     """Generate a simple 3-digit pickup code like '247'"""
-    import random as _random
-    return str(_random.randint(100, 999))
+    import secrets
+    return str(secrets.randbelow(900) + 100)
 
 
 def compute_health_score(cached_stats, tenant):

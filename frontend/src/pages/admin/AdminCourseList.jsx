@@ -33,7 +33,7 @@ export default function AdminCourseList() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   useEffect(() => { fetchCourses(); }, []);

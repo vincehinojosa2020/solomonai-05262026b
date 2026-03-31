@@ -9,7 +9,9 @@ import re
 import hashlib
 import logging
 import random
+import secrets
 import os
+import bcrypt
 
 from core import (
     db, DEFAULT_TENANT_ID, ROLE_TEMPLATES,
@@ -1977,7 +1979,7 @@ async def platform_create_user(request: Request, payload: dict):
         "user_id": str(uuid.uuid4()),
         "id": str(uuid.uuid4()),
         "email": email,
-        "password_hash": __import__("bcrypt").hashpw(password.encode("utf-8"), __import__("bcrypt").gensalt()).decode("utf-8"),
+        "password_hash": bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8"),
         "name": name,
         "first_name": name.split()[0] if name.split() else name,
         "last_name": name.split()[-1] if len(name.split()) > 1 else "",

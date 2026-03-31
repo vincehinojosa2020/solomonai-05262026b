@@ -78,7 +78,8 @@ print(f"Written models/__init__.py with {len(model_names)} exports")
 
 # ═══ STEP 2: Verify models import correctly ═══
 print("\nVerifying models import...")
-os.system("cd /app/backend && python3 -c 'from models.schemas import *; print(\"Models import: OK\")'")
+import subprocess
+subprocess.run(["python3", "-c", "from models.schemas import *; print('Models import: OK')"], cwd="/app/backend", check=True)
 
 print("\n✅ Phase R1 (Models) complete")
 print(f"   - {len(model_blocks)} models extracted to models/schemas.py")

@@ -52,7 +52,7 @@ export default function PortalLayout() {
 
   const fetchMemberData = async () => {
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       const [meRes, profileRes] = await Promise.all([
         fetch(`${API_URL}/auth/me`, { headers }),
@@ -86,7 +86,7 @@ export default function PortalLayout() {
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       await fetch(`${API_URL}/auth/logout`, {
         method: 'POST',
@@ -96,8 +96,8 @@ export default function PortalLayout() {
     } catch (err) {
       console.error('Logout failed:', err);
     }
-    localStorage.removeItem('session_token');
-    localStorage.removeItem('user_data');
+    sessionStorage.removeItem('session_token');
+    sessionStorage.removeItem('user_data');
     navigate('/login');
   };
 

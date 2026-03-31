@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { API_URL, formatCurrency, formatDate } from '@/lib/utils';
 import EnterDonationPanel from '@/components/modals/EnterDonationPanel';
 import DonationCheckout from '@/components/modals/DonationCheckout';
+import AdminRecurringGiving from '@/components/AdminRecurringGiving';
 import { toast } from 'sonner';
 
 const StatCard = ({ title, value, subtitle, icon: Icon }) => (
@@ -100,7 +101,7 @@ export default function GivingDashboard() {
 
   const fetchIntegrations = async () => {
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const res = await fetch(`${API_URL}/admin/giving/integrations`, {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {},
       });
@@ -116,7 +117,7 @@ export default function GivingDashboard() {
   const handleConnectProcessor = async (processor) => {
     setConnectingProcessor(processor);
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const res = await fetch(`${API_URL}/admin/giving/integrations/connect`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
@@ -136,7 +137,7 @@ export default function GivingDashboard() {
   const handleDisconnectProcessor = async (processor) => {
     setConnectingProcessor(processor);
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const res = await fetch(`${API_URL}/admin/giving/integrations/disconnect`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
@@ -297,6 +298,9 @@ export default function GivingDashboard() {
           })}
         </div>
       </div>
+
+      {/* Recurring Giving Admin */}
+      <AdminRecurringGiving />
 
       {/* Giving Options */}
       <div className="giving-section" data-testid="giving-section">

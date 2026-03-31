@@ -3,7 +3,6 @@ from fastapi import APIRouter, HTTPException, Request, Response, UploadFile, Fil
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
-from typing import Optional, List, Dict, Any
 import uuid
 import random
 import re
@@ -39,6 +38,7 @@ from models.schemas import (
     AddMemberToGroupRequest, EventCreate, GroupCreate,
     VideoNote, VideoNoteCreate, VideoNoteUpdate, VideoNoteShare,
     VolunteerSignupRequest, Service, User,
+    CreateRecurringGivingRequest, UpdateRecurringGivingRequest,
 )
 
 router = APIRouter()
@@ -225,6 +225,248 @@ async def get_member_giving_ytd(request: Request):
         "currency": "USD",
         "donation_count": len(donations)
     }
+
+
+# ============== RECURRING GIVING MANAGEMENT ==============
+
+def _calculate_next_charge_date(frequency: str, from_date: str = None) -> str:
+    """Calculate the next charge date based on frequency."""
+    base = datetime.strptime(from_date, "%Y-%m-%d") if from_date else datetime.now(timezone.utc)
+    if frequency == "weekly":
+        next_date = base + timedelta(days=7)
+    elif frequency == "biweekly":
+        next_date = base + timedelta(days=14)
+    elif frequency == "monthly":
+        month = base.month + 1
+        year = base.year
+        if month > 12:
+            month = 1
+            year += 1
+        day = min(base.day, 28)
+        next_date = base.replace(year=year, month=month, day=day)
+    elif frequency == "annually":
+        next_date = base.replace(year=base.year + 1)
+    else:
+        next_date = base + timedelta(days=30)
+    return next_date.strftime("%Y-%m-%d")
+
+
+@router.post("/portal/recurring-giving")
+async def create_recurring_giving(request: Request, payload: CreateRecurringGivingRequest):
+    """Create a new recurring giving schedule for the current member."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    if payload.amount <= 0:
+        raise HTTPException(status_code=400, detail="Amount must be positive")
+    if payload.frequency not in ("weekly", "biweekly", "monthly", "annually"):
+        raise HTTPException(status_code=400, detail="Invalid frequency")
+
+    person = await db.people.find_one(
+        {"email": user["email"], "tenant_id": tenant_id}, {"_id": 0}
+    )
+    person_id = person["id"] if person else user.get("user_id")
+    person_name = f"{person.get('first_name', '')} {person.get('last_name', '')}".strip() if person else user.get("name", "")
+
+    start_date = payload.start_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    next_charge = _calculate_next_charge_date(payload.frequency, start_date)
+
+    schedule = {
+        "id": f"rec_{uuid.uuid4().hex[:12]}",
+        "tenant_id": tenant_id,
+        "person_id": person_id,
+        "person_name": person_name,
+        "person_email": user.get("email", ""),
+        "amount": round(payload.amount, 2),
+        "fund_id": payload.fund_id,
+        "fund_name": payload.fund_name,
+        "frequency": payload.frequency,
+        "start_date": start_date,
+        "next_charge_date": next_charge,
+        "payment_method_id": payload.payment_method_id,
+        "card_last_four": payload.card_last_four,
+        "card_brand": payload.card_brand,
+        "status": "active",
+        "is_active": True,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "cancelled_at": None,
+    }
+    await db.recurring_giving.insert_one(schedule)
+
+    return {
+        "id": schedule["id"],
+        "amount": schedule["amount"],
+        "fund_name": schedule["fund_name"],
+        "frequency": schedule["frequency"],
+        "next_charge_date": schedule["next_charge_date"],
+        "status": "active",
+        "message": f"Recurring {payload.frequency} gift of ${payload.amount:.2f} to {payload.fund_name} created successfully.",
+    }
+
+
+@router.get("/portal/recurring-giving")
+async def list_my_recurring_giving(request: Request):
+    """List all recurring giving schedules for the current member."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    person = await db.people.find_one(
+        {"email": user["email"], "tenant_id": tenant_id}, {"_id": 0}
+    )
+    person_id = person["id"] if person else user.get("user_id")
+
+    schedules = await db.recurring_giving.find(
+        {"tenant_id": tenant_id, "person_id": person_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+
+    return {"schedules": schedules}
+
+
+@router.put("/portal/recurring-giving/{schedule_id}")
+async def update_recurring_giving(request: Request, schedule_id: str, payload: UpdateRecurringGivingRequest):
+    """Update an existing recurring giving schedule (amount, fund, frequency)."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    person = await db.people.find_one(
+        {"email": user["email"], "tenant_id": tenant_id}, {"_id": 0}
+    )
+    person_id = person["id"] if person else user.get("user_id")
+
+    schedule = await db.recurring_giving.find_one(
+        {"id": schedule_id, "tenant_id": tenant_id, "person_id": person_id},
+        {"_id": 0}
+    )
+    if not schedule:
+        raise HTTPException(status_code=404, detail="Recurring schedule not found")
+    if schedule.get("status") == "cancelled":
+        raise HTTPException(status_code=400, detail="Cannot edit a cancelled schedule")
+
+    update_fields = {}
+    if payload.amount is not None:
+        if payload.amount <= 0:
+            raise HTTPException(status_code=400, detail="Amount must be positive")
+        update_fields["amount"] = round(payload.amount, 2)
+    if payload.fund_id is not None:
+        update_fields["fund_id"] = payload.fund_id
+    if payload.fund_name is not None:
+        update_fields["fund_name"] = payload.fund_name
+    if payload.frequency is not None:
+        if payload.frequency not in ("weekly", "biweekly", "monthly", "annually"):
+            raise HTTPException(status_code=400, detail="Invalid frequency")
+        update_fields["frequency"] = payload.frequency
+        update_fields["next_charge_date"] = _calculate_next_charge_date(payload.frequency)
+    if payload.payment_method_id is not None:
+        update_fields["payment_method_id"] = payload.payment_method_id
+    if payload.card_last_four is not None:
+        update_fields["card_last_four"] = payload.card_last_four
+    if payload.card_brand is not None:
+        update_fields["card_brand"] = payload.card_brand
+
+    update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
+
+    await db.recurring_giving.update_one(
+        {"id": schedule_id, "tenant_id": tenant_id},
+        {"$set": update_fields}
+    )
+
+    updated = await db.recurring_giving.find_one({"id": schedule_id}, {"_id": 0})
+    return {"message": "Recurring schedule updated", "schedule": updated}
+
+
+@router.put("/portal/recurring-giving/{schedule_id}/pause")
+async def pause_recurring_giving(request: Request, schedule_id: str):
+    """Pause a recurring giving schedule."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    person = await db.people.find_one(
+        {"email": user["email"], "tenant_id": tenant_id}, {"_id": 0}
+    )
+    person_id = person["id"] if person else user.get("user_id")
+
+    schedule = await db.recurring_giving.find_one(
+        {"id": schedule_id, "tenant_id": tenant_id, "person_id": person_id},
+        {"_id": 0}
+    )
+    if not schedule:
+        raise HTTPException(status_code=404, detail="Recurring schedule not found")
+    if schedule.get("status") != "active":
+        raise HTTPException(status_code=400, detail="Only active schedules can be paused")
+
+    await db.recurring_giving.update_one(
+        {"id": schedule_id},
+        {"$set": {"status": "paused", "is_active": False, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"message": "Recurring schedule paused", "status": "paused"}
+
+
+@router.put("/portal/recurring-giving/{schedule_id}/resume")
+async def resume_recurring_giving(request: Request, schedule_id: str):
+    """Resume a paused recurring giving schedule."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    person = await db.people.find_one(
+        {"email": user["email"], "tenant_id": tenant_id}, {"_id": 0}
+    )
+    person_id = person["id"] if person else user.get("user_id")
+
+    schedule = await db.recurring_giving.find_one(
+        {"id": schedule_id, "tenant_id": tenant_id, "person_id": person_id},
+        {"_id": 0}
+    )
+    if not schedule:
+        raise HTTPException(status_code=404, detail="Recurring schedule not found")
+    if schedule.get("status") != "paused":
+        raise HTTPException(status_code=400, detail="Only paused schedules can be resumed")
+
+    next_charge = _calculate_next_charge_date(schedule.get("frequency", "monthly"))
+    await db.recurring_giving.update_one(
+        {"id": schedule_id},
+        {"$set": {
+            "status": "active",
+            "is_active": True,
+            "next_charge_date": next_charge,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }}
+    )
+    return {"message": "Recurring schedule resumed", "status": "active", "next_charge_date": next_charge}
+
+
+@router.delete("/portal/recurring-giving/{schedule_id}")
+async def cancel_recurring_giving(request: Request, schedule_id: str):
+    """Cancel a recurring giving schedule (soft delete)."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    person = await db.people.find_one(
+        {"email": user["email"], "tenant_id": tenant_id}, {"_id": 0}
+    )
+    person_id = person["id"] if person else user.get("user_id")
+
+    schedule = await db.recurring_giving.find_one(
+        {"id": schedule_id, "tenant_id": tenant_id, "person_id": person_id},
+        {"_id": 0}
+    )
+    if not schedule:
+        raise HTTPException(status_code=404, detail="Recurring schedule not found")
+    if schedule.get("status") == "cancelled":
+        raise HTTPException(status_code=400, detail="Schedule is already cancelled")
+
+    await db.recurring_giving.update_one(
+        {"id": schedule_id},
+        {"$set": {
+            "status": "cancelled",
+            "is_active": False,
+            "cancelled_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }}
+    )
+    return {"message": "Recurring schedule cancelled", "status": "cancelled"}
+
 
 
 @router.get("/portal/events")

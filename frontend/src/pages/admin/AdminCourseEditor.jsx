@@ -42,7 +42,7 @@ export default function AdminCourseEditor() {
   const [quizQuestions, setQuizQuestions] = useState([{ question: '', options: ['', '', '', ''], correct: 0 }]);
   const [passingScore, setPassingScore] = useState(70);
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   const fetchCourse = useCallback(async () => {

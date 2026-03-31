@@ -1140,3 +1140,25 @@ class CheckoutWithNudgeRequest(BaseModel):
     order_type: str = "cafe"  # "cafe" or "merch"
     pickup_time: Optional[str] = None
 
+
+
+# ============== RECURRING GIVING ==============
+
+class CreateRecurringGivingRequest(BaseModel):
+    amount: float
+    fund_id: str = "general"
+    fund_name: str = "General Fund"
+    frequency: str = "monthly"  # weekly, biweekly, monthly, annually
+    start_date: Optional[str] = None
+    payment_method_id: Optional[str] = None
+    card_last_four: Optional[str] = None
+    card_brand: Optional[str] = None
+
+class UpdateRecurringGivingRequest(BaseModel):
+    amount: Optional[float] = None
+    fund_id: Optional[str] = None
+    fund_name: Optional[str] = None
+    frequency: Optional[str] = None
+    payment_method_id: Optional[str] = None
+    card_last_four: Optional[str] = None
+    card_brand: Optional[str] = None

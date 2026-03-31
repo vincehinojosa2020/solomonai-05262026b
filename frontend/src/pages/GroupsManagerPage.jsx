@@ -45,7 +45,7 @@ export default function GroupsManagerPage() {
   const [activeTab, setActiveTab] = useState('groups');
   const [joinRequests, setJoinRequests] = useState([]);
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   useEffect(() => {

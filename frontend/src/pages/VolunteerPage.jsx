@@ -32,7 +32,7 @@ export default function VolunteerPage() {
   const [scheduleForm, setScheduleForm] = useState({ date: '', role: '', user_name: '', user_id: '' });
   const [blockoutForm, setBlockoutForm] = useState({ user_name: '', start_date: '', end_date: '', reason: '' });
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   useEffect(() => { fetchTeams(); fetchSchedule(); fetchBlockouts(); }, []);

@@ -31,7 +31,7 @@ export default function GroupDetail() {
   const [resourceForm, setResourceForm] = useState({ title: '', description: '', resource_type: 'link', url: '' });
   const chatEndRef = useRef(null);
 
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   useEffect(() => {

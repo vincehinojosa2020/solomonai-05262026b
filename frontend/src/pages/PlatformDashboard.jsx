@@ -25,7 +25,7 @@ const ROLE_OPTIONS = [
 ];
 
 function getAuthHeaders() {
-  const token = localStorage.getItem('session_token');
+  const token = sessionStorage.getItem('session_token');
   return token ? { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
 }
 

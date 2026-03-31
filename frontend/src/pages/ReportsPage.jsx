@@ -84,7 +84,7 @@ export default function ReportsPage() {
   const handleExport = async (reportId, format = 'csv') => {
     setExporting(true);
     try {
-      const token = localStorage.getItem('session_token');
+      const token = sessionStorage.getItem('session_token');
       const typeMap = { 'kids-history': 'kids', 'giving-fund': 'giving', 'giving-method': 'giving', 'top-donors': 'giving', 'attendance': 'attendance', 'executive-summary': 'executive' };
       const reportType = typeMap[reportId];
 
