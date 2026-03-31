@@ -88,7 +88,6 @@ export default function LandingPage() {
           </Link>
           {/* Desktop nav */}
           <div className="lp-nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-            <Link to="/pricing" style={{ fontSize: 14, fontWeight: 500, color: '#cbd5e1', textDecoration: 'none' }} data-testid="nav-pricing">Pricing</Link>
             <Link to="/demo" style={{ fontSize: 14, fontWeight: 500, color: '#cbd5e1', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }} data-testid="nav-watch-demo">
               <Play style={{ width: 13, height: 13 }} /> Watch Demo
             </Link>
@@ -109,7 +108,6 @@ export default function LandingPage() {
         {mobileMenuOpen && (
           <div className="lp-mobile-menu" style={{ background: 'rgba(15,23,42,0.98)', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '16px 24px' }} data-testid="mobile-menu">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: 15, fontWeight: 500, color: '#cbd5e1', textDecoration: 'none', padding: '8px 0' }}>Pricing</Link>
               <Link to="/demo" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: 15, fontWeight: 500, color: '#cbd5e1', textDecoration: 'none', padding: '8px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Play style={{ width: 14, height: 14 }} /> Watch Demo
               </Link>
@@ -284,97 +282,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── PRICING ── */}
-      <section style={{ background: S.white, padding: '80px 32px' }} data-testid="pricing-section">
-        <div style={{ maxWidth: 1000, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: S.blue, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>Pricing</p>
-          <h2 style={{ fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 800, color: S.textDark, letterSpacing: '-0.02em', margin: '0 0 8px 0' }}>Simple pricing. No surprises.</h2>
-          <p style={{ fontSize: 16, color: S.textGray, margin: '0 0 48px 0' }}>One price. Every feature. All campuses included.</p>
-          <div className="lp-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, textAlign: 'left' }}>
-            {[
-              { name: 'Starter', price: '$499', period: '/mo', desc: 'Up to 500 members', features: ['All features included', '1 campus', 'Email support'], popular: false, cta: 'Get Started' },
-              { name: 'Growth', price: '$1,499', period: '/mo', desc: 'Up to 5,000 members', features: ['All features included', 'Up to 3 campuses', 'Priority support', 'Onboarding included'], popular: true, cta: 'Get Started' },
-              { name: 'Enterprise', price: '$2,999', period: '/mo', desc: 'Unlimited members', features: ['All features included', 'Unlimited campuses', 'Dedicated success manager', 'Custom integrations', 'SLA guarantee'], popular: false, cta: 'Contact Sales' },
-            ].map(plan => (
-              <div key={plan.name} style={{ background: S.white, borderRadius: 16, padding: 32, border: plan.popular ? `2px solid ${S.gold}` : `1px solid ${S.border}`, position: 'relative', boxShadow: plan.popular ? '0 4px 24px rgba(245,158,11,0.12)' : 'none' }}>
-                {plan.popular && <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', padding: '4px 16px', background: S.gold, borderRadius: 100, fontSize: 11, fontWeight: 700, color: '#fff', letterSpacing: '0.04em' }}>MOST POPULAR</div>}
-                <h3 style={{ fontSize: 20, fontWeight: 700, color: S.textDark, margin: '0 0 4px 0' }}>{plan.name}</h3>
-                <p style={{ fontSize: 12, color: S.textGray, margin: '0 0 16px 0' }}>{plan.desc}</p>
-                <div style={{ margin: '0 0 24px 0' }}>
-                  <span style={{ fontSize: 40, fontWeight: 800, color: S.textDark }}>{plan.price}</span>
-                  <span style={{ fontSize: 16, color: S.textGray }}>{plan.period}</span>
-                </div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px 0' }}>
-                  {plan.features.map(f => (
-                    <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: S.textGray, padding: '6px 0' }}>
-                      <Check style={{ width: 16, height: 16, color: '#22c55e', flexShrink: 0 }} /> {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link to={plan.cta === 'Contact Sales' ? '/demo' : '/signup'} style={{ display: 'block', textAlign: 'center', padding: '14px 0', background: plan.popular ? S.blue : S.navy, color: '#fff', borderRadius: 10, fontSize: 15, fontWeight: 700, textDecoration: 'none' }} data-testid={`pricing-cta-${plan.name.toLowerCase()}`}>
-                  {plan.cta} <ArrowRight style={{ width: 14, height: 14, display: 'inline', verticalAlign: 'middle' }} />
-                </Link>
-              </div>
-            ))}
-          </div>
-
-          {/* FAQ */}
-          <div style={{ maxWidth: 700, margin: '60px auto 0', textAlign: 'left' }}>
-            {[
-              { q: 'Do you charge per campus?', a: "No. One account covers all your campuses. Three campuses, five campuses, ten campuses: one bill." },
-              { q: 'Are there transaction fees on giving?', a: 'Currently we process through Stripe at standard rates. In 2026 we launch Solomon Pay — our own payment processor at lower rates than SecureGive, Pushpay, or Venmo.' },
-              { q: 'How long does onboarding take?', a: 'Week 1: we import your member list from your current system (Excel, CSV, or Planning Center export). Week 2: staff training. Week 3: you\'re live.' },
-            ].map(faq => (
-              <div key={faq.q} style={{ padding: '20px 0', borderBottom: `1px solid ${S.border}` }}>
-                <h4 style={{ fontSize: 15, fontWeight: 700, color: S.textDark, margin: '0 0 8px 0' }}>{faq.q}</h4>
-                <p style={{ fontSize: 14, color: S.textGray, lineHeight: 1.6, margin: 0 }}>{faq.a}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── THE VISION ── */}
-      <section style={{ background: S.navy, padding: '80px 32px', color: '#fff' }} data-testid="vision-section">
-        <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: S.gold, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>The Future</p>
-          <h2 style={{ fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 800, letterSpacing: '-0.02em', margin: '0 0 56px 0', lineHeight: 1.15 }}>
-            We're building the financial<br />infrastructure of the church.
-          </h2>
-          <div className="lp-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, textAlign: 'left' }}>
-            {[
-              { label: 'NOW', title: 'Church Management', desc: 'Replace Planning Center + Church Center + SecureGive in one platform.', status: 'Live' },
-              { label: '2026', title: 'Solomon Pay', desc: 'Our own payment processor. Transaction fees lower than Venmo. Lower than Pushpay. Lower than anyone. Every dollar stays in ministry.', status: 'Coming' },
-              { label: 'BEYOND', title: 'The Church OS', desc: 'Every API. Every integration. Every system a church uses — connected through Solomon AI. The operating system of the American church.', status: 'Vision' },
-            ].map(item => (
-              <div key={item.label} style={{ background: 'rgba(30,41,59,0.5)', border: '1px solid rgba(51,65,85,0.5)', borderRadius: 14, padding: 28 }}>
-                <div style={{ display: 'inline-block', padding: '4px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', marginBottom: 16, background: item.label === 'NOW' ? 'rgba(34,197,94,0.15)' : item.label === '2026' ? 'rgba(59,130,246,0.15)' : 'rgba(168,85,247,0.15)', color: item.label === 'NOW' ? '#4ade80' : item.label === '2026' ? '#60a5fa' : '#c084fc' }}>
-                  {item.label} — {item.status}
-                </div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 8px 0' }}>{item.title}</h3>
-                <p style={{ fontSize: 14, color: S.textMuted, lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Solomon Pay Waitlist */}
-          <div style={{ marginTop: 48, padding: '28px 32px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 14 }} data-testid="waitlist-form">
-            {waitlistSent ? (
-              <p style={{ fontSize: 16, color: S.gold, fontWeight: 600 }}>You're on the Solomon Pay waitlist! We'll be in touch.</p>
-            ) : (
-              <>
-                <p style={{ fontSize: 15, fontWeight: 700, color: S.gold, marginBottom: 16 }}>Join the waitlist for Solomon Pay</p>
-                <div className="lp-waitlist-row" style={{ display: 'flex', gap: 8, maxWidth: 540, margin: '0 auto', flexWrap: 'wrap', justifyContent: 'center' }}>
-                  <input value={waitlistEmail} onChange={e => setWaitlistEmail(e.target.value)} placeholder="Email" style={{ flex: '1 1 180px', minWidth: 160, padding: '12px 16px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(15,23,42,0.6)', color: '#fff', fontSize: 14 }} data-testid="waitlist-email" />
-                  <input value={waitlistChurch} onChange={e => setWaitlistChurch(e.target.value)} placeholder="Church name" style={{ flex: '1 1 180px', minWidth: 160, padding: '12px 16px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(15,23,42,0.6)', color: '#fff', fontSize: 14 }} data-testid="waitlist-church" />
-                  <button onClick={submitWaitlist} style={{ padding: '12px 24px', background: S.gold, color: '#fff', borderRadius: 8, border: 'none', fontWeight: 700, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap', minWidth: 'auto' }} data-testid="waitlist-submit">Join Waitlist</button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </section>
-
       {/* ── FINAL CTA ── */}
       <section style={{ background: `linear-gradient(135deg, ${S.navy} 0%, #1a2744 100%)`, padding: '80px 32px', textAlign: 'center' }} data-testid="final-cta-section">
         <div style={{ maxWidth: 700, margin: '0 auto' }}>
@@ -406,7 +313,6 @@ export default function LandingPage() {
               <h4 style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 16px 0' }}>Product</h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <Link to="/" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }}>Features</Link>
-                <Link to="/pricing" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }}>Pricing</Link>
                 <Link to="/demo" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }}>Demo</Link>
               </div>
             </div>

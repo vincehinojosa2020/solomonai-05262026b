@@ -24,7 +24,6 @@ import { API_URL } from '@/lib/utils';
 const navItems = [
   { section: 'OVERVIEW', items: [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'War Room', path: '/war-room', icon: Zap, badge: 'live' },
   ]},
   { section: 'PEOPLE', items: [
     { name: 'Members', path: '/people', icon: Users },

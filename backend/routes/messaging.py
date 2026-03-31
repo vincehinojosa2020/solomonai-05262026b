@@ -14,7 +14,7 @@ router = APIRouter(prefix="/groups", tags=["groups"])
 @router.get("/{group_id}/messages")
 async def get_group_messages(request: Request, group_id: str, before: str = None, limit: int = 50):
     """Get messages for a group."""
-    user = await get_current_user(request)
+    user = await get_current_portal_user(request)
     tenant_id = user.get("tenant_id", "")
 
     query = {"group_id": group_id, "tenant_id": tenant_id}
@@ -32,7 +32,7 @@ async def get_group_messages(request: Request, group_id: str, before: str = None
 @router.post("/{group_id}/messages")
 async def send_group_message(request: Request, group_id: str):
     """Send a message to a group chat."""
-    user = await get_current_user(request)
+    user = await get_current_portal_user(request)
     tenant_id = user.get("tenant_id", "")
     body = await request.json()
     text = (body.get("text") or "").strip()
@@ -80,7 +80,7 @@ async def send_group_message(request: Request, group_id: str):
 @router.delete("/{group_id}/messages/{message_id}")
 async def delete_group_message(request: Request, group_id: str, message_id: str):
     """Delete a message (sender or admin only)."""
-    user = await get_current_user(request)
+    user = await get_current_portal_user(request)
     tenant_id = user.get("tenant_id", "")
 
     msg = await db.group_messages.find_one(

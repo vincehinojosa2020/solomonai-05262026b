@@ -110,7 +110,6 @@ export default function PortalLayout() {
     { name: 'Give', path: '/portal/give', icon: DollarSign },
     { name: 'Groups', path: '/portal/groups', icon: Users },
     { name: 'Events', path: '/portal/events', icon: Calendar },
-    { name: 'Directory', path: '/portal/directory', icon: BookUser },
     { name: 'Courses', path: '/portal/courses', icon: GraduationCap },
     { name: 'Me', path: '/portal/me', icon: User },
   ];

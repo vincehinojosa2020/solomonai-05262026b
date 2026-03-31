@@ -33,7 +33,7 @@ import LeadershipNotesPage from "@/pages/LeadershipNotesPage";
 import DeveloperAPIPage from "@/pages/admin/DeveloperAPIPage";
 import GroupLeaderDashboard from "@/pages/admin/GroupLeaderDashboard";
 import KidsCheckinAdmin from "@/pages/KidsCheckinAdmin";
-import WarRoom from "@/pages/WarRoom";
+// War Room removed for demo
 import AuditLogPage from "@/pages/AuditLogPage";
 // Portal Pages
 import PortalHome from "@/pages/portal/PortalHome";
@@ -129,7 +129,6 @@ function AppRouter() {
         <Route path="/notes" element={<LeadershipNotesPage />} />
         <Route path="/developer" element={<DeveloperAPIPage />} />
         <Route path="/kids-checkin" element={<KidsCheckinAdmin />} />
-        <Route path="/war-room" element={<WarRoom />} />
         <Route path="/audit-log" element={<AuditLogPage />} />
         <Route path="/admin/groups" element={<GroupsManagerPage />} />
         <Route path="/admin/groups/:groupId/dashboard" element={<GroupLeaderDashboard />} />

@@ -25,7 +25,7 @@ async def get_vapid_public_key():
 @router.post("/subscribe")
 async def push_subscribe(request: Request):
     """Store a push subscription for the authenticated user."""
-    user = await get_current_user(request)
+    user = await get_current_portal_user(request)
     body = await request.json()
     subscription = body.get("subscription")
     if not subscription or not subscription.get("endpoint"):
@@ -47,7 +47,7 @@ async def push_subscribe(request: Request):
 @router.delete("/subscribe")
 async def push_unsubscribe(request: Request):
     """Remove a push subscription."""
-    user = await get_current_user(request)
+    user = await get_current_portal_user(request)
     body = await request.json()
     endpoint = body.get("endpoint", "")
     if endpoint:
