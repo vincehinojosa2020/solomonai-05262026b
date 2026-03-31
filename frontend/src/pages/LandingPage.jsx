@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Check, X, Tv, Baby, Heart, Users, Calendar, Zap, Play, DollarSign, Menu, Loader2 } from 'lucide-react';
+import { ArrowRight, Check, X, Tv, Baby, Heart, Users, Calendar, Zap, Play, Menu, Loader2 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -68,7 +68,7 @@ export default function LandingPage() {
           .lp-table-wrap { overflow-x: auto !important; }
           .lp-waitlist-row { flex-direction: column !important; }
           .lp-waitlist-row input, .lp-waitlist-row button { width: 100% !important; }
-          .lp-pricing-grid { grid-template-columns: 1fr !important; max-width: 400px !important; margin-left: auto !important; margin-right: auto !important; }
+          .lp-pricing-grid { grid-template-columns: 1fr !important; max-width: 400px !important; }
         }
         @media (min-width: 769px) {
           .lp-nav-mobile-toggle { display: none !important; }
@@ -161,13 +161,13 @@ export default function LandingPage() {
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <p style={{ fontSize: 12, fontWeight: 700, color: S.blue, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>The Problem</p>
           <h2 style={{ fontSize: 'clamp(28px, 3vw, 40px)', fontWeight: 800, color: S.textDark, letterSpacing: '-0.02em', margin: '0 0 48px 0', lineHeight: 1.15 }}>
-            Your church is paying too much<br />for too little.
+            Your church deserves better<br />than duct-taped tools.
           </h2>
           <div className="lp-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {[
-              { title: 'Too many bills', body: 'Planning Center: $300-$1,500/mo\nSecureGive: $99-$199/mo + 2% fees\nSermon platform: $50-$200/mo\nChurch app: $200-$500/mo', highlight: 'TOTAL: $700-$2,400/month for tools that don\'t talk to each other', color: '#ef4444' },
-              { title: 'Too complex', body: 'Church Center is not your app. It says "Church Center" — not your church\'s name. Planning Center takes months to learn. Your staff dreads Sunday morning logistics.', highlight: '', color: '#f59e0b' },
-              { title: 'Zero AI', body: 'Planning Center was built in 2006. Church Center has no AI assistant. No geofencing. No giving nudges. No war room. No cafe ordering. They\'re not building for 2026.', highlight: 'Solomon AI is.', color: '#8b5cf6' },
+              { title: 'Too many tools', body: 'Check-in from one vendor. Giving from another. Groups from a third. None of them talk to each other.', highlight: 'Solomon AI replaces them all.', color: '#ef4444' },
+              { title: 'Too complex', body: 'Planning Center takes months to learn. Church Center says their name, not yours. Your staff dreads Sunday morning logistics.', highlight: '', color: '#f59e0b' },
+              { title: 'Zero AI', body: 'Planning Center was built in 2006. No AI assistant. No geofencing. No giving nudges. No cafe ordering.', highlight: 'Solomon AI is built for 2026.', color: '#8b5cf6' },
             ].map(card => (
               <div key={card.title} style={{ background: S.white, borderRadius: 16, padding: 28, border: `1px solid ${S.border}`, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                 <h3 style={{ fontSize: 18, fontWeight: 700, color: S.textDark, margin: '0 0 12px 0' }}>{card.title}</h3>
@@ -239,7 +239,6 @@ export default function LandingPage() {
                   ['Geofence Check-in', true, false],
                   ['Real-time War Room', true, false],
                   ['Multi-campus (1 bill)', true, false],
-                  ['Flat Monthly Price', true, false],
                 ].map(([feature, sol, pc], i) => (
                   <tr key={feature} style={{ borderBottom: `1px solid ${S.border}`, background: i % 2 === 0 ? S.white : S.grayLight }}>
                     <td style={{ padding: '12px 20px', color: S.textDark, fontWeight: 500 }}>{feature}</td>
@@ -251,26 +250,12 @@ export default function LandingPage() {
             </table>
           </div>
 
-          {/* Honest note about giving */}
-          <div style={{ background: S.white, border: `1px solid ${S.border}`, borderRadius: 12, padding: '24px 28px', marginTop: 24, display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-            <DollarSign style={{ width: 20, height: 20, color: S.gold, flexShrink: 0, marginTop: 2 }} />
-            <div>
-              <p style={{ fontSize: 14, fontWeight: 700, color: S.textDark, margin: '0 0 6px 0' }}>
-                What about giving?
-              </p>
-              <p style={{ fontSize: 14, color: S.textGray, lineHeight: 1.6, margin: 0 }}>
-                Today, Solomon AI works alongside your church's current giving provider &mdash; Pushpay, SecureGive, Tithe.ly, or whoever you trust.
-                We're building <strong style={{ color: S.textDark }}>Solomon Pay</strong>, our own giving platform with the lowest transaction fees in the industry. It launches later this year. <a href="#" onClick={openLeadForm} style={{ color: S.blue, fontWeight: 600, textDecoration: 'none' }}>Request a demo</a> to learn more.
-              </p>
-            </div>
-          </div>
-
           {/* Why switch card */}
           <div className="lp-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginTop: 24 }}>
             {[
-              { num: '1', title: 'One platform, not six', body: 'Stop paying for check-in, giving, groups, events, and sermons separately. Solomon AI replaces them all.' },
-              { num: '2', title: 'Built for 2026, not 2006', body: 'AI assistant, geofencing, real-time analytics, cafe ordering. Features your current tools will never build.' },
-              { num: '3', title: 'One bill, every campus', body: 'Planning Center charges per module per campus. Solomon AI covers every feature, every campus, one price.' },
+              { num: '1', title: 'One platform, not six', body: 'Check-in, giving, groups, events, sermons, cafe, merch. All in one place.' },
+              { num: '2', title: 'Built for 2026', body: 'AI assistant, geofencing, real-time analytics. Features your current tools will never build.' },
+              { num: '3', title: 'Every campus, one app', body: 'Multi-site from day one. Every feature, every location, no add-ons.' },
             ].map(card => (
               <div key={card.num} style={{ background: S.white, borderRadius: 12, padding: '24px', border: `1px solid ${S.border}` }}>
                 <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: S.blue, marginBottom: 12 }}>{card.num}</div>
