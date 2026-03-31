@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="11" skipped="1" tests="17" time="2.649" timestamp="2026-03-31T15:34:02.233245+00:00" hostname="agent-env-7129ce9b-84c8-40f8-befa-cc54345ce9e2"><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestHealthAndBasics" name="test_api_health" time="0.194" /><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestBcryptMigration" name="test_login_shannon_bcrypt" time="0.345" /><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestBcryptMigration" name="test_login_jacob_sha256_migration" time="0.340" /><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestBcryptMigration" name="test_login_platform_admin" time="0.365" /><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestCrossTenantIsolation" name="test_cross_tenant_groups_isolation" time="0.928" /><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestAdminEndpointsAfterRefactor" name="test_admin_groups" time="0.113"><failure message="AssertionError: Admin login failed&#10;assert None">backend/tests/test_iter62_bcrypt_refactor.py:134: in test_admin_groups
+    assert admin_token, "Admin login failed"
+E   AssertionError: Admin login failed
+E   assert None</failure></testcase><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestAdminEndpointsAfterRefactor" name="test_admin_people" time="0.000"><failure message="AssertionError: Admin login failed&#10;assert None">backend/tests/test_iter62_bcrypt_refactor.py:145: in test_admin_people
+    assert admin_token, "Admin login failed"
+E   AssertionError: Admin login failed
+E   assert None</failure></testcase><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestAdminEndpointsAfterRefactor" name="test_admin_giving_summary" time="0.000"><failure message="AssertionError: Admin login failed&#10;assert None">backend/tests/test_iter62_bcrypt_refactor.py:157: in test_admin_giving_summary
+    assert admin_token, "Admin login failed"
+E   AssertionError: Admin login failed
+E   assert None</failure></testcase><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestAdminEndpointsAfterRefactor" name="test_admin_events" time="0.000"><failure message="AssertionError: Admin login failed&#10;assert None">backend/tests/test_iter62_bcrypt_refactor.py:168: in test_admin_events
+    assert admin_token, "Admin login failed"
+E   AssertionError: Admin login failed
+E   assert None</failure></testcase><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestAdminEndpointsAfterRefactor" name="test_admin_checkin_locations" time="0.000"><failure message="AssertionError: Admin login failed&#10;assert None">backend/tests/test_iter62_bcrypt_refactor.py:180: in test_admin_checkin_locations
+    assert admin_token, "Admin login failed"
+E   AssertionError: Admin login failed
+E   assert None</failure></testcase><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestAdminEndpointsAfterRefactor" name="test_admin_service_types" time="0.000"><failure message="AssertionError: Admin login failed&#10;assert None">backend/tests/test_iter62_bcrypt_refactor.py:192: in test_admin_service_types
+    assert admin_token, "Admin login failed"
+E   AssertionError: Admin login failed
+E   assert None</failure></testcase><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestAdminEndpointsAfterRefactor" name="test_admin_registrations_events" time="0.000"><failure message="AssertionError: Admin login failed&#10;assert None">backend/tests/test_iter62_bcrypt_refactor.py:204: in test_admin_registrations_events
+    assert admin_token, "Admin login failed"
+E   AssertionError: Admin login failed
+E   assert None</failure></testcase><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestPortalEndpoints" name="test_portal_giving_history" time="0.127"><failure message="AssertionError: Member login failed&#10;assert None">backend/tests/test_iter62_bcrypt_refactor.py:226: in test_portal_giving_history
+    assert member_token, "Member login failed"
+E   AssertionError: Member login failed
+E   assert None</failure></testcase><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestPortalEndpoints" name="test_portal_events" time="0.000"><failure message="AssertionError: Member login failed&#10;assert None">backend/tests/test_iter62_bcrypt_refactor.py:236: in test_portal_events
+    assert member_token, "Member login failed"
+E   AssertionError: Member login failed
+E   assert None</failure></testcase><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestPortalEndpoints" name="test_portal_groups" time="0.000"><failure message="AssertionError: Member login failed&#10;assert None">backend/tests/test_iter62_bcrypt_refactor.py:248: in test_portal_groups
+    assert member_token, "Member login failed"
+E   AssertionError: Member login failed
+E   assert None</failure></testcase><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestSolomonAIChat" name="test_solomon_chat" time="0.111"><failure message="AssertionError: Admin login failed&#10;assert None">backend/tests/test_iter62_bcrypt_refactor.py:265: in test_solomon_chat
+    assert token, "Admin login failed"
+E   AssertionError: Admin login failed
+E   assert None</failure></testcase><testcase classname="backend.tests.test_iter62_bcrypt_refactor.TestRateLimiting" name="test_rate_limit_info" time="0.000"><skipped type="pytest.skip" message="Rate limit test skipped - requires 65 second wait and would block IP">/app/backend/tests/test_iter62_bcrypt_refactor.py:288: Rate limit test skipped - requires 65 second wait and would block IP</skipped></testcase></testsuite></testsuites>

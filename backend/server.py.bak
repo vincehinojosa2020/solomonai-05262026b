@@ -2,6 +2,7 @@ from fastapi import FastAPI, APIRouter, HTTPException, Query, Request, Response,
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
+from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 import asyncio
@@ -38,27 +39,27 @@ from emergentintegrations.llm.chat import LlmChat, UserMessage
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# ═══ CORE IMPORTS (Refactored) ═══
-# Database, auth, permissions, and shared helpers now live in core/
-from core import (
-    db, client,
-    DEFAULT_TENANT_ID, PLATFORM_ADMIN_EMAILS,
-    ROLES, PERMISSION_REGISTRY, MEMBER_PERMISSIONS,
-    ALL_ADMIN_PERMISSIONS, ALL_PLATFORM_PERMISSIONS, ROLE_TEMPLATES,
-    check_rate_limit_v2, RATE_LIMITS,
-    get_session_token_from_request,
-    get_current_admin_user, get_current_portal_user, get_current_member_user,
-    require_tenant,
-    get_permissions_for_user, check_permission, require_permission,
-    check_idempotency, store_idempotency,
-    audit_log,
-    get_tenant_by_subdomain, get_tenant_by_id, validate_tenant_subscription,
-    logger,
-)
-
 # Configure Resend for welcome emails
 resend.api_key = os.environ.get("RESEND_API_KEY")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
+
+# MongoDB connection with Atlas-compatible settings
+mongo_url = os.environ['MONGO_URL']
+client = AsyncIOMotorClient(
+    mongo_url,
+    serverSelectionTimeoutMS=45000,
+    connectTimeoutMS=45000,
+    socketTimeoutMS=60000,
+    maxPoolSize=10,
+    minPoolSize=0,
+    maxIdleTimeMS=60000,
+    retryWrites=True,
+    retryReads=True,
+    w='majority',
+    heartbeatFrequencyMS=30000,
+    appname='solomon-ai',
+)
+db = client[os.environ['DB_NAME']]
 
 # Create the main app
 app = FastAPI(title="Solomon AI Church Management API")
@@ -76,7 +77,9 @@ async def security_headers_middleware(request: Request, call_next):
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return response
 
-# Rate limiting imported from core.check_rate_limit_v2
+# Rate limiting for auth endpoints (in-memory, single-instance)
+import time as _time
+RATE_LIMITS = {}  # {bucket_key: {count, window_start}}
 
 # Structured error handler for unhandled 500 errors
 @app.exception_handler(500)
@@ -89,7 +92,16 @@ async def structured_500_handler(request: Request, exc):
         "code": 500, "correlation_id": correlation_id
     })
 
-# check_rate_limit_v2: imported from core
+def check_rate_limit_v2(bucket: str, max_requests: int, window_seconds: int) -> bool:
+    """Generic rate limiter. Returns True if allowed, False if exceeded."""
+    now = _time.time()
+    if bucket not in RATE_LIMITS:
+        RATE_LIMITS[bucket] = {"count": 0, "window_start": now}
+    entry = RATE_LIMITS[bucket]
+    if now - entry["window_start"] > window_seconds:
+        RATE_LIMITS[bucket] = {"count": 1, "window_start": now}
+        return True
+    entry["count"] += 1
     return entry["count"] <= max_requests
 
 # Legacy compat
@@ -120,8 +132,185 @@ api_router = APIRouter(prefix="/api")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Multi-tenant config, permissions, audit: imported from core
-# Idempotency, audit, tenant helpers: imported from core
+# ============== MULTI-TENANT CONFIGURATION ==============
+
+# Platform admin accounts (can access all tenants)
+PLATFORM_ADMIN_EMAILS = ["admin@solomonai.us", "admin@abundant.org", "admin@solomon.ai"]
+
+# Role hierarchy
+ROLES = {
+    "platform_admin": 100,  # Can access everything
+    "church_admin": 50,     # Can manage their church
+    "member": 10            # Portal access only
+}
+
+# ============== PERMISSION REGISTRY (Active Directory-inspired) ==============
+
+PERMISSION_REGISTRY = [
+    # Member surface
+    "member.home", "member.give", "member.kids", "member.watch",
+    "member.merch", "member.cafe", "member.groups", "member.events",
+    "member.nextsteps", "member.prayer", "member.volunteer", "member.courses",
+    # Ministry operations
+    "admin.dashboard", "admin.members.view", "admin.members.edit",
+    "admin.members.roles", "admin.giving.view", "admin.giving.edit",
+    "admin.kids.manage", "admin.media.manage", "admin.cafe.manage",
+    "admin.merch.manage", "admin.groups.manage", "admin.groups.lead",
+    "admin.events.manage", "admin.announcements", "admin.volunteers.manage",
+    "admin.geofence.manage", "admin.reports.view", "admin.reports.export",
+    "admin.communications", "admin.settings",
+    "admin.courses.view", "admin.courses.edit",
+    "admin.users.create", "admin.users.roles",
+    # Platform level
+    "platform.churches.view", "platform.churches.create",
+    "platform.users.create", "platform.billing", "platform.reports",
+]
+
+MEMBER_PERMISSIONS = [p for p in PERMISSION_REGISTRY if p.startswith("member.")]
+ALL_ADMIN_PERMISSIONS = [p for p in PERMISSION_REGISTRY if p.startswith("admin.")]
+ALL_PLATFORM_PERMISSIONS = [p for p in PERMISSION_REGISTRY if p.startswith("platform.")]
+
+ROLE_TEMPLATES = {
+    "member": {
+        "role_title": "Church Member",
+        "permissions": MEMBER_PERMISSIONS,
+    },
+    "kids_volunteer": {
+        "role_title": "Kids Check-In Volunteer",
+        "permissions": MEMBER_PERMISSIONS + ["admin.kids.manage"],
+    },
+    "small_group_leader": {
+        "role_title": "Small Group Leader",
+        "permissions": MEMBER_PERMISSIONS + ["admin.groups.manage", "admin.groups.lead", "admin.events.manage"],
+    },
+    "cafe_manager": {
+        "role_title": "Cafe Manager",
+        "permissions": MEMBER_PERMISSIONS + ["admin.cafe.manage", "admin.reports.view", "admin.reports.export"],
+    },
+    "merch_manager": {
+        "role_title": "Merch Manager",
+        "permissions": MEMBER_PERMISSIONS + ["admin.merch.manage", "admin.reports.view", "admin.reports.export"],
+    },
+    "worship_media_team": {
+        "role_title": "Worship & Media Team",
+        "permissions": MEMBER_PERMISSIONS + ["admin.media.manage", "admin.events.manage", "admin.announcements"],
+    },
+    "ministry_leader": {
+        "role_title": "Ministry Leader",
+        "permissions": MEMBER_PERMISSIONS + [
+            "admin.dashboard", "admin.members.view", "admin.members.edit",
+            "admin.groups.manage", "admin.events.manage", "admin.announcements",
+            "admin.volunteers.manage", "admin.media.manage", "admin.reports.view",
+            "admin.communications",
+        ],
+    },
+    "executive_pastor": {
+        "role_title": "Executive Pastor",
+        "permissions": MEMBER_PERMISSIONS + [p for p in ALL_ADMIN_PERMISSIONS if p not in ("admin.users.create", "admin.users.roles")],
+    },
+    "church_admin": {
+        "role_title": "Church Administrator",
+        "permissions": MEMBER_PERMISSIONS + ALL_ADMIN_PERMISSIONS,
+    },
+    "platform_admin": {
+        "role_title": "Platform Administrator",
+        "permissions": PERMISSION_REGISTRY[:],  # All permissions
+    },
+}
+
+def get_permissions_for_user(user_doc: dict) -> list:
+    """Resolve permissions for a user. Custom permissions take priority over template."""
+    custom = user_doc.get("permissions")
+    if custom and isinstance(custom, list):
+        return custom
+    role = user_doc.get("role", "member")
+    template = ROLE_TEMPLATES.get(role, ROLE_TEMPLATES["member"])
+    return template["permissions"]
+
+def check_permission(user_doc: dict, required: str) -> bool:
+    """Check if user has a specific permission."""
+    if user_doc.get("role") == "platform_admin":
+        return True  # Platform admins bypass all checks
+    perms = get_permissions_for_user(user_doc)
+    return required in perms
+
+async def require_permission(request: Request, permission: str):
+    """Get current user and verify they have the required permission. Returns user doc."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    if not check_permission(user, permission):
+        raise HTTPException(status_code=403, detail=f"Permission denied: {permission} required")
+    return user
+
+# ============== IDEMPOTENCY SYSTEM (MongoDB TTL) ==============
+
+async def check_idempotency(key: str):
+    """Check if an idempotency key has been used. Returns cached result or None."""
+    if not key:
+        return None
+    doc = await db.idempotency_keys.find_one({"key": key}, {"_id": 0})
+    if doc:
+        return doc.get("result")
+    return None
+
+async def store_idempotency(key: str, result: dict):
+    """Store idempotency key with result. TTL index auto-expires after 24hr."""
+    if not key:
+        return
+    await db.idempotency_keys.update_one(
+        {"key": key},
+        {"$set": {"key": key, "result": result, "created_at": datetime.now(timezone.utc)}},
+        upsert=True
+    )
+
+# ============== AUDIT TRAIL ==============
+
+async def audit_log(action: str, entity_type: str, entity_id: str, tenant_id: str,
+                    user_id: str, user_name: str, before_value: dict = None,
+                    after_value: dict = None, request: Request = None):
+    """Create an immutable audit record."""
+    doc = {
+        "id": str(uuid.uuid4()),
+        "action": action,
+        "entity_type": entity_type,
+        "entity_id": entity_id,
+        "tenant_id": tenant_id,
+        "performed_by_user_id": user_id,
+        "performed_by_name": user_name,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "before_value": before_value,
+        "after_value": after_value,
+        "ip_address": request.client.host if request else None,
+        "user_agent": request.headers.get("user-agent", "") if request else None,
+    }
+    await db.audit_log.insert_one(doc)
+
+async def get_tenant_by_subdomain(subdomain: str):
+    """Get tenant by subdomain"""
+    tenant = await db.tenants.find_one({"subdomain": subdomain.lower()}, {"_id": 0})
+    return tenant
+
+async def get_tenant_by_id(tenant_id: str):
+    """Get tenant by ID"""
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+    return tenant
+
+async def validate_tenant_subscription(tenant_id: str) -> bool:
+    """Check if tenant has active subscription"""
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+    if not tenant:
+        return False
+    return tenant.get("subscription_status") == "active"
+
+# ============== EMAIL HELPER FUNCTIONS ==============
+
 async def send_welcome_email(email: str, first_name: str, church_name: str = "your church"):
     """Send a creative welcome email from Solomon AI when a new user registers"""
     try:
@@ -1788,7 +1977,7 @@ async def notify_meeting_event(event: str, meeting: dict) -> dict:
     }
 
 # Default tenant ID for demo
-# DEFAULT_TENANT_ID: imported from core
+DEFAULT_TENANT_ID = "abundant-east-001"
 DEFAULT_NEXT_STEPS_URL = "https://abundantchurch.thinkific.com/courses/abundant-next-steps"
 
 
@@ -2803,7 +2992,17 @@ async def exchange_session(request: SessionRequest, response: Response):
         raise HTTPException(status_code=500, detail="Auth service unavailable")
 
 
-# get_session_token_from_request: imported from core
+def get_session_token_from_request(request: Request) -> Optional[str]:
+    """Resolve auth token from cookie (web) or Authorization Bearer header (mobile)."""
+    # Prefer explicit Authorization header so API clients can override stale browser cookies.
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header:
+        parts = auth_header.strip().split(" ", 1)
+        if len(parts) == 2 and parts[0].lower() == "bearer":
+            token = parts[1].strip()
+            if token:
+                return token
+
     session_token = request.cookies.get("session_token")
     if session_token:
         return session_token
@@ -3016,9 +3215,8 @@ async def debug_test_login(request: Request, payload: EmailLoginRequest):
 
 @api_router.post("/auth/login")
 async def email_password_login(request: Request, payload: EmailLoginRequest, response: Response):
-    """Login with email and password — supports bcrypt + SHA256 legacy with auto-migration"""
+    """Login with email and password"""
     import hashlib
-    import bcrypt
     
     # Normalize email
     login_email = payload.email.strip().lower()
@@ -3042,31 +3240,10 @@ async def email_password_login(request: Request, payload: EmailLoginRequest, res
         logging.warning(f"[AUTH] Login failed - no password_hash for: {login_email}")
         raise HTTPException(status_code=401, detail="Password login not enabled for this account")
     
-    # Verify password — support both bcrypt and legacy SHA256
-    password_valid = False
-    needs_rehash = False
-    
-    if stored_hash.startswith("$2b$") or stored_hash.startswith("$2a$"):
-        # bcrypt hash — verify with bcrypt
-        password_valid = bcrypt.checkpw(payload.password.encode("utf-8"), stored_hash.encode("utf-8"))
-    else:
-        # Legacy SHA256 hash — verify and flag for migration
-        input_hash = hashlib.sha256(payload.password.encode()).hexdigest()
-        password_valid = (input_hash == stored_hash)
-        needs_rehash = password_valid  # Migrate on successful login
-    
-    if not password_valid:
-        logging.warning(f"[AUTH] Login failed - password mismatch for: {login_email}")
+    input_hash = hashlib.sha256(payload.password.encode()).hexdigest()
+    if input_hash != stored_hash:
+        logging.warning(f"[AUTH] Login failed - password mismatch for: {login_email} (stored_hash starts with: {stored_hash[:8]})")
         raise HTTPException(status_code=401, detail="Invalid email or password")
-    
-    # Auto-migrate from SHA256 to bcrypt on successful login
-    if needs_rehash:
-        new_hash = bcrypt.hashpw(payload.password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-        await db.users.update_one(
-            {"user_id": user_doc["user_id"]},
-            {"$set": {"password_hash": new_hash}}
-        )
-        logging.info(f"[AUTH] Migrated password to bcrypt for: {login_email}")
     
     # Session management: limit to 5 concurrent sessions
     existing = await db.user_sessions.count_documents({"user_id": user_doc["user_id"]})
@@ -3184,7 +3361,7 @@ async def register_user(request: UserRegistrationRequest, response: Response):
     
     # Create user
     user_id = str(uuid.uuid4())
-    import bcrypt as _bc; password_hash = _bc.hashpw(request.password.encode("utf-8"), _bc.gensalt()).decode("utf-8")
+    password_hash = hashlib.sha256(request.password.encode()).hexdigest()
     
     # Use provided tenant_id or default
     tenant_id = request.tenant_id if request.tenant_id else DEFAULT_TENANT_ID
@@ -5121,7 +5298,7 @@ async def register_new_family(request: Request, payload: RegisterFamilyPayload):
         # Create new parent user
         parent_user_id = f"member_{str(uuid.uuid4())[:8]}"
         temp_password = secrets.token_urlsafe(12)
-        import bcrypt as _bc; password_hash = _bc.hashpw(temp_password.encode("utf-8"), _bc.gensalt()).decode("utf-8")
+        password_hash = hashlib.sha256(temp_password.encode()).hexdigest()
         new_user = {
             "user_id": parent_user_id,
             "email": payload.parentEmail.lower(),
@@ -6847,6 +7024,7 @@ async def root():
     return {"message": "Solomon AI Church Management API", "version": "1.0.0"}
 
 
+
 @api_router.get("/clear-site-data")
 async def clear_site_data():
     """Force browser to clear all caches, cookies, storage via HTTP header."""
@@ -7714,7 +7892,28 @@ def extract_youtube_id(url: str) -> Optional[str]:
             return match.group(1)
     return None
 
-# get_current_admin_user: imported from core
+async def get_current_admin_user(request: Request):
+    """Helper to get current admin user with tenant validation"""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    # Must be admin or platform_admin
+    if user.get("role") not in ["admin", "church_admin", "platform_admin"]:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Enforce tenant_id for non-platform admins (prevents cross-tenant data leaks)
+    if user.get("role") != "platform_admin" and not user.get("tenant_id"):
+        raise HTTPException(status_code=403, detail="Tenant context required for admin access")
+    
     return user
 
 async def get_current_member_user(request: Request):
@@ -13156,6 +13355,7 @@ async def get_music_stand(plan_id: str):
     }
 
 
+
 # ============== HOUSEHOLDS / FAMILIES ==============
 
 @api_router.get("/admin/households")
@@ -16995,7 +17195,7 @@ async def create_church_onboarding(request: Request, payload: ChurchOnboardingRe
     }
     await db.tenants.insert_one({**tenant})
 
-    import bcrypt as _bc; admin_password_hash = _bc.hashpw((payload.admin_password or "Welcome2026!").encode("utf-8"), _bc.gensalt()).decode("utf-8")
+    admin_password_hash = hashlib.sha256(payload.admin_password.encode()).hexdigest() if payload.admin_password else hashlib.sha256("Welcome2026!".encode()).hexdigest()
     admin_user = {
         "user_id": str(uuid.uuid4()),
         "email": payload.admin_email.lower(),
@@ -17066,7 +17266,7 @@ async def platform_create_user(request: Request, payload: dict):
         "user_id": str(uuid.uuid4()),
         "id": str(uuid.uuid4()),
         "email": email,
-        "password_hash": __import__("bcrypt").hashpw(password.encode("utf-8"), __import__("bcrypt").gensalt()).decode("utf-8"),
+        "password_hash": hashlib.sha256(password.encode()).hexdigest(),
         "name": name,
         "first_name": name.split()[0] if name.split() else name,
         "last_name": name.split()[-1] if len(name.split()) > 1 else "",
@@ -17535,7 +17735,7 @@ async def register_church(payload: dict):
     })
     user_id = str(uuid.uuid4())
     await db.users.insert_one({
-        "user_id": user_id, "email": email, "password_hash": __import__("bcrypt").hashpw(password.encode("utf-8"), __import__("bcrypt").gensalt()).decode("utf-8"),
+        "user_id": user_id, "email": email, "password_hash": hashlib.sha256(password.encode()).hexdigest(),
         "name": f"{first_name} {last_name}".strip(), "first_name": first_name, "last_name": last_name,
         "role": "church_admin", "role_title": payload.get("role_title", "Lead Pastor"),
         "tenant_id": tenant_id, "is_first_login": True, "created_at": datetime.now(timezone.utc).isoformat()
@@ -17763,25 +17963,12 @@ app.include_router(courses_router, prefix="/api")
 courses_init(db, require_permission, get_current_member_user, DEFAULT_TENANT_ID)
 
 
-# CORS middleware — restrict to known origins
-ALLOWED_ORIGINS = [
-    os.environ.get("FRONTEND_URL", ""),
-    "https://solomonai.us",
-    "https://www.solomonai.us",
-    "https://app.solomonai.us",
-]
-# Add preview/dev URLs
-preview_url = os.environ.get("REACT_APP_BACKEND_URL", "")
-if preview_url:
-    ALLOWED_ORIGINS.append(preview_url)
-# Filter empty strings
-ALLOWED_ORIGINS = [o for o in ALLOWED_ORIGINS if o]
 
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=r"https://.*\.preview\.emergentagent\.com",
+    allow_origin_regex=r".*",
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
     allow_headers=["*"],
 )
