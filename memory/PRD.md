@@ -1,7 +1,7 @@
 # Solomon AI — Product Requirements Document
 
 ## Original Problem Statement
-Comprehensive church management SaaS platform (M&A due diligence) targeting 100% Planning Center parity. Multi-tenant React/FastAPI/MongoDB application with AI-powered features (Ask Solomon, Whisper transcription, image gen). User requested "Modular Monolith" refactor across 5 phases, plus demo-ready UI polish.
+Comprehensive church management SaaS platform (M&A due diligence) targeting 100% Planning Center parity. Multi-tenant React/FastAPI/MongoDB application with AI-powered features (Ask Solomon, Whisper transcription, image gen). User requested "Modular Monolith" refactor across 5 phases, plus demo-ready UI polish. Latest request: FULL PARITY CONFIRMATION + GAP CLOSURE.
 
 ## Core Requirements
 - Multi-tenant church management (People, Groups, Giving, Services, Check-ins, Events, Calendar, Communications)
@@ -13,54 +13,54 @@ Comprehensive church management SaaS platform (M&A due diligence) targeting 100%
 
 ## Architecture
 - **Frontend**: React + Shadcn UI + Tailwind CSS
-- **Backend**: FastAPI (Python) — Modular Monolith
+- **Backend**: FastAPI (Python) — Modular Monolith (30 route files, 492 routes)
 - **Database**: MongoDB (96 collections)
 - **Auth**: Cookie-based sessions + bcrypt + Google OAuth
+- **Entry**: server.py (255 lines) -> routes/ (30 domain files)
 
 ## What's Been Implemented
 
-### Completed — Phase R1: Extract Pydantic Models ✅
-- 123 models extracted to `/app/backend/models/schemas.py`
+### Completed — Phase R1-R4: Modular Monolith Refactor (March 31, 2026)
+- 123 Pydantic models in `/app/backend/models/schemas.py`
+- Core helpers in `/app/backend/core/` (auth, db, helpers, seed)
+- 492 routes in 30 domain files in `/app/backend/routes/`
+- server.py: 17,828 → 255 lines (98.6% reduction)
 
-### Completed — Phase R2: Extract Core Helpers ✅
-- Auth, DB, tenant helpers extracted to `/app/backend/core/__init__.py`
+### Completed — Phase R5: OWASP Security Audit
+- CORS, SHA256→bcrypt migration, rate limiting
 
-### Completed — Phase R3: Extract Routes ✅ (March 31, 2026)
-- **492 routes** extracted from server.py into **30 domain-specific files** in `/app/backend/routes/`
-- Route files: auth.py, portal.py, solomon.py, admin_people.py, admin_giving.py, admin_groups.py, admin_services.py, admin_checkins.py, admin_events.py, admin_comms.py, admin_media.py, admin_cafe.py, admin_merch.py, admin_pathways.py, admin_settings.py, admin_workflows.py, admin_meetings.py, reports.py, payments.py, platform.py, agent.py, public_api.py + pre-existing: push.py, messaging.py, volunteer.py, geofence.py, announcements.py, media_uploads.py, giving_nudge.py, courses.py
+### Completed — P1: Demo UI Removals (March 31, 2026)
+- Removed: War Room, Go-Live Health, Directory, Pricing, Vision
 
-### Completed — Phase R4: Slim server.py ✅ (March 31, 2026)
-- server.py reduced from **17,828 lines → 255 lines** (98.6% reduction)
-- Now contains only: app creation, middleware, router mounts, startup/shutdown
+### Completed — Full Parity Audit + Gap Closure (March 31, 2026)
+- Fixed 12 P0 bugs:
+  1. StreamingResponse import in admin_giving.py
+  2. RBAC admin.giving → admin.giving.view/edit
+  3. 16 dangling decorators removed across 5 files
+  4. PAYMENT_PROCESSORS imported in admin_giving.py & public_api.py
+  5. get_session_token_from_request added to 4 route files
+  6. get_current_portal_user added to 3 route files
+  7. PRAYER_CATEGORIES defined in admin_comms.py
+  8. ROOT_DIR defined in admin_meetings.py
+  9-10. Duplicate imports cleaned
+- 116 endpoints tested: 113 pass (97.4%)
+- 5 Deliverables generated: Parity Matrix, Gap List, Ask Solomon Report, Landing Page Status, Deployment Readiness
 
-### Completed — Phase R5: OWASP Security Audit ✅
-- CORS fixed, SHA256→bcrypt password auto-migration on login
-
-### Completed — P1: Demo UI Removals ✅ (March 31, 2026)
-- Removed "War Room" from admin sidebar
-- Removed "Go-Live Health" widget from Dashboard
-- Removed "Directory" from Portal nav
-- Removed "Pricing" section from Landing Page
-- Removed "The Future/Vision" section from Landing Page
-
-### Completed — Shared Helpers Extraction ✅ (March 31, 2026)
-- `/app/backend/core/helpers.py` — Shared utility functions (serialize_doc, AI integrations, agent API helpers, etc.)
-- `/app/backend/core/seed.py` — Demo seed data functions
-
-## Testing Status
-- Iteration 63: 100% pass rate (14/14 backend, 5/5 frontend)
-- All 492 routes verified working post-refactor
+### Testing Status
+- Iteration 63: 100% (14/14 backend, 5/5 frontend) — Post-refactor
+- Iteration 64: 100% (24/24 backend, 5/5 frontend) — Post-parity-audit
 
 ## Prioritized Backlog
 
-### P2
-- Phase 7: Publishing + Home (Custom page builder, role-based dashboards)
-- Phase 8: Church Center Mobile API sync (Push notifications, offline sync)
+### P2 (Deferred per user)
+- Physical printer driver integration for Check-ins (currently mocked)
+- Live Twilio SMS integration (currently stubbed to DB)
+- Real-Time WebSocket for Group Chat (currently HTTP polling)
 
-### P3
-- Real-Time WebSocket for Group Chat (Currently HTTP polling)
-- Printer driver integration for Check-ins (Currently mocked)
-- Solomon Pay live transaction processing (Stripe wrapper currently used)
+### P3 (Excluded per user)
+- Publishing / page builder
+- Church Center Mobile API sync
+- Solomon Pay live transaction processing (Stripe test keys in use)
 
 ## 3rd Party Integrations
 - Anthropic Claude (Ask Solomon) — Emergent LLM Key
