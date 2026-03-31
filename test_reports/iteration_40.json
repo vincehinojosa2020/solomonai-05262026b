@@ -20,7 +20,7 @@
   "fixes_verified": {
     "fix_1_no_hardcoded_urls": {
       "status": "PASS",
-      "verified": "All API calls work via public URL https://parity-audit-preview.preview.emergentagent.com/api/...",
+      "verified": "All API calls work via public URL https://parity-audit-1.preview.emergentagent.com/api/...",
       "evidence": "Login, church list, kids endpoints all work"
     },
     "fix_2_role_management": {

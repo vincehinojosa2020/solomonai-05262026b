@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Backend Go-Live Verification Tests for Solomon Church Management System
-Testing production environment: https://parity-audit-preview.preview.emergentagent.com/api
+Testing production environment: https://parity-audit-1.preview.emergentagent.com/api
 """
 import asyncio
 import aiohttp
@@ -10,7 +10,7 @@ from typing import Dict, List, Optional, Any
 import sys
 
 # Production base URL
-BASE_URL = "https://parity-audit-preview.preview.emergentagent.com/api"
+BASE_URL = "https://parity-audit-1.preview.emergentagent.com/api"
 
 # Test credentials provided in review request
 TEST_ACCOUNTS = [

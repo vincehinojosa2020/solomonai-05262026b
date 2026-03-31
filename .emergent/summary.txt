@@ -1,74 +1,58 @@
 <analysis>**original_problem_statement**: 
-The user requested a comprehensive audit of the Solomon AI platform (M&A due diligence) to prepare for a demo, specifically focusing on reaching 100% Planning Center parity. After the agent delivered the audit, the user provided a strict instruction to execute a Modular Monolith refactor (Option A) across 5 phases: Phase R1 (Extract Pydantic Models), Phase R2 (Extract Core Helpers), Phase R3 (Extract Routes), Phase R4 (Slim  to ~200 lines), and Phase R5 (OWASP Top 10 Audit & fixes). Constraints: DO NOT build Publishing (page builder), physical printer integrations, or live Twilio SMS. DO NOT extract Solomon Pay to a microservice yet.
-
-**PRODUCT REQUIREMENTS**:
-- High-stakes SaaS platform presentation. Clean white aesthetics, zero AI slop.
-- Strict multi-tenancy implementation.
-- Platform must have 100% feature parity with Planning Center for core modules (People, Check-ins, Giving, Groups, Registrations, Services, Calendar, Communications).
-- Backend must be cleanly refactored into a modular monolith without breaking existing endpoints.
+The user previously requested a Modular Monolith refactor and the removal of specific UI elements for an M&A demo. This was successfully completed. 
+*CURRENT REQUIREMENT:* The user has now requested a **SOLOMON AI — FULL PARITY CONFIRMATION + GAP CLOSURE**. The user provided an exhaustive checklist covering Admin Workflows (People, Check-Ins, Giving, Groups, Registrations, Services, Calendar, Comms, Media, Cafe, Merch, Courses, Reports) and Member Workflows (Portal). The goal is to identify gaps against Planning Center, generate a Parity Matrix, Ask Solomon Report, Landing Page Status, and Deployment Readiness assessment.
+*CONSTRAINTS:* DO NOT build Publishing (page builder), Church Center Mobile API sync, physical printer drivers, live Twilio (mocked is fine), or WebSocket chat (HTTP polling is fine).
 
 **User's preferred language**: English
 *(INSTRUCT NEXT AGENT: You MUST automatically detect the user's primary language from their messages inside the <trajectory> tag and INSTRUCT next agent to respond in the user's preferred language only)*
 
 **what currently exists?** 
-A highly polished, multi-tenant React/FastAPI/MongoDB SaaS application at ~96% Planning Center parity. The app consists of 420 API endpoints and 96 MongoDB collections. In this session, a major QA and UI/UX audit was completed. The backend refactoring was started: 123 Pydantic models were extracted to , and core helpers were moved to . A critical security migration was implemented to transition passwords from SHA256 to  with backward-compatible auto-migration on login. However,  remains at ~17,796 lines, meaning the route extraction (Phase R3 & R4) was missed/hallucinated by the previous agent.
+A heavily refactored, multi-tenant React/FastAPI/MongoDB SaaS application. The massive 17,800-line  was successfully decomposed into 492 routes across 30 domain-specific files (Phase R3/R4). Unwanted UI elements (War Room, Go-Live Health, Directory, Landing Page Pricing/Vision) were successfully removed. The system is currently undergoing a live programmatic API audit to verify 100% end-to-end parity with Planning Center workflows.
 
 **Last working item**: 
-    - Last item agent was working: Running  (iteration 62) to validate the OWASP security fixes (CORS configuration fix and SHA256 to  auto-migration on the  endpoint).
-    - Status: USER VERIFICATION PENDING
-    - Agent Testing Done: Y
-    - Which testing method agent to use? testing_agent_v3_fork
+    - Last item agent was working: Executing Python bash scripts to systematically test critical endpoints (People, Check-ins, Calendar, Giving) to gather data for the user's requested Parity Verification Checklist and Gap List.
+    - Status: IN PROGRESS
+    - Agent Testing Done: N (Auditing phase)
+    - Which testing method agent to use? main agent to test via curl/python -c for the audit, then testing_agent_v3_fork after fixing any identified P0 gaps.
     - User Testing Done: N
 
 **All Pending/In progress Issue list**: 
-  Issue 1: 🔴 CRITICAL: Failed Backend Route Refactoring (Phase R3 & R4) (P0)
-     - Attempted fixes: The previous agent extracted models (R1) and core helpers (R2), but completely failed/hallucinated extracting the 420 routes into .  is STILL 17,796 lines long.
-     - Next debug checklist: Create domain-specific router files in  (e.g., , , ), move the corresponding  functions from , and slim  down to the bare entrypoint mounting these routers.
-     - Why fix this issue and what will be achieved with the fix? Completes the user's explicitly requested Modular Monolith refactor to solve developer velocity and context limits.
+  Issue 1: 🔴 Endpoints failing during Parity Audit Script (P0)
+     - Attempted fixes: Agent ran an audit script and found errors, but context ended before debugging.
+     - Next debug checklist: 
+       -  is returning a 500 INTERNAL_ERROR.
+       -  is returning .
+       - An audit script threw .
+     - Why fix this issue and what will be achieved with the fix? Required to achieve the 100% parity requested by the user and ensure demo readiness.
      - Status: IN PROGRESS
      - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? Backend via automated tests/curl and testing_agent for regression.
-     - Blocked on other issue: None.
+     - Should Test frontend/backend/both after fix? Backend
 
 **In progress Task List**: 
-  Task 1: Execute Flagged UI Removals for Demo Prep (P1)
-     - Where to resume: Modify React frontend files to remove requested items: War Room (from sidebar), Go-Live Health (from Admin Dashboard), Directory (from Portal nav), Pricing section (from Landing Page), and The Future/Vision section (from Landing Page).
-     - What will be achieved with this? Cleans up the UI for the upcoming M&A due diligence demo as specifically requested by the user in the audit phase.
-     - Status: NOT STARTED
-     - Should Test frontend/backend/both after fix? Frontend (Screenshots).
-     - Blocked on something: None.
-
-  Task 2: Finish tool invocation and Report Delivery
-     - Where to resume: Provide the generated  details to the user and outline what was genuinely completed vs what is left (Route refactoring).
-     - What will be achieved with this? Finalizes the current conversational loop.
-     - Status: TESTING PENDING
-     - Should Test frontend/backend/both after fix? Both.
-     - Blocked on something: None.
+  Task 1: Generate Deliverables for Full Parity Confirmation (P0)
+     - Where to resume: Continue auditing the API and UI against the user's exhaustive checklist (Message 318).
+     - What will be achieved with this? Fulfills the user's request for a Parity Matrix, Gap List, Ask Solomon Report, and Deployment Readiness report.
+     - Status: IN PROGRESS
+     - Should Test frontend/backend/both after fix? Both
+     - Blocked on something: Nothing, just requires systematic evaluation.
 
 **Upcoming and Future Tasks**
     Upcoming Tasks:
-    - P1: Complete Phase R3 (Extract Routes) and Phase R4 (Slim server.py) of the modular monolith refactor.
-    - P1: Remove flagged UI items (War Room, Directory, Landing Page Pricing/Vision) for demo readiness.
-    Future Tasks:
-    - P2: Phase 7: Publishing + Home (Custom page builder, role-based dashboards).
-    - P2: Phase 8: Church Center Mobile API sync (Push notifications, offline sync).
-    - P3: Real-Time WebSocket for Group Chat (Currently HTTP polling).
-    - P3: Printer driver integration for Check-ins (Currently mocked).
+    - P0: Fix any P0 gaps (must-haves for parity) identified during the audit.
+    - P1: Ensure Ask Solomon responds contextually with church data and biblical knowledge.
+    Future Tasks (Deferred by User):
+    - P2: Physical printer driver integration for Check-ins.
+    - P2: Live Twilio SMS integration.
+    - P2: Real-Time WebSocket for Group Chat.
 
 **Completed work in this session**
-- Conducted exhaustive M&A Due Diligence audit, verifying 96% Planning Center parity across all modules.
-- Generated 5 Go-To-Market reports (, , etc.).
-- Refactor Phase R1: Extracted 123 Pydantic models into .
-- Refactor Phase R2: Extracted core database, auth, and tenant helpers into .
-- OWASP Security Fixes: Fixed CORS middleware and migrated password hashing from SHA256 to  (with backward-compatible auto-migration during login).
-- Testing Agent iterations 61 and 62 passed 100%.
+- Phase R3 & R4 Refactor (DONE): Extracted 492 routes from  into 30 domain files (). Reduced  from 17,828 to 255 lines.
+- Extracted shared dependencies to  and .
+- Phase P1 UI Removals (DONE): Removed War Room, Go-Live Health, Portal Directory, and Landing Page Pricing/Vision sections.
+- Testing Agent Iteration 63 passed with 100%.
 
 **Earlier issues found/mentioned but not fixed**
-- Issue 1: UI Elements Flagged for Removal
-   - Debug checklist: Remove War Room, Go-Live Health, Directory, Pricing, and The Future from the frontend React components.
-   - Why to solve this issue and what will be achieved with this? Required for the user's M&A demo presentation.
-   - Should Test frontend/backend/both after fix: Frontend
-   - Is recurring issue? N
+None. (Previous fork's hallucinated route extraction was completely resolved).
 
 **Known issue recurrence from previous fork**
   - Issue recurrence in previous fork: None
@@ -79,73 +63,109 @@ A highly polished, multi-tenant React/FastAPI/MongoDB SaaS application at ~96% P
 
 
 **Key Technical Concepts**
-- **Modular Monolith Refactoring:** Moving from a massive single file to domain-driven directories (, , ).
-- **Bcrypt Auto-Migration:** Passwords are now hashed with . Legacy demo accounts seeded with SHA256 are automatically re-hashed and saved with  upon their first successful login (implemented in ).
-- **Multi-Tenant System:**  must be queried and stored on every single MongoDB document.
+- **Modular Monolith:** 30 APIRouter files injected into a clean .
+- **Multi-Tenant System:**  context is required across all routes.
+- **Strict Parity Constraints:** Code must reflect actual operational flows of a church SaaS, mimicking Planning Center's UX/logic.
 
 **key DB schema**
   -  ->  (tenants) ->  (users).
-  - Relevant models: , , root, , , etc.
+  - Data mapped across 96 collections.
 
 **changes in tech stack**
-  -  library added for secure password hashing.
+  - Massive architectural reorganization of FastAPI routing. , , and  imports were standardized across route files.
 
-**All files of reference**
-  -  (Still contains 400+ routes, needs massive slimming).
-  -  (New file containing 123 extracted models).
-  - ,  (New core helpers).
-  -  (Generated report).
+**All files of reference** 
+  -  (Core entry)
+  -  (Contains the failing 500 endpoint found in the audit)
+  -  (Updated with completed refactor)
+  -  (Updated)
 
-**Areas that need refactoring**:
-  - : MUST be slimmed down to ~200 lines. The 419 routes need to be extracted into  files. The previous agent skipped this crucial step.
+**Areas that need refactoring**: 
+Refactoring is successfully completed. Maintain the new directory structure strictly. Do not pollute  with new routes.
 
 **key api endpoints**
-  -  (Updated with bcrypt auto-migration logic).
+  -  (Currently 500 erroring)
+  -  (Currently permission erroring)
 
-**Critical Info for New Agent**
-  - **HALLUCINATION WARNING:** The previous agent *claimed* to have finished the Phase R3 & R4 refactor, but it did NOT extract the routes.  is still 17,796 lines long. Your top backend priority is to actually extract these routes into  and slim .
-  - The user explicitly requested removing several UI elements (War Room, Go-Live Health, Portal Directory, Landing Page Pricing/Vision) for an M&A demo. This was left pending. Address these removals.
+**Critical Info for New Agent** 
+- **CONTEXT SHIFT:** You are entering right after a massively successful refactor. The user dropped a very long, highly detailed checklist in their last message (Message 318). Read it thoroughly.
+- Your immediate job is to finish the programmatic/manual audit of the system against that checklist, fix the failing endpoints you discover (like the giving ones found in the last logs), and output the 5 exact Deliverables requested by the user.
 
-**documents and test reports created in this job**
-  - 
-  - 
-  - 
-  - 
-  - 
+**documents and test reports created in this job** 
   - 
   - 
   - 
 
 **Last 10 User Messages and any pending HUMAN messages** 
- - *User:* Requested full execution of UI Polish, Security Audits, Parity Checks, and report generation.
- - *Agent:* Generated reports, implemented design system, fixed cross-tenant leaks.
- - *User:* Requested an Honest M&A Due Diligence audit of all endpoints, frontend, DB, and parity vs Planning Center, plus flagged specific UI items for removal.
- - *Agent:* Provided exhaustive audit outlining 420 endpoints, 96 DB collections, and ~96% parity.
- - *User:* Requested execution of the Modular Monolith Refactor (Phases R1-R5) and a Parity Matrix report.
- - *Agent:* Extracted models, extracted core helpers, updated login to bcrypt, fixed CORS, and ran the testing agent. *Failed to extract the actual routes from server.py.* (Pending completion and handover).
+ - *User:* Asked agent to confirm refactor plan.
+ - *User:* Instructed agent to split routes into specific sub-domains (admin_people, admin_giving, etc.) and perform UI removals.
+ - *Agent:* Completed the massive refactor, fixed all circular imports, removed UI elements, ran testing agent (100% pass), and updated PRD.
+ - *User:* (LATEST) Posted a massive FULL PARITY CONFIRMATION + GAP CLOSURE checklist. Requested a Parity Matrix, Gap List, Ask Solomon Report, Landing Page check, and Deployment check.
+ - *Agent:* Started writing python scripts to ping API endpoints to build the audit report. Found a few 500/Permission errors before context window filled.
 
 **Project Health Check:**
-  - Status: Working, tests passing, but major technical debt remains due to incomplete refactoring of . 
+  - Broken: , 
+  - Mocked: Stripe payments, Twilio SMS, Physical Printers (As requested by user).
 
-**3rd Party Integrations**
+**3rd Party Integrations** 
   • Anthropic Claude (Ask Solomon) — *uses Emergent LLM Key*
   • Gemini Image Gen (OG Tags) — *uses Emergent LLM Key*
   • OpenAI Whisper (Transcriptions) — *uses Emergent LLM Key*
-  • Stripe (Payments) — *Requires User API Key (Live keys currently mocked/stubbed in SolomonPay wrapper)*
+  • Stripe (Payments) — *Requires User API Key (Currently mocked/pending status)*
   • Emergent Google Auth — *uses Emergent Managed Service*
-  • Twilio (SMS) — *Requires User API Key (Currently stubbed/DB logging fallback)*
+  • Twilio (SMS) — *Requires User API Key (Currently stubbed)*
 
 **Testing status**
-  - Testing agent used after significant changes: YES (Iterations 61 and 62 passed 100%).
-  - Troubleshoot agent used after agent stuck in loop: NO.
+  - Testing agent used after significant changes: YES (Iteration 63 passed 100%)
+  - Troubleshoot agent used after agent stuck in loop: NO
   - Test files created: 
-  - Known regressions: None currently, but route refactoring carries high regression risk.
+  - Known regressions: None from the refactor, but the audit is uncovering existing endpoint gaps.
 
 **Credentials to test flow:**
   - Platform Admin:  / 
   - Church Admin:  / 
 
 **What agent forgot to execute**
-  - The previous agent **completely missed Phase R3 (Extract Routes) and Phase R4 (Slim server.py)** of the Modular Monolith refactor.
-  - The previous agent did not execute the frontend UI element removals requested for the M&A demo (War Room, Go-Live Health, Directory, Landing Page Pricing/Future sections).
-  - The PRD.md was not updated with the newly completed tasks before finishing.</analysis>
+  - The agent did not forget anything, it was actively working on the Parity Audit script when the context window was reached.
+
+**Debugging checklist for current issue**
+    Issue: Failing endpoints during Parity Audit
+
+    Backend files to check: 
+    -  (Line numbers depend on where declare -x DEBIAN_FRONTEND="noninteractive"
+declare -x ENABLE_RELOAD="true"
+declare -x GPG_KEY="A035C8C19219BA821ECEA86B64E628F8D684696D"
+declare -x HOME="/root"
+declare -x HOSTNAME="agent-env-68438ad7-8180-4d7c-9120-2930a99b8e27"
+declare -x KUBERNETES_PORT="tcp://34.118.224.1:443"
+declare -x KUBERNETES_PORT_443_TCP="tcp://34.118.224.1:443"
+declare -x KUBERNETES_PORT_443_TCP_ADDR="34.118.224.1"
+declare -x KUBERNETES_PORT_443_TCP_PORT="443"
+declare -x KUBERNETES_PORT_443_TCP_PROTO="tcp"
+declare -x KUBERNETES_SERVICE_HOST="34.118.224.1"
+declare -x KUBERNETES_SERVICE_PORT="443"
+declare -x KUBERNETES_SERVICE_PORT_HTTPS="443"
+declare -x LANG="C.UTF-8"
+declare -x NEXT_TELEMETRY_DISABLED="1"
+declare -x NODE_VERSION="20"
+declare -x OLDPWD
+declare -x PATH="/root/.venv/bin:/opt/plugins-venv/bin:/opt/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+declare -x PIP_NO_INPUT="1"
+declare -x PLAYWRIGHT_BROWSERS_PATH="/pw-browsers"
+declare -x PLUGIN_VENV_PATH="/opt/plugins-venv"
+declare -x PWD="/app"
+declare -x PYTHONUNBUFFERED="1"
+declare -x PYTHON_SHA256="272179ddd9a2e41a0fc8e42e33dfbdca0b3711aa5abf372d3f2d51543d09b625"
+declare -x PYTHON_VERSION="3.11.15"
+declare -x SHLVL="1"
+declare -x STRIPE_API_KEY="sk_test_emergent"
+declare -x UV_COMPILE_BYTECODE="1"
+declare -x VIRTUAL_ENV="/root/.venv"
+declare -x base_url="https://demobackend.emergentagent.com"
+declare -x code_server_password="996fba8b"
+declare -x integration_proxy_url="https://integrations.emergentagent.com"
+declare -x monitor_polling_interval="1"
+declare -x preview_endpoint="https://parity-audit-1.preview.emergentagent.com"
+declare -x run_id="68438ad7-8180-4d7c-9120-2930a99b8e27" and  are defined)
+    - Check the  decorator logic for .
+    - Check for missing imports or unhandled exceptions in the CSV export logic.</analysis>
