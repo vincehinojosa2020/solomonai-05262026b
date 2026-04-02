@@ -3200,14 +3200,23 @@ async def portal_giving_donate(request: Request, payload: GivingDonateRequest):
     tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
     if payload.amount <= 0:
         raise HTTPException(status_code=400, detail="Amount must be positive")
+    cover_fees = getattr(payload, 'cover_fees', False)
+    base_amount = round(payload.amount, 2)
+    processing_fee = round(base_amount * 0.025 + 0.30, 2) if cover_fees else 0
+    total_amount = round(base_amount + processing_fee, 2)
     txn_id = f"sp_txn_{uuid.uuid4().hex[:12]}"
     donation = {
         "id": str(uuid.uuid4()),
         "tenant_id": tenant_id,
         "person_id": user.get("user_id"),
         "person_name": user.get("name", ""),
-        "amount": round(payload.amount, 2),
+        "person_email": user.get("email", ""),
+        "amount": total_amount,
+        "base_amount": base_amount,
+        "processing_fee": processing_fee,
+        "fees_covered_by_donor": cover_fees,
         "fund": payload.fund,
+        "fund_name": payload.fund,
         "fund_id": payload.fund_id if hasattr(payload, 'fund_id') else "general",
         "frequency": payload.frequency,
         "donation_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),

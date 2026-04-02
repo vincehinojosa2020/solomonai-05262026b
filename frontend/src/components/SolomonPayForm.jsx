@@ -28,11 +28,14 @@ export default function SolomonPayForm({ amount, onSuccess, onCancel, context = 
   const [cardholderName, setCardholderName] = useState('');
   const [billingZip, setBillingZip] = useState('');
   const [saveCard, setSaveCard] = useState(false);
+  const [coverFees, setCoverFees] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const brand = detectCardBrand(cardNumber);
   const isAmex = brand === 'Amex';
+  const processingFee = coverFees ? Math.round((amount * 0.025 + 0.30) * 100) / 100 : 0;
+  const totalAmount = Math.round((amount + processingFee) * 100) / 100;
 
   const isValid = cardNumber.replace(/\s/g, '').length >= 15
     && expiry.length === 5
@@ -55,7 +58,8 @@ export default function SolomonPayForm({ amount, onSuccess, onCancel, context = 
       cardholder_name: cardholderName.trim(),
       billing_zip: billingZip,
       save_card: saveCard,
-      amount: amount,
+      amount: totalAmount,
+      cover_fees: coverFees,
       context: context,
     };
 
@@ -188,7 +192,7 @@ export default function SolomonPayForm({ amount, onSuccess, onCancel, context = 
         </div>
 
         {/* Save card checkbox */}
-        <label style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20, cursor: 'pointer' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, cursor: 'pointer' }}>
           <input
             data-testid="solomonpay-save-card"
             type="checkbox"
@@ -198,6 +202,21 @@ export default function SolomonPayForm({ amount, onSuccess, onCancel, context = 
           />
           <span style={{ fontSize: 13, color: '#374151' }}>Save this card for future use</span>
         </label>
+
+        {/* Cover processing fees */}
+        {context === 'donation' && (
+          <label style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20, cursor: 'pointer' }} data-testid="cover-fees-toggle">
+            <input
+              type="checkbox"
+              checked={coverFees}
+              onChange={(e) => setCoverFees(e.target.checked)}
+              style={{ width: 16, height: 16, accentColor: '#0f172a' }}
+            />
+            <span style={{ fontSize: 13, color: '#374151' }}>
+              Cover processing fees {coverFees && <span style={{ color: '#16a34a', fontWeight: 600 }}>(+${processingFee.toFixed(2)})</span>}
+            </span>
+          </label>
+        )}
 
         {/* Beta notice */}
         <div data-testid="solomonpay-beta-notice" style={{ padding: '10px 14px', background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 8, marginBottom: 20 }}>

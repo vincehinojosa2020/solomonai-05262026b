@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { usePolling } from '@/hooks/usePolling';
-import { DollarSign, TrendingUp, RefreshCw, Users, FileText, Download, Search, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Building2, CreditCard, Settings, Clock, Filter, Eye, Zap, Archive, Plus, Pencil, X } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { DollarSign, TrendingUp, RefreshCw, Users, FileText, Download, Search, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Building2, CreditCard, Settings, Clock, Filter, Eye, Zap, Archive, Plus, Pencil, X, QrCode, RotateCcw, Terminal, PieChart } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart as RPieChart, Pie, Cell } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { API_URL, formatCurrency, formatDate } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -49,6 +49,10 @@ export default function SolomonPayAdmin() {
   const [showFundModal, setShowFundModal] = useState(false);
   const [editFund, setEditFund] = useState(null);
   const [fundForm, setFundForm] = useState({ name: '', description: '', goal_amount: '' });
+  const [donorIQ, setDonorIQ] = useState(null);
+  const [showVT, setShowVT] = useState(false);
+  const [vtForm, setVtForm] = useState({ person_name: '', person_email: '', amount: '', fund_name: 'General Fund', payment_method: 'cash', note: '', cover_fees: false });
+  const [qrCodes, setQrCodes] = useState([]);
 
   const headers = () => {
     const t = sessionStorage.getItem('session_token');
@@ -162,6 +166,35 @@ export default function SolomonPayAdmin() {
     } catch { toast.error('Failed'); } finally { setLoading(false); }
   };
 
+  const fetchDonorIQ = async () => {
+    try { const res = await fetch(`${API_URL}/admin/solomonpay/donor-insights`, { headers: headers() }); if (res.ok) setDonorIQ(await res.json()); } catch (e) { console.error(e); }
+  };
+
+  const submitVirtualTerminal = async () => {
+    if (!vtForm.amount || parseFloat(vtForm.amount) <= 0) { toast.error('Enter a valid amount'); return; }
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/admin/solomonpay/virtual-terminal`, { method: 'POST', headers: { ...headers(), 'Content-Type': 'application/json' }, body: JSON.stringify({ ...vtForm, amount: parseFloat(vtForm.amount) }) });
+      if (res.ok) { const d = await res.json(); toast.success(d.message); setShowVT(false); setVtForm({ person_name: '', person_email: '', amount: '', fund_name: 'General Fund', payment_method: 'cash', note: '', cover_fees: false }); fetchDashboard(); }
+      else { const err = await res.json(); toast.error(err.detail || 'Failed'); }
+    } catch { toast.error('Failed'); } finally { setLoading(false); }
+  };
+
+  const refundDonation = async (donationId) => {
+    if (!confirm('Are you sure you want to refund this donation?')) return;
+    try {
+      const res = await fetch(`${API_URL}/admin/solomonpay/refund/${donationId}`, { method: 'POST', headers: headers() });
+      if (res.ok) { const d = await res.json(); toast.success(d.message); fetchTransactions(); fetchDashboard(); }
+      else { const err = await res.json(); toast.error(err.detail || 'Refund failed'); }
+    } catch { toast.error('Refund failed'); }
+  };
+
+  const fetchQRCodes = async () => {
+    try { const res = await fetch(`${API_URL}/admin/solomonpay/qr-codes`, { headers: headers() }); if (res.ok) { const d = await res.json(); setQrCodes(d.qr_codes || []); } } catch (e) { console.error(e); }
+  };
+
+  useEffect(() => { if (activeTab === 'dashboard') { fetchDonorIQ(); fetchQRCodes(); } }, [activeTab]);
+
   return (
     <div className="space-y-4" data-testid="solomonpay-admin">
       {/* Header */}
@@ -228,12 +261,74 @@ export default function SolomonPayAdmin() {
                       <td className="px-4 py-2.5 font-medium text-slate-700">{tx.person_name || 'Anonymous'}</td>
                       <td className="px-4 py-2.5 text-slate-500">{tx.fund_name || 'General'}</td>
                       <td className="px-4 py-2.5 text-right font-mono font-semibold">{formatCurrency(tx.amount)}</td>
-                      <td className="px-4 py-2.5"><span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${tx.status === 'completed' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>{tx.status || 'completed'}</span></td>
+                      <td className="px-4 py-2.5"><span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${tx.status === 'completed' ? 'bg-green-50 text-green-700' : tx.status === 'refunded' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'}`}>{tx.status || 'completed'}</span></td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* DonorIQ Engagement Insights */}
+          {donorIQ && (
+            <div className="bg-white border border-slate-200 rounded-xl p-5" data-testid="donor-iq-panel">
+              <h3 className="text-sm font-semibold text-slate-800 mb-4">DonorIQ — Engagement Stages</h3>
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-4">
+                {[
+                  { key: 'recurring', label: 'Recurring', color: '#16a34a' },
+                  { key: 'regular', label: 'Regular', color: '#2563eb' },
+                  { key: 'occasional', label: 'Occasional', color: '#8b5cf6' },
+                  { key: 'once', label: 'First-Time', color: '#f59e0b' },
+                  { key: 'at_risk', label: 'At Risk', color: '#f97316' },
+                  { key: 'lapsed', label: 'Lapsed', color: '#dc2626' },
+                ].map(s => (
+                  <div key={s.key} className="text-center p-3 rounded-lg" style={{ background: s.color + '10' }}>
+                    <p className="text-2xl font-bold" style={{ color: s.color }}>{donorIQ.stages[s.key] || 0}</p>
+                    <p className="text-xs font-medium text-slate-500">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-slate-400">Total: {donorIQ.total_donors} unique donors tracked</p>
+            </div>
+          )}
+
+          {/* Quick Actions */}
+          <div className="grid grid-cols-2 gap-3">
+            <button onClick={() => setShowVT(true)} className="flex items-center gap-3 p-4 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors" data-testid="virtual-terminal-btn">
+              <Terminal className="w-5 h-5 text-slate-600" />
+              <div className="text-left"><p className="text-sm font-semibold text-slate-800">Virtual Terminal</p><p className="text-xs text-slate-400">Process donation on behalf of a donor</p></div>
+            </button>
+            <div className="flex items-center gap-3 p-4 bg-white border border-slate-200 rounded-xl">
+              <QrCode className="w-5 h-5 text-slate-600" />
+              <div className="text-left"><p className="text-sm font-semibold text-slate-800">QR Code Giving</p><p className="text-xs text-slate-400">{qrCodes.length} giving links available</p></div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Virtual Terminal Modal */}
+      {showVT && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 p-6 space-y-4" data-testid="virtual-terminal-modal">
+            <div className="flex items-center justify-between"><h3 className="font-semibold text-slate-800">Virtual Terminal</h3><button onClick={() => setShowVT(false)}><X className="w-4 h-4" /></button></div>
+            <p className="text-xs text-slate-500">Process a donation on behalf of a donor (phone, walk-in, mail)</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div><label className="text-xs font-medium text-slate-500">DONOR NAME</label><input type="text" value={vtForm.person_name} onChange={e => setVtForm({...vtForm, person_name: e.target.value})} placeholder="John Smith" className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm" data-testid="vt-name" /></div>
+              <div><label className="text-xs font-medium text-slate-500">EMAIL</label><input type="email" value={vtForm.person_email} onChange={e => setVtForm({...vtForm, person_email: e.target.value})} placeholder="john@email.com" className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm" data-testid="vt-email" /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><label className="text-xs font-medium text-slate-500">AMOUNT</label><input type="number" step="0.01" value={vtForm.amount} onChange={e => setVtForm({...vtForm, amount: e.target.value})} placeholder="100.00" className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm" data-testid="vt-amount" /></div>
+              <div><label className="text-xs font-medium text-slate-500">FUND</label><select value={vtForm.fund_name} onChange={e => setVtForm({...vtForm, fund_name: e.target.value})} className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"><option>General Fund</option><option>Building Fund</option><option>Missions</option><option>Benevolence</option><option>Youth Ministry</option></select></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><label className="text-xs font-medium text-slate-500">PAYMENT METHOD</label><select value={vtForm.payment_method} onChange={e => setVtForm({...vtForm, payment_method: e.target.value})} className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"><option value="cash">Cash</option><option value="check">Check</option><option value="card">Card</option></select></div>
+              <div><label className="text-xs font-medium text-slate-500">NOTE</label><input type="text" value={vtForm.note} onChange={e => setVtForm({...vtForm, note: e.target.value})} placeholder="Optional note" className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm" /></div>
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={vtForm.cover_fees} onChange={e => setVtForm({...vtForm, cover_fees: e.target.checked})} className="rounded" />
+              <span className="text-sm text-slate-600">Donor covers processing fees (+2.5% + $0.30)</span>
+            </label>
+            <div className="flex gap-2"><Button onClick={submitVirtualTerminal} disabled={loading} className="flex-1" data-testid="vt-submit">{loading ? 'Processing...' : 'Process Donation'}</Button><Button variant="outline" onClick={() => setShowVT(false)}>Cancel</Button></div>
           </div>
         </div>
       )}
@@ -253,7 +348,7 @@ export default function SolomonPayAdmin() {
           <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="bg-slate-50 text-xs text-slate-500 uppercase"><th className="px-4 py-2 text-left">Date</th><th className="px-4 py-2 text-left">Donor</th><th className="px-4 py-2 text-left">Fund</th><th className="px-4 py-2 text-right">Amount</th><th className="px-4 py-2 text-left">Method</th><th className="px-4 py-2 text-left">Status</th></tr></thead>
+                <thead><tr className="bg-slate-50 text-xs text-slate-500 uppercase"><th className="px-4 py-2 text-left">Date</th><th className="px-4 py-2 text-left">Donor</th><th className="px-4 py-2 text-left">Fund</th><th className="px-4 py-2 text-right">Amount</th><th className="px-4 py-2 text-left">Method</th><th className="px-4 py-2 text-left">Status</th><th className="px-4 py-2"></th></tr></thead>
                 <tbody>
                   {transactions.data.map((tx, i) => (
                     <tr key={i} className="border-t border-slate-50 hover:bg-slate-50">
@@ -262,7 +357,8 @@ export default function SolomonPayAdmin() {
                       <td className="px-4 py-2.5 text-slate-500">{tx.fund_name || 'General'}</td>
                       <td className="px-4 py-2.5 text-right font-mono font-semibold">{formatCurrency(tx.amount)}</td>
                       <td className="px-4 py-2.5 capitalize text-slate-500">{tx.payment_method || 'card'}</td>
-                      <td className="px-4 py-2.5"><span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${tx.status === 'completed' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>{tx.status || 'completed'}</span></td>
+                      <td className="px-4 py-2.5"><span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${tx.status === 'completed' ? 'bg-green-50 text-green-700' : tx.status === 'refunded' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'}`}>{tx.status || 'completed'}</span></td>
+                      <td className="px-4 py-2.5">{tx.status === 'completed' && tx.amount > 0 && <button onClick={() => refundDonation(tx.id)} className="text-xs text-red-500 hover:underline" data-testid={`refund-${tx.id}`}><RotateCcw className="w-3 h-3 inline mr-0.5" />Refund</button>}</td>
                     </tr>
                   ))}
                   {transactions.data.length === 0 && <tr><td colSpan={6} className="text-center py-8 text-slate-400">No transactions found</td></tr>}

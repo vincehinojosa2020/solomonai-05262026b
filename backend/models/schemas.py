@@ -1117,9 +1117,11 @@ class SermonUpdate(BaseModel):
 class GivingDonateRequest(BaseModel):
     amount: float
     fund: str = "general"
+    fund_id: Optional[str] = None
     frequency: str = "one_time"
     payment_method_id: Optional[str] = None
     source: str = "direct"
+    cover_fees: bool = False
 
 class ChurchOnboardingRequest(BaseModel):
     name: str

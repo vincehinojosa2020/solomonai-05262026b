@@ -394,3 +394,181 @@ async def archive_fund(request: Request, fund_id: str):
     user = await _get_admin(request)
     await db.funds.update_one({"id": fund_id}, {"$set": {"is_archived": True, "is_active": False}})
     return {"message": "Fund archived"}
+
+
+# ═══════════════════ GAP CLOSURE: DonorIQ Engagement Stages ═══════════════════
+
+def _classify_donor_stage(donation_count, last_gift_date, has_recurring):
+    """Classify donor into SecureGive-style engagement stages."""
+    if has_recurring:
+        return "recurring"
+    if not last_gift_date:
+        return "lapsed"
+    try:
+        last = datetime.fromisoformat(last_gift_date) if isinstance(last_gift_date, str) else last_gift_date
+    except Exception:
+        return "lapsed"
+    days_since = (datetime.now(timezone.utc) - last.replace(tzinfo=timezone.utc if last.tzinfo is None else last.tzinfo)).days
+    if days_since > 180:
+        return "lapsed"
+    if days_since > 90:
+        return "at_risk"
+    if donation_count == 1:
+        return "once"
+    if donation_count <= 3:
+        return "occasional"
+    return "regular"
+
+
+@router.get("/admin/solomonpay/donor-insights")
+async def donor_insights(request: Request):
+    """DonorIQ-style engagement breakdown."""
+    user = await _get_admin(request, "admin.giving.view")
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    pipeline = [
+        {"$match": {"tenant_id": tenant_id}},
+        {"$group": {
+            "_id": "$person_id",
+            "name": {"$first": "$person_name"},
+            "count": {"$sum": 1},
+            "total": {"$sum": "$amount"},
+            "last_gift": {"$max": "$donation_date"},
+        }},
+    ]
+    donors = await db.donations.aggregate(pipeline).to_list(10000)
+
+    # Check recurring status for each donor
+    recurring_ids = set()
+    recs = await db.recurring_giving.find({"tenant_id": tenant_id, "is_active": True}, {"_id": 0, "person_id": 1}).to_list(10000)
+    for r in recs:
+        recurring_ids.add(r.get("person_id"))
+
+    stages = {"once": 0, "occasional": 0, "regular": 0, "recurring": 0, "at_risk": 0, "lapsed": 0}
+    stage_donors = {"once": [], "occasional": [], "regular": [], "recurring": [], "at_risk": [], "lapsed": []}
+
+    for d in donors:
+        stage = _classify_donor_stage(d["count"], d["last_gift"], d["_id"] in recurring_ids)
+        stages[stage] = stages.get(stage, 0) + 1
+        if len(stage_donors[stage]) < 10:
+            stage_donors[stage].append({"person_id": d["_id"], "name": d["name"], "total": round(d["total"], 2), "count": d["count"], "last_gift": d["last_gift"]})
+
+    return {
+        "total_donors": len(donors),
+        "stages": stages,
+        "stage_donors": stage_donors,
+    }
+
+
+# ═══════════════════ GAP CLOSURE: Virtual Terminal ═══════════════════
+
+@router.post("/admin/solomonpay/virtual-terminal")
+async def virtual_terminal(request: Request):
+    """Process a donation on behalf of a donor (phone/in-person)."""
+    user = await _get_admin(request, "admin.giving.edit")
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    body = await request.json()
+
+    person_id = body.get("person_id")
+    person_name = body.get("person_name", "Walk-in Donor")
+    amount = body.get("amount", 0)
+    fund_name = body.get("fund_name", "General Fund")
+    fund_id = body.get("fund_id", "general")
+    payment_method = body.get("payment_method", "cash")
+    note = body.get("note", "")
+    cover_fees = body.get("cover_fees", False)
+
+    if amount <= 0:
+        raise HTTPException(status_code=400, detail="Invalid amount")
+
+    processing_fee = round(amount * 0.025 + 0.30, 2) if cover_fees else 0
+    total = round(amount + processing_fee, 2)
+
+    donation = {
+        "id": f"don_{uuid.uuid4().hex[:12]}",
+        "transaction_id": f"vt_{uuid.uuid4().hex[:8]}",
+        "tenant_id": tenant_id,
+        "person_id": person_id or f"walk-in-{uuid.uuid4().hex[:6]}",
+        "person_name": person_name,
+        "person_email": body.get("person_email", ""),
+        "amount": total,
+        "base_amount": amount,
+        "processing_fee": processing_fee,
+        "fees_covered_by_donor": cover_fees,
+        "fund_id": fund_id,
+        "fund_name": fund_name,
+        "payment_method": payment_method,
+        "source": "virtual_terminal",
+        "status": "completed",
+        "note": note,
+        "processed_by": user.get("name", user.get("email")),
+        "donation_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.donations.insert_one(donation)
+    return {"message": f"${amount:.2f} donation processed for {person_name}", "donation": {k: v for k, v in donation.items() if k != "_id"}}
+
+
+# ═══════════════════ GAP CLOSURE: Refund ═══════════════════
+
+@router.post("/admin/solomonpay/refund/{donation_id}")
+async def refund_donation(request: Request, donation_id: str):
+    """Refund a donation."""
+    user = await _get_admin(request, "admin.giving.edit")
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    donation = await db.donations.find_one({"id": donation_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not donation:
+        raise HTTPException(status_code=404, detail="Donation not found")
+    if donation.get("status") == "refunded":
+        raise HTTPException(status_code=400, detail="Already refunded")
+
+    await db.donations.update_one({"id": donation_id}, {"$set": {
+        "status": "refunded",
+        "refunded_at": datetime.now(timezone.utc).isoformat(),
+        "refunded_by": user.get("name", user.get("email")),
+    }})
+
+    # Record refund as negative donation
+    refund = {
+        "id": f"ref_{uuid.uuid4().hex[:12]}",
+        "transaction_id": f"ref_{donation.get('transaction_id', '')}",
+        "tenant_id": tenant_id,
+        "person_id": donation.get("person_id"),
+        "person_name": donation.get("person_name"),
+        "amount": -donation.get("amount", 0),
+        "fund_id": donation.get("fund_id"),
+        "fund_name": donation.get("fund_name"),
+        "payment_method": donation.get("payment_method"),
+        "source": "refund",
+        "status": "completed",
+        "original_donation_id": donation_id,
+        "processed_by": user.get("name", user.get("email")),
+        "donation_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.donations.insert_one(refund)
+    return {"message": f"Refund of ${abs(donation.get('amount', 0)):.2f} processed", "refund": {k: v for k, v in refund.items() if k != "_id"}}
+
+
+# ═══════════════════ GAP CLOSURE: QR Code Giving ═══════════════════
+
+@router.get("/admin/solomonpay/qr-codes")
+async def generate_qr_codes(request: Request):
+    """Generate QR codes for giving links."""
+    user = await _get_admin(request, "admin.giving.view")
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    # Get active funds
+    funds = await db.funds.find({"tenant_id": tenant_id, "is_active": True, "is_archived": {"$ne": True}}, {"_id": 0, "id": 1, "name": 1}).to_list(50)
+
+    org = await db.organizations.find_one({"id": tenant_id}, {"_id": 0, "website": 1, "name": 1})
+    base_url = org.get("website", "") if org else ""
+
+    qr_codes = [
+        {"label": "General Giving", "url": f"{base_url}/portal/give", "fund": "general"},
+    ]
+    for f in funds:
+        qr_codes.append({"label": f"Give to {f['name']}", "url": f"{base_url}/portal/give?fund={f['id']}", "fund": f["id"]})
+
+    return {"qr_codes": qr_codes, "note": "Use any QR code generator to create scannable codes from these URLs."}
