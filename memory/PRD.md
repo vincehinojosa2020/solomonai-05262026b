@@ -17,7 +17,14 @@ SOLOMON AI — FULL PARITY CONFIRMATION + GAP CLOSURE against Planning Center, S
 | 8.1 | COMPLETE | Twilio SMS scaffolding (graceful degradation, text-to-give parsing) |
 | 8.2 | COMPLETE | WebSocket service + useWebSocket hook (polling fallback) |
 | 8.3 | COMPLETE | Printer service (ZPL generation, config UI, Brother/Zebra/Dymo support) |
-| 9 | COMPLETE | Final validation — 100% pass (iteration_72.json) |
+| 9 | COMPLETE | Final validation — 100% pass (iteration_73.json) |
+
+## Recent Changes (April 2, 2026)
+- **Removed** Pastoral Meetings from admin sidebar
+- **Removed** Prayer Requests from member portal and admin
+- **Removed** Leadership Notes from admin sidebar
+- **Added** Publish button to Services page (Draft → Published → Live → Completed workflow)
+- **Added** "How It Works" tutorial panel to Services page (6-section guide)
 
 ## Architecture
 ```
@@ -40,6 +47,7 @@ SOLOMON AI — FULL PARITY CONFIRMATION + GAP CLOSURE against Planning Center, S
 ├── frontend/
 │   ├── src/
 │   │   ├── pages/
+│   │   │   ├── ServicesPage.jsx     # Publish button + tutorial
 │   │   │   ├── SolomonPayAdmin.jsx  # 8-tab admin + DonorIQ + VT + Refund
 │   │   │   ├── PrinterConfig.jsx    # Printer management UI
 │   │   │   ├── kids/               # Refactored sub-components
@@ -53,25 +61,17 @@ SOLOMON AI — FULL PARITY CONFIRMATION + GAP CLOSURE against Planning Center, S
 │   │   │   └── SolomonPayForm.jsx  # Cover fees toggle
 ```
 
-## Phase 6 — Ask Solomon Agentic AI (Completed April 2, 2026)
-- **Backend**: `SolomonActionExecutor` in `/app/backend/services/solomon_actions.py` with 7 handlers:
-  - `cafe_order`: Creates cafe orders (latte, coffee, pastry, etc.)
-  - `merch_order`: Creates merchandise orders (t-shirts, hoodies, hats)
-  - `donation`: Creates one-time donations to any fund
-  - `recurring_giving`: Sets up recurring giving schedules
-  - `event_registration`: Registers for events (searches by name/title)
-  - `group_join`: Joins church groups/ministries
-  - `checkin`: Kids check-in with pickup code generation
-- **Intent Parsing**: System prompt instructs Claude to embed `\`\`\`action` JSON blocks; `_parse_action_from_response()` extracts them
-- **Endpoints**: `POST /api/solomon/chat` (with pending_action), `POST /api/solomon/execute-action`
-- **Frontend**: `ActionConfirmCard` component with Confirm/Cancel, colored by action type, success/error states
+## Removed Features
+- Pastoral Meetings (admin + portal routes)
+- Prayer Requests (portal route + email preference)
+- Leadership Notes (admin sidebar + route)
 
 ## Parity Verdicts
-| Competitor | Parity | Full Analysis |
-|-----------|--------|--------------|
-| SecureGive | 92% | /app/memory/PARITY_ANALYSIS.md |
-| Church Center | 97% | /app/memory/PARITY_ANALYSIS.md |
-| Planning Center | 96% | /app/memory/PARITY_ANALYSIS.md |
+| Competitor | Parity |
+|-----------|--------|
+| SecureGive | 92% |
+| Church Center | 97% |
+| Planning Center | 96% |
 
 ## MOCKED Integrations
 - Stripe payment processing (donations stay pending)
