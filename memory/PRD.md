@@ -1,91 +1,69 @@
 # Solomon AI — Product Requirements Document
 
 ## Original Problem Statement
-SOLOMON AI — FULL PARITY CONFIRMATION + GAP CLOSURE against Planning Center, SecureGive, and Church Center. Multi-phase Master Build for production deployment.
+SOLOMON AI — Full-parity church management SaaS with proprietary payment processor (Solomon Pay). Competing with Planning Center, Church Center, SecureGive, and Pushpay. Building to demonstrate to co-founders with real revenue data.
 
 ## Phase Completion Status
 
 | Phase | Status | Key Deliverables |
 |-------|--------|-----------------|
 | 1 | COMPLETE | Landing page, Login, White-labeling, SolomonPay branding |
-| 2 | COMPLETE | Demo data (171 donations, 10 sermons), Recurring Giving, Goals, Custom Fields |
-| 3 | COMPLETE | Groups Q&A/Notify, Tax Statements, Payment Methods, Onboarding Flow |
-| 4 | COMPLETE | SolomonPay Admin (8 tabs), RBAC (12 roles), Real-time Polling, 6 Academy Courses |
+| 2 | COMPLETE | Demo data, Recurring Giving, Goals, Custom Fields |
+| 3 | COMPLETE | Groups Q&A, Tax Statements, Payment Methods, Onboarding |
+| 4 | COMPLETE | SolomonPay Admin (8 tabs), RBAC (12 roles), Real-time Polling, Academy |
 | 5 | COMPLETE | DonorIQ, Virtual Terminal, Refunds, QR Codes, Cover Fees |
-| 6 | COMPLETE | Ask Solomon Agentic AI — Voice + Action Executor (7 action types), Confirmation UI |
-| 7 | COMPLETE | KidsCheckinAdmin refactor (sub-components extracted) |
-| 8.1 | COMPLETE | Twilio SMS scaffolding (graceful degradation, text-to-give parsing) |
-| 8.2 | COMPLETE | WebSocket service + useWebSocket hook (polling fallback) |
-| 8.3 | COMPLETE | Printer service (ZPL generation, config UI, Brother/Zebra/Dymo support) |
-| 9 | COMPLETE | Final validation — 100% pass (iteration_73.json) |
+| 6 | COMPLETE | Ask Solomon Agentic AI — Voice + 7 Action Types + Confirmation UI |
+| 7 | COMPLETE | KidsCheckinAdmin refactor |
+| 8 | COMPLETE | Twilio SMS + WebSocket + Printer scaffolding |
+| 9 | COMPLETE | Final validation |
 
 ## Recent Changes (April 2, 2026)
-- **Removed** Pastoral Meetings from admin sidebar
-- **Removed** Prayer Requests from member portal and admin
-- **Removed** Leadership Notes from admin sidebar
-- **Added** Publish button to Services page (Draft → Published → Live → Completed workflow)
-- **Added** "How It Works" tutorial panel to Services page (6-section guide)
+
+### Revenue Infrastructure
+- **3-Year Giving History**: 537K+ transactions across 8 churches, ~$82M total volume
+- **Processing Fee**: 2.2% + $0.22 per transaction (25% below industry 2.9% + $0.30)
+- **Godmode Revenue Dashboard**: Platform admin sees total volume, fees earned, per-church/per-year breakdown, monthly trend
+- Churches: Abundant (East/Downtown/West), Potter's House, Cristo Viene, Eden X, CityReach, Grace Community
+
+### Services Overhaul
+- Removed test/CRUD plans, seeded 16 realistic services (Easter, Good Friday, Palm Sunday, Sunday Worship series, Wednesday Bible Study)
+- Added 10 templates: Christmas Eve, Easter, Thanksgiving, New Year's, Mother's Day, Father's Day, plus 4 sermon series (Faith, Love, Virtue, Hope)
+- Added "Publish" button for draft plans (Draft → Published → Live → Completed)
+
+### GitHub-Style "How It Works" Tutorials
+Added to 9 admin sections: Services, Groups, Events, Giving, People, Volunteers, Registrations, Communications, Kids Check-In
+
+### Feature Removals
+- Pastoral Meetings (admin + portal)
+- Prayer Requests (portal + admin)
+- Leadership Notes (admin)
 
 ## Architecture
 ```
-/app/
-├── backend/
-│   ├── server.py                    # Entry point (35+ routers + WebSocket)
-│   ├── core/                        # RBAC (12 roles), auth, helpers
-│   ├── models/schemas.py            # Pydantic models
-│   ├── routes/                      # 35+ route files
-│   │   ├── solomon.py               # Agentic AI chat + action execution
-│   │   ├── solomonpay_admin.py      # Dashboard, DonorIQ, VT, Refunds, QR
-│   │   ├── sms_routes.py            # Text-to-give, SMS management
-│   │   ├── printer_routes.py        # Printer CRUD, test print, label preview
-│   │   └── ...
-│   ├── services/
-│   │   ├── solomon_actions.py       # Action executor (7 action types)
-│   │   ├── sms_service.py           # Twilio with graceful degradation
-│   │   ├── websocket_service.py     # ConnectionManager, event emitters
-│   │   └── print_service.py         # ZPL generation, label templates
-├── frontend/
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── ServicesPage.jsx     # Publish button + tutorial
-│   │   │   ├── SolomonPayAdmin.jsx  # 8-tab admin + DonorIQ + VT + Refund
-│   │   │   ├── PrinterConfig.jsx    # Printer management UI
-│   │   │   ├── kids/               # Refactored sub-components
-│   │   │   └── portal/             # Member portal pages
-│   │   ├── hooks/
-│   │   │   ├── useWebSocket.js     # WebSocket with auto-reconnect
-│   │   │   └── usePolling.js       # Polling fallback
-│   │   ├── components/
-│   │   │   ├── SolomonChat.jsx     # Agentic AI chat with voice + action confirm
-│   │   │   ├── OnboardingFlow.jsx  # First sign-in 3-step modal
-│   │   │   └── SolomonPayForm.jsx  # Cover fees toggle
+Backend: FastAPI + MongoDB (35+ route files, 4 service files)
+Frontend: React + Shadcn/UI (46 admin pages, 20 portal pages)
+AI: Claude (via Emergent LLM Key) with structured action parsing
+Payments: Solomon Pay (proprietary, 2.2% + $0.22)
 ```
 
-## Removed Features
-- Pastoral Meetings (admin + portal routes)
-- Prayer Requests (portal route + email preference)
-- Leadership Notes (admin sidebar + route)
+## Test Status
+- Iteration 74: 100% pass (Backend 10/10, Frontend 100%)
+- Iterations 69-73: All 100% pass
+- Total test iterations: 6 (all passing)
 
-## Parity Verdicts
-| Competitor | Parity |
-|-----------|--------|
-| SecureGive | 92% |
-| Church Center | 97% |
-| Planning Center | 96% |
-
-## MOCKED Integrations
-- Stripe payment processing (donations stay pending)
-- Twilio SMS (logs to DB, works when keys added)
-- Payout processing (records created, not processed)
-- Printer connections (preview mode)
-
-## Test Credentials
-- Platform Admin: admin@solomonai.us / Demo2026!
+## Credentials
+- Platform Admin (Godmode): admin@solomonai.us / Demo2026!
 - Church Admin: shannonnieman1030@gmail.com / Demo2026!
 - Portal Member: member@abundant.church / Demo2026!
 
+## MOCKED Integrations
+- Stripe: Donations stay "pending" until regulatory approval
+- Twilio SMS: Logs to DB, ready for live keys
+- Printer: Preview mode, ZPL generation ready
+
 ## Remaining/Deferred
-- Native mobile app (iOS/Android) — major project
-- Apple Pay / Google Pay — Stripe Payment Request API
-- ACH bank transfers — Stripe ACH integration
-- Monday summary email — email service integration
+- Solomon AI admin-side actions (create service plans, add children via voice)
+- Native mobile app (iOS/Android)
+- Apple Pay / Google Pay
+- ACH bank transfers
+- Monday summary emails
