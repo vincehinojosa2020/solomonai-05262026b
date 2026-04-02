@@ -4,6 +4,7 @@ import {
   HandHeart, Plus, Users, Calendar, Shield, Search,
   ChevronDown, ChevronUp, UserPlus, Trash2, CalendarOff
 } from 'lucide-react';
+import { SectionTutorial, TUTORIALS } from '@/components/SectionTutorial';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -154,6 +155,7 @@ export default function VolunteerPage() {
           <h1 className="page-title">Volunteers</h1>
           <p className="page-subtitle">Manage volunteer teams and scheduling for services and events</p>
         </div>
+        <SectionTutorial {...TUTORIALS.volunteers} />
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>

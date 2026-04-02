@@ -2325,3 +2325,154 @@ NOW = datetime.now(timezone.utc)
 
 # ============== PUBLIC ENDPOINTS (NO AUTH) ==============
 
+
+
+# ============== GODMODE REVENUE DASHBOARD ==============
+
+SOLOMON_FEE_RATE = 0.022  # 2.2%
+SOLOMON_FEE_FLAT = 0.22   # $0.22 per transaction
+
+
+@router.get("/platform/revenue")
+async def get_platform_revenue(request: Request):
+    """Godmode Revenue Dashboard — Processing fees earned by Solomon AI"""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    # Revenue by church
+    church_pipeline = [
+        {"$match": {"source": "solomonpay", "status": "completed"}},
+        {"$group": {
+            "_id": "$tenant_id",
+            "total_volume": {"$sum": "$amount"},
+            "total_fees": {"$sum": "$solomon_fee"},
+            "txn_count": {"$sum": 1},
+        }},
+        {"$sort": {"total_volume": -1}},
+    ]
+    church_results = await db.donations.aggregate(church_pipeline).to_list(50)
+
+    churches = []
+    for r in church_results:
+        if not r["_id"]:
+            continue
+        tenant = await db.tenants.find_one({"id": r["_id"]}, {"_id": 0, "name": 1, "church_name": 1})
+        name = (tenant.get("name") or tenant.get("church_name") or r["_id"]) if tenant else r["_id"]
+        # Recalculate fees if solomon_fee not stored
+        fees = r["total_fees"] if r["total_fees"] > 0 else round(r["total_volume"] * SOLOMON_FEE_RATE + r["txn_count"] * SOLOMON_FEE_FLAT, 2)
+        churches.append({
+            "tenant_id": r["_id"],
+            "name": name,
+            "total_volume": round(r["total_volume"], 2),
+            "total_fees": round(fees, 2),
+            "txn_count": r["txn_count"],
+        })
+
+    # Revenue by year
+    year_pipeline = [
+        {"$match": {"source": "solomonpay", "status": "completed"}},
+        {"$addFields": {"year": {"$substr": ["$donation_date", 0, 4]}}},
+        {"$group": {
+            "_id": "$year",
+            "total_volume": {"$sum": "$amount"},
+            "total_fees": {"$sum": "$solomon_fee"},
+            "txn_count": {"$sum": 1},
+        }},
+        {"$sort": {"_id": 1}},
+    ]
+    year_results = await db.donations.aggregate(year_pipeline).to_list(10)
+    by_year = []
+    for r in year_results:
+        fees = r["total_fees"] if r["total_fees"] > 0 else round(r["total_volume"] * SOLOMON_FEE_RATE + r["txn_count"] * SOLOMON_FEE_FLAT, 2)
+        by_year.append({
+            "year": r["_id"],
+            "total_volume": round(r["total_volume"], 2),
+            "total_fees": round(fees, 2),
+            "txn_count": r["txn_count"],
+        })
+
+    # Revenue by year by church (for detailed breakdown)
+    detail_pipeline = [
+        {"$match": {"source": "solomonpay", "status": "completed"}},
+        {"$addFields": {"year": {"$substr": ["$donation_date", 0, 4]}}},
+        {"$group": {
+            "_id": {"tenant_id": "$tenant_id", "year": "$year"},
+            "volume": {"$sum": "$amount"},
+            "fees": {"$sum": "$solomon_fee"},
+            "txn_count": {"$sum": 1},
+        }},
+        {"$sort": {"_id.year": 1}},
+    ]
+    detail_results = await db.donations.aggregate(detail_pipeline).to_list(200)
+    by_church_year = {}
+    for r in detail_results:
+        tid = r["_id"]["tenant_id"]
+        yr = r["_id"]["year"]
+        if not tid:
+            continue
+        if tid not in by_church_year:
+            by_church_year[tid] = {}
+        fees = r["fees"] if r["fees"] > 0 else round(r["volume"] * SOLOMON_FEE_RATE + r["txn_count"] * SOLOMON_FEE_FLAT, 2)
+        by_church_year[tid][yr] = {
+            "volume": round(r["volume"], 2),
+            "fees": round(fees, 2),
+            "txn_count": r["txn_count"],
+        }
+
+    # Monthly trend (last 12 months)
+    monthly_pipeline = [
+        {"$match": {"source": "solomonpay", "status": "completed"}},
+        {"$addFields": {"month": {"$substr": ["$donation_date", 0, 7]}}},
+        {"$group": {
+            "_id": "$month",
+            "volume": {"$sum": "$amount"},
+            "fees": {"$sum": "$solomon_fee"},
+            "txn_count": {"$sum": 1},
+        }},
+        {"$sort": {"_id": -1}},
+        {"$limit": 36},
+    ]
+    monthly_results = await db.donations.aggregate(monthly_pipeline).to_list(36)
+    monthly_trend = []
+    for r in sorted(monthly_results, key=lambda x: x["_id"]):
+        fees = r["fees"] if r["fees"] > 0 else round(r["volume"] * SOLOMON_FEE_RATE + r["txn_count"] * SOLOMON_FEE_FLAT, 2)
+        monthly_trend.append({
+            "month": r["_id"],
+            "volume": round(r["volume"], 2),
+            "fees": round(fees, 2),
+            "txn_count": r["txn_count"],
+        })
+
+    # Grand totals
+    total_volume = sum(c["total_volume"] for c in churches)
+    total_fees = sum(c["total_fees"] for c in churches)
+    total_txns = sum(c["txn_count"] for c in churches)
+
+    return {
+        "summary": {
+            "total_processing_volume": round(total_volume, 2),
+            "total_fees_earned": round(total_fees, 2),
+            "total_transactions": total_txns,
+            "active_churches": len(churches),
+            "fee_rate": f"{SOLOMON_FEE_RATE * 100:.1f}% + ${SOLOMON_FEE_FLAT:.2f}",
+            "industry_rate": "2.9% + $0.30",
+            "savings_vs_industry": "25% cheaper",
+        },
+        "by_church": churches,
+        "by_year": by_year,
+        "by_church_year": {
+            tid: {
+                "name": next((c["name"] for c in churches if c["tenant_id"] == tid), tid),
+                "years": data,
+            }
+            for tid, data in by_church_year.items()
+        },
+        "monthly_trend": monthly_trend,
+    }

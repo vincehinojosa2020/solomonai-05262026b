@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Mail, Send, FileText, Users, Clock, MessageSquare, Plus, Search, ChevronRight, Loader2, Calendar } from 'lucide-react';
+import { SectionTutorial, TUTORIALS } from '@/components/SectionTutorial';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -107,6 +108,7 @@ export default function CommunicationsPage() {
           <p className="page-subtitle">Email, SMS, and messaging hub</p>
         </div>
         <div className="flex items-center gap-2">
+          <SectionTutorial {...TUTORIALS.communications} />
           <Button className="btn-primary" onClick={() => setActiveTab('compose')} data-testid="compose-email-btn">
             <Mail className="w-4 h-4 mr-1" />
             Compose

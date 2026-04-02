@@ -43,6 +43,9 @@ export default function PlatformDashboard() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showCreateUser, setShowCreateUser] = useState(false);
   const [showPromote, setShowPromote] = useState(null);
+  const [revenueData, setRevenueData] = useState(null);
+  const [revenueLoading, setRevenueLoading] = useState(false);
+  const [selectedChurchRevenue, setSelectedChurchRevenue] = useState(null);
   const [createUserForm, setCreateUserForm] = useState({ name: '', email: '', tenant_id: '', role_template: 'member', password: 'Welcome2026!' });
   const [promoteRole, setPromoteRole] = useState('church_admin');
   const [stats, setStats] = useState({
@@ -68,9 +71,8 @@ export default function PlatformDashboard() {
   }, []);
 
   useEffect(() => {
-    if (activeTab === 'members') {
-      fetchMembers();
-    }
+    if (activeTab === 'members') fetchMembers();
+    if (activeTab === 'revenue') fetchRevenue();
   }, [activeTab, searchQuery]);
 
   const fetchPlatformStats = async () => {
@@ -123,6 +125,20 @@ export default function PlatformDashboard() {
       }
     } catch (error) {
       console.error('Failed to fetch health scores:', error);
+    }
+  };
+
+  const fetchRevenue = async () => {
+    setRevenueLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/platform/revenue`, { headers: getAuthHeaders() });
+      if (res.ok) {
+        setRevenueData(await res.json());
+      }
+    } catch (error) {
+      console.error('Failed to fetch revenue:', error);
+    } finally {
+      setRevenueLoading(false);
     }
   };
 
@@ -364,6 +380,14 @@ export default function PlatformDashboard() {
         >
           <Users className="w-4 h-4" />
           All Members ({stats.totalMembers.toLocaleString()})
+        </button>
+        <button 
+          className={`platform-tab ${activeTab === 'revenue' ? 'active' : ''}`}
+          onClick={() => setActiveTab('revenue')}
+          data-testid="tab-revenue"
+        >
+          <DollarSign className="w-4 h-4" />
+          Revenue
         </button>
       </div>
 
@@ -905,6 +929,166 @@ export default function PlatformDashboard() {
         onClose={() => setShowOnboarding(false)}
         onSuccess={() => fetchTenants()}
       />
+
+      {/* Revenue Tab Content */}
+      {activeTab === 'revenue' && (
+        <div className="space-y-6" data-testid="revenue-dashboard">
+          {revenueLoading ? (
+            <div className="flex justify-center py-12"><Activity className="w-6 h-6 animate-spin text-slate-400" /></div>
+          ) : revenueData ? (
+            <>
+              {/* Summary Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div style={{ background: 'linear-gradient(135deg, #0f172a, #1e293b)', borderRadius: 12, padding: '20px 24px', color: '#fff' }}>
+                  <p style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Processing Volume</p>
+                  <p style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-0.02em', marginTop: 4 }} data-testid="revenue-total-volume">
+                    {formatCurrency(revenueData.summary.total_processing_volume)}
+                  </p>
+                  <p style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>{revenueData.summary.total_transactions.toLocaleString()} transactions</p>
+                </div>
+                <div style={{ background: 'linear-gradient(135deg, #065f46, #047857)', borderRadius: 12, padding: '20px 24px', color: '#fff' }}>
+                  <p style={{ fontSize: 11, fontWeight: 600, color: '#a7f3d0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Processing Fees Earned</p>
+                  <p style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-0.02em', marginTop: 4 }} data-testid="revenue-total-fees">
+                    {formatCurrency(revenueData.summary.total_fees_earned)}
+                  </p>
+                  <p style={{ fontSize: 12, color: '#a7f3d0', marginTop: 4 }}>Solomon AI revenue</p>
+                </div>
+                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '20px 24px' }}>
+                  <p style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Our Rate</p>
+                  <p style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', marginTop: 4 }}>{revenueData.summary.fee_rate}</p>
+                  <p style={{ fontSize: 12, color: '#22c55e', fontWeight: 600, marginTop: 4 }}>{revenueData.summary.savings_vs_industry} than industry</p>
+                </div>
+                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '20px 24px' }}>
+                  <p style={{ fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active Churches</p>
+                  <p style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', marginTop: 4 }}>{revenueData.summary.active_churches}</p>
+                  <p style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>Processing with Solomon Pay</p>
+                </div>
+              </div>
+
+              {/* Revenue by Year */}
+              <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 24 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', marginBottom: 16 }}>Revenue by Year</h3>
+                <div className="overflow-x-auto">
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '2px solid #e2e8f0' }}>
+                        <th style={{ textAlign: 'left', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Year</th>
+                        <th style={{ textAlign: 'right', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Processing Volume</th>
+                        <th style={{ textAlign: 'right', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Fees Earned</th>
+                        <th style={{ textAlign: 'right', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Transactions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {revenueData.by_year.map((yr) => (
+                        <tr key={yr.year} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '14px 16px', fontWeight: 700, fontSize: 15, color: '#0f172a' }}>{yr.year}</td>
+                          <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: 15, fontWeight: 600, color: '#0f172a' }}>{formatCurrency(yr.total_volume)}</td>
+                          <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: 15, fontWeight: 700, color: '#059669' }}>{formatCurrency(yr.total_fees)}</td>
+                          <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: 14, color: '#64748b' }}>{yr.txn_count.toLocaleString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Revenue by Church */}
+              <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 24 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', marginBottom: 16 }}>Revenue by Church</h3>
+                <div className="overflow-x-auto">
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '2px solid #e2e8f0' }}>
+                        <th style={{ textAlign: 'left', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Church</th>
+                        <th style={{ textAlign: 'right', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Total Volume</th>
+                        <th style={{ textAlign: 'right', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Fees Earned</th>
+                        <th style={{ textAlign: 'right', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Transactions</th>
+                        <th style={{ textAlign: 'center', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Details</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {revenueData.by_church.map((church) => (
+                        <tr key={church.tenant_id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '14px 16px' }}>
+                            <div style={{ fontWeight: 600, fontSize: 14, color: '#0f172a' }}>{church.name}</div>
+                            <div style={{ fontSize: 11, color: '#94a3b8' }}>{church.tenant_id}</div>
+                          </td>
+                          <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: 14, fontWeight: 600, color: '#0f172a' }}>{formatCurrency(church.total_volume)}</td>
+                          <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: 14, fontWeight: 700, color: '#059669' }}>{formatCurrency(church.total_fees)}</td>
+                          <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: 13, color: '#64748b' }}>{church.txn_count.toLocaleString()}</td>
+                          <td style={{ padding: '14px 16px', textAlign: 'center' }}>
+                            <button
+                              onClick={() => setSelectedChurchRevenue(selectedChurchRevenue === church.tenant_id ? null : church.tenant_id)}
+                              style={{ color: '#6366f1', fontSize: 12, fontWeight: 600, cursor: 'pointer', background: 'none', border: 'none' }}
+                              data-testid={`revenue-detail-${church.tenant_id}`}
+                            >
+                              {selectedChurchRevenue === church.tenant_id ? 'Hide' : 'Yearly'}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Per-Church Year Breakdown (expandable) */}
+              {selectedChurchRevenue && revenueData.by_church_year[selectedChurchRevenue] && (
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: 24 }} data-testid="church-yearly-breakdown">
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', marginBottom: 16 }}>
+                    {revenueData.by_church_year[selectedChurchRevenue].name} — Yearly Breakdown
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {Object.entries(revenueData.by_church_year[selectedChurchRevenue].years)
+                      .sort(([a], [b]) => a.localeCompare(b))
+                      .map(([year, data]) => (
+                        <div key={year} style={{ background: '#fff', borderRadius: 10, padding: 20, border: '1px solid #e2e8f0' }}>
+                          <p style={{ fontSize: 24, fontWeight: 800, color: '#0f172a' }}>{year}</p>
+                          <div style={{ marginTop: 12, space: 8 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f1f5f9' }}>
+                              <span style={{ fontSize: 13, color: '#64748b' }}>Volume</span>
+                              <span style={{ fontSize: 14, fontWeight: 600, color: '#0f172a' }}>{formatCurrency(data.volume)}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f1f5f9' }}>
+                              <span style={{ fontSize: 13, color: '#64748b' }}>Fees Earned</span>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: '#059669' }}>{formatCurrency(data.fees)}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0' }}>
+                              <span style={{ fontSize: 13, color: '#64748b' }}>Transactions</span>
+                              <span style={{ fontSize: 14, fontWeight: 600, color: '#0f172a' }}>{data.txn_count.toLocaleString()}</span>
+                            </div>
+                          </div>
+                        </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Monthly Trend */}
+              <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 24 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', marginBottom: 16 }}>Monthly Processing Trend (Last 36 Months)</h3>
+                <div style={{ display: 'flex', gap: 2, alignItems: 'flex-end', height: 200, padding: '0 8px' }}>
+                  {revenueData.monthly_trend.map((m, i) => {
+                    const maxVol = Math.max(...revenueData.monthly_trend.map(x => x.volume));
+                    const height = maxVol > 0 ? (m.volume / maxVol) * 180 : 0;
+                    return (
+                      <div key={m.month} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 0 }} title={`${m.month}: ${formatCurrency(m.volume)} vol / ${formatCurrency(m.fees)} fees`}>
+                        <div style={{ width: '100%', maxWidth: 20, height, background: i >= revenueData.monthly_trend.length - 12 ? '#6366f1' : '#cbd5e1', borderRadius: '3px 3px 0 0', transition: 'height 0.3s' }} />
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, padding: '0 8px' }}>
+                  <span style={{ fontSize: 11, color: '#94a3b8' }}>Jan 2023</span>
+                  <span style={{ fontSize: 11, color: '#94a3b8' }}>Dec 2025</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <p className="text-slate-500 text-center py-12">Failed to load revenue data</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import {
   Search, Filter, Download, Plus, ChevronLeft, ChevronRight,
   MoreHorizontal, Mail, UserPlus, Trash2, Check, Upload
 } from 'lucide-react';
+import { SectionTutorial, TUTORIALS } from '@/components/SectionTutorial';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -133,6 +134,7 @@ export default function PeopleList({ type = 'people' }) {
           <p className="page-subtitle">Manage your church members and visitors</p>
         </div>
         <div className="flex items-center gap-3">
+          <SectionTutorial {...TUTORIALS.people} />
           <Button variant="outline" className="h-9" onClick={() => navigate('/admin/members/import')} data-testid="import-btn">
             <Upload className="w-4 h-4 mr-2" />
             Import CSV

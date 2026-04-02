@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, MapPin, Users, Plus, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { API_URL, formatDateTime } from '@/lib/utils';
+import { SectionTutorial, TUTORIALS } from '@/components/SectionTutorial';
 
 const EventCard = ({ event }) => {
   const startDate = new Date(event.start_datetime);
@@ -83,10 +84,13 @@ export default function EventsPage() {
           <h1 className="page-title">Events</h1>
           <p className="page-subtitle">Manage church events and registrations</p>
         </div>
-        <Button className="h-9 btn-primary" data-testid="create-event-btn">
+        <div className="flex gap-2">
+          <SectionTutorial {...TUTORIALS.events} />
+          <Button className="h-9 btn-primary" data-testid="create-event-btn">
           <Plus className="w-4 h-4 mr-2" />
           Create Event
         </Button>
+        </div>
       </div>
 
       {/* Stats */}

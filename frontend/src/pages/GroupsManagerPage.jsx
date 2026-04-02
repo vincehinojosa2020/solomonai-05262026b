@@ -6,6 +6,7 @@ import {
   Calendar, ChevronRight, MoreVertical, CheckCircle, XCircle,
   Loader2, X, BarChart3, Inbox, Check, Ban
 } from 'lucide-react';
+import { SectionTutorial, TUTORIALS } from '@/components/SectionTutorial';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -170,6 +171,9 @@ export default function GroupsManagerPage() {
             <Plus className="w-4 h-4" />
             Create Group
           </Button>
+          <div className="mt-2">
+            <SectionTutorial {...TUTORIALS.groups} />
+          </div>
         </div>
 
         {/* Stats */}

@@ -5,6 +5,7 @@ import {
   Banknote, Building2, FileText, Bitcoin, ChevronLeft, ChevronRight,
   Link2, Unlink, CheckCircle2, Circle, Loader2, Settings2, Zap
 } from 'lucide-react';
+import { SectionTutorial, TUTORIALS } from '@/components/SectionTutorial';
 import { 
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer
 } from 'recharts';
@@ -186,6 +187,7 @@ export default function GivingDashboard() {
           <p className="page-subtitle">Manage giving and financial operations</p>
         </div>
         <div className="flex items-center gap-2">
+          <SectionTutorial {...TUTORIALS.giving} />
           <Button 
             variant="outline" 
             onClick={() => window.open(`${API_URL}/admin/giving/export`, '_blank')}

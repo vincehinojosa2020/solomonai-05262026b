@@ -6,6 +6,7 @@ import {
   QrCode, Sparkles, Shield, Cross, Plus, Mail, PartyPopper,
   Camera, Keyboard
 } from 'lucide-react';
+import { SectionTutorial, TUTORIALS } from '@/components/SectionTutorial';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -390,6 +391,7 @@ export default function KidsCheckinAdmin() {
           </div>
         </div>
         <div className="kca-header-right">
+          <SectionTutorial {...TUTORIALS.checkins} />
           <button 
             className="kca-register-btn"
             onClick={() => setShowManualCheckin(true)}

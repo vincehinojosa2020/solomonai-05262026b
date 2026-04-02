@@ -5,6 +5,7 @@ import {
   ChevronDown, ChevronUp, Trash2, Edit2, Settings, Eye,
   UserCheck, Clock, Loader2, ExternalLink, Tag, Gift
 } from 'lucide-react';
+import { SectionTutorial, TUTORIALS } from '@/components/SectionTutorial';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -120,6 +121,7 @@ export default function RegistrationsPage() {
           </h1>
           <p className="text-sm text-slate-500 mt-1">Manage event signups, add-ons, pricing, and waitlists</p>
         </div>
+        <SectionTutorial {...TUTORIALS.registrations} />
       </div>
 
       {loading ? (
