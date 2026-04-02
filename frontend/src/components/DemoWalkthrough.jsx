@@ -92,15 +92,17 @@ export default function DemoWalkthrough({ userRole, userName, onNavigate }) {
   const [showWelcome, setShowWelcome] = useState(false);
 
   const storageKey = `solomon_walkthrough_${userRole}`;
+  const loginCountKey = `solomon_login_count_${userRole}`;
   const steps = userRole === 'church_admin' ? ADMIN_STEPS : MEMBER_STEPS;
 
   useEffect(() => {
-    const seen = localStorage.getItem(storageKey);
-    if (!seen) {
+    const count = parseInt(sessionStorage.getItem(loginCountKey) || '0', 10);
+    const seen = sessionStorage.getItem(storageKey);
+    if (!seen && count < 2) {
       const timer = setTimeout(() => setShowWelcome(true), 1500);
       return () => clearTimeout(timer);
     }
-  }, [storageKey]);
+  }, [storageKey, loginCountKey]);
 
   const startWalkthrough = () => {
     setShowWelcome(false);
@@ -116,7 +118,7 @@ export default function DemoWalkthrough({ userRole, userName, onNavigate }) {
     setShowWelcome(false);
     setActive(false);
     setDismissed(true);
-    localStorage.setItem(storageKey, 'true');
+    sessionStorage.setItem(storageKey, 'true');
   };
 
   const nextStep = useCallback(() => {
@@ -128,7 +130,7 @@ export default function DemoWalkthrough({ userRole, userName, onNavigate }) {
       }
     } else {
       setActive(false);
-      localStorage.setItem(storageKey, 'true');
+      sessionStorage.setItem(storageKey, 'true');
     }
   }, [step, steps, onNavigate, storageKey]);
 

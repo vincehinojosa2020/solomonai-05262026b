@@ -31,7 +31,7 @@ async def ensure_demo_merch_data(tenant_id: Optional[str]):
             {
                 "name": "SO BE IT - Vinyl",
                 "description": "Limited edition worship vinyl for collectors.",
-                "image_url": "https://store.elevationchurch.org/cdn/shop/files/Background_6963f237-502c-48c7-9c0c-7d1a2a185a27.png?crop=center&height=1200&v=1770318508&width=1200",
+                "image_url": "https://images.unsplash.com/photo-1539375665275-f9de415ef9ac?auto=format&fit=crop&w=600&q=80",
                 "price": 40.00,
                 "category": "Music",
                 "is_featured": True,
@@ -40,7 +40,7 @@ async def ensure_demo_merch_data(tenant_id: Optional[str]):
             {
                 "name": "SO BE IT Hoodie",
                 "description": "Soft fleece hoodie inspired by the SO BE IT collection.",
-                "image_url": "https://store.elevationchurch.org/cdn/shop/files/Background_22b72fee-5a5c-40ac-b88d-8dc43af1ba98.png?crop=center&height=1200&v=1770147858&width=1200",
+                "image_url": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=600&q=80",
                 "price": 60.00,
                 "category": "Apparel",
                 "is_featured": True,
@@ -49,7 +49,7 @@ async def ensure_demo_merch_data(tenant_id: Optional[str]):
             {
                 "name": "SO BE IT Album T-Shirt",
                 "description": "Classic tee with album artwork. Perfect for Sundays and beyond.",
-                "image_url": "https://store.elevationchurch.org/cdn/shop/files/Background_7_55188e58-8c97-42a4-b48f-35ada8aabe12.png?crop=center&height=1200&v=1770316861&width=1200",
+                "image_url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=80",
                 "price": 30.00,
                 "category": "Apparel",
                 "inventory": 150
@@ -57,7 +57,7 @@ async def ensure_demo_merch_data(tenant_id: Optional[str]):
             {
                 "name": "SO BE IT Crest Camo Hat",
                 "description": "Structured camo hat with embroidered crest.",
-                "image_url": "https://store.elevationchurch.org/cdn/shop/files/Background_16_0b761a70-5ebc-4db6-bf03-5fab8a2cb0cb.png?crop=center&height=1200&v=1770317102&width=1200",
+                "image_url": "https://images.unsplash.com/photo-1588850561407-ed78c334e67a?auto=format&fit=crop&w=600&q=80",
                 "price": 35.00,
                 "category": "Accessories",
                 "inventory": 90
@@ -65,7 +65,7 @@ async def ensure_demo_merch_data(tenant_id: Optional[str]):
             {
                 "name": "SO BE IT Tote",
                 "description": "Canvas tote for carrying all the essentials.",
-                "image_url": "https://store.elevationchurch.org/cdn/shop/files/Background_18_f1900fee-6a54-4c49-b949-d516eb8aba6a.png?crop=center&height=1200&v=1770318552&width=1200",
+                "image_url": "https://images.unsplash.com/photo-1622260614153-03223fb72052?auto=format&fit=crop&w=600&q=80",
                 "price": 20.00,
                 "category": "Accessories",
                 "inventory": 140

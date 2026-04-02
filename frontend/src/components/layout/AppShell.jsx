@@ -188,8 +188,8 @@ export default function AppShell() {
         {/* Logo */}
         <div className="flex items-center justify-between h-12 px-3 border-b border-slate-700">
           {!collapsed && (
-            <span className="logo-text" data-testid="app-logo">
-              SOL<span className="logo-accent">O</span>MON
+            <span className="logo-text" data-testid="app-logo" style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.02em' }}>
+              {tenant?.church_name || tenant?.name || 'Church Admin'}
             </span>
           )}
           <button
@@ -291,6 +291,11 @@ export default function AppShell() {
                 </p>
               </div>
             </div>
+          </div>
+        )}
+        {!collapsed && (
+          <div className="px-3 py-2 text-center border-t border-slate-700">
+            <span style={{ fontSize: 10, color: '#64748b', letterSpacing: '0.05em' }} data-testid="powered-by-solomon">Powered by Solomon AI</span>
           </div>
         )}
       </aside>

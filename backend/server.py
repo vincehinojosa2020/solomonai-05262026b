@@ -241,7 +241,7 @@ async def _seed_demo_quality_data():
         {"$set": {
             "tenant_id": tenant_id, "active_processor": "solomon_pay",
             "processors": {
-                "solomon_pay": {"enabled": True, "status": "active", "label": "Solomon Pay",
+                "solomon_pay": {"enabled": True, "status": "active", "label": "SolomonPay",
                                 "description": "Native giving powered by Solomon AI", "connected_at": now_iso},
                 "pushpay": {"enabled": False, "status": "not_connected", "label": "Pushpay",
                             "description": "Connect your existing Pushpay account"},

@@ -290,41 +290,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* System Banner - Online Service */}
-      <div className="system-banner" data-testid="system-banner">
-        <div className="system-banner-content">
-          <div className="system-banner-icon">
-            <Video className="w-4 h-4" />
-          </div>
-          <div className="system-banner-text">
-            <h3>Live Worship Service</h3>
-            <p>Sundays at 9:00 AM & 11:00 AM PST</p>
-          </div>
-        </div>
-        <div className="system-banner-actions">
-          <a 
-            href="https://zoom.us/j/placeholder" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="btn-system"
-            data-testid="join-worship-btn"
-          >
-            <Video className="w-3 h-3" />
-            Join Now
-            <ExternalLink className="w-3 h-3" />
-          </a>
-          <a 
-            href="https://calendly.com/placeholder"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-system-secondary"
-            data-testid="schedule-visit-btn"
-          >
-            <CalendarCheck className="w-3 h-3" />
-            Schedule Visit
-          </a>
-        </div>
-      </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">

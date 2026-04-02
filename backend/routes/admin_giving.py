@@ -439,7 +439,7 @@ async def get_giving_integrations(request: Request):
             "tenant_id": tenant_id,
             "active_processor": None,
             "processors": {
-                "solomon_pay": {"enabled": False, "status": "not_connected", "label": "Solomon Pay", "description": "Native giving powered by Solomon AI. Lowest fees, seamless integration."},
+                "solomon_pay": {"enabled": False, "status": "not_connected", "label": "SolomonPay", "description": "Native giving powered by Solomon AI. Lowest fees, seamless integration."},
                 "pushpay": {"enabled": False, "status": "not_connected", "label": "Pushpay", "description": "Connect your existing Pushpay account for seamless giving sync."},
                 "securegive": {"enabled": False, "status": "not_connected", "label": "SecureGive", "description": "Integrate with SecureGive for church giving management."},
             },

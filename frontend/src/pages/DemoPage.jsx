@@ -14,7 +14,7 @@ export default function DemoPage() {
 
   const interestOptions = [
     'Replacing Planning Center', 'Reducing giving fees', 'Kids Check-In',
-    'Multi-campus management', 'AI assistant', 'Becoming a Solomon Pay early adopter'
+    'Multi-campus management', 'AI assistant', 'Becoming a SolomonPay early adopter'
   ];
 
   const toggleInterest = (interest) => {

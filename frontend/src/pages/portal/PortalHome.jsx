@@ -216,7 +216,7 @@ export default function PortalHome() {
       {/* Welcome Banner */}
       <div className="portal-welcome">
         <h1 className="portal-welcome-title">
-          {getGreeting()}, {user?.name?.split(' ')[0] || 'Friend'} 👋
+          {getGreeting()}, {user?.name?.split(' ')[0] || 'Friend'}
         </h1>
         <p className="portal-welcome-date">
           {new Date().toLocaleDateString('en-US', { 
@@ -226,13 +226,6 @@ export default function PortalHome() {
             day: 'numeric' 
           })}
         </p>
-        {/* Streak Badge on Welcome */}
-        {streakData && streakData.current_streak > 0 && (
-          <div className="portal-streak-badge" data-testid="home-streak-badge">
-            <Flame className="w-4 h-4" />
-            <span>{streakData.current_streak} Week Streak!</span>
-          </div>
-        )}
       </div>
 
       {/* Quick Actions */}
@@ -253,52 +246,44 @@ export default function PortalHome() {
         ))}
       </div>
 
-      <div className="portal-home-grid">
-        {/* Attendance Streak Card */}
-        {streakData && (
-          <AttendanceStreakCard
-            currentStreak={streakData.current_streak}
-            longestStreak={streakData.longest_streak}
-            totalAttended={streakData.total_attended}
-            badges={streakData.streak_badges}
-          />
-        )}
-
-        {/* Next Steps Membership Journey */}
+      <div className="portal-home-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
+        {/* Membership Journey — expanded */}
         {nextSteps && (
-          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" data-testid="home-next-steps-card">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm" data-testid="home-next-steps-card">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide" data-testid="home-next-steps-label">Membership Journey</p>
                 <h3 className="text-lg font-semibold text-slate-900 mt-1" data-testid="home-next-steps-title">Abundant Next Steps</h3>
                 <p className="text-sm text-slate-600 mt-1" data-testid="home-next-steps-status">
-                  {nextSteps.completion_percent || 0}% complete • {nextSteps.approval_status?.replaceAll('_', ' ') || 'in progress'}
+                  {nextSteps.completion_percent || 0}% complete
                 </p>
               </div>
               <GraduationCap className="w-5 h-5 text-blue-600" />
             </div>
-            <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden mt-4" data-testid="home-next-steps-progress-bar">
-              <div className="h-full bg-blue-600 transition-[width] duration-500" style={{ width: `${nextSteps.completion_percent || 0}%` }} />
+            <div className="h-3 w-full rounded-full bg-slate-100 overflow-hidden mt-4" data-testid="home-next-steps-progress-bar">
+              <div className="h-full bg-blue-600 transition-[width] duration-500 rounded-full" style={{ width: `${nextSteps.completion_percent || 0}%` }} />
             </div>
-            <div className="mt-4 flex flex-wrap gap-2">
+            {nextSteps.steps && nextSteps.steps.length > 0 && (
+              <div className="mt-4 space-y-2">
+                {nextSteps.steps.slice(0, 4).map((step, i) => (
+                  <div key={i} className="flex items-center gap-3 text-sm">
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${step.completed ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
+                      {step.completed ? <Heart className="w-3 h-3" /> : <span className="text-xs font-bold">{i + 1}</span>}
+                    </div>
+                    <span className={step.completed ? 'text-slate-500 line-through' : 'text-slate-800 font-medium'}>{step.name || step.title}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="mt-5 flex flex-wrap gap-2">
               <Link
                 to="/portal/pathways"
-                className="inline-flex items-center gap-2 rounded-full bg-slate-900 text-white px-4 py-2 text-sm font-semibold"
+                className="inline-flex items-center gap-2 rounded-full bg-slate-900 text-white px-5 py-2.5 text-sm font-semibold hover:bg-slate-800 transition-colors"
                 data-testid="home-next-steps-open-pathways"
               >
                 Continue Track
                 <ChevronRight className="w-4 h-4" />
               </Link>
-              <a
-                href={nextSteps.thinkific_url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
-                data-testid="home-next-steps-open-thinkific"
-              >
-                Thinkific Course
-                <ExternalLink className="w-4 h-4" />
-              </a>
             </div>
           </div>
         )}
@@ -318,7 +303,7 @@ export default function PortalHome() {
             events.map((event) => {
               const { month, day } = formatDate(event.start_datetime || event.event_date);
               return (
-                <div key={event.id} className="portal-event-item" data-testid="portal-event-item">
+                <Link key={event.id} to={`/portal/events/${event.id}`} className="portal-event-item" data-testid="portal-event-item" style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
                   <div className="portal-event-date">
                     <span className="portal-event-month">{month}</span>
                     <span className="portal-event-day">{day}</span>
@@ -332,7 +317,8 @@ export default function PortalHome() {
                       })) : ''}
                     </p>
                   </div>
-                </div>
+                  <ChevronRight className="w-4 h-4 text-slate-300" />
+                </Link>
               );
             })
           )}
