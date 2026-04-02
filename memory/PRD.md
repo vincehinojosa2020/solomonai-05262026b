@@ -16,27 +16,32 @@ SOLOMON AI — Full-parity church management SaaS with proprietary payment proce
 | 7 | COMPLETE | KidsCheckinAdmin refactor |
 | 8 | COMPLETE | Twilio SMS + WebSocket + Printer scaffolding |
 | 9 | COMPLETE | Final validation |
+| CQ | COMPLETE | Code Quality Recommendations (security, hooks, keys, mutable defaults) |
 
 ## Recent Changes (April 2, 2026)
+
+### Code Quality Fixes (CQ Phase)
+- **Python Mutable Default Arguments**: Fixed `admin_services.py` (`payload: dict = {}` → `dict = None`) and `public_api.py` (`recipient_ids: List[str] = []` → `Optional[List[str]] = None`)
+- **Insecure Random Replaced**: `platform.py` and `volunteer.py` use `SystemRandom` instead of `random`; `solomon_actions.py` uses `secrets.choice` for pickup codes
+- **React Hook Dependencies**: Wrapped fetch functions in `useCallback` for `PortalWatch.jsx`, `PortalPrayer.jsx`; added missing deps to `SolomonPayForm.jsx`
+- **Array Index Keys**: Fixed in `Dashboard.jsx`, `GivingDashboard.jsx`, `PortalWatch.jsx`, `PortalLibrary.jsx`, `PortalLessonViewer.jsx`, `PortalDirectory.jsx`
+- **Hardcoded Secrets**: Replaced in 5 test files with `os.getenv()` (done in previous session)
 
 ### Revenue Infrastructure
 - **3-Year Giving History**: 537K+ transactions across 8 churches, ~$82M total volume
 - **Processing Fee**: 2.2% + $0.22 per transaction (25% below industry 2.9% + $0.30)
 - **Godmode Revenue Dashboard**: Platform admin sees total volume, fees earned, per-church/per-year breakdown, monthly trend
-- Churches: Abundant (East/Downtown/West), Potter's House, Cristo Viene, Eden X, CityReach, Grace Community
 
 ### Services Overhaul
-- Removed test/CRUD plans, seeded 16 realistic services (Easter, Good Friday, Palm Sunday, Sunday Worship series, Wednesday Bible Study)
-- Added 10 templates: Christmas Eve, Easter, Thanksgiving, New Year's, Mother's Day, Father's Day, plus 4 sermon series (Faith, Love, Virtue, Hope)
+- Removed test/CRUD plans, seeded 16 realistic services
+- Added 10 templates (Christmas Eve, Easter, Thanksgiving, etc.)
 - Added "Publish" button for draft plans (Draft → Published → Live → Completed)
 
 ### GitHub-Style "How It Works" Tutorials
 Added to 9 admin sections: Services, Groups, Events, Giving, People, Volunteers, Registrations, Communications, Kids Check-In
 
 ### Feature Removals
-- Pastoral Meetings (admin + portal)
-- Prayer Requests (portal + admin)
-- Leadership Notes (admin)
+- Pastoral Meetings, Prayer Requests (admin), Leadership Notes
 
 ## Architecture
 ```
@@ -47,9 +52,9 @@ Payments: Solomon Pay (proprietary, 2.2% + $0.22)
 ```
 
 ## Test Status
-- Iteration 74: 100% pass (Backend 10/10, Frontend 100%)
-- Iterations 69-73: All 100% pass
-- Total test iterations: 6 (all passing)
+- Iteration 75: 100% pass (Backend 20/20, Frontend 100%) — Code Quality Regression
+- Iterations 72-74: All 100% pass
+- Total test iterations: 7 (all passing)
 
 ## Credentials
 - Platform Admin (Godmode): admin@solomonai.us / Demo2026!
@@ -62,6 +67,7 @@ Payments: Solomon Pay (proprietary, 2.2% + $0.22)
 - Printer: Preview mode, ZPL generation ready
 
 ## Remaining/Deferred
+- P2: Refactor oversized components (KidsCheckinAdmin.jsx, CheckInSetupPage.jsx, AbundantPathwaysAdmin.jsx, GroupDetail.jsx, GivingDashboard.jsx, AppShell.jsx, SolomonChat.jsx, core/seed.py, core/helpers.py)
 - Solomon AI admin-side actions (create service plans, add children via voice)
 - Native mobile app (iOS/Android)
 - Apple Pay / Google Pay
