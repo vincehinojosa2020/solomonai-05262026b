@@ -329,7 +329,6 @@ export default function PortalMe() {
                 { id: 'events', label: 'Event reminders', checked: true },
                 { id: 'receipts', label: 'Giving receipts', checked: true },
                 { id: 'groups', label: 'Group updates', checked: true },
-                { id: 'prayer', label: 'Prayer requests', checked: false },
               ].map((pref) => (
                 <label key={pref.id} className="portal-pref-item">
                   <input

@@ -30,8 +30,6 @@ import ThinkificPage from "@/pages/ThinkificPage";
 import AbundantPathwaysAdmin from "@/pages/AbundantPathwaysAdmin";
 import MerchAdminPage from "@/pages/MerchAdminPage";
 import CafeAdminPage from "@/pages/CafeAdminPage";
-import MeetingsAdminPage from "@/pages/MeetingsAdminPage";
-import LeadershipNotesPage from "@/pages/LeadershipNotesPage";
 import DeveloperAPIPage from "@/pages/admin/DeveloperAPIPage";
 import GroupLeaderDashboard from "@/pages/admin/GroupLeaderDashboard";
 import KidsCheckinAdmin from "@/pages/KidsCheckinAdmin";
@@ -50,9 +48,7 @@ import PortalPathways from "@/pages/portal/PortalPathways";
 import PortalPathwaysCourse from "@/pages/portal/PortalPathwaysCourse";
 import PortalMerch from "@/pages/portal/PortalMerch";
 import PortalCafe from "@/pages/portal/PortalCafe";
-import PortalMeetings from "@/pages/portal/PortalMeetings";
 import PortalKidsCheckin from "@/pages/portal/PortalKidsCheckin";
-import PortalPrayer from "@/pages/portal/PortalPrayer";
 import LandingPage from "@/pages/LandingPage";
 import DemoPage from "@/pages/DemoPage";
 import SupportPage from "@/pages/SupportPage";
@@ -129,8 +125,6 @@ function AppRouter() {
         <Route path="/abundant-pathways" element={<AbundantPathwaysAdmin />} />
         <Route path="/merch" element={<MerchAdminPage />} />
         <Route path="/cafe" element={<CafeAdminPage />} />
-        <Route path="/meetings" element={<MeetingsAdminPage />} />
-        <Route path="/notes" element={<LeadershipNotesPage />} />
         <Route path="/developer" element={<DeveloperAPIPage />} />
         <Route path="/kids-checkin" element={<KidsCheckinAdmin />} />
         <Route path="/audit-log" element={<AuditLogPage />} />
@@ -164,8 +158,6 @@ function AppRouter() {
         <Route path="pathways/:courseId" element={<PortalPathwaysCourse />} />
         <Route path="merch" element={<PortalMerch />} />
         <Route path="cafe" element={<PortalCafe />} />
-        <Route path="meetings" element={<PortalMeetings />} />
-        <Route path="prayer" element={<PortalPrayer />} />
         <Route path="directory" element={<PortalDirectory />} />
         <Route path="courses" element={<PortalCourses />} />
         <Route path="courses/:id" element={<PortalCourseDetail />} />

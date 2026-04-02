@@ -145,16 +145,13 @@ async def solomon_chat(request: Request, payload: SolomonChatRequest):
                 "pathways": "/portal/pathways", "discipleship": "/portal/pathways",
                 "merch": "/portal/merch", "store": "/portal/merch", "shop": "/portal/merch",
                 "cafe": "/portal/cafe", "coffee": "/portal/cafe",
-                "meet": "/portal/meetings", "meeting": "/portal/meetings", "pastor": "/portal/meetings"
             }
             admin_paths = {
                 "giving": "/giving", "groups": "/admin/groups", "events": "/admin/events",
                 "watch": "/media", "media": "/media", "thinkific": "/thinkific",
                 "pathways": "/abundant-pathways", "discipleship": "/abundant-pathways",
                 "merch": "/merch", "store": "/merch", "shop": "/merch",
-                "notes": "/notes", "leadership": "/notes",
                 "cafe": "/cafe", "coffee": "/cafe",
-                "meet": "/meetings", "meeting": "/meetings", "pastor": "/meetings"
             }
             path_map = portal_paths if is_member else admin_paths
 
@@ -165,8 +162,6 @@ async def solomon_chat(request: Request, payload: SolomonChatRequest):
                 ("media", "Open Media Library"), ("merch", "Open Merch"),
                 ("store", "Open Merch"), ("shop", "Open Merch"),
                 ("cafe", "Open Cafe"), ("coffee", "Open Cafe"),
-                ("meet", "Open Meetings"), ("meeting", "Open Meetings"),
-                ("pastor", "Open Meetings"), ("notes", "View Notes"), ("leadership", "View Notes")
             ]
             for keyword, label in action_candidates:
                 if keyword in combined_text:

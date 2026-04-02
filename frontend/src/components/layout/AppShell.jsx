@@ -32,8 +32,6 @@ const navItems = [
     { name: 'Forms', path: '/forms', icon: FileText },
     { name: 'Smart Lists', path: '/smart-lists', icon: ListFilter },
     { name: 'Duplicates', path: '/people/duplicates', icon: Merge },
-    { name: 'Meetings', path: '/meetings', icon: Calendar },
-    { name: 'Notes', path: '/notes', icon: MessageSquare },
   ]},
   { section: 'MINISTRY', items: [
     { name: 'Services', path: '/services', icon: Music },
@@ -73,7 +71,6 @@ const navItems = [
 const platformNavItems = [
   { section: 'PLATFORM', items: [
     { name: 'All Churches', path: '/platform', icon: Globe },
-    { name: 'Notes', path: '/notes', icon: MessageSquare },
   ]},
 ];
 

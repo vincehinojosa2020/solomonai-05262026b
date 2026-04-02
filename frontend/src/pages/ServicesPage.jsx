@@ -3,7 +3,7 @@ import { useOutletContext, Link } from 'react-router-dom';
 import {
   Music, Plus, Calendar, Clock, Users, ChevronDown, ChevronUp,
   GripVertical, Trash2, Edit2, Save, ListMusic, Mic2, BookOpen,
-  Copy, Bookmark, ExternalLink, UserPlus, X
+  Copy, Bookmark, ExternalLink, UserPlus, X, HelpCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +28,7 @@ const ITEM_TYPES = [
 
 const STATUS_COLORS = {
   draft: 'bg-slate-100 text-slate-600',
+  published: 'bg-emerald-50 text-emerald-700',
   confirmed: 'bg-blue-50 text-blue-700',
   live: 'bg-emerald-50 text-emerald-700',
   completed: 'bg-slate-100 text-slate-500',
@@ -46,6 +47,7 @@ export default function ServicesPage() {
   const [showTemplates, setShowTemplates] = useState(false);
   const [assignForm, setAssignForm] = useState({ position: '', volunteer_name: '' });
   const [showAssignForm, setShowAssignForm] = useState(null);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   const token = sessionStorage.getItem('session_token');
   const authHeaders = { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
@@ -221,6 +223,9 @@ export default function ServicesPage() {
           <p className="page-subtitle">Plan worship services, assign teams, and build your run-of-show</p>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setShowTutorial(!showTutorial)} data-testid="services-tutorial-btn">
+            <HelpCircle className="w-4 h-4 mr-2" /> How It Works
+          </Button>
           {templates.length > 0 && (
             <Button variant="outline" onClick={() => setShowTemplates(true)} data-testid="from-template-btn">
               <Bookmark className="w-4 h-4 mr-2" /> From Template
@@ -232,6 +237,53 @@ export default function ServicesPage() {
           </Button>
         </div>
       </div>
+
+      {/* Tutorial */}
+      {showTutorial && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 space-y-4" data-testid="services-tutorial">
+          <div className="flex items-start justify-between">
+            <h3 className="text-base font-semibold text-blue-900 flex items-center gap-2">
+              <HelpCircle className="w-5 h-5" /> How Services Works
+            </h3>
+            <button onClick={() => setShowTutorial(false)} className="text-blue-400 hover:text-blue-600">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-900">
+            <div className="space-y-3">
+              <div>
+                <p className="font-semibold mb-1">1. Create a Service Plan</p>
+                <p className="text-blue-700">Click <strong>"New Service Plan"</strong> to start. Choose a title, date, and service type (Sunday Morning, Wednesday Night, or Special Event).</p>
+              </div>
+              <div>
+                <p className="font-semibold mb-1">2. Build Your Run-of-Show</p>
+                <p className="text-blue-700">Expand any plan and click <strong>"Add Item"</strong> to add songs, prayers, sermons, or announcements. Each item can have a title, type, leader, duration, and notes.</p>
+              </div>
+              <div>
+                <p className="font-semibold mb-1">3. Assign Your Team</p>
+                <p className="text-blue-700">In the <strong>"Team Assignments"</strong> section, click <strong>"Assign"</strong> to add volunteers with their position (Worship Leader, Audio, Vocals, etc.).</p>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <p className="font-semibold mb-1">4. Publish When Ready</p>
+                <p className="text-blue-700">Service plans start as <strong>Draft</strong>. When your plan is ready, click the green <strong>"Publish"</strong> button to make it visible to your team. The workflow is: Draft &rarr; Published &rarr; Live &rarr; Completed.</p>
+              </div>
+              <div>
+                <p className="font-semibold mb-1">5. Use Templates</p>
+                <p className="text-blue-700">Click <strong>"Save Template"</strong> on any plan to reuse its structure. Then use <strong>"From Template"</strong> to quickly create a new plan with the same items and layout.</p>
+              </div>
+              <div>
+                <p className="font-semibold mb-1">6. Music Stand View</p>
+                <p className="text-blue-700">Click <strong>"Music Stand"</strong> to open a distraction-free, full-screen view showing song lyrics and chord charts (ChordPro format) for your worship team on stage.</p>
+              </div>
+            </div>
+          </div>
+          <div className="pt-2 border-t border-blue-200">
+            <p className="text-xs text-blue-600"><strong>Tip:</strong> You can also <strong>Duplicate</strong> any plan to create a copy, and use the <strong>Song Library</strong> (in the sidebar) to manage your congregation's full song catalog with lyrics and keys.</p>
+          </div>
+        </div>
+      )}
 
       {/* Plans List */}
       {plans.length === 0 ? (
@@ -285,18 +337,28 @@ export default function ServicesPage() {
                   <div className="border-t border-slate-100 p-5 space-y-4" data-testid={`service-plan-details-${plan.id}`}>
                     {/* Status Actions */}
                     <div className="flex items-center gap-2 flex-wrap">
-                      {['draft', 'confirmed', 'live', 'completed'].map((s) => (
+                      {['draft', 'published', 'live', 'completed'].map((s) => (
                         <Button
                           key={s}
                           variant={plan.status === s ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => updateStatus(plan.id, s)}
-                          className="capitalize text-xs"
+                          className={`capitalize text-xs ${s === 'published' && plan.status !== 'published' ? 'border-emerald-300 text-emerald-700 hover:bg-emerald-50' : ''}`}
                           data-testid={`service-plan-status-action-${s}`}
                         >
                           {s}
                         </Button>
                       ))}
+                      {(plan.status === 'draft') && (
+                        <Button
+                          size="sm"
+                          onClick={() => updateStatus(plan.id, 'published')}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs ml-1"
+                          data-testid={`publish-plan-${plan.id}`}
+                        >
+                          Publish
+                        </Button>
+                      )}
                       <div style={{ borderLeft: '1px solid #e5e7eb', height: 20, margin: '0 4px' }} />
                       <Button size="sm" variant="outline" onClick={() => duplicatePlan(plan.id)} title="Duplicate plan" data-testid={`duplicate-plan-${plan.id}`}>
                         <Copy className="w-3.5 h-3.5 mr-1" /> Duplicate

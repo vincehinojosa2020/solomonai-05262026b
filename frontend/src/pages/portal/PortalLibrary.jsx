@@ -20,7 +20,6 @@ const PORTAL_NAV = [
   { name: 'Abundant Pathways', path: '/portal/pathways', icon: BookOpen },
   { name: 'Merch', path: '/portal/merch', icon: ShoppingBag },
   { name: 'Cafe', path: '/portal/cafe', icon: Coffee },
-  { name: 'Meet', path: '/portal/meetings', icon: MessageSquare },
   { name: 'Give', path: '/portal/give', icon: DollarSign },
   { name: 'Groups', path: '/portal/groups', icon: Users },
   { name: 'Events', path: '/portal/events', icon: Calendar },
