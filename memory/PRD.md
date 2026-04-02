@@ -1,93 +1,109 @@
 # Solomon AI — Product Requirements Document
 
 ## Original Problem Statement
-Full-parity church management SaaS combining Planning Center + Church Center + SecureGive + Thinkific, powered by proprietary AI (Ask Solomon). Production deployment and demo readiness for church leaders.
+SOLOMON AI — FULL PARITY CONFIRMATION + GAP CLOSURE against Planning Center, SecureGive, and Church Center. Multi-phase "MASTER BUILD PROMPT" for production deployment and demo preparation.
+
+## Core Requirements
+- 100% functional parity with Planning Center, Church Center, and SecureGive
+- NO Publishing (page builder) and NO Church Center Mobile API sync
+- SolomonPay admin dashboard and portal giving enhancements
+- Phase 1-9 Master Build Execution
 
 ## Architecture
-- **Frontend**: React + Shadcn UI + Tailwind CSS
-- **Backend**: FastAPI (Python) — Modular Monolith (30 route files, 500+ routes)
-- **Database**: MongoDB (test_database, 96+ collections)
-- **Auth**: Cookie-based sessions + bcrypt + Google OAuth (disabled for enterprise)
-- **Entry**: server.py (255 lines) -> routes/ (30 domain files)
+```
+/app/
+├── backend/
+│   ├── server.py             # Entry point
+│   ├── core/                 # helpers.py, seed.py, auth.py, __init__.py (RBAC)
+│   ├── models/               # schemas.py
+│   ├── routes/               # 30+ domain files
+│   │   ├── solomonpay_admin.py  # SolomonPay Admin Dashboard (NEW)
+│   │   ├── portal.py            # Member portal routes
+│   │   ├── courses.py           # Academy courses (6 seeded)
+│   │   └── ...
+├── frontend/
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── SolomonPayAdmin.jsx  # 8-tab admin dashboard (NEW)
+│   │   │   ├── portal/
+│   │   │   │   ├── PortalGroups.jsx   # Group detail/Q&A/Notify
+│   │   │   │   ├── PortalGive.jsx     # Tax statement download
+│   │   │   │   ├── PortalMe.jsx       # Payment methods tab
+│   │   │   │   └── ...
+│   │   ├── components/
+│   │   │   ├── OnboardingFlow.jsx     # First sign-in (NEW)
+│   │   │   └── ...
+│   │   ├── hooks/
+│   │   │   └── usePolling.js          # Real-time sync
+```
 
-## Completed Work
+## Phase Completion Status
 
-### Phase R1-R4: Modular Monolith Refactor — DONE
-### Phase R5: OWASP Security Audit — DONE
-### Endpoint Parity Audit — DONE (116 endpoints, 97.4%)
-### Full CRUD Parity Test — DONE (127/127)
+### Phase 1 ✅ COMPLETE — Demo Blockers
+- Landing page rewrite, Login UI cleanup, Password visibility
+- Admin White-labeling, DemoWalkthrough sessionStorage
+- SolomonPay branding system-wide
 
-### Recurring Giving + Giving Goals + Custom Fields + Add-ons — DONE
-- 8 recurring giving endpoints + portal/admin UI
-- Giving goals/pledges with progress tracking
-- Custom field definitions (7 types) + person detail integration
-- Enhanced registration add-ons (description, required, max qty)
+### Phase 2 ✅ COMPLETE — Demo Data
+- 171 donations for Shannon Nieman (4 years)
+- 10 sermons by Pastor Charles Nieman
+- Premium Unsplash images for Merch/Cafe
+- Recurring Giving, Goals, Custom Fields, Registration Add-ons
 
-### Phase 1: Demo Blockers (April 2, 2026) — DONE
-- **Landing Page**: Complete rewrite — "Your Church. One App. Zero Compromise." hero, problem statement, feature cards (SolomonPay, Kids Check-In, Small Groups, Events, Ask Solomon, Academy), comparison table, Support Promise, Founding Team, enterprise CTA "Talk to Sales"/"Request a Demo"
-- **Login Page**: Removed Google login, removed "Start Free Trial" link, fixed password toggle z-index
-- **Admin Dashboard**: Removed "Live Worship Service" banner
-- **Admin White-Label**: Sidebar shows church name instead of "SOLOMON" logo, "Powered by Solomon AI" footer
-- **Portal Dashboard**: Removed 12-week streak card, expanded Membership Journey widget with step details, events are clickable links navigating to detail pages
-- **Welcome Message**: Limited to first 2 logins (sessionStorage-based)
-- **SolomonPay**: Capitalization audit — "SolomonPay" (one word, capital P) across all surfaces
+### Phase 3 ✅ COMPLETE — Member Portal Polish
+- Group Enhancements: Detail overlay, Q&A submissions, "Get Notified" toggle
+- Tax Statement Download: Year selector (2024-2027), PDF generation
+- Stored Payment Methods: Add/view/delete/set-default cards in PortalMe
+- First Sign-In Onboarding: 3-step modal (Profile, Payment, Notifications)
 
-### Phase 2: Demo Data & Portal Fixes (April 2, 2026) — DONE
-- **Watch**: 10 sermons seeded with "Pastor Charles Nieman" attribution
-- **Merch**: Updated product images to Unsplash professional photography
-- **Cafe**: Already had professional Unsplash images
-- **Shannon's Giving**: 171 donations across 2024-2027 (realistic weekly recurring + seasonal one-time gifts: ~$6,747 / ~$7,740 / ~$8,275 / ~$2,001)
+### Phase 4 ✅ COMPLETE — SolomonPay Admin Dashboard
+- **Main Dashboard**: Today/Week/Month/YTD stats, 12-month trend chart, recent 20 transactions
+- **Transactions**: Full list, search, date/fund filters, CSV export, pagination
+- **Payouts**: Available balance, instant (1.5% fee) / standard (free) payouts, history
+- **Funds**: CRUD management, goal tracking, progress bars
+- **Recurring**: Integrated AdminRecurringGiving component
+- **Donors**: 187 donors, search, click-into detail (by year, by fund, giving history)
+- **Statements**: Year-end bulk generation, results display
+- **Settings**: Payout schedule, fee display, receipt emails, bank account placeholder
+- **RBAC**: 12 roles (member, kids_volunteer, small_group_leader, cafe_manager, merch_manager, worship_media_team, finance, staff, ministry_leader, senior_pastor, executive_pastor, church_admin, platform_admin)
+- **Real-Time Sync**: Polling (5s giving/transactions, 10s registrations/groups, 30s content)
+- **Academy Courses**: 6 courses seeded (Becoming a Member, Why We Give, What is Baptism, Premarital Counseling, Food Pantry Volunteer, First-Time Volunteers)
 
-## Testing Iterations
-- Iteration 63-65: Backend CRUD 127/127 (100%)
-- Iteration 66: Recurring Giving 25/25 (100%)
-- Iteration 67: Giving Goals + Custom Fields + Add-ons 31/31 (100%)
-- Iteration 68: Phase 1 Frontend 18/20 → Fixed data seeding issues
+## Remaining Phases
+
+### Phase 5 (P0) — SecureGive & Church Center Research
+- Web search SecureGive features/screenshots/pricing
+- Document Church Center member-facing features
+- Identify gaps → build them
+
+### Phase 6 (P1) — Ask Solomon Agentic AI
+- Voice-activated actions
+- AI chatbot enhancements
+
+### Phase 7 (P1) — Refactoring
+- KidsCheckinAdmin.jsx refactor (1028 lines → split)
+
+### Phase 8 (P2) — Infrastructure
+- Twilio SMS integration
+- WebSocket for real-time (replace polling)
+- Printer scaffolding for check-in labels
+
+### Phase 9 (P2) — Final Parity Verdict
+- Full feature comparison matrix
+- GO/NO-GO decision
 
 ## 3rd Party Integrations
 - Anthropic Claude (Ask Solomon) — Emergent LLM Key
-- Gemini Image Gen (OG Tags) — Emergent LLM Key
-- OpenAI Whisper (Transcriptions) — Emergent LLM Key
-- Stripe (Payments) — Test keys (SolomonPay returns "pending")
-- Emergent Google Auth — Managed (disabled for enterprise motion)
-- Twilio (SMS) — Stubbed/DB logging fallback
+- Stripe (SolomonPay) — Test keys in .env (MOCKED for demo)
+- Emergent Google Auth — Managed Service
 
-## Master Build Remaining Tasks
+## Test Credentials
+- Platform Admin: admin@solomonai.us / Demo2026!
+- Church Admin: shannonnieman1030@gmail.com / Demo2026!
+- Portal Member: member@abundant.church / Demo2026!
 
-### PHASE 3 — Member Portal Fixes (IN PROGRESS)
-- [ ] Merch cart spacing fix (space between name and price)
-- [ ] Groups: "Get Notified" button, enhanced detail view (leader, address, time, capacity), Q&A
-- [ ] Giving: Tax statement download verification
-- [ ] Payments: Stored payment methods, first sign-in onboarding prompt
-
-### PHASE 4 — Admin Portal + SolomonPay
-- [ ] SolomonPay admin dashboard (transactions, payouts, fund management, statements, export)
-- [ ] RBAC for giving data (pastor/finance/staff/volunteer/member levels)
-- [ ] Bidirectional real-time sync (polling-based)
-- [ ] Solomon Academy demo courses (Becoming a Member, Why We Give, Baptism, etc.)
-
-### PHASE 5 — Parity Research
-- [ ] SecureGive features research
-- [ ] Church Center features research
-- [ ] Gap analysis and closure
-
-### PHASE 6 — Ask Solomon Agentic AI (POST-DEMO)
-- [ ] Mic stays active until speech finishes
-- [ ] Agentic actions (place orders, create donations, register for events)
-
-### PHASE 7 — UI Elevation + Refactoring
-- [ ] Design refresh (premium typography, spacing, photography)
-- [ ] Favicon update
-- [ ] KidsCheckinAdmin.jsx split (1028 lines)
-
-### PHASE 8 — Infrastructure
-- [ ] WebSocket for group chat
-- [ ] Twilio scaffolding
-- [ ] Printer scaffolding
-- [ ] FPM vulnerability scan
-- [ ] RBAC verification
-
-### PHASE 9 — Final Validation
-- [ ] Full test suite (all 127+ tests passing)
-- [ ] Smoke tests, browser checks
-- [ ] Parity verdict (GO/NO-GO)
+## Key Decisions
+- "Solomon Pay" → "SolomonPay" (capital P, no space)
+- Database: test_database (not solomonai)
+- Payments are MOCKED for demo purposes
+- Polling preferred over WebSockets for Phase 4 (WebSocket deferred to Phase 8)
