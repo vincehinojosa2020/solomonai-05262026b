@@ -15,6 +15,7 @@ import GroupsList from "@/pages/GroupsList";
 import GroupDetail from "@/pages/GroupDetail";
 import GivingDashboard from "@/pages/GivingDashboard";
 import SolomonPayAdmin from "@/pages/SolomonPayAdmin";
+import PrinterConfig from "@/pages/PrinterConfig";
 import AttendancePage from "@/pages/AttendancePage";
 import CommunicationsPage from "@/pages/CommunicationsPage";
 import ReportsPage from "@/pages/ReportsPage";
@@ -118,6 +119,7 @@ function AppRouter() {
         <Route path="/attendance" element={<AttendancePage />} />
         <Route path="/giving" element={<GivingDashboard />} />
         <Route path="/solomonpay" element={<SolomonPayAdmin />} />
+        <Route path="/printers" element={<PrinterConfig />} />
         <Route path="/communications" element={<CommunicationsPage />} />
         <Route path="/reports" element={<ReportsPage />} />
         <Route path="/settings" element={<SettingsPage />} />

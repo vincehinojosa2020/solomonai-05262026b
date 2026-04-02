@@ -80,6 +80,8 @@ from routes.media_uploads import router as media_uploads_router
 from routes.giving_nudge import router as giving_nudge_router
 from routes.courses import router as courses_router, _init as courses_init, seed_academy_course, seed_academy_courses_v2
 from routes.solomonpay_admin import router as solomonpay_admin_router
+from routes.sms_routes import router as sms_router
+from routes.printer_routes import router as printer_router
 
 _domain_routers = [
     auth_router, portal_router, solomon_router,
@@ -93,6 +95,7 @@ _domain_routers = [
     push_router, messaging_router, volunteer_router,
     geofence_router, announcements_router, media_uploads_router,
     giving_nudge_router, courses_router, solomonpay_admin_router,
+    sms_router, printer_router,
 ]
 
 for router in _domain_routers:
@@ -100,6 +103,25 @@ for router in _domain_routers:
 
 # Initialize courses router with shared dependencies
 courses_init(db, require_permission, get_current_member_user, DEFAULT_TENANT_ID)
+
+# ═══ WEBSOCKET ═══
+from fastapi import WebSocket, WebSocketDisconnect
+from services.websocket_service import ws_manager
+
+@app.websocket("/ws/{tenant_id}/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, tenant_id: str, user_id: str):
+    await ws_manager.connect(websocket, tenant_id, user_id)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            # Handle ping/pong for keepalive
+            if data == "ping":
+                await websocket.send_text("pong")
+    except WebSocketDisconnect:
+        await ws_manager.disconnect(tenant_id, user_id)
+    except Exception:
+        await ws_manager.disconnect(tenant_id, user_id)
+
 
 
 # ═══ CORS ═══
