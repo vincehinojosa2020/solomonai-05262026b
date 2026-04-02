@@ -574,3 +574,152 @@ async def seed_academy_course():
     for l in lessons:
         await _db.course_lessons.insert_one({**l})
     print("Seeded 'Abundant Next Steps' course with 5 modules and 7 lessons")
+
+
+async def seed_academy_courses_v2():
+    """Seed all 6 Solomon Academy demo courses."""
+    tenant_id = "abundant-east-001"
+    now = _now()
+
+    COURSES = [
+        {
+            "id": "becoming-a-member",
+            "title": "Becoming a Member",
+            "description": "Discover what it means to be a member of Abundant Church. Learn about our beliefs, values, and what membership commitment looks like.",
+            "instructor_name": "Pastor Charles Nieman",
+            "category": "new_members",
+            "thumbnail_url": "https://images.unsplash.com/photo-1529070538774-1db5681a4e3e?w=600",
+            "lessons": [
+                {"title": "Welcome to Abundant", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "Pastor Charles welcomes you and shares the heart behind Abundant Church."}, "duration_minutes": 8},
+                {"title": "Our Beliefs and Values", "type": "text", "content": {"body": "# Our Beliefs and Values\n\n## What We Believe\n\nAt Abundant Church, we believe in:\n\n- **The Bible** — God's inspired, inerrant Word\n- **One God** — Father, Son, and Holy Spirit\n- **Salvation** — Through faith in Jesus Christ alone\n- **The Church** — The body of believers, called to love God and love people\n- **The Great Commission** — Go and make disciples of all nations\n\n## Our Core Values\n\n1. **Faith** — We trust God in all things\n2. **Family** — We are better together\n3. **Generosity** — We give because God first gave to us\n4. **Excellence** — We honor God by giving our best\n5. **Growth** — We are always taking next steps\n\n## Download Resources\n\nYou can download our full beliefs statement from the church office or ask your small group leader."}, "duration_minutes": 10},
+                {"title": "What Membership Means", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "Understand the privileges and responsibilities of church membership."}, "duration_minutes": 12},
+                {"title": "Next Steps After This Course", "type": "text", "content": {"body": "# Your Next Steps\n\nCongratulations on completing this course!\n\n## What's Next?\n\n1. **Schedule a meeting** with a pastor or staff member\n2. **Join a Small Group** to build authentic relationships\n3. **Find a place to serve** — discover your gifts\n4. **Set up recurring giving** — invest in God's kingdom\n\n## Membership Commitment\n\nMembership at Abundant is not just joining an organization — it's joining a family."}, "duration_minutes": 5},
+                {"title": "Membership Commitment", "type": "quiz", "content": {"questions": [{"question": "What is the primary purpose of church membership?", "options": ["Status", "Joining a family and committing to growth", "Getting benefits", "Tradition"], "correct": 1}, {"question": "Which is NOT one of Abundant's core values?", "options": ["Faith", "Generosity", "Competition", "Growth"], "correct": 2}], "passing_score": 70, "description": "Complete this to confirm your membership commitment."}, "duration_minutes": 5},
+            ],
+        },
+        {
+            "id": "why-we-give",
+            "title": "Why We Give",
+            "description": "Explore the biblical foundation of generosity and understand how your giving makes an eternal impact at Abundant Church.",
+            "instructor_name": "Shannon Nieman",
+            "category": "stewardship",
+            "thumbnail_url": "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=600",
+            "lessons": [
+                {"title": "The Heart of Generosity", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "Shannon Nieman shares her personal testimony of how generosity transformed their family."}, "duration_minutes": 10},
+                {"title": "Biblical Foundation", "type": "text", "content": {"body": "# Biblical Foundation for Giving\n\n## Key Scriptures\n\n### Malachi 3:10\n> *\"Bring the whole tithe into the storehouse, that there may be food in my house. Test me in this,\" says the LORD Almighty, \"and see if I will not throw open the floodgates of heaven and pour out so much blessing that there will not be room enough to store it.\"*\n\n### 2 Corinthians 9:7\n> *\"Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver.\"*\n\n### Proverbs 3:9-10\n> *\"Honor the LORD with your wealth, with the firstfruits of all your crops; then your barns will be filled to overflowing.\"*\n\n## Principles of Biblical Giving\n\n1. **Tithing** — The first 10% belongs to God\n2. **Offerings** — Above and beyond the tithe\n3. **Cheerful** — Give with a willing heart\n4. **Faithful** — Consistent, not sporadic\n5. **Trusting** — God honors our obedience"}, "duration_minutes": 8},
+                {"title": "How Your Giving Makes an Impact", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "See the real-world impact of giving: missions, food pantry, kids programs, and community outreach."}, "duration_minutes": 12},
+                {"title": "Setting Up Recurring Giving", "type": "text", "content": {"body": "# Setting Up Recurring Giving\n\nThe easiest way to honor God with your finances is to automate your generosity.\n\n## How to Set Up Recurring Giving\n\n1. Go to the **Give** page in your member portal\n2. Enter your desired **amount**\n3. Select your **fund** (General, Missions, Building, etc.)\n4. Choose your **frequency** (Weekly, Bi-weekly, Monthly)\n5. Enter your payment information\n6. Click **Start Recurring**\n\n## Why Automate?\n\n- **Consistency** — Never miss a giving opportunity\n- **Discipline** — Prioritize giving before spending\n- **Impact** — The church can plan and budget effectively\n- **Convenience** — Set it and forget it\n\nIf you need help, visit the church office or contact us at giving@abundant.church."}, "duration_minutes": 5},
+            ],
+        },
+        {
+            "id": "what-is-baptism",
+            "title": "What is Baptism",
+            "description": "Learn about the meaning, significance, and practice of water baptism. Prepare for your baptism day at Abundant Church.",
+            "instructor_name": "Pastor Charles Nieman",
+            "category": "spiritual_growth",
+            "thumbnail_url": "https://images.unsplash.com/photo-1507692049790-de58290a4334?w=600",
+            "lessons": [
+                {"title": "The Meaning of Baptism", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "Pastor Charles explains the spiritual significance of water baptism."}, "duration_minutes": 10},
+                {"title": "Baptism in Scripture", "type": "text", "content": {"body": "# Baptism in Scripture\n\n## What the Bible Says\n\n### Matthew 28:19\n> *\"Go and make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit.\"*\n\n### Romans 6:3-4\n> *\"Don't you know that all of us who were baptized into Christ Jesus were baptized into his death? We were therefore buried with him through baptism into death in order that, just as Christ was raised from the dead through the glory of the Father, we too may live a new life.\"*\n\n### Acts 2:38\n> *\"Repent and be baptized, every one of you, in the name of Jesus Christ for the forgiveness of your sins. And you will receive the gift of the Holy Spirit.\"*\n\n## What Baptism Represents\n\n1. **Death** — to our old life of sin\n2. **Burial** — going under the water\n3. **Resurrection** — rising to new life in Christ"}, "duration_minutes": 8},
+                {"title": "What to Expect on Baptism Day", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "A walkthrough of what happens on your baptism day — what to wear, bring, and expect."}, "duration_minutes": 6},
+                {"title": "Schedule Your Baptism", "type": "text", "content": {"body": "# Schedule Your Baptism\n\nWe're so excited that you've decided to be baptized!\n\n## Next Steps\n\n1. **Contact our office** at baptism@abundant.church\n2. **Choose a date** — We do baptisms on the first Sunday of each month\n3. **Invite friends & family** — This is a celebration!\n4. **Prepare your testimony** — You'll have the option to share briefly\n\n## What to Bring\n\n- Change of clothes\n- Towel\n- A heart ready to celebrate!\n\nWe provide baptism robes and will have someone assist you in the water.\n\n*If you have questions, reach out to your small group leader or a pastor.*"}, "duration_minutes": 5},
+            ],
+        },
+        {
+            "id": "premarital-counseling",
+            "title": "Premarital Counseling",
+            "description": "A comprehensive 6-session course for engaged couples covering communication, finances, conflict resolution, and spiritual foundations.",
+            "instructor_name": "Pastor Charles & Shannon Nieman",
+            "category": "marriage",
+            "thumbnail_url": "https://images.unsplash.com/photo-1519741497674-611481863552?w=600",
+            "lessons": [
+                {"title": "Introduction to the Journey", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "Pastor Charles and Shannon welcome couples and share their own marriage journey."}, "duration_minutes": 15},
+                {"title": "Communication Foundations", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "Learn healthy communication patterns, active listening, and how to express needs.", "worksheet_note": "Download the Communication Worksheet from your group leader."}, "duration_minutes": 20},
+                {"title": "Financial Unity", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "Discuss budgeting, tithing, debt management, and financial goals as a couple.", "worksheet_note": "Download the Financial Unity Worksheet."}, "duration_minutes": 18},
+                {"title": "Conflict Resolution", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "Understand healthy conflict, forgiveness, and repair in marriage.", "worksheet_note": "Download the Conflict Resolution Worksheet."}, "duration_minutes": 20},
+                {"title": "Spiritual Foundations", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "Build your marriage on the rock — prayer, devotions, and church involvement as a couple."}, "duration_minutes": 15},
+                {"title": "Planning Your Ceremony", "type": "text", "content": {"body": "# Planning Your Ceremony\n\nCongratulations! Here's a checklist for your wedding planning:\n\n## Ceremony Checklist\n\n- [ ] Set a date with the church office\n- [ ] Choose your wedding party\n- [ ] Schedule a rehearsal\n- [ ] Select music and readings\n- [ ] Arrange premarital counseling completion certificate\n- [ ] Submit marriage license to church office\n\n## Resources\n\n- Wedding coordinator contact: weddings@abundant.church\n- Venue booking: Contact the church office\n- Photography: Ask for our recommended vendors list\n\n*We're honored to be part of your special day!*"}, "duration_minutes": 10},
+            ],
+        },
+        {
+            "id": "volunteer-food-pantry",
+            "title": "Volunteer Training: Food Pantry",
+            "description": "Everything you need to know to serve effectively in Abundant's Food Pantry ministry. Safety, procedures, and scheduling.",
+            "instructor_name": "Community Outreach Team",
+            "category": "volunteer",
+            "thumbnail_url": "https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?w=600",
+            "lessons": [
+                {"title": "Welcome to the Food Pantry Team", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "Meet the food pantry team and learn about our mission to serve the community."}, "duration_minutes": 8},
+                {"title": "Safety and Procedures", "type": "text", "content": {"body": "# Safety and Procedures\n\n## Food Safety Guidelines\n\n1. **Wash hands** before handling any food\n2. **Wear gloves** when sorting and distributing\n3. **Check expiration dates** — discard expired items\n4. **Temperature control** — Keep cold items cold, hot items hot\n5. **Allergen awareness** — Label packages containing common allergens\n\n## Operating Procedures\n\n### Before Opening\n- Set up distribution tables\n- Sort incoming donations by category\n- Prepare family packs\n\n### During Distribution\n- Greet every person with warmth and dignity\n- Follow the distribution list for each family\n- Log all distributions in the tracking sheet\n\n### After Closing\n- Clean and sanitize all surfaces\n- Inventory remaining stock\n- Report any issues to the team lead\n\n## Emergency Procedures\n\n- First aid kit location: Kitchen counter\n- Emergency contacts posted by the door\n- Report any incidents immediately"}, "duration_minutes": 12},
+                {"title": "Serving with Compassion", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "How to serve with dignity, compassion, and without judgment."}, "duration_minutes": 10},
+                {"title": "Scheduling Your Shifts", "type": "text", "content": {"body": "# Scheduling Your Shifts\n\n## How to Sign Up\n\n1. Go to the **Volunteer** page in your member portal\n2. Select **Food Pantry** team\n3. Choose available shifts\n4. Confirm your commitment\n\n## Regular Schedule\n\n- **Tuesday**: 9 AM - 12 PM (Sorting & prep)\n- **Wednesday**: 10 AM - 2 PM (Distribution day)\n- **Saturday**: 9 AM - 1 PM (Community distribution)\n\n## Expectations\n\n- Commit to at least 2 shifts per month\n- Notify the team lead 24 hours in advance if you can't make it\n- Wear closed-toe shoes and comfortable clothes\n\nQuestions? Email foodpantry@abundant.church"}, "duration_minutes": 5},
+            ],
+        },
+        {
+            "id": "first-time-volunteers",
+            "title": "First-Time Volunteers",
+            "description": "New to volunteering at Abundant Church? Start here! Learn about our volunteer culture, find your fit, and take your first step.",
+            "instructor_name": "Volunteer Team",
+            "category": "volunteer",
+            "thumbnail_url": "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=600",
+            "lessons": [
+                {"title": "Welcome to the Team", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "A warm welcome from our volunteer coordinators."}, "duration_minutes": 6},
+                {"title": "Our Volunteer Culture", "type": "text", "content": {"body": "# Our Volunteer Culture\n\nAt Abundant Church, we believe everyone has a gift and a role to play.\n\n## Our Volunteer Values\n\n1. **Serve with Excellence** — Whatever you do, do it as unto the Lord\n2. **Be Faithful** — Show up on time, prepared, and with a great attitude\n3. **Be Teachable** — We're all learning and growing\n4. **Love People** — Every person matters to God\n5. **Have Fun** — Ministry should be life-giving!\n\n## What to Expect\n\n- A welcoming team that values you\n- Training and resources for your role\n- Opportunities to grow and lead\n- A community of like-minded servants\n\n## Volunteer Covenant\n\nAs a volunteer, you agree to:\n- Uphold the values of Abundant Church\n- Be reliable and communicative\n- Maintain appropriate conduct\n- Participate in required training"}, "duration_minutes": 8},
+                {"title": "Serving with Excellence", "type": "video", "content": {"video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "description": "What does excellence look like in church volunteering? Real stories from our teams."}, "duration_minutes": 10},
+                {"title": "Finding Your Fit", "type": "text", "content": {"body": "# Finding Your Fit\n\nNot sure where to serve? Here's a quick guide:\n\n## Ministry Teams\n\n### Worship & Production\n- Worship team, sound, lights, cameras\n- *Best for:* Creative, technical, musical people\n\n### Kids Ministry\n- Sunday school, nursery, VBS\n- *Best for:* Patient, fun, child-loving people\n\n### Guest Services\n- Greeters, ushers, parking team, info desk\n- *Best for:* Friendly, outgoing, organized people\n\n### Food Pantry & Outreach\n- Community events, food distribution\n- *Best for:* Compassionate, service-oriented people\n\n### Small Group Leaders\n- Facilitate weekly small groups\n- *Best for:* Relational, mature believers\n\n### Administrative\n- Office support, data entry, communications\n- *Best for:* Detail-oriented, organized people\n\n## Self-Assessment Questions\n\n1. What are you passionate about?\n2. What skills do you have?\n3. Where do you feel God leading you?\n4. What energizes you?"}, "duration_minutes": 10},
+                {"title": "Next Steps", "type": "quiz", "content": {"questions": [{"question": "Which is a core volunteer value at Abundant?", "options": ["Work alone", "Serve with excellence", "Only attend Sundays", "Avoid leadership"], "correct": 1}, {"question": "What should you do if you can't make your shift?", "options": ["Just don't show up", "Notify team lead 24 hours in advance", "Wait until next week", "Send someone random"], "correct": 1}], "passing_score": 70, "description": "Quick review before you get started!"}, "duration_minutes": 5},
+            ],
+        },
+    ]
+
+    seeded = 0
+    for course_data in COURSES:
+        existing = await _db.courses.find_one({"id": course_data["id"]})
+        if existing:
+            continue
+
+        lessons_data = course_data.pop("lessons")
+        course = {
+            **course_data,
+            "tenant_id": tenant_id,
+            "status": "published",
+            "enrollment_type": "open",
+            "certificate_enabled": course_data["id"] in ("becoming-a-member", "premarital-counseling"),
+            "created_at": now,
+            "updated_at": now,
+        }
+        await _db.courses.insert_one({**course})
+
+        # Create a single module per course
+        module_id = f"mod-{course_data['id']}"
+        await _db.course_modules.insert_one({
+            "id": module_id,
+            "course_id": course_data["id"],
+            "tenant_id": tenant_id,
+            "title": course_data["title"],
+            "order": 1,
+            "created_at": now,
+        })
+
+        for idx, lesson in enumerate(lessons_data):
+            lesson_doc = {
+                "id": f"les-{course_data['id']}-{idx+1}",
+                "module_id": module_id,
+                "course_id": course_data["id"],
+                "tenant_id": tenant_id,
+                "title": lesson["title"],
+                "type": lesson["type"],
+                "content": lesson["content"],
+                "duration_minutes": lesson["duration_minutes"],
+                "is_required": True,
+                "order": idx + 1,
+                "created_at": now,
+            }
+            await _db.course_lessons.insert_one({**lesson_doc})
+
+        seeded += 1
+        print(f"  Seeded course: {course_data['title']} ({len(lessons_data)} lessons)")
+
+    if seeded > 0:
+        print(f"Seeded {seeded} Solomon Academy courses")
+    return seeded

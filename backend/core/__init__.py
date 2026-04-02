@@ -54,6 +54,7 @@ PERMISSION_REGISTRY = [
     "member.nextsteps", "member.prayer", "member.volunteer", "member.courses",
     "admin.dashboard", "admin.members.view", "admin.members.edit",
     "admin.members.roles", "admin.giving.view", "admin.giving.edit",
+    "admin.giving.donors", "admin.giving.payouts", "admin.giving.statements",
     "admin.kids.manage", "admin.media.manage", "admin.cafe.manage",
     "admin.merch.manage", "admin.groups.manage", "admin.groups.lead",
     "admin.events.manage", "admin.announcements", "admin.volunteers.manage",
@@ -76,6 +77,22 @@ ROLE_TEMPLATES = {
     "cafe_manager": {"role_title": "Cafe Manager", "permissions": MEMBER_PERMISSIONS + ["admin.cafe.manage", "admin.reports.view", "admin.reports.export"]},
     "merch_manager": {"role_title": "Merch Manager", "permissions": MEMBER_PERMISSIONS + ["admin.merch.manage", "admin.reports.view", "admin.reports.export"]},
     "worship_media_team": {"role_title": "Worship & Media Team", "permissions": MEMBER_PERMISSIONS + ["admin.media.manage", "admin.events.manage", "admin.announcements"]},
+    "finance": {
+        "role_title": "Finance Team",
+        "permissions": MEMBER_PERMISSIONS + [
+            "admin.dashboard", "admin.giving.view", "admin.giving.edit",
+            "admin.giving.donors", "admin.giving.payouts", "admin.giving.statements",
+            "admin.reports.view", "admin.reports.export",
+        ],
+    },
+    "staff": {
+        "role_title": "Staff",
+        "permissions": MEMBER_PERMISSIONS + [
+            "admin.dashboard", "admin.members.view", "admin.giving.view",
+            "admin.events.manage", "admin.groups.manage", "admin.announcements",
+            "admin.reports.view", "admin.communications",
+        ],
+    },
     "ministry_leader": {
         "role_title": "Ministry Leader",
         "permissions": MEMBER_PERMISSIONS + [
@@ -84,6 +101,10 @@ ROLE_TEMPLATES = {
             "admin.volunteers.manage", "admin.media.manage", "admin.reports.view",
             "admin.communications",
         ],
+    },
+    "senior_pastor": {
+        "role_title": "Senior Pastor / Founder",
+        "permissions": MEMBER_PERMISSIONS + ALL_ADMIN_PERMISSIONS,
     },
     "executive_pastor": {
         "role_title": "Executive Pastor",

@@ -8,6 +8,7 @@ import PWABottomNav from '@/components/PWABottomNav';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import NotificationBell from '@/components/NotificationBell';
 import DemoWalkthrough from '@/components/DemoWalkthrough';
+import OnboardingFlow from '@/components/OnboardingFlow';
 
 export default function PortalLayout() {
   const [user, setUser] = useState(null);
@@ -269,6 +270,8 @@ export default function PortalLayout() {
         userName={user?.name?.split(' ')[0] || 'there'}
         onNavigate={navigate}
       />
+      {/* First Sign-In Onboarding */}
+      <OnboardingFlow user={user} onComplete={fetchMemberData} />
     </div>
   );
 }

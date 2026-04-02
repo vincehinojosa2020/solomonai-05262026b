@@ -1,50 +1,82 @@
 <analysis>**original_problem_statement**: 
-The user required SOLOMON AI — FULL PARITY CONFIRMATION + GAP CLOSURE against Planning Center. This included rigorous functional CRUD testing (not just endpoint existence), preparing a Co-Founder Meeting Prep document with Go/No-Go status, running a final pre-deployment checklist, cleaning up the landing page, and addressing a comprehensive Code Quality and Security Report.
+The user requested SOLOMON AI — FULL PARITY CONFIRMATION + GAP CLOSURE against Planning Center, SecureGive, and Church Center. This includes a massive multi-phase MASTER BUILD PROMPT for production deployment and demo preparation. Key requirements include Landing Page overhauls, Admin/Portal White-labeling, SolomonPay branding/UI implementation, extensive real-world demo data seeding, UI elevations (modern premium aesthetics), and comprehensive parity functionality across Giving, Groups, Check-ins, and Media.
 
 **PRODUCT REQUIREMENTS**: 
-- 100% functional parity with Planning Center for core church operations (People, Check-ins, Giving, Groups, Registrations, etc.).
+- 100% functional parity with Planning Center, Church Center, and SecureGive.
 - NO Publishing (page builder) and NO Church Center Mobile API sync.
-- Mocked Twilio, physical printers, and WebSocket chat are acceptable.
-- High security standards: No hardcoded credentials, secure auth token storage, secure random generation.
+- SolomonPay admin dashboard and portal giving enhancements.
+- Phase 1-9 Master Build Execution (Phase 1 & 2 completed in this session).
 
-**User's preferred language**: English
-*(INSTRUCT NEXT AGENT: You MUST automatically detect the user's primary language from their messages inside the <trajectory> tag and INSTRUCT next agent to respond in the user's preferred language only)*
+**User's preferred language**: English (INSTRUCT next agent to respond in the user's preferred language only)
 
 **what currently exists?** 
-A highly tested, production-ready church management SaaS. The backend consists of 492 routes split across 30 modular files. The system successfully passed an exhaustive 127-point functional CRUD and User Journey test suite (100% pass rate). All critical Code Quality and Security vulnerabilities (hardcoded test secrets,  auth,  usage, insecure  usage) have been resolved. The app is ready for deployment and demo.
+A highly tested, production-ready church management SaaS. Recently updated with a fully refactored Landing Page, streamlined Login UI, White-labeled Admin AppShell, and extensive demo data (Shannon Nieman's giving history, Pastor Charles Nieman's sermons, premium Unsplash imagery for Cafe/Merch). Backend now supports recurring giving, giving goals, custom fields, and new Group endpoints (Q&A, notifications).
 
 **Last working item**: 
-    - Last item agent was working: Executing fixes from the Code Quality Report: parity-audit-1. This included migrating frontend auth tokens from  to , replacing  with  for security ops, removing , replacing dynamic  with static imports, and deleting test files with hardcoded credentials.
-    - Status: USER VERIFICATION PENDING (Agent finished the implementations and ran successful server health checks).
-    - Agent Testing Done: Y
-    - Which testing method agent to use? manual testing by curl/bash syntax checks.
+    - Last item agent was working: Implementing Phase 3 Member Portal Polish. The agent successfully added backend endpoints for Group Get Notified alerts, Group Q&A submissions, and Tax Statement PDF generation (). The agent also just updated  to enhance the group detail view and integrate the new Q&A/Notify actions.
+    - Status: IN PROGRESS
+    - Agent Testing Done: N (For the latest Phase 3 changes)
+    - Which testing method agent to use? both
     - User Testing Done: N
 
-**All Pending/In progress Issue list**: 
-*(No critical pending issues. The system is in a Clear to Deploy state. Minor UI gaps exist as noted in the future tasks).*
+**All Pending/In progress Issue list**:
+  Issue 1: Group Enhancements UI Verification
+     - Attempted fixes: Modified  to include Q&A and Notify logic.
+     - Next debug checklist: Check if GroupCard correctly toggles the detail view, and verify that submitting a question/notification successfully hits the new  and  endpoints. 
+     - Why fix this issue and what will be achieved with the fix? Fulfills Phase 3 requirements for Groups parity.
+     - Status: TESTING PENDING
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? both
+     - Blocked on other issue: None
 
 **In progress Task List**: 
-*(None. All requested deliverables, tests, and code quality fixes are complete).*
+  Task 1: Phase 3 - Tax Statement Download UI integration
+     - Where to resume: The backend endpoint () has been written. Need to add a Download Tax Statement button in the Member Portal Giving page ( or similar) to trigger the download.
+     - What will be achieved with this? Members can download their 2024-2027 giving PDFs.
+     - Status: IN PROGRESS
+     - Should Test frontend/backend/both after fix? frontend
+     - Blocked on something: None
+
+  Task 2: Phase 3 - Stored Payment Methods
+     - Where to resume: Build/integrate UI for members to add/view stored credit/debit/PayPal methods in their settings/giving area.
+     - What will be achieved with this? Streamlines checkout for Merch, Cafe, and Donations.
+     - Status: NOT STARTED
+     - Should Test frontend/backend/both after fix? both
+     - Blocked on something: None
+
+  Task 3: Phase 3 - First Sign-In Onboarding Flow
+     - Where to resume: Create a modal/flow that triggers on the first 1-2 logins, prompting users to complete their profile, add payment methods, and set notification preferences.
+     - What will be achieved with this? Better user onboarding experience.
+     - Status: NOT STARTED
+     - Should Test frontend/backend/both after fix? frontend
+     - Blocked on something: None
 
 **Upcoming and Future Tasks**
     Upcoming Tasks:
-    - P1: Custom Fields UI Builder (Backend supports key-value storage, needs frontend drag-and-drop interface).
-    - P1: Recurring Giving Management UI (One-time giving works; needs recurring schedule management interface).
-    - P1: Registration Add-ons UI Builder (Config exists; needs rich member-facing UI).
-    - P2: Refactor  (Currently 1028 lines; flagged in Code Quality Report for urgent splitting).
+    - P0: Phase 4 - SolomonPay Admin Dashboard (Build full SecureGive parity admin UI: Total giving stats, payout management, fund management, recurring management, and year-end statement bulk generation).
+    - P0: Phase 4 - RBAC for Giving Data (Enforce strict access levels for giving data across Senior Pastor, Finance, Staff, Volunteers, and Members).
+    - P1: Phase 4 - Bidirectional Real-Time Sync (Implement 5-10s polling for giving/orders and 30-60s polling for content across portal and admin).
+    - P1: Phase 4 - Solomon Academy Demo Courses (Seed 6 specific courses: Becoming a Member, Why We Give, Baptism, Premarital, etc.).
     
-    Future Tasks (Deferred by User constraints):
-    - P3: Physical printer driver integration for Check-ins.
-    - P3: Live Twilio SMS integration.
-    - P3: Real-Time WebSocket for Group Chat.
+    Future Tasks:
+    - Phase 5: SecureGive & Church Center feature research & gap closure.
+    - Phase 6: Ask Solomon Agentic AI capabilities (actions via voice).
+    - Phase 7: KidsCheckinAdmin.jsx refactor (split 1028 lines).
+    - Phase 8: Twilio, WebSocket, Printer scaffolding.
+    - Phase 9: Final Parity Verdict validation.
 
 **Completed work in this session**
-- Fixed P0 missing imports and 16 dangling decorators across 8 route files.
-- Built and ran  and  (127/127 tests passed).
-- Generated Deliverables: , , , , , , .
-- Removed pricing and comparison sections from the Landing Page.
-- Code Quality Fixes (Security): Swapped  for  in React, replaced  with , replaced insecure  with  in auth/helpers, removed dynamic  in auth routes, and deleted 63 test files containing hardcoded credentials.
-- Deleted massive legacy  file.
+- Phase 1 & 2 Demo Blockers Resolved (Landing page rewrite, Login page clean up, Password visibility toggle fixed).
+- Admin White-labeling (Replaced SOLOMON with dynamic Tenant name in Sidebar).
+- Removed Live Worship Service placeholder and streak gamification cards.
+- Solomon Pay renamed to SolomonPay system-wide.
+- DemoWalkthrough modal updated to use  and limited to first 2 logins.
+- Seeded robust demo data: 171 donations for Shannon Nieman across 4 years matching financial targets, 10 sermons attributed to Pastor Charles Nieman.
+- Swapped Merch/Cafe AI-generated stock images for premium Unsplash aesthetic images.
+- Recurring Giving full CRUD built and 100% verified.
+- Giving Goals/Pledges built and verified.
+- Custom Fields UI Builder built and verified.
+- Registration Add-ons UI built and verified.
 
 **Earlier issues found/mentioned but not fixed**
 None.
@@ -58,79 +90,75 @@ None.
 
 
 **Key Technical Concepts**
-- **Modular Monolith:** 30 APIRouter files injected into .
-- **Session-based Auth:** Frontend uses  (recently migrated from  for security) to hold JWTs, passed via .
+- **Modular Monolith:** 30+ APIRouter files injected into .
+- **Session-based Auth:** Frontend uses  to hold JWTs, passed via .
 - **Multi-Tenant System:**  context is required across all routes.
-- **Automated Regression:** Extensive automated Python scripts hit live endpoints to verify full CRUD cycles and user journeys.
+- **PDF Generation:** Using  library on the backend for Tax Statements.
 
 **key DB schema**
   -  ->  (tenants) ->  (users).
-  - Main operational collections: , , , , root.
+  - New DB interactions: , .
+  - Database namespace: Data was explicitly verified/corrected to run under  locally (fixed misdirected seeds into ).
 
 **changes in tech stack**
-  - **Security Upgrade:** Auth tokens in the frontend are now strictly handled via  to prevent XSS persistence risks.
+  - Added  usage in  for dynamic PDF document generation.
 
 **All files of reference** 
-  -  &  (New test suites)
-  -  (Auth handling)
-  -  (Updated)
-  -  (Updated)
-  -  (Go-Live status doc)
+  -  (Modified for Tax PDFs, Group Q&A, and Notifications)
+  -  (Updated UI for Q&A and detail views)
+  -  (Fully rewritten)
+  -  (Session storage limits)
+  -  (Updated to pull Unsplash images and correct demo data)
 
 **Areas that need refactoring**: 
--  (1028 lines) - Flagged by user's Code Quality report to be split into smaller components.
+-  (1028 lines) - Slated for Phase 7 refactoring.
 
 **key api endpoints**
   - All Admin CRUD ()
   - All Portal Journeys ()
-  - Ask Solomon AI ()
+  -  (New PDF generator)
+  -  (New)
+  -  (New)
 
 **Critical Info for New Agent** 
-- The system is in a highly polished, production-ready state. The previous agent achieved 100% pass rates on 127 functional CRUD tests. **Do not introduce regressions.**
-- If you build new features, ensure you adhere to the new security rules: Use  (not ) for sensitive frontend data, and use the  module (not ) for any backend security/token generation.
-- The  monolith file has been permanently deleted.
+- Phase 1 and 2 are strictly completed. You are actively inside **Phase 3 & 4**.
+-  is installed and functioning for PDFs. Ensure the frontend calls the endpoint with  if using custom fetch.
+- All Solomon Pay references must be strictly written as SolomonPay with a capital P and no spaces.
+- Demo data operates on the  DB_NAME.
 
 **documents and test reports created in this job** 
-  - 
-  - 
-  - 
-  - 
-  - 
+  -  (100% pass)
+  -  (100% pass)
+  -  (Phase 1+2 tests)
+  -  (Updated)
 
 **Last 10 User Messages and any pending HUMAN messages** 
- - *User:* Instructed agent to run Ask_Human for plan.
- - *User:* Provided fixes for P0 backend bugs (giving exports, permissions).
- - *User:* Demanded a FULL FUNCTIONAL PARITY TEST (CRUD and User Journeys), pointing out that endpoint existence does not equal functional parity.
- - *User:* Asked how automated testing works if Emergent builds everything. (Agent explained the scripts reside in ).
- - *User:* Requested a Co-Founder Meeting Prep document to verify full readiness.
- - *User:* Requested a Final Pre-Deploy Checklist (Smoke tests, errors, environment, security).
- - *User:* remove pricing from landing page. less is more.
- - *User:* (LATEST) Provided a Code Quality Report with 12 critical/important recommendations (Hardcoded test secrets,  removal,  removal, missing hook dependencies, etc.).
- - *Agent:* Completed all critical Code Quality fixes and verified server stability.
+ 1. *User:* Instructed to go forward with Phase 3 & 4 (Groups polish, Tax Statements, Payment Methods, First Sign-in Onboarding, SolomonPay Admin).
+ 2. *Agent:* Explored , , , and .
+ 3. *Agent:* Inserted endpoints in  for Group Notifications, Q&A, and Tax Statement PDF.
+ 4. *Agent:* Added Admin endpoint for Group Q&A in .
+ 5. *Agent:* Updated  frontend to integrate the new group detail, notify, and Q&A features. *(No human reply pending; agent was actively coding).*
 
 **Project Health Check:**
-  - Broken: None
-  - Mocked: Stripe payments, Twilio SMS, Physical Printers (As requested by user).
+  - Broken: None known, though Phase 3 changes are currently untested.
+  - Mocked: Stripe payments/SolomonPay processing (remains in pending status for demo purposes), Twilio SMS.
 
 **3rd Party Integrations** 
   • Anthropic Claude (Ask Solomon) — *uses Emergent LLM Key*
-  • Gemini Image Gen (OG Tags) — *uses Emergent LLM Key*
-  • OpenAI Whisper (Transcriptions) — *uses Emergent LLM Key*
-  • Stripe (Payments) — *Requires User API Key (Test keys in .env)*
+  • Stripe (Payments/SolomonPay) — *Requires User API Key (Test keys in .env)*
   • Emergent Google Auth — *uses Emergent Managed Service*
-  • Twilio (SMS) — *Requires User API Key (Currently stubbed)*
 
 **Testing status**
-  - Testing agent used after significant changes: YES (Iteration 64 & 65 passed)
+  - Testing agent used after significant changes: YES (Iterations 66, 67, 68 all successful).
   - Troubleshoot agent used after agent stuck in loop: NO
-  - Test files created: , 
+  - Test files created: N/A in this specific session segment.
   - Known regressions: None.
 
 **Credentials to test flow:**
   - Platform Admin:  / 
   - Church Admin:  / 
   - Portal Member:  / 
-  *(Located in )*
 
 **What agent forgot to execute**
-  - The agent addressed the critical security items from the Code Quality Report, but left the Refactor KidsCheckinAdmin.jsx and Reduce complexity in seed.py for the next sprint, as prioritizing the security fixes was the immediate requirement before the Co-Founder meeting.</analysis>
+- The backend PDF generation for Tax Statements was created, but the frontend UI button/call inside the Giving portal (to download the statement) was not yet implemented.
+- Phase 3 Stored Payment Methods and First Sign-in Onboarding UI were not started yet.</analysis>

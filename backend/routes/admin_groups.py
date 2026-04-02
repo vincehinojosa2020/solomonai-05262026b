@@ -668,3 +668,51 @@ async def send_group_message(request: Request, group_id: str, payload: dict):
     await db.group_messages.insert_one(message)
     return {"message": {k: v for k, v in message.items() if k != "_id"}}
 
+
+
+# ============== GROUP Q&A (Admin) ==============
+
+@router.get("/admin/groups/{group_id}/questions")
+async def admin_get_group_questions(request: Request, group_id: str):
+    """Admin/Leader: View all questions for a group."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    questions = await db.group_questions.find(
+        {"group_id": group_id, "tenant_id": tenant_id}, {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    return {"questions": questions}
+
+
+@router.put("/admin/groups/{group_id}/questions/{question_id}/answer")
+async def admin_answer_group_question(request: Request, group_id: str, question_id: str):
+    """Admin/Leader: Answer a group question."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    body = await request.json()
+    answer = body.get("answer", "").strip()
+    if not answer:
+        raise HTTPException(status_code=400, detail="Answer cannot be empty")
+
+    result = await db.group_questions.update_one(
+        {"id": question_id, "group_id": group_id, "tenant_id": tenant_id},
+        {"$set": {
+            "answer": answer,
+            "answered_by": user.get("name", user.get("email")),
+            "answered_at": datetime.now(timezone.utc).isoformat(),
+            "status": "answered",
+        }}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Question not found")
+    return {"message": "Answer posted"}
+
+
+@router.get("/admin/group-notifications")
+async def admin_get_group_notifications(request: Request):
+    """Admin: See all group notification signups."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    notifications = await db.group_notifications.find(
+        {"tenant_id": tenant_id}, {"_id": 0}
+    ).sort("created_at", -1).to_list(200)
+    return {"notifications": notifications}

@@ -5,7 +5,7 @@ import {
   CheckSquare, DollarSign, Mail, BarChart3, Settings, 
   Building2, Search, Bell, ChevronLeft, Menu, Command,
   LogOut, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, MessageSquare, Coffee, Code, Baby, Zap, Shield,
-  ChevronDown, MapPin, Check, Music, HandHeart, GitBranch, FileText, ListFilter, Merge, ClipboardList
+  ChevronDown, MapPin, Check, Music, HandHeart, GitBranch, FileText, ListFilter, Merge, ClipboardList, CreditCard
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -50,6 +50,7 @@ const navItems = [
   ]},
   { section: 'STEWARDSHIP', items: [
     { name: 'Giving', path: '/giving', icon: DollarSign },
+    { name: 'SolomonPay', path: '/solomonpay', icon: CreditCard, permission: 'admin.giving.view' },
   ]},
   { section: 'CONNECT', items: [
     { name: 'Communications', path: '/communications', icon: Mail },
@@ -232,13 +233,20 @@ export default function AppShell() {
             const isImpersonating = !!impersonatedTenant;
             
             const filteredItems = section.items.filter(item => {
+              // Permission-based filtering
+              if (item.permission) {
+                const userPerms = JSON.parse(sessionStorage.getItem('user_permissions') || '[]');
+                const userRole = sessionStorage.getItem('user_role') || '';
+                // Always show for church_admin, platform_admin, senior_pastor
+                if (!['church_admin', 'platform_admin', 'senior_pastor', 'admin'].includes(userRole)) {
+                  if (!userPerms.includes(item.permission)) return false;
+                }
+              }
               // If platform admin and NOT impersonating, hide church-specific items
               if (isPlatformAdmin && !isImpersonating) {
-                // Only show Settings, Integrations for platform admin without context
                 const platformOnlyPaths = ['/settings', '/integrations', '/audit-log', '/reports', '/war-room', '/dashboard'];
                 return platformOnlyPaths.includes(item.path);
               }
-              // If impersonating or regular church admin, show all items
               return true;
             });
             

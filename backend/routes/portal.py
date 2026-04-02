@@ -152,6 +152,9 @@ async def update_portal_profile(request: Request, payload: PortalProfileUpdate):
         person_update["mobile_phone"] = update_fields["mobile_phone"]
     elif update_fields.get("phone"):
         person_update["mobile_phone"] = update_fields["phone"]
+    for addr_field in ["address", "city", "state", "zip"]:
+        if update_fields.get(addr_field):
+            person_update[addr_field] = update_fields[addr_field]
     if person_update:
         person_update["updated_at"] = datetime.now(timezone.utc).isoformat()
         await db.people.update_one(
@@ -329,6 +332,168 @@ async def delete_giving_goal(request: Request, year: int = None):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="No goal found for this year")
     return {"message": "Giving goal removed"}
+
+
+
+# ============== TAX STATEMENT ==============
+
+@router.get("/portal/giving/statement/{year}")
+async def get_my_giving_statement(request: Request, year: int):
+    """Get the member's giving statement data for a specific year."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    person = await db.people.find_one({"email": user["email"], "tenant_id": tenant_id}, {"_id": 0})
+    if not person:
+        raise HTTPException(status_code=404, detail="Member not found")
+    person_id = person["id"]
+
+    start_date = f"{year}-01-01"
+    end_date = f"{year}-12-31"
+    donations = await db.donations.find(
+        {"tenant_id": tenant_id, "person_id": person_id, "donation_date": {"$gte": start_date, "$lte": end_date}},
+        {"_id": 0}
+    ).sort("donation_date", 1).to_list(1000)
+
+    fund_totals = {}
+    for d in donations:
+        fn = d.get("fund_name", "General Fund")
+        fund_totals[fn] = fund_totals.get(fn, 0) + d.get("amount", 0)
+    total = sum(d.get("amount", 0) for d in donations)
+
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+
+    return {
+        "year": year,
+        "generated_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "church": {
+            "name": tenant.get("name", "Abundant Life Church") if tenant else "Abundant Life Church",
+            "address": tenant.get("address", "1200 E Paisano Dr") if tenant else "1200 E Paisano Dr",
+            "city_state_zip": f"{tenant.get('city', 'El Paso')}, {tenant.get('state', 'TX')} {tenant.get('zip', '79901')}" if tenant else "El Paso, TX 79901",
+            "ein": tenant.get("ein", "74-1234567") if tenant else "74-1234567",
+        },
+        "donor": {
+            "name": f"{person.get('first_name', '')} {person.get('last_name', '')}".strip(),
+            "address": person.get("address", ""),
+            "email": person.get("email", ""),
+        },
+        "donations": [{"date": d["donation_date"], "amount": d["amount"], "fund": d.get("fund_name", "General")} for d in donations],
+        "fund_totals": [{"fund": k, "total": round(v, 2)} for k, v in fund_totals.items()],
+        "total_amount": round(total, 2),
+        "donation_count": len(donations),
+        "disclaimer": "No goods or services were provided in exchange for these contributions except intangible religious benefits. This statement may be used for tax purposes.",
+    }
+
+
+@router.get("/portal/giving/statement/{year}/pdf")
+async def download_giving_statement_pdf(request: Request, year: int):
+    """Download the member's giving statement as a PDF."""
+    from fastapi.responses import StreamingResponse
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.units import inch
+    from reportlab.pdfgen import canvas
+    import io
+
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    person = await db.people.find_one({"email": user["email"], "tenant_id": tenant_id}, {"_id": 0})
+    if not person:
+        raise HTTPException(status_code=404, detail="Member not found")
+    person_id = person["id"]
+
+    start_date = f"{year}-01-01"
+    end_date = f"{year}-12-31"
+    donations = await db.donations.find(
+        {"tenant_id": tenant_id, "person_id": person_id, "donation_date": {"$gte": start_date, "$lte": end_date}},
+        {"_id": 0}
+    ).sort("donation_date", 1).to_list(1000)
+
+    fund_totals = {}
+    for d in donations:
+        fn = d.get("fund_name", "General Fund")
+        fund_totals[fn] = fund_totals.get(fn, 0) + d.get("amount", 0)
+    total = sum(d.get("amount", 0) for d in donations)
+
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+    church_name = tenant.get("name", "Abundant Life Church") if tenant else "Abundant Life Church"
+    church_ein = tenant.get("ein", "74-1234567") if tenant else "74-1234567"
+    donor_name = f"{person.get('first_name', '')} {person.get('last_name', '')}".strip()
+
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=letter)
+    w, h = letter
+    y = h - 60
+
+    # Header
+    c.setFont("Helvetica-Bold", 18)
+    c.drawString(72, y, church_name)
+    y -= 20
+    c.setFont("Helvetica", 10)
+    c.drawString(72, y, f"EIN: {church_ein}")
+    y -= 30
+
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(72, y, f"Annual Giving Statement — {year}")
+    y -= 25
+
+    c.setFont("Helvetica", 11)
+    c.drawString(72, y, f"Donor: {donor_name}")
+    y -= 15
+    c.drawString(72, y, f"Email: {person.get('email', '')}")
+    y -= 15
+    c.drawString(72, y, f"Generated: {datetime.now(timezone.utc).strftime('%B %d, %Y')}")
+    y -= 30
+
+    # Table header
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(72, y, "Date")
+    c.drawString(220, y, "Fund")
+    c.drawRightString(w - 72, y, "Amount")
+    y -= 3
+    c.line(72, y, w - 72, y)
+    y -= 15
+
+    c.setFont("Helvetica", 10)
+    for don in donations:
+        if y < 100:
+            c.showPage()
+            y = h - 60
+            c.setFont("Helvetica", 10)
+        c.drawString(72, y, don.get("donation_date", ""))
+        c.drawString(220, y, don.get("fund_name", "General Fund"))
+        c.drawRightString(w - 72, y, f"${don.get('amount', 0):,.2f}")
+        y -= 14
+
+    y -= 10
+    c.line(72, y, w - 72, y)
+    y -= 18
+
+    # Fund totals
+    c.setFont("Helvetica-Bold", 10)
+    for fn, ft in fund_totals.items():
+        c.drawString(220, y, fn)
+        c.drawRightString(w - 72, y, f"${ft:,.2f}")
+        y -= 14
+
+    y -= 6
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(72, y, "Total Contributions")
+    c.drawRightString(w - 72, y, f"${total:,.2f}")
+    y -= 30
+
+    # Disclaimer
+    c.setFont("Helvetica", 8)
+    c.drawString(72, y, "No goods or services were provided in exchange for these contributions")
+    y -= 11
+    c.drawString(72, y, "except intangible religious benefits. This statement may be used for tax purposes.")
+
+    c.save()
+    buf.seek(0)
+    return StreamingResponse(
+        buf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=giving_statement_{year}.pdf"}
+    )
+
 
 
 # ============== RECURRING GIVING MANAGEMENT ==============
@@ -1917,6 +2082,129 @@ async def request_to_join_group(request: Request, group_id: str):
     logger.info(f"User {user['email']} joined group {group['name']}")
     
     return {"message": f"You have joined {group['name']}!"}
+
+
+
+# ============== GROUP NOTIFICATIONS & Q&A ==============
+
+@router.post("/portal/groups/{group_id}/notify")
+async def subscribe_group_notification(request: Request, group_id: str):
+    """Member subscribes to be notified when a spot opens in a full/closed group."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    person = await db.people.find_one({"email": user["email"], "tenant_id": tenant_id}, {"_id": 0})
+    if not person:
+        raise HTTPException(status_code=404, detail="Member not found")
+
+    group = await db.groups.find_one({"id": group_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+
+    existing = await db.group_notifications.find_one({
+        "group_id": group_id, "person_id": person["id"], "status": "waiting"
+    })
+    if existing:
+        return {"message": "You're already on the notification list"}
+
+    await db.group_notifications.insert_one({
+        "id": f"gn_{uuid.uuid4().hex[:12]}",
+        "tenant_id": tenant_id,
+        "group_id": group_id,
+        "group_name": group.get("name"),
+        "person_id": person["id"],
+        "person_name": f"{person.get('first_name','')} {person.get('last_name','')}".strip(),
+        "person_email": person.get("email"),
+        "status": "waiting",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+    return {"message": f"You'll be notified when a spot opens in {group.get('name')}"}
+
+
+@router.get("/portal/groups/{group_id}/detail")
+async def get_group_detail(request: Request, group_id: str):
+    """Get detailed group info for member view (no member names for privacy)."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+
+    group = await db.groups.find_one({"id": group_id, "tenant_id": tenant_id, "is_active": True}, {"_id": 0})
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+
+    member_count = await db.group_members.count_documents({"group_id": group_id, "is_active": True})
+    spots_available = max(0, (group.get("capacity", 0) - member_count)) if group.get("capacity") else None
+
+    return {
+        "id": group["id"],
+        "name": group.get("name"),
+        "description": group.get("description"),
+        "group_type": group.get("group_type", "Small Group"),
+        "leader_name": f"{group.get('leader', {}).get('first_name', '')} {group.get('leader', {}).get('last_name', '')}".strip() if group.get("leader") else None,
+        "location": group.get("location"),
+        "address": group.get("address", group.get("location")),
+        "meeting_day": group.get("meeting_day"),
+        "meeting_time": group.get("meeting_time"),
+        "start_date": group.get("start_date"),
+        "end_date": group.get("end_date"),
+        "capacity": group.get("capacity"),
+        "member_count": member_count,
+        "spots_available": spots_available,
+        "is_open": group.get("is_open", True),
+        "is_full": spots_available == 0 if spots_available is not None else False,
+    }
+
+
+@router.post("/portal/groups/{group_id}/questions")
+async def submit_group_question(request: Request, group_id: str):
+    """Member submits a question to the group leader."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    body = await request.json()
+    question_text = body.get("question", "").strip()
+    if not question_text:
+        raise HTTPException(status_code=400, detail="Question cannot be empty")
+
+    person = await db.people.find_one({"email": user["email"], "tenant_id": tenant_id}, {"_id": 0})
+    if not person:
+        raise HTTPException(status_code=404, detail="Member not found")
+
+    group = await db.groups.find_one({"id": group_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+
+    question = {
+        "id": f"gq_{uuid.uuid4().hex[:12]}",
+        "tenant_id": tenant_id,
+        "group_id": group_id,
+        "group_name": group.get("name"),
+        "person_id": person["id"],
+        "person_name": f"{person.get('first_name','')} {person.get('last_name','')}".strip(),
+        "person_email": person.get("email"),
+        "question": question_text,
+        "answer": None,
+        "answered_by": None,
+        "answered_at": None,
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.group_questions.insert_one(question)
+    return {"message": "Question submitted. The group leader will respond soon.", "question_id": question["id"]}
+
+
+@router.get("/portal/groups/{group_id}/questions")
+async def get_group_questions(request: Request, group_id: str):
+    """Get Q&A for a group (member sees their own questions + answered ones)."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    person = await db.people.find_one({"email": user["email"], "tenant_id": tenant_id}, {"_id": 0})
+    person_id = person["id"] if person else None
+
+    questions = await db.group_questions.find(
+        {"group_id": group_id, "tenant_id": tenant_id,
+         "$or": [{"person_id": person_id}, {"status": "answered"}]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    return {"questions": questions}
+
 
 # ============== ADMIN GROUP MEMBER MANAGEMENT ==============
 

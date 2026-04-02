@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
-import { CreditCard, DollarSign, Download, CheckCircle } from 'lucide-react';
+import { usePolling } from '@/hooks/usePolling';
+import { CreditCard, DollarSign, Download, CheckCircle, ChevronDown } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import SolomonPayForm from '@/components/SolomonPayForm';
@@ -110,6 +111,51 @@ export default function PortalGive() {
   const ytdGiving = memberData?.giving?.ytd_total || 0;
   const lastGift = memberData?.giving?.last_gift;
   const recurring = memberData?.giving?.recurring;
+
+  const TaxStatementDownloader = () => {
+    const [showYears, setShowYears] = useState(false);
+    const [downloading, setDownloading] = useState(null);
+    const currentYear = new Date().getFullYear();
+    const years = [currentYear, currentYear - 1, currentYear - 2, currentYear - 3];
+
+    const downloadStatement = async (year) => {
+      setDownloading(year);
+      try {
+        const res = await fetch(`${API_URL}/portal/giving/statement/${year}/pdf`);
+        if (!res.ok) { toast.error('Failed to generate statement'); return; }
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `giving_statement_${year}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        toast.success(`${year} statement downloaded`);
+        setShowYears(false);
+      } catch { toast.error('Download failed'); }
+      finally { setDownloading(null); }
+    };
+
+    return (
+      <div className="relative" data-testid="tax-statement-section">
+        <button onClick={() => setShowYears(!showYears)} className="portal-download-btn w-full" data-testid="download-statement-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <Download className="w-4 h-4" /> Download Tax Statement <ChevronDown className={`w-3 h-3 transition-transform ${showYears ? 'rotate-180' : ''}`} />
+        </button>
+        {showYears && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-10 overflow-hidden" data-testid="year-selector">
+            {years.map(y => (
+              <button key={y} onClick={() => downloadStatement(y)} disabled={downloading === y} className="w-full px-4 py-2.5 text-sm text-left hover:bg-slate-50 transition-colors flex items-center justify-between" data-testid={`download-year-${y}`}>
+                <span>{y} Statement</span>
+                {downloading === y && <span className="text-xs text-slate-400">Generating...</span>}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="portal-give" data-testid="portal-give">
@@ -296,10 +342,7 @@ export default function PortalGive() {
             </div>
           )}
 
-          <button className="portal-download-btn" data-testid="download-statement-btn">
-            <Download className="w-4 h-4" />
-            Download Tax Statement
-          </button>
+          <TaxStatementDownloader />
         </div>
       </div>
 

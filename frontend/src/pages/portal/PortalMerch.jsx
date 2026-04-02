@@ -213,9 +213,9 @@ export default function PortalMerch() {
               {cartItems.map((item) => (
                 <div key={item.id} className="portal-merch-cart-item" data-testid={`merch-cart-item-${item.id}`}>
                   <img src={item.image_url || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80'} alt={item.name} />
-                  <div>
-                    <strong>{item.name}</strong>
-                    <span>{formatCurrency(item.price)}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <strong style={{ display: 'block', marginBottom: 4 }}>{item.name}</strong>
+                    <span style={{ color: '#64748b', fontSize: 13 }}>{formatCurrency(item.price)}</span>
                   </div>
                   <div className="portal-merch-qty">
                     <button onClick={() => updateQuantity(item.id, -1)} data-testid={`merch-qty-minus-${item.id}`}>

@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Edit2, Mail, Phone, MapPin, Calendar, Download, ChevronRight } from 'lucide-react';
+import { Edit2, Mail, Phone, MapPin, Calendar, Download, ChevronRight, CreditCard, Plus, Trash2, Star, ChevronDown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { API_URL, formatCurrency } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export default function PortalMe() {
   const { user, memberData, refreshData } = useOutletContext();
   const [activeTab, setActiveTab] = useState('overview');
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [showAddCard, setShowAddCard] = useState(false);
+  const [cardForm, setCardForm] = useState({ number: '', exp_month: '', exp_year: '', cvc: '', nickname: '' });
+  const [savingCard, setSavingCard] = useState(false);
 
   const person = memberData?.person;
   const groups = memberData?.groups || [];
@@ -15,6 +20,7 @@ export default function PortalMe() {
   const tabs = [
     { id: 'overview', label: 'Overview' },
     { id: 'giving', label: 'My Giving' },
+    { id: 'payments', label: 'Payment Methods' },
     { id: 'groups', label: 'My Groups' },
     { id: 'communications', label: 'Communications' },
   ];
@@ -22,6 +28,63 @@ export default function PortalMe() {
   const getInitials = (name) => {
     if (!name) return 'U';
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  useEffect(() => { fetchPaymentMethods(); }, []);
+
+  const fetchPaymentMethods = async () => {
+    try {
+      const res = await fetch(`${API_URL}/portal/payment-methods`);
+      if (res.ok) { const d = await res.json(); setPaymentMethods(d.payment_methods || []); }
+    } catch (e) { console.error(e); }
+  };
+
+  const saveCard = async () => {
+    if (!cardForm.number || !cardForm.exp_month || !cardForm.exp_year || !cardForm.cvc) { toast.error('Fill all card fields'); return; }
+    setSavingCard(true);
+    try {
+      const last4 = cardForm.number.slice(-4);
+      const brand = cardForm.number.startsWith('4') ? 'Visa' : cardForm.number.startsWith('5') ? 'Mastercard' : cardForm.number.startsWith('3') ? 'Amex' : 'Card';
+      const res = await fetch(`${API_URL}/portal/payment-methods`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          stripe_payment_method_id: `pm_demo_${Date.now()}`,
+          card_brand: brand, card_last_four: last4,
+          card_exp_month: parseInt(cardForm.exp_month), card_exp_year: parseInt(cardForm.exp_year),
+          is_default: paymentMethods.length === 0, nickname: cardForm.nickname || `${brand} ****${last4}`,
+        }),
+      });
+      if (res.ok) { toast.success('Card saved!'); setShowAddCard(false); setCardForm({ number: '', exp_month: '', exp_year: '', cvc: '', nickname: '' }); fetchPaymentMethods(); }
+      else { const err = await res.json(); toast.error(err.detail || 'Failed to save'); }
+    } catch { toast.error('Failed to save card'); }
+    finally { setSavingCard(false); }
+  };
+
+  const deleteCard = async (id) => {
+    if (!confirm('Remove this payment method?')) return;
+    try {
+      const res = await fetch(`${API_URL}/portal/payment-methods/${id}`, { method: 'DELETE' });
+      if (res.ok) { toast.success('Removed'); fetchPaymentMethods(); }
+    } catch { toast.error('Failed to remove'); }
+  };
+
+  const setDefault = async (id) => {
+    try {
+      const res = await fetch(`${API_URL}/portal/payment-methods/${id}/default`, { method: 'PUT' });
+      if (res.ok) { toast.success('Default updated'); fetchPaymentMethods(); }
+    } catch { toast.error('Failed'); }
+  };
+
+  const downloadStatement = async (year) => {
+    try {
+      const res = await fetch(`${API_URL}/portal/giving/statement/${year}/pdf`);
+      if (!res.ok) { toast.error('Failed to generate'); return; }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `giving_statement_${year}.pdf`;
+      document.body.appendChild(a); a.click(); a.remove(); window.URL.revokeObjectURL(url);
+      toast.success(`${year} statement downloaded`);
+    } catch { toast.error('Download failed'); }
   };
 
   const formatMemberSince = () => {
@@ -137,25 +200,100 @@ export default function PortalMe() {
                 <span className="portal-giving-ytd-label">YTD Total</span>
                 <span className="portal-giving-ytd-value">{formatCurrency(giving.ytd_total || 0)}</span>
               </div>
-              
               {giving.recurring && (
                 <div className="portal-recurring-info">
                   <span>Recurring: {formatCurrency(giving.recurring.amount)}/{giving.recurring.frequency}</span>
-                  <button className="text-blue-600 text-sm hover:underline">Edit</button>
-                  <button className="text-red-600 text-sm hover:underline">Cancel</button>
                 </div>
               )}
             </div>
-
-            <button className="portal-download-statement-btn">
-              <Download className="w-4 h-4" />
-              Download Year-End Statement
-            </button>
-
-            {/* Mini Chart Placeholder */}
-            <div className="portal-giving-chart-placeholder">
+            <div className="space-y-2 mt-4" data-testid="me-tax-statement-section">
+              <p className="text-xs font-medium text-slate-500">DOWNLOAD TAX STATEMENT</p>
+              <div className="grid grid-cols-2 gap-2">
+                {[new Date().getFullYear(), new Date().getFullYear()-1, new Date().getFullYear()-2, new Date().getFullYear()-3].map(y => (
+                  <button key={y} onClick={() => downloadStatement(y)} className="flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 text-sm" data-testid={`me-download-${y}`}>
+                    <Download className="w-3.5 h-3.5 text-slate-500" /> {y}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="portal-giving-chart-placeholder mt-4">
               <p className="text-slate-400 text-sm">24-month giving chart coming soon</p>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'payments' && (
+          <div className="portal-payments-content" data-testid="payment-methods-tab">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="portal-info-title">Saved Payment Methods</h3>
+              <button onClick={() => setShowAddCard(!showAddCard)} className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 text-white rounded-lg text-sm hover:bg-slate-800 transition-colors" data-testid="add-payment-btn">
+                <Plus className="w-3.5 h-3.5" /> Add Card
+              </button>
+            </div>
+
+            {showAddCard && (
+              <div className="bg-slate-50 rounded-lg p-4 mb-4 space-y-3" data-testid="add-card-form">
+                <div>
+                  <label className="text-xs font-medium text-slate-500">CARD NUMBER</label>
+                  <input type="text" maxLength="19" value={cardForm.number} onChange={e => setCardForm({...cardForm, number: e.target.value.replace(/\D/g,'')})} placeholder="4242 4242 4242 4242" className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-300" data-testid="card-number-input" />
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-slate-500">MONTH</label>
+                    <input type="text" maxLength="2" value={cardForm.exp_month} onChange={e => setCardForm({...cardForm, exp_month: e.target.value})} placeholder="MM" className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-300" data-testid="card-month-input" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-slate-500">YEAR</label>
+                    <input type="text" maxLength="4" value={cardForm.exp_year} onChange={e => setCardForm({...cardForm, exp_year: e.target.value})} placeholder="2028" className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-300" data-testid="card-year-input" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-slate-500">CVC</label>
+                    <input type="text" maxLength="4" value={cardForm.cvc} onChange={e => setCardForm({...cardForm, cvc: e.target.value})} placeholder="123" className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-300" data-testid="card-cvc-input" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-slate-500">NICKNAME (optional)</label>
+                  <input type="text" value={cardForm.nickname} onChange={e => setCardForm({...cardForm, nickname: e.target.value})} placeholder="Personal Visa" className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-300" data-testid="card-nickname-input" />
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={saveCard} disabled={savingCard} className="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm hover:bg-slate-800 disabled:opacity-50" data-testid="save-card-btn">{savingCard ? 'Saving...' : 'Save Card'}</button>
+                  <button onClick={() => setShowAddCard(false)} className="px-4 py-2 border border-slate-200 rounded-lg text-sm hover:bg-slate-50">Cancel</button>
+                </div>
+              </div>
+            )}
+
+            {paymentMethods.length === 0 && !showAddCard ? (
+              <div className="text-center py-8">
+                <CreditCard className="w-12 h-12 text-slate-300 mx-auto" />
+                <p className="text-slate-500 mt-3 text-sm">No saved payment methods</p>
+                <p className="text-slate-400 text-xs mt-1">Add a card for faster checkout on Merch, Cafe, and Giving</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {paymentMethods.map(pm => (
+                  <div key={pm.id} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg" data-testid={`payment-method-${pm.id}`}>
+                    <div className="flex items-center gap-3">
+                      <CreditCard className="w-5 h-5 text-slate-600" />
+                      <div>
+                        <p className="text-sm font-medium text-slate-800">{pm.card_brand} •••• {pm.card_last_four}</p>
+                        <p className="text-xs text-slate-400">Exp {pm.card_exp_month}/{pm.card_exp_year} {pm.nickname ? `· ${pm.nickname}` : ''}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {pm.is_default ? (
+                        <span className="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium" data-testid={`default-badge-${pm.id}`}>Default</span>
+                      ) : (
+                        <button onClick={() => setDefault(pm.id)} className="text-xs text-blue-600 hover:underline" data-testid={`set-default-${pm.id}`}>Set Default</button>
+                      )}
+                      <button onClick={() => deleteCard(pm.id)} className="p-1 text-slate-400 hover:text-red-500 transition-colors" data-testid={`delete-card-${pm.id}`}>
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <p className="text-xs text-slate-400 mt-4">Payment methods are securely stored and can be used for Merch, Cafe, and Giving transactions.</p>
           </div>
         )}
 

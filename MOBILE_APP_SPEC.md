@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://church-crud-verified.preview.emergentagent.com/api
+https://solomon-phase3.preview.emergentagent.com/api
 ```
 
 ### Authentication

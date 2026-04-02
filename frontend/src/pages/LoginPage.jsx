@@ -41,6 +41,8 @@ export default function LoginPage() {
       if (data.session_token) {
         sessionStorage.setItem('session_token', data.session_token);
         sessionStorage.setItem('user_data', JSON.stringify(data));
+        sessionStorage.setItem('user_role', data.role || '');
+        sessionStorage.setItem('user_permissions', JSON.stringify(data.permissions || []));
         // Track login count for welcome message limiting
         const countKey = `solomon_login_count_${data.role === 'member' ? 'member' : 'church_admin'}`;
         const prevCount = parseInt(sessionStorage.getItem(countKey) || '0', 10);

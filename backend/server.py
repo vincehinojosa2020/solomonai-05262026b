@@ -78,7 +78,8 @@ from routes.geofence import router as geofence_router
 from routes.announcements import router as announcements_router
 from routes.media_uploads import router as media_uploads_router
 from routes.giving_nudge import router as giving_nudge_router
-from routes.courses import router as courses_router, _init as courses_init, seed_academy_course
+from routes.courses import router as courses_router, _init as courses_init, seed_academy_course, seed_academy_courses_v2
+from routes.solomonpay_admin import router as solomonpay_admin_router
 
 _domain_routers = [
     auth_router, portal_router, solomon_router,
@@ -91,7 +92,7 @@ _domain_routers = [
     agent_router, public_api_router,
     push_router, messaging_router, volunteer_router,
     geofence_router, announcements_router, media_uploads_router,
-    giving_nudge_router, courses_router,
+    giving_nudge_router, courses_router, solomonpay_admin_router,
 ]
 
 for router in _domain_routers:
@@ -132,6 +133,7 @@ async def startup():
             await ensure_mobile_demo_accounts()
             await seed_vol_data()
             await seed_academy_course()
+            await seed_academy_courses_v2()
             try:
                 await db.idempotency_keys.create_index("created_at", expireAfterSeconds=86400)
             except Exception:
