@@ -12,11 +12,12 @@ SOLOMON AI — FULL PARITY CONFIRMATION + GAP CLOSURE against Planning Center, S
 | 3 | COMPLETE | Groups Q&A/Notify, Tax Statements, Payment Methods, Onboarding Flow |
 | 4 | COMPLETE | SolomonPay Admin (8 tabs), RBAC (12 roles), Real-time Polling, 6 Academy Courses |
 | 5 | COMPLETE | DonorIQ, Virtual Terminal, Refunds, QR Codes, Cover Fees |
+| 6 | COMPLETE | Ask Solomon Agentic AI — Voice + Action Executor (7 action types), Confirmation UI |
 | 7 | COMPLETE | KidsCheckinAdmin refactor (sub-components extracted) |
 | 8.1 | COMPLETE | Twilio SMS scaffolding (graceful degradation, text-to-give parsing) |
 | 8.2 | COMPLETE | WebSocket service + useWebSocket hook (polling fallback) |
 | 8.3 | COMPLETE | Printer service (ZPL generation, config UI, Brother/Zebra/Dymo support) |
-| 9 | COMPLETE | Final validation — 100% pass (iteration_71.json) |
+| 9 | COMPLETE | Final validation — 100% pass (iteration_72.json) |
 
 ## Architecture
 ```
@@ -26,11 +27,13 @@ SOLOMON AI — FULL PARITY CONFIRMATION + GAP CLOSURE against Planning Center, S
 │   ├── core/                        # RBAC (12 roles), auth, helpers
 │   ├── models/schemas.py            # Pydantic models
 │   ├── routes/                      # 35+ route files
-│   │   ├── solomonpay_admin.py      # 560 lines — Dashboard, DonorIQ, VT, Refunds, QR
+│   │   ├── solomon.py               # Agentic AI chat + action execution
+│   │   ├── solomonpay_admin.py      # Dashboard, DonorIQ, VT, Refunds, QR
 │   │   ├── sms_routes.py            # Text-to-give, SMS management
 │   │   ├── printer_routes.py        # Printer CRUD, test print, label preview
 │   │   └── ...
 │   ├── services/
+│   │   ├── solomon_actions.py       # Action executor (7 action types)
 │   │   ├── sms_service.py           # Twilio with graceful degradation
 │   │   ├── websocket_service.py     # ConnectionManager, event emitters
 │   │   └── print_service.py         # ZPL generation, label templates
@@ -45,9 +48,23 @@ SOLOMON AI — FULL PARITY CONFIRMATION + GAP CLOSURE against Planning Center, S
 │   │   │   ├── useWebSocket.js     # WebSocket with auto-reconnect
 │   │   │   └── usePolling.js       # Polling fallback
 │   │   ├── components/
+│   │   │   ├── SolomonChat.jsx     # Agentic AI chat with voice + action confirm
 │   │   │   ├── OnboardingFlow.jsx  # First sign-in 3-step modal
 │   │   │   └── SolomonPayForm.jsx  # Cover fees toggle
 ```
+
+## Phase 6 — Ask Solomon Agentic AI (Completed April 2, 2026)
+- **Backend**: `SolomonActionExecutor` in `/app/backend/services/solomon_actions.py` with 7 handlers:
+  - `cafe_order`: Creates cafe orders (latte, coffee, pastry, etc.)
+  - `merch_order`: Creates merchandise orders (t-shirts, hoodies, hats)
+  - `donation`: Creates one-time donations to any fund
+  - `recurring_giving`: Sets up recurring giving schedules
+  - `event_registration`: Registers for events (searches by name/title)
+  - `group_join`: Joins church groups/ministries
+  - `checkin`: Kids check-in with pickup code generation
+- **Intent Parsing**: System prompt instructs Claude to embed `\`\`\`action` JSON blocks; `_parse_action_from_response()` extracts them
+- **Endpoints**: `POST /api/solomon/chat` (with pending_action), `POST /api/solomon/execute-action`
+- **Frontend**: `ActionConfirmCard` component with Confirm/Cancel, colored by action type, success/error states
 
 ## Parity Verdicts
 | Competitor | Parity | Full Analysis |
@@ -68,7 +85,6 @@ SOLOMON AI — FULL PARITY CONFIRMATION + GAP CLOSURE against Planning Center, S
 - Portal Member: member@abundant.church / Demo2026!
 
 ## Remaining/Deferred
-- Phase 6: Ask Solomon Agentic AI (voice actions for cafe, merch, donations)
 - Native mobile app (iOS/Android) — major project
 - Apple Pay / Google Pay — Stripe Payment Request API
 - ACH bank transfers — Stripe ACH integration
