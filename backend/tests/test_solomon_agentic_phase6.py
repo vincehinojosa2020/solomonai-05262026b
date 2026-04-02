@@ -14,11 +14,11 @@ import uuid
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
-# Test credentials
-MEMBER_EMAIL = "member@abundant.church"
-MEMBER_PASSWORD = "Demo2026!"
-ADMIN_EMAIL = "shannonnieman1030@gmail.com"
-ADMIN_PASSWORD = "Demo2026!"
+# Test credentials — from environment
+MEMBER_EMAIL = os.environ.get('TEST_MEMBER_EMAIL', 'member@abundant.church')
+MEMBER_PASSWORD = os.environ.get('TEST_MEMBER_PASSWORD', '')
+ADMIN_EMAIL = os.environ.get('TEST_ADMIN_EMAIL', 'shannonnieman1030@gmail.com')
+ADMIN_PASSWORD = os.environ.get('TEST_ADMIN_PASSWORD', '')
 
 
 class TestSolomonAgenticPhase6:

@@ -9,9 +9,9 @@ import time
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
-# Test credentials
-ADMIN_EMAIL = "shannonnieman1030@gmail.com"
-ADMIN_PASSWORD = "Demo2026!"
+# Test credentials — from environment
+ADMIN_EMAIL = os.environ.get('TEST_ADMIN_EMAIL', 'shannonnieman1030@gmail.com')
+ADMIN_PASSWORD = os.environ.get('TEST_ADMIN_PASSWORD', '')
 
 
 class TestPhase5GapClosure:

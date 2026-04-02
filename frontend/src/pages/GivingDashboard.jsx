@@ -372,7 +372,7 @@ export default function GivingDashboard() {
                 >
                   {methodData.map((entry, index) => (
                     <Cell 
-                      key={`cell-${index}`} 
+                      key={`cell-${entry.name}`} 
                       fill={PAYMENT_COLORS[entry.name.toLowerCase()] || '#94a3b8'} 
                     />
                   ))}

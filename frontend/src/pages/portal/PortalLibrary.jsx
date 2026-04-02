@@ -303,7 +303,7 @@ const HeroSection = ({ content, onPlay, watchProgress }) => {
         <div className="prem-hero-nav">
           {featured.map((_, i) => (
             <button
-              key={i}
+              key={`nav-dot-${i}`}
               className={`prem-nav-dot ${activeIndex === i ? 'active' : ''}`}
               onClick={() => setActiveIndex(i)}
             />

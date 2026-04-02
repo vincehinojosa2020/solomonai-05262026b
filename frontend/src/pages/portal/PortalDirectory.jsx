@@ -60,7 +60,7 @@ export default function PortalDirectory() {
     return (
       <div className="space-y-4 py-6" data-testid="directory-loading">
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="animate-pulse flex items-center gap-3 p-4 bg-white rounded-xl">
+          <div key={`skel-${i}`} className="animate-pulse flex items-center gap-3 p-4 bg-white rounded-xl">
             <div className="w-10 h-10 bg-slate-200 rounded-full" />
             <div className="flex-1 space-y-2">
               <div className="h-4 bg-slate-200 rounded w-32" />

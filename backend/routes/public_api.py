@@ -1528,7 +1528,9 @@ async def get_communications(status: Optional[str] = None, limit: int = 20):
 
 
 @router.post("/communications")
-async def create_communication(subject: str, body_html: str, recipient_ids: List[str] = []):
+async def create_communication(subject: str, body_html: str, recipient_ids: Optional[List[str]] = None):
+    if recipient_ids is None:
+        recipient_ids = []
     tenant_id = DEFAULT_TENANT_ID
     
     comm = Communication(

@@ -322,8 +322,10 @@ async def create_plan_from_template(request: Request, payload: dict):
 
 
 @router.post("/admin/services/plans/{plan_id}/duplicate")
-async def duplicate_plan(request: Request, plan_id: str, payload: dict = {}):
+async def duplicate_plan(request: Request, plan_id: str, payload: dict = None):
     """Duplicate an existing plan to a new date"""
+    if payload is None:
+        payload = {}
     user = await require_permission(request, "admin.dashboard")
     tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
     source = await db.service_plans.find_one({"id": plan_id, "tenant_id": tenant_id}, {"_id": 0})

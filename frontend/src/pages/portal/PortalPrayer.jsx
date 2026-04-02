@@ -39,14 +39,7 @@ export default function PortalPrayer() {
     is_anonymous: false
   });
 
-  useEffect(() => {
-    fetchData();
-  }, [activeTab, selectedCategory]);
-
-  // Real-time polling every 30 seconds
-  usePolling(useCallback(() => fetchData(), [activeTab, selectedCategory]), 30000);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       if (activeTab === 'wall') {
@@ -70,7 +63,14 @@ export default function PortalPrayer() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab, selectedCategory]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // Real-time polling every 30 seconds
+  usePolling(fetchData, 30000);
 
   const submitRequest = async () => {
     if (!newRequest.title.trim()) {

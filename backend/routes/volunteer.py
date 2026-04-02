@@ -8,7 +8,8 @@ from datetime import datetime, timezone, timedelta
 from database import db, serialize_doc, DEFAULT_TENANT_ID
 from auth import get_current_admin_user, get_current_member_user
 import uuid
-import random
+from random import SystemRandom
+_rng = SystemRandom()
 
 router = APIRouter()
 
@@ -406,9 +407,9 @@ async def seed_volunteer_leaderboard_data():
             "user_name": user_name,
             "opportunity_id": opp["id"] if opp else f"opp_seed_{i}",
             "ministry_area": ministry_map.get(opp["id"], "General") if opp else "General",
-            "hours": round(random.uniform(1.5, 4.0), 1),
+            "hours": round(_rng.uniform(1.5, 4.0), 1),
             "status": "signed_up",
-            "created_at": (now - timedelta(days=random.randint(1, 90))).isoformat(),
+            "created_at": (now - timedelta(days=_rng.randint(1, 90))).isoformat(),
         })
     fake_volunteers = [
         ("vol_demo_sarah", "Sarah Johnson", 22),
@@ -430,9 +431,9 @@ async def seed_volunteer_leaderboard_data():
                 "user_name": fake_name,
                 "opportunity_id": opp["id"] if opp else f"opp_seed_{j}",
                 "ministry_area": ministry_map.get(opp["id"], "General") if opp else "General",
-                "hours": round(random.uniform(1.0, 3.5), 1),
+                "hours": round(_rng.uniform(1.0, 3.5), 1),
                 "status": "signed_up",
-                "created_at": (now - timedelta(days=random.randint(1, 120))).isoformat(),
+                "created_at": (now - timedelta(days=_rng.randint(1, 120))).isoformat(),
             })
     for s in seed_signups:
         await db.volunteer_signups.update_one({"id": s["id"]}, {"$set": s}, upsert=True)

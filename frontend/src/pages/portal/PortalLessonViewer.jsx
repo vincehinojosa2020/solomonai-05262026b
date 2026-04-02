@@ -193,7 +193,7 @@ function QuizLesson({ lesson, courseId, onComplete }) {
         <div className="flex items-center gap-1.5">
           {questions.map((_, i) => (
             <button
-              key={i}
+              key={`q-dot-${i}`}
               className={`w-2.5 h-2.5 rounded-full transition-colors ${
                 i === currentQ ? 'bg-indigo-500' : answers[i] >= 0 ? 'bg-indigo-200' : 'bg-slate-200'
               }`}

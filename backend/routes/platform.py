@@ -8,8 +8,8 @@ import uuid
 import re
 import hashlib
 import logging
-import random
-import secrets
+from random import SystemRandom
+_rng = SystemRandom()
 import os
 import bcrypt
 
@@ -334,12 +334,12 @@ async def seed_demo_accounts(tenant_id: str):
             "id": ep_household_id,
             "tenant_id": tenant_id,
             "name": f"The {ep_member['last']} Family",
-            "address_line1": f"{random.randint(1000, 9999)} {random.choice(el_paso_streets)}",
+            "address_line1": f"{_rng.randint(1000, 9999)} {_rng.choice(el_paso_streets)}",
             "city": "El Paso",
             "state": "TX",
-            "zip": f"799{random.randint(10, 99)}",
+            "zip": f"799{_rng.randint(10, 99)}",
             "country": "US",
-            "phone": f"(915) {random.randint(200, 999)}-{random.randint(1000, 9999)}",
+            "phone": f"(915) {_rng.randint(200, 999)}-{_rng.randint(1000, 9999)}",
             "envelope_num": 1002 + i,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
@@ -352,18 +352,18 @@ async def seed_demo_accounts(tenant_id: str):
             "first_name": ep_member["first"],
             "last_name": ep_member["last"],
             "email": f"{ep_member['first'].lower()}.{ep_member['last'].lower()}@email.com",
-            "mobile_phone": f"(915) {random.randint(200, 999)}-{random.randint(1000, 9999)}",
-            "date_of_birth": f"{random.randint(1960, 2000)}-{random.randint(1, 12):02d}-{random.randint(1, 28):02d}",
+            "mobile_phone": f"(915) {_rng.randint(200, 999)}-{_rng.randint(1000, 9999)}",
+            "date_of_birth": f"{_rng.randint(1960, 2000)}-{_rng.randint(1, 12):02d}-{_rng.randint(1, 28):02d}",
             "gender": ep_member["gender"],
             "marital_status": "married",
             "membership_status": "member",
-            "membership_date": f"20{random.randint(15, 24)}-{random.randint(1, 12):02d}-01",
+            "membership_date": f"20{_rng.randint(15, 24)}-{_rng.randint(1, 12):02d}-01",
             "photo_url": f"https://api.dicebear.com/7.x/avataaars/svg?seed={ep_person_id}",
             "is_head_of_household": True,
-            "campus": random.choice(["Main Campus", "East Campus", "West Campus"]),
-            "engagement_score": random.randint(60, 100),
-            "ytd_giving": random.randint(500, 5000) * 1.0,
-            "lifetime_giving": random.randint(5000, 50000) * 1.0,
+            "campus": _rng.choice(["Main Campus", "East Campus", "West Campus"]),
+            "engagement_score": _rng.randint(60, 100),
+            "ytd_giving": _rng.randint(500, 5000) * 1.0,
+            "lifetime_giving": _rng.randint(5000, 50000) * 1.0,
             "custom_fields": {},
             "giving_anonymous": False,
             "paperless_statements": True,
@@ -374,30 +374,30 @@ async def seed_demo_accounts(tenant_id: str):
     # Create 80 households with 200 people (remaining generic)
     for h in range(80):
         household_id = str(uuid.uuid4())
-        last_name = random.choice(last_names)
+        last_name = _rng.choice(last_names)
         
         household = {
             "id": household_id,
             "tenant_id": tenant_id,
             "name": f"The {last_name} Family",
-            "address_line1": f"{random.randint(100, 9999)} {random.choice(['Oak', 'Main', 'Church', 'Park', 'Elm', 'Cedar'])} {random.choice(['St', 'Ave', 'Blvd', 'Dr'])}",
+            "address_line1": f"{_rng.randint(100, 9999)} {_rng.choice(['Oak', 'Main', 'Church', 'Park', 'Elm', 'Cedar'])} {_rng.choice(['St', 'Ave', 'Blvd', 'Dr'])}",
             "city": "El Cajon",
             "state": "CA",
-            "zip": f"920{random.randint(10, 99)}",
+            "zip": f"920{_rng.randint(10, 99)}",
             "country": "US",
-            "phone": f"619-{random.randint(200, 999)}-{random.randint(1000, 9999)}",
+            "phone": f"619-{_rng.randint(200, 999)}-{_rng.randint(1000, 9999)}",
             "envelope_num": h + 1,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         households.append(household)
         
         # 2-3 people per household
-        num_people = random.randint(2, 3)
+        num_people = _rng.randint(2, 3)
         for i in range(num_people):
             person_id = str(uuid.uuid4())
-            first_name = random.choice(first_names)
-            gender = random.choice(genders)
-            birth_year = random.randint(1950, 2010)
+            first_name = _rng.choice(first_names)
+            gender = _rng.choice(genders)
+            birth_year = _rng.randint(1950, 2010)
             
             person = {
                 "id": person_id,
@@ -405,17 +405,17 @@ async def seed_demo_accounts(tenant_id: str):
                 "household_id": household_id,
                 "first_name": first_name,
                 "last_name": last_name,
-                "email": f"{first_name.lower()}.{last_name.lower()}{random.randint(1, 99)}@email.com",
-                "mobile_phone": f"619-{random.randint(200, 999)}-{random.randint(1000, 9999)}",
-                "date_of_birth": f"{birth_year}-{random.randint(1, 12):02d}-{random.randint(1, 28):02d}",
+                "email": f"{first_name.lower()}.{last_name.lower()}{_rng.randint(1, 99)}@email.com",
+                "mobile_phone": f"619-{_rng.randint(200, 999)}-{_rng.randint(1000, 9999)}",
+                "date_of_birth": f"{birth_year}-{_rng.randint(1, 12):02d}-{_rng.randint(1, 28):02d}",
                 "gender": gender,
-                "marital_status": random.choice(["single", "married", "married"]),
-                "membership_status": random.choice(statuses),
-                "membership_date": f"20{random.randint(10, 24)}-{random.randint(1, 12):02d}-01",
+                "marital_status": _rng.choice(["single", "married", "married"]),
+                "membership_status": _rng.choice(statuses),
+                "membership_date": f"20{_rng.randint(10, 24)}-{_rng.randint(1, 12):02d}-01",
                 "photo_url": f"https://api.dicebear.com/7.x/avataaars/svg?seed={person_id}",
                 "is_head_of_household": i == 0,
-                "campus": random.choice(campuses),
-                "engagement_score": random.randint(20, 100),
+                "campus": _rng.choice(campuses),
+                "engagement_score": _rng.randint(20, 100),
                 "ytd_giving": 0,
                 "lifetime_giving": 0,
                 "custom_fields": {},
@@ -440,7 +440,7 @@ async def seed_demo_accounts(tenant_id: str):
     groups = []
     for i, name in enumerate(group_names):
         group_type = group_types[i % len(group_types)]
-        leader = random.choice(people)
+        leader = _rng.choice(people)
         
         group = {
             "id": str(uuid.uuid4()),
@@ -448,12 +448,12 @@ async def seed_demo_accounts(tenant_id: str):
             "group_type_id": group_type["id"],
             "name": name,
             "description": f"{name} - a place to grow and connect",
-            "location": random.choice(["Room 101", "Room 202", "Fellowship Hall", "Chapel", "Youth Center"]),
-            "meeting_schedule": random.choice(["Weekly", "Bi-weekly", "Monthly"]),
-            "meeting_day": random.choice(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Sunday"]),
-            "meeting_time": random.choice(["09:00", "10:00", "18:00", "19:00"]),
-            "capacity": random.randint(15, 60),
-            "is_open": random.choice([True, True, True, False]),
+            "location": _rng.choice(["Room 101", "Room 202", "Fellowship Hall", "Chapel", "Youth Center"]),
+            "meeting_schedule": _rng.choice(["Weekly", "Bi-weekly", "Monthly"]),
+            "meeting_day": _rng.choice(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Sunday"]),
+            "meeting_time": _rng.choice(["09:00", "10:00", "18:00", "19:00"]),
+            "capacity": _rng.randint(15, 60),
+            "is_open": _rng.choice([True, True, True, False]),
             "is_active": True,
             "leader_id": leader["id"],
             "tags": [],
@@ -466,8 +466,8 @@ async def seed_demo_accounts(tenant_id: str):
     # Assign people to groups (each person in 1-3 groups)
     group_members = []
     for person in people:
-        num_groups = random.randint(1, 3)
-        selected_groups = random.sample(groups, min(num_groups, len(groups)))
+        num_groups = _rng.randint(1, 3)
+        selected_groups = _rng.sample(groups, min(num_groups, len(groups)))
         
         for g in selected_groups:
             member = {
@@ -475,8 +475,8 @@ async def seed_demo_accounts(tenant_id: str):
                 "tenant_id": tenant_id,
                 "group_id": g["id"],
                 "person_id": person["id"],
-                "role": random.choice(["member", "member", "member", "leader", "co-leader"]),
-                "joined_at": f"20{random.randint(20, 24)}-{random.randint(1, 12):02d}-{random.randint(1, 28):02d}",
+                "role": _rng.choice(["member", "member", "member", "leader", "co-leader"]),
+                "joined_at": f"20{_rng.randint(20, 24)}-{_rng.randint(1, 12):02d}-{_rng.randint(1, 28):02d}",
                 "is_active": True
             }
             group_members.append(member)
@@ -505,7 +505,7 @@ async def seed_demo_accounts(tenant_id: str):
                 "service_type_id": st["id"],
                 "date": sunday_str,
                 "time": st["default_time"],
-                "total_headcount": random.randint(3000, 4500),
+                "total_headcount": _rng.randint(3000, 4500),
                 "notes": None,
                 "created_at": datetime.now(timezone.utc).isoformat()
             }
@@ -517,7 +517,7 @@ async def seed_demo_accounts(tenant_id: str):
     attendance_records = []
     for service in services[-24:]:  # Last 12 weeks (24 services)
         # Random subset of people attended
-        attendees = random.sample(people, random.randint(60, 120))
+        attendees = _rng.sample(people, _rng.randint(60, 120))
         for person in attendees:
             record = {
                 "id": str(uuid.uuid4()),
@@ -541,12 +541,12 @@ async def seed_demo_accounts(tenant_id: str):
         sunday_str = sunday.strftime("%Y-%m-%d")
         
         # 40-80 donations per week
-        num_donations = random.randint(40, 80)
-        donors = random.sample(people, min(num_donations, len(people)))
+        num_donations = _rng.randint(40, 80)
+        donors = _rng.sample(people, min(num_donations, len(people)))
         
         for donor in donors:
-            fund = random.choice(funds)
-            amount = random.choice([25, 50, 100, 100, 150, 200, 250, 500, 1000, 2500])
+            fund = _rng.choice(funds)
+            amount = _rng.choice([25, 50, 100, 100, 150, 200, 250, 500, 1000, 2500])
             
             donation = {
                 "id": str(uuid.uuid4()),
@@ -555,8 +555,8 @@ async def seed_demo_accounts(tenant_id: str):
                 "fund_id": fund["id"],
                 "amount": float(amount),
                 "donation_date": sunday_str,
-                "payment_method": random.choice(payment_methods),
-                "is_recurring": random.random() < 0.15,
+                "payment_method": _rng.choice(payment_methods),
+                "is_recurring": _rng.random() < 0.15,
                 "receipt_sent": True,
                 "created_at": datetime.now(timezone.utc).isoformat()
             }
@@ -565,9 +565,9 @@ async def seed_demo_accounts(tenant_id: str):
     # Add 5 crypto donations
     crypto_currencies = ["BTC", "ETH", "USDC", "SOL"]
     for _ in range(5):
-        donor = random.choice(people)
-        crypto_amount = random.uniform(0.01, 2.0)
-        usd_value = random.uniform(500, 25000)
+        donor = _rng.choice(people)
+        crypto_amount = _rng.uniform(0.01, 2.0)
+        usd_value = _rng.uniform(500, 25000)
         
         donation = {
             "id": str(uuid.uuid4()),
@@ -575,11 +575,11 @@ async def seed_demo_accounts(tenant_id: str):
             "person_id": donor["id"],
             "fund_id": funds[0]["id"],  # General fund
             "amount": usd_value,
-            "donation_date": (today - timedelta(days=random.randint(1, 180))).strftime("%Y-%m-%d"),
+            "donation_date": (today - timedelta(days=_rng.randint(1, 180))).strftime("%Y-%m-%d"),
             "payment_method": "crypto",
-            "crypto_currency": random.choice(crypto_currencies),
+            "crypto_currency": _rng.choice(crypto_currencies),
             "crypto_amount": crypto_amount,
-            "crypto_tx_hash": f"0x{''.join(random.choices('0123456789abcdef', k=64))}",
+            "crypto_tx_hash": f"0x{''.join(_rng.choices('0123456789abcdef', k=64))}",
             "crypto_usd_value": usd_value,
             "is_recurring": False,
             "receipt_sent": True,
@@ -594,14 +594,14 @@ async def seed_demo_accounts(tenant_id: str):
     ]
     
     for asset in asset_donations:
-        donor = random.choice(people)
+        donor = _rng.choice(people)
         donation = {
             "id": str(uuid.uuid4()),
             "tenant_id": tenant_id,
             "person_id": donor["id"],
             "fund_id": funds[1]["id"],  # Building fund
             "amount": asset["asset_appraised_value"],
-            "donation_date": (today - timedelta(days=random.randint(30, 180))).strftime("%Y-%m-%d"),
+            "donation_date": (today - timedelta(days=_rng.randint(30, 180))).strftime("%Y-%m-%d"),
             "payment_method": "stock" if asset["asset_type"] == "stock" else "vehicle",
             "asset_type": asset["asset_type"],
             "asset_description": asset["asset_description"],
@@ -631,7 +631,7 @@ async def seed_demo_accounts(tenant_id: str):
         )
     
     # Create recurring giving (30 givers)
-    recurring_givers = random.sample(people, 30)
+    recurring_givers = _rng.sample(people, 30)
     recurring_records = []
     
     for person in recurring_givers:
@@ -639,10 +639,10 @@ async def seed_demo_accounts(tenant_id: str):
             "id": str(uuid.uuid4()),
             "tenant_id": tenant_id,
             "person_id": person["id"],
-            "fund_id": random.choice(funds)["id"],
-            "amount": float(random.choice([50, 100, 150, 200, 250, 500])),
-            "frequency": random.choice(["weekly", "biweekly", "monthly"]),
-            "next_gift_date": (today + timedelta(days=random.randint(1, 30))).strftime("%Y-%m-%d"),
+            "fund_id": _rng.choice(funds)["id"],
+            "amount": float(_rng.choice([50, 100, 150, 200, 250, 500])),
+            "frequency": _rng.choice(["weekly", "biweekly", "monthly"]),
+            "next_gift_date": (today + timedelta(days=_rng.randint(1, 30))).strftime("%Y-%m-%d"),
             "payment_method": "card",
             "is_active": True,
             "created_at": datetime.now(timezone.utc).isoformat()
@@ -652,12 +652,12 @@ async def seed_demo_accounts(tenant_id: str):
     await db.recurring_giving.insert_many(recurring_records)
     
     # Create pledges (10 pledges for Building Fund campaign)
-    pledgers = random.sample(people, 10)
+    pledgers = _rng.sample(people, 10)
     pledges = []
     
     for person in pledgers:
-        pledge_amount = random.choice([5000, 10000, 15000, 25000, 50000])
-        total_given = random.uniform(0.2, 0.9) * pledge_amount
+        pledge_amount = _rng.choice([5000, 10000, 15000, 25000, 50000])
+        total_given = _rng.uniform(0.2, 0.9) * pledge_amount
         
         pledge = {
             "id": str(uuid.uuid4()),
@@ -1682,8 +1682,8 @@ async def seed_church_members(tenant_id: str, church_name: str, count: int = 500
     
     for i in range(count):
         person_id = str(uuid.uuid4())
-        first_name = random.choice(first_names)
-        last_name = random.choice(last_names)
+        first_name = _rng.choice(first_names)
+        last_name = _rng.choice(last_names)
         
         person = {
             "id": person_id,
@@ -1691,13 +1691,13 @@ async def seed_church_members(tenant_id: str, church_name: str, count: int = 500
             "first_name": first_name,
             "last_name": last_name,
             "email": f"{first_name.lower()}.{last_name.lower()}{i}@email.com",
-            "mobile_phone": f"({random.randint(200, 999)}) {random.randint(200, 999)}-{random.randint(1000, 9999)}",
-            "date_of_birth": f"{random.randint(1960, 2005)}-{random.randint(1, 12):02d}-{random.randint(1, 28):02d}",
-            "gender": random.choice(["male", "female"]),
-            "membership_status": random.choice(statuses),
-            "membership_date": (six_months_ago + timedelta(days=random.randint(0, 180))).strftime("%Y-%m-%d"),
+            "mobile_phone": f"({_rng.randint(200, 999)}) {_rng.randint(200, 999)}-{_rng.randint(1000, 9999)}",
+            "date_of_birth": f"{_rng.randint(1960, 2005)}-{_rng.randint(1, 12):02d}-{_rng.randint(1, 28):02d}",
+            "gender": _rng.choice(["male", "female"]),
+            "membership_status": _rng.choice(statuses),
+            "membership_date": (six_months_ago + timedelta(days=_rng.randint(0, 180))).strftime("%Y-%m-%d"),
             "photo_url": f"https://api.dicebear.com/7.x/avataaars/svg?seed={person_id}",
-            "engagement_score": random.randint(30, 100),
+            "engagement_score": _rng.randint(30, 100),
             "ytd_giving": 0,
             "lifetime_giving": 0,
             "created_at": datetime.now(timezone.utc).isoformat()
@@ -1705,40 +1705,40 @@ async def seed_church_members(tenant_id: str, church_name: str, count: int = 500
         people.append(person)
         
         # Generate donations (6 months of history)
-        if random.random() > 0.3:  # 70% of members give
-            num_donations = random.randint(3, 24)  # 3-24 donations over 6 months
+        if _rng.random() > 0.3:  # 70% of members give
+            num_donations = _rng.randint(3, 24)  # 3-24 donations over 6 months
             person_total = 0
             for _ in range(num_donations):
-                donation_date = six_months_ago + timedelta(days=random.randint(0, 180))
-                amount = random.choice([25, 50, 100, 150, 200, 250, 500, 1000])
+                donation_date = six_months_ago + timedelta(days=_rng.randint(0, 180))
+                amount = _rng.choice([25, 50, 100, 150, 200, 250, 500, 1000])
                 donation = {
                     "id": str(uuid.uuid4()),
                     "tenant_id": tenant_id,
                     "person_id": person_id,
                     "donor_name": f"{first_name} {last_name}",
                     "amount": amount,
-                    "fund_name": random.choice(fund_names),
+                    "fund_name": _rng.choice(fund_names),
                     "donation_date": donation_date.strftime("%Y-%m-%d"),
-                    "payment_method": random.choice(["card", "ach", "cash", "check"]),
+                    "payment_method": _rng.choice(["card", "ach", "cash", "check"]),
                     "payment_status": "completed",
                     "created_at": donation_date.isoformat()
                 }
                 donations.append(donation)
                 person_total += amount
             person["ytd_giving"] = person_total
-            person["lifetime_giving"] = person_total * random.uniform(1, 3)
+            person["lifetime_giving"] = person_total * _rng.uniform(1, 3)
         
         # Generate attendance (6 months)
-        if random.random() > 0.2:  # 80% have some attendance
-            num_attendances = random.randint(5, 24)  # 5-24 services over 6 months
+        if _rng.random() > 0.2:  # 80% have some attendance
+            num_attendances = _rng.randint(5, 24)  # 5-24 services over 6 months
             for _ in range(num_attendances):
-                att_date = six_months_ago + timedelta(days=random.randint(0, 180))
+                att_date = six_months_ago + timedelta(days=_rng.randint(0, 180))
                 att_record = {
                     "id": str(uuid.uuid4()),
                     "tenant_id": tenant_id,
                     "person_id": person_id,
                     "person_name": f"{first_name} {last_name}",
-                    "service_name": random.choice(["Sunday 9AM", "Sunday 11AM", "Wednesday Night"]),
+                    "service_name": _rng.choice(["Sunday 9AM", "Sunday 11AM", "Wednesday Night"]),
                     "check_in_time": att_date.isoformat(),
                     "created_at": att_date.isoformat()
                 }

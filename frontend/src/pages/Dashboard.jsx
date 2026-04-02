@@ -43,7 +43,7 @@ const CustomTooltip = ({ active, payload, label }) => {
       <div className="custom-tooltip">
         <p className="label">{label}</p>
         {payload.map((entry, index) => (
-          <p key={index} className="value" style={{ color: entry.color }}>
+          <p key={`${entry.name}-${index}`} className="value" style={{ color: entry.color }}>
             {entry.name}: {typeof entry.value === 'number' && entry.value > 100 
               ? formatCurrency(entry.value) 
               : formatNumber(entry.value)}

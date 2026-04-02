@@ -408,9 +408,9 @@ class SolomonActionExecutor:
                 "navigate": "/portal/kids",
             }
 
-        import random
+        import secrets
         import string
-        pickup_code = "".join(random.choices(string.ascii_uppercase + string.digits, k=4))
+        pickup_code = "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(4))
         classroom = params.get("classroom", "Sunday School")
 
         user = await db.users.find_one({"user_id": user_id}, {"_id": 0})

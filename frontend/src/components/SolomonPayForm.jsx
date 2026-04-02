@@ -70,7 +70,7 @@ export default function SolomonPayForm({ amount, onSuccess, onCancel, context = 
     } finally {
       setLoading(false);
     }
-  }, [cardNumber, expiry, cvv, cardholderName, billingZip, saveCard, amount, brand, context, isValid, loading, onSuccess]);
+  }, [cardNumber, expiry, cvv, cardholderName, billingZip, saveCard, coverFees, totalAmount, amount, brand, context, isValid, loading, onSuccess]);
 
   const inputStyle = {
     width: '100%', padding: '12px 14px', fontSize: 15, border: '1px solid #d1d5db',

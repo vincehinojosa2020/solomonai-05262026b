@@ -12,11 +12,11 @@ import uuid
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
-# Test credentials
-PORTAL_MEMBER_EMAIL = "member@abundant.church"
-PORTAL_MEMBER_PASSWORD = "Demo2026!"
-CHURCH_ADMIN_EMAIL = "shannonnieman1030@gmail.com"
-CHURCH_ADMIN_PASSWORD = "Demo2026!"
+# Test credentials — from environment
+PORTAL_MEMBER_EMAIL = os.environ.get('TEST_MEMBER_EMAIL', 'member@abundant.church')
+PORTAL_MEMBER_PASSWORD = os.environ.get('TEST_MEMBER_PASSWORD', '')
+CHURCH_ADMIN_EMAIL = os.environ.get('TEST_ADMIN_EMAIL', 'shannonnieman1030@gmail.com')
+CHURCH_ADMIN_PASSWORD = os.environ.get('TEST_ADMIN_PASSWORD', '')
 
 
 class TestRecurringGivingPortal:

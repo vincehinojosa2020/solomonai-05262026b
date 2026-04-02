@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -37,13 +37,7 @@ const VideoPlayer = ({ isOpen, onClose, video, onShare, user }) => {
   const [savingNote, setSavingNote] = useState(false);
   const [showNotes, setShowNotes] = useState(true);
 
-  useEffect(() => {
-    if (isOpen && video?.id) {
-      fetchVideoNotes();
-    }
-  }, [isOpen, video?.id]);
-
-  const fetchVideoNotes = async () => {
+  const fetchVideoNotes = useCallback(async () => {
     if (!video?.id) return;
     try {
       const res = await fetch(`${API_URL}/portal/video-notes/video/${video.id}`, { 
@@ -56,7 +50,13 @@ const VideoPlayer = ({ isOpen, onClose, video, onShare, user }) => {
     } catch (error) {
       console.error('Failed to fetch notes:', error);
     }
-  };
+  }, [video?.id]);
+
+  useEffect(() => {
+    if (isOpen && video?.id) {
+      fetchVideoNotes();
+    }
+  }, [isOpen, video?.id, fetchVideoNotes]);
 
   const saveNote = async () => {
     if (!newNote.trim() || !video?.id) return;
@@ -390,13 +390,7 @@ const NotesPanel = ({ video, user, isOpen, onClose }) => {
   const [editingNote, setEditingNote] = useState(null);
   const [shareModalNote, setShareModalNote] = useState(null);
   
-  useEffect(() => {
-    if (isOpen && video) {
-      fetchNotes();
-    }
-  }, [isOpen, video?.id, activeTab]);
-  
-  const fetchNotes = async () => {
+  const fetchNotes = useCallback(async () => {
     if (!video?.id) return;
     setLoading(true);
     try {
@@ -418,7 +412,13 @@ const NotesPanel = ({ video, user, isOpen, onClose }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [video?.id, activeTab]);
+
+  useEffect(() => {
+    if (isOpen && video) {
+      fetchNotes();
+    }
+  }, [isOpen, video?.id, activeTab, fetchNotes]);
   
   const createNote = async () => {
     if (!newNote.trim()) return;
@@ -733,11 +733,7 @@ const ShareNoteModal = ({ note, onClose, onShared }) => {
   const [shareWithChurch, setShareWithChurch] = useState(note.is_public || false);
   const [loading, setLoading] = useState(false);
   
-  useEffect(() => {
-    fetchMembers();
-  }, [searchQuery]);
-  
-  const fetchMembers = async () => {
+  const fetchMembers = useCallback(async () => {
     try {
       const url = searchQuery 
         ? `${API_URL}/portal/church-members?search=${encodeURIComponent(searchQuery)}`
@@ -750,7 +746,11 @@ const ShareNoteModal = ({ note, onClose, onShared }) => {
     } catch (error) {
       console.error('Failed to fetch members:', error);
     }
-  };
+  }, [searchQuery]);
+
+  useEffect(() => {
+    fetchMembers();
+  }, [fetchMembers]);
   
   const toggleMember = (memberId) => {
     setSelectedMembers(prev => 
@@ -948,7 +948,7 @@ const HeroSection = ({ content, onPlay, onShare }) => {
         <div className="atv-hero-dots">
           {featured.map((_, i) => (
             <button
-              key={i}
+              key={`dot-${i}`}
               className={`atv-dot ${activeIndex === i ? 'active' : ''}`}
               onClick={() => setActiveIndex(i)}
             />
