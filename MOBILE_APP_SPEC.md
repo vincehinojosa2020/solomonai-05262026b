@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://solomon-phase3.preview.emergentagent.com/api
+https://solomon-voice-ai.preview.emergentagent.com/api
 ```
 
 ### Authentication
