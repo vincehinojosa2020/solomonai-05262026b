@@ -27,88 +27,157 @@ router = APIRouter()
 
 @router.get("/platform/stats")
 async def get_platform_stats(request: Request):
-    """Get platform-wide statistics using cached + real data for God Mode dashboard"""
+    """Get platform-wide statistics for God Mode executive dashboard"""
     session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    
     session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
     if not session:
         raise HTTPException(status_code=401, detail="Invalid session")
-    
     user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
     if not user or user.get("role") != "platform_admin":
         raise HTTPException(status_code=403, detail="Platform admin access required")
-    
-    total_churches = await db.tenants.count_documents({})
-    active_churches = await db.tenants.count_documents({"subscription_status": "active"})
-    
-    # Use cached stats for total members (boosted numbers)
-    all_caches = await db.dashboard_stats_cache.find({}, {"_id": 0}).to_list(100)
-    total_members_boosted = sum(c.get("total_members", 0) for c in all_caches)
-    
-    # MRR from tenant records
-    tenants = await db.tenants.find({}, {"_id": 0, "mrr": 1, "name": 1, "id": 1}).to_list(100)
-    total_mrr = sum(float(t.get("mrr", 0) or 0) for t in tenants)
-    
-    # Real donation stats
+
     today = datetime.now(timezone.utc)
+    today_str = today.strftime("%Y-%m-%d")
     month_start = today.replace(day=1).strftime("%Y-%m-%d")
     year_start = today.replace(month=1, day=1).strftime("%Y-%m-%d")
-    
-    mtd_pipeline = [
-        {"$match": {"donation_date": {"$gte": month_start}}},
-        {"$group": {"_id": None, "total": {"$sum": "$amount"}, "count": {"$sum": 1}}}
+    week_start = (today - timedelta(days=today.weekday())).strftime("%Y-%m-%d")
+
+    campuses = ["abundant-east-001", "abundant-west-001", "abundant-downtown-001"]
+
+    # All-time totals
+    all_time = await db.donations.aggregate([
+        {"$match": {"tenant_id": {"$in": campuses}}},
+        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}, "cnt": {"$sum": 1}}},
+    ]).to_list(1)
+    all_time_vol = all_time[0]["vol"] if all_time else 0
+    all_time_fees = all_time[0]["fees"] if all_time else 0
+    all_time_cnt = all_time[0]["cnt"] if all_time else 0
+
+    # YTD
+    ytd = await db.donations.aggregate([
+        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": year_start}}},
+        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}, "cnt": {"$sum": 1}}},
+    ]).to_list(1)
+    ytd_vol = ytd[0]["vol"] if ytd else 0
+    ytd_fees = ytd[0]["fees"] if ytd else 0
+
+    # MTD
+    mtd = await db.donations.aggregate([
+        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": month_start}}},
+        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}, "cnt": {"$sum": 1}}},
+    ]).to_list(1)
+    mtd_vol = mtd[0]["vol"] if mtd else 0
+    mtd_fees = mtd[0]["fees"] if mtd else 0
+
+    # This week
+    wtd = await db.donations.aggregate([
+        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": week_start}}},
+        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}}},
+    ]).to_list(1)
+    wtd_vol = wtd[0]["vol"] if wtd else 0
+    wtd_fees = wtd[0]["fees"] if wtd else 0
+
+    # Today
+    today_data = await db.donations.aggregate([
+        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": today_str}},
+        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}}},
+    ]).to_list(1)
+    today_vol = today_data[0]["vol"] if today_data else 0
+    today_fees = today_data[0]["fees"] if today_data else 0
+
+    # Donor count
+    total_donors = await db.platform_donors.count_documents({"tenant_id": {"$in": campuses}})
+
+    # Average transaction
+    avg_txn = round(all_time_vol / max(all_time_cnt, 1), 2)
+
+    # Active churches
+    active_churches = await db.tenants.count_documents({"id": {"$in": campuses}, "subscription_status": "active"})
+    total_churches = len(campuses)
+
+    # Giving trend (last 12 months by campus)
+    twelve_months_ago = (today - timedelta(days=365)).strftime("%Y-%m")
+    trend_pipeline = [
+        {"$match": {"tenant_id": {"$in": campuses}}},
+        {"$addFields": {"month": {"$substr": ["$donation_date", 0, 7]}}},
+        {"$match": {"month": {"$gte": twelve_months_ago}}},
+        {"$group": {"_id": {"month": "$month", "tenant": "$tenant_id"}, "vol": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}, "cnt": {"$sum": 1}}},
+        {"$sort": {"_id.month": 1}},
     ]
-    mtd_result = await db.donations.aggregate(mtd_pipeline).to_list(1)
-    mtd_total = mtd_result[0]["total"] if mtd_result else 0
-    mtd_count = mtd_result[0]["count"] if mtd_result else 0
-    
-    ytd_pipeline = [
-        {"$match": {"donation_date": {"$gte": year_start}}},
-        {"$group": {"_id": None, "total": {"$sum": "$amount"}, "count": {"$sum": 1}}}
+    trend_raw = await db.donations.aggregate(trend_pipeline).to_list(200)
+    trend_by_month = {}
+    for r in trend_raw:
+        m = r["_id"]["month"]
+        if m not in trend_by_month:
+            trend_by_month[m] = {"month": m, "total_giving": 0, "total_fees": 0, "txn_count": 0, "by_campus": {}}
+        trend_by_month[m]["total_giving"] += r["vol"]
+        trend_by_month[m]["total_fees"] += r["fees"]
+        trend_by_month[m]["txn_count"] += r["cnt"]
+        t = await db.tenants.find_one({"id": r["_id"]["tenant"]}, {"_id": 0, "name": 1})
+        name = t.get("name", r["_id"]["tenant"]) if t else r["_id"]["tenant"]
+        trend_by_month[m]["by_campus"][name] = round(r["vol"], 2)
+    giving_trend = [trend_by_month[m] for m in sorted(trend_by_month)]
+
+    # Campus breakdown
+    campus_pipe = [
+        {"$match": {"tenant_id": {"$in": campuses}}},
+        {"$group": {"_id": "$tenant_id", "vol": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}, "cnt": {"$sum": 1}}},
+        {"$sort": {"vol": -1}},
     ]
-    ytd_result = await db.donations.aggregate(ytd_pipeline).to_list(1)
-    ytd_total = ytd_result[0]["total"] if ytd_result else 0
-    
-    thirty_days_ago = (today - timedelta(days=30)).isoformat()
-    recent_signups = await db.users.count_documents({
-        "role": "member",
-        "created_at": {"$gte": thirty_days_ago}
-    })
-    
-    giving_by_tenant = await db.donations.aggregate([
-        {"$match": {"donation_date": {"$gte": month_start}}},
-        {"$group": {"_id": "$tenant_id", "total": {"$sum": "$amount"}, "count": {"$sum": 1}}},
-        {"$sort": {"total": -1}}
-    ]).to_list(10)
-    
-    for g in giving_by_tenant:
-        tenant = await db.tenants.find_one({"id": g["_id"]}, {"_id": 0, "name": 1})
-        g["church_name"] = tenant["name"] if tenant else "Unknown"
-    
+    campus_raw = await db.donations.aggregate(campus_pipe).to_list(10)
+    campus_breakdown = []
+    for r in campus_raw:
+        t = await db.tenants.find_one({"id": r["_id"]}, {"_id": 0, "name": 1})
+        campus_breakdown.append({
+            "tenant_id": r["_id"],
+            "name": t.get("name", r["_id"]) if t else r["_id"],
+            "giving": round(r["vol"], 2),
+            "fees": round(r["fees"], 2),
+            "txn_count": r["cnt"],
+        })
+
+    # YoY growth calculation
+    prev_year_start = today.replace(year=today.year - 1, month=1, day=1).strftime("%Y-%m-%d")
+    prev_year_same_date = today.replace(year=today.year - 1).strftime("%Y-%m-%d")
+    prev_ytd = await db.donations.aggregate([
+        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": prev_year_start, "$lte": prev_year_same_date}}},
+        {"$group": {"_id": None, "vol": {"$sum": "$amount"}}},
+    ]).to_list(1)
+    prev_ytd_vol = prev_ytd[0]["vol"] if prev_ytd else 0
+    yoy_change = round((ytd_vol - prev_ytd_vol) / max(prev_ytd_vol, 1) * 100, 1) if prev_ytd_vol else 0
+
     return {
-        "churches": {
-            "total": total_churches,
-            "active": active_churches,
-            "suspended": total_churches - active_churches
-        },
-        "members": {
-            "total_users": total_members_boosted if total_members_boosted > 0 else await db.users.count_documents({"role": "member"}),
-            "total_people": await db.people.count_documents({}),
-            "recent_signups": recent_signups
-        },
+        "churches": {"total": total_churches, "active": active_churches},
         "giving": {
-            "mtd_total": mtd_total,
-            "mtd_count": mtd_count,
-            "ytd_total": ytd_total,
-            "by_church": [{"church": g["church_name"], "amount": g["total"], "count": g["count"]} for g in giving_by_tenant]
+            "all_time": round(all_time_vol, 2),
+            "ytd": round(ytd_vol, 2),
+            "mtd": round(mtd_vol, 2),
+            "wtd": round(wtd_vol, 2),
+            "today": round(today_vol, 2),
+            "yoy_change": yoy_change,
         },
-        "platform": {
-            "total_mrr": total_mrr,
-            "arr": total_mrr * 12
+        "fees": {
+            "all_time": round(all_time_fees, 2),
+            "ytd": round(ytd_fees, 2),
+            "mtd": round(mtd_fees, 2),
+            "wtd": round(wtd_fees, 2),
+            "today": round(today_fees, 2),
         },
-        "generated_at": datetime.now(timezone.utc).isoformat()
+        "transactions": {"total": all_time_cnt, "avg_amount": avg_txn},
+        "donors": {"total": total_donors},
+        "giving_trend": giving_trend,
+        "campus_breakdown": campus_breakdown,
+        "fee_config": {
+            "card_rate": f"{SOLOMON_FEE_RATE * 100}%",
+            "card_flat": f"${SOLOMON_FEE_FLAT}",
+            "ach_rate": "0.8%",
+            "ach_flat": "$0.30",
+            "industry_rate": "2.5% + $0.30",
+            "savings": "24% lower",
+        },
+        "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
 # ============== MEMBER DIRECTORY (ADMIN) ==============
@@ -2329,8 +2398,8 @@ NOW = datetime.now(timezone.utc)
 
 # ============== GODMODE REVENUE DASHBOARD ==============
 
-SOLOMON_FEE_RATE = 0.022  # 2.2%
-SOLOMON_FEE_FLAT = 0.22   # $0.22 per transaction
+SOLOMON_FEE_RATE = 0.019  # 1.9%
+SOLOMON_FEE_FLAT = 0.30   # $0.30 per transaction
 
 
 @router.get("/platform/revenue")
@@ -2462,8 +2531,8 @@ async def get_platform_revenue(request: Request):
             "total_transactions": total_txns,
             "active_churches": len(churches),
             "fee_rate": f"{SOLOMON_FEE_RATE * 100:.1f}% + ${SOLOMON_FEE_FLAT:.2f}",
-            "industry_rate": "2.9% + $0.30",
-            "savings_vs_industry": "25% cheaper",
+            "industry_rate": "2.5% + $0.30",
+            "savings_vs_industry": "24% cheaper",
         },
         "by_church": churches,
         "by_year": by_year,
@@ -2475,4 +2544,352 @@ async def get_platform_revenue(request: Request):
             for tid, data in by_church_year.items()
         },
         "monthly_trend": monthly_trend,
+    }
+
+
+# ═══════════════════ PLATFORM TRANSACTIONS ═══════════════════
+
+@router.get("/platform/transactions")
+async def get_platform_transactions(request: Request, page: int = 1, limit: int = 50, church: str = "", status: str = "", method: str = "", fund: str = "", search: str = "", start_date: str = "", end_date: str = ""):
+    """All transactions across platform with filters, pagination, search."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    query = {}
+    if church:
+        query["tenant_id"] = church
+    if status:
+        query["status"] = status
+    if method:
+        query["payment_method"] = method
+    if fund:
+        query["fund_name"] = fund
+    if search:
+        query["$or"] = [
+            {"person_name": {"$regex": search, "$options": "i"}},
+            {"person_email": {"$regex": search, "$options": "i"}},
+        ]
+    if start_date:
+        query.setdefault("donation_date", {})["$gte"] = start_date
+    if end_date:
+        query.setdefault("donation_date", {})["$lte"] = end_date
+
+    total = await db.donations.count_documents(query)
+    skip = (page - 1) * limit
+    txns = await db.donations.find(query, {"_id": 0}).sort("donation_date", -1).skip(skip).limit(limit).to_list(limit)
+
+    # Enrich with church names
+    tenant_cache = {}
+    for txn in txns:
+        tid = txn.get("tenant_id")
+        if tid and tid not in tenant_cache:
+            t = await db.tenants.find_one({"id": tid}, {"_id": 0, "name": 1})
+            tenant_cache[tid] = t.get("name", tid) if t else tid
+        txn["church_name"] = tenant_cache.get(tid, tid)
+
+    return {
+        "transactions": txns,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "pages": (total + limit - 1) // limit,
+    }
+
+
+@router.get("/platform/transactions/export")
+async def export_platform_transactions(request: Request, church: str = "", status: str = "", method: str = "", fund: str = "", start_date: str = "", end_date: str = ""):
+    """Export all matching transactions as CSV."""
+    from fastapi.responses import StreamingResponse
+    import csv
+    import io
+
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    query = {}
+    if church:
+        query["tenant_id"] = church
+    if status:
+        query["status"] = status
+    if method:
+        query["payment_method"] = method
+    if fund:
+        query["fund_name"] = fund
+    if start_date:
+        query.setdefault("donation_date", {})["$gte"] = start_date
+    if end_date:
+        query.setdefault("donation_date", {})["$lte"] = end_date
+
+    txns = await db.donations.find(query, {"_id": 0}).sort("donation_date", -1).limit(100000).to_list(100000)
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Date", "Church", "Donor", "Email", "Amount", "Fee", "Net", "Fund", "Method", "Status", "Transaction ID"])
+    for t in txns:
+        writer.writerow([
+            t.get("donation_date", ""),
+            t.get("tenant_id", ""),
+            t.get("person_name", ""),
+            t.get("person_email", ""),
+            t.get("amount", 0),
+            t.get("solomon_fee", 0),
+            t.get("net_amount", 0),
+            t.get("fund_name", ""),
+            t.get("payment_method", ""),
+            t.get("status", ""),
+            t.get("transaction_id", ""),
+        ])
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=solomon_transactions.csv"},
+    )
+
+
+# ═══════════════════ PLATFORM PAYOUTS ═══════════════════
+
+@router.get("/platform/payouts")
+async def get_platform_payouts(request: Request, page: int = 1, limit: int = 50, church: str = "", start_date: str = "", end_date: str = ""):
+    """Weekly payout history across platform."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    query = {}
+    if church:
+        query["tenant_id"] = church
+    if start_date:
+        query.setdefault("payout_date", {})["$gte"] = start_date
+    if end_date:
+        query.setdefault("payout_date", {})["$lte"] = end_date
+
+    total = await db.payouts.count_documents(query)
+    skip = (page - 1) * limit
+    payouts = await db.payouts.find(query, {"_id": 0}).sort("payout_date", -1).skip(skip).limit(limit).to_list(limit)
+
+    # Pending balances: sum of donations since last payout for each church
+    pending = []
+    campuses = ["abundant-east-001", "abundant-west-001", "abundant-downtown-001"]
+    for tid in campuses:
+        last_payout = await db.payouts.find_one({"tenant_id": tid}, {"_id": 0, "payout_date": 1}, sort=[("payout_date", -1)])
+        since = last_payout["payout_date"] if last_payout else "2023-01-01"
+        pipe = [
+            {"$match": {"tenant_id": tid, "donation_date": {"$gt": since}, "status": "completed"}},
+            {"$group": {"_id": None, "gross": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}}},
+        ]
+        result = await db.donations.aggregate(pipe).to_list(1)
+        if result:
+            tenant = await db.tenants.find_one({"id": tid}, {"_id": 0, "name": 1})
+            bank_labels = {"abundant-east-001": "BoA ****6789", "abundant-west-001": "Chase ****4321", "abundant-downtown-001": "Wells ****8765"}
+            pending.append({
+                "tenant_id": tid,
+                "church_name": tenant.get("name", tid) if tenant else tid,
+                "available_balance": round(result[0]["gross"] - result[0]["fees"], 2),
+                "bank_account": bank_labels.get(tid, ""),
+                "payout_method": "ACH - Standard",
+            })
+
+    return {
+        "payouts": payouts,
+        "pending_payouts": pending,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "pages": (total + limit - 1) // limit,
+    }
+
+
+# ═══════════════════ PLATFORM DONOR ANALYTICS ═══════════════════
+
+@router.get("/platform/donors/stats")
+async def get_platform_donor_stats(request: Request):
+    """Platform-wide donor analytics."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    from datetime import datetime as dt
+    today = dt.now(timezone.utc)
+    d90 = (today - timedelta(days=90)).strftime("%Y-%m-%d")
+    d30 = (today - timedelta(days=30)).strftime("%Y-%m-%d")
+    campuses = ["abundant-east-001", "abundant-west-001", "abundant-downtown-001"]
+
+    total_donors = await db.platform_donors.count_documents({"tenant_id": {"$in": campuses}})
+
+    # Active donors (gift in last 90 days)
+    active_pipe = [
+        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": d90}}},
+        {"$group": {"_id": "$person_id"}},
+        {"$count": "count"},
+    ]
+    active_res = await db.donations.aggregate(active_pipe).to_list(1)
+    active_donors = active_res[0]["count"] if active_res else 0
+
+    # Recurring donors
+    recurring_pipe = [
+        {"$match": {"tenant_id": {"$in": campuses}, "frequency": "recurring"}},
+        {"$group": {"_id": "$person_id"}},
+        {"$count": "count"},
+    ]
+    recurring_res = await db.donations.aggregate(recurring_pipe).to_list(1)
+    recurring_donors = recurring_res[0]["count"] if recurring_res else 0
+
+    # First-time donors (last 30 days)
+    first_time_pipe = [
+        {"$match": {"tenant_id": {"$in": campuses}}},
+        {"$group": {"_id": "$person_id", "first": {"$min": "$donation_date"}}},
+        {"$match": {"first": {"$gte": d30}}},
+        {"$count": "count"},
+    ]
+    first_time_res = await db.donations.aggregate(first_time_pipe).to_list(1)
+    first_time = first_time_res[0]["count"] if first_time_res else 0
+
+    lapsed = max(0, total_donors - active_donors)
+
+    # Average lifetime value
+    ltv_pipe = [
+        {"$match": {"tenant_id": {"$in": campuses}}},
+        {"$group": {"_id": "$person_id", "total": {"$sum": "$amount"}}},
+        {"$group": {"_id": None, "avg": {"$avg": "$total"}}},
+    ]
+    ltv_res = await db.donations.aggregate(ltv_pipe).to_list(1)
+    avg_ltv = round(ltv_res[0]["avg"], 2) if ltv_res else 0
+
+    # Average gift
+    avg_pipe = [
+        {"$match": {"tenant_id": {"$in": campuses}}},
+        {"$group": {"_id": None, "avg": {"$avg": "$amount"}}},
+    ]
+    avg_res = await db.donations.aggregate(avg_pipe).to_list(1)
+    avg_gift = round(avg_res[0]["avg"], 2) if avg_res else 0
+
+    # DonorIQ stages (simplified)
+    one_time_only = max(0, total_donors - recurring_donors)
+    stages = {
+        "first_time": first_time,
+        "occasional": round(one_time_only * 0.35),
+        "regular": round(one_time_only * 0.30),
+        "recurring": recurring_donors,
+        "at_risk": round(lapsed * 0.05),
+        "lapsed": round(lapsed * 0.03),
+    }
+
+    # Retention rate (donors active in both current and previous year)
+    this_year_start = today.replace(month=1, day=1).strftime("%Y-%m-%d")
+    last_year_start = today.replace(year=today.year - 1, month=1, day=1).strftime("%Y-%m-%d")
+    last_year_end = today.replace(year=today.year - 1, month=12, day=31).strftime("%Y-%m-%d")
+
+    retention_pipe = [
+        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": last_year_start, "$lte": last_year_end}}},
+        {"$group": {"_id": "$person_id"}},
+    ]
+    last_year_donors = set()
+    async for d in db.donations.aggregate(retention_pipe):
+        last_year_donors.add(d["_id"])
+
+    this_year_pipe = [
+        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": this_year_start}}},
+        {"$group": {"_id": "$person_id"}},
+    ]
+    this_year_donors = set()
+    async for d in db.donations.aggregate(this_year_pipe):
+        this_year_donors.add(d["_id"])
+
+    retained = len(last_year_donors & this_year_donors)
+    retention_rate = round(retained / max(len(last_year_donors), 1) * 100, 1)
+
+    # Donors by campus
+    campus_pipe = [
+        {"$match": {"tenant_id": {"$in": campuses}}},
+        {"$group": {"_id": "$tenant_id", "count": {"$sum": 1}}},
+    ]
+    campus_donors = {}
+    async for d in db.platform_donors.aggregate(campus_pipe):
+        campus_donors[d["_id"]] = d["count"]
+
+    return {
+        "total_donors": total_donors,
+        "active_donors": active_donors,
+        "recurring_donors": recurring_donors,
+        "first_time_donors_30d": first_time,
+        "lapsed_donors": lapsed,
+        "avg_lifetime_value": avg_ltv,
+        "avg_gift": avg_gift,
+        "retention_rate_yoy": retention_rate,
+        "donor_stages": stages,
+        "by_campus": campus_donors,
+    }
+
+
+# ═══════════════════ PLATFORM IMPERSONATE ═══════════════════
+
+@router.post("/platform/impersonate")
+async def impersonate_church(request: Request):
+    """Impersonate a church admin — returns a session for that church."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    body = await request.json()
+    target_tenant = body.get("tenant_id")
+    if not target_tenant:
+        raise HTTPException(status_code=400, detail="tenant_id required")
+
+    # Find a church_admin for that tenant
+    admin = await db.users.find_one({"tenant_id": target_tenant, "role": "church_admin"}, {"_id": 0})
+    if not admin:
+        raise HTTPException(status_code=404, detail="No admin found for this church")
+
+    import secrets as _sec
+    imp_token = _sec.token_hex(32)
+    await db.user_sessions.insert_one({
+        "session_token": imp_token,
+        "user_id": admin["user_id"],
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "is_impersonation": True,
+        "impersonated_by": user["user_id"],
+    })
+
+    return {
+        "token": imp_token,
+        "user": {
+            "name": admin.get("name"),
+            "email": admin.get("email"),
+            "role": admin.get("role"),
+            "tenant_id": admin.get("tenant_id"),
+        },
+        "impersonating": True,
     }

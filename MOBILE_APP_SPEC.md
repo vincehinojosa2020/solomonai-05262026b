@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://solomon-qa-1.preview.emergentagent.com/api
+https://platform-god-mode.preview.emergentagent.com/api
 ```
 
 ### Authentication

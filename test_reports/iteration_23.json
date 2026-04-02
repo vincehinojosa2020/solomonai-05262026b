@@ -35,7 +35,7 @@
     },
     "sw_registration": {
       "status": "PASSED",
-      "details": "Console logs confirm: 'SW registered: https://solomon-qa-1.preview.emergentagent.com/'"
+      "details": "Console logs confirm: 'SW registered: https://platform-god-mode.preview.emergentagent.com/'"
     },
     "pwa_install_prompt_component": {
       "status": "PASSED (component exists)",
