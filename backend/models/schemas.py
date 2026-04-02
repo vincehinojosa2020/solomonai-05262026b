@@ -431,6 +431,7 @@ class SolomonChatResponse(BaseModel):
     session_id: str
     data: Optional[Dict[str, Any]] = None  # For chart/table data
     actions: Optional[List[Dict[str, str]]] = None  # Suggested actions
+    pending_action: Optional[Dict[str, Any]] = None  # Action awaiting user confirmation
 
 class WatchProgressUpdate(BaseModel):
     video_id: str

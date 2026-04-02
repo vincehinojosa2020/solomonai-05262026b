@@ -1374,6 +1374,17 @@ textarea:focus-visible {
   color: var(--color-gray-500, #6b7280);
 }
 
+.solomon-message-content.action-success {
+  background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+  border: 1px solid #86efac;
+  color: #166534;
+}
+
+.solomon-message-avatar.success {
+  background: #22c55e;
+  color: white;
+}
+
 /* Actions */
 .solomon-actions {
   margin-top: 10px;
