@@ -23,6 +23,7 @@ import SettingsPage from "@/pages/SettingsPage";
 import EventsPage from "@/pages/EventsPage";
 import IntegrationsPage from "@/pages/IntegrationsPage";
 import PlatformDashboard from "@/pages/PlatformDashboard";
+import GodModeDashboard from "@/pages/GodModeDashboard";
 import MediaManagerPage from "@/pages/MediaManagerPage";
 import GroupsManagerPage from "@/pages/GroupsManagerPage";
 import EventsManagerPage from "@/pages/EventsManagerPage";
@@ -104,6 +105,7 @@ function AppRouter() {
       }>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/platform" element={<PlatformDashboard />} />
+        <Route path="/godmode" element={<GodModeDashboard />} />
         <Route path="/people" element={<PeopleList />} />
         <Route path="/people/:personId" element={<PersonDetail />} />
         <Route path="/households" element={<HouseholdsPage />} />

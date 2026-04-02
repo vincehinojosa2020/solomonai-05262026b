@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Users, Home, UsersRound, Calendar,
   CheckSquare, DollarSign, Mail, BarChart3, Settings,
   Search, Plug, Globe, Video, GraduationCap, BookOpen, ShoppingBag, Coffee, Code, Baby, Shield,
-  Music, HandHeart, GitBranch, FileText, ListFilter, Merge, ClipboardList, CreditCard
+  Music, HandHeart, GitBranch, FileText, ListFilter, Merge, ClipboardList, CreditCard, Gauge
 } from 'lucide-react';
 
 export const navItems = [
@@ -56,6 +56,7 @@ export const navItems = [
 
 export const platformNavItems = [
   { section: 'PLATFORM', items: [
+    { name: 'God Mode', path: '/godmode', icon: Gauge },
     { name: 'All Churches', path: '/platform', icon: Globe },
   ]},
 ];

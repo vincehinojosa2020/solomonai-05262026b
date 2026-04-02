@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { API_URL } from '@/lib/utils';
 import { Users, UserCheck, Repeat, UserPlus, UserMinus, DollarSign, TrendingUp, BarChart3 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts';
 
 export default function PlatformDonors({ token }) {
   const [data, setData] = useState(null);
@@ -59,9 +59,7 @@ export default function PlatformDonors({ token }) {
               <Tooltip formatter={(v) => v.toLocaleString()} />
               <Bar dataKey="count" radius={[0, 6, 6, 0]}>
                 {stageData.map((entry) => (
-                  <BarChart key={entry.name}>
-                    <Bar fill={COLORS[entry.name] || '#94a3b8'} />
-                  </BarChart>
+                  <Cell key={entry.name} fill={COLORS[entry.name] || '#94a3b8'} />
                 ))}
               </Bar>
             </BarChart>
