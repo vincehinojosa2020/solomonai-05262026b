@@ -3,7 +3,7 @@ import { useOutletContext, Link } from 'react-router-dom';
 import {
   Music, Plus, Calendar, Clock, Users, ChevronDown, ChevronUp,
   GripVertical, Trash2, Edit2, Save, ListMusic, Mic2, BookOpen,
-  Copy, Bookmark, ExternalLink, UserPlus, X, HelpCircle
+  Copy, Bookmark, ExternalLink, UserPlus, X, HelpCircle, Play, ChevronRight, Timer
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,12 +18,17 @@ import { Badge } from '@/components/ui/badge';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { FeatureEducationHeader } from '@/components/FeatureEducationHeader';
 
 const ITEM_TYPES = [
   { value: 'song', label: 'Song', icon: Music },
   { value: 'prayer', label: 'Prayer', icon: BookOpen },
-  { value: 'sermon', label: 'Sermon', icon: Mic2 },
+  { value: 'scripture', label: 'Scripture', icon: BookOpen },
+  { value: 'sermon', label: 'Message', icon: Mic2 },
+  { value: 'offering', label: 'Offering', icon: ListMusic },
   { value: 'announcement', label: 'Announcement', icon: ListMusic },
+  { value: 'video', label: 'Video', icon: Play },
+  { value: 'transition', label: 'Transition', icon: ChevronRight },
   { value: 'other', label: 'Other', icon: ListMusic },
 ];
 
@@ -48,6 +53,8 @@ export default function ServicesPage() {
   const [showTemplates, setShowTemplates] = useState(false);
   const [assignForm, setAssignForm] = useState({ position: '', volunteer_name: '' });
   const [showAssignForm, setShowAssignForm] = useState(null);
+  const [liveModeplan, setLiveModePlan] = useState(null);
+  const [liveItemIndex, setLiveItemIndex] = useState(0);
   const [showTutorial, setShowTutorial] = useState(false);
 
   const token = sessionStorage.getItem('session_token');
@@ -217,6 +224,7 @@ export default function ServicesPage() {
 
   return (
     <div className="space-y-6 animate-fade-in" data-testid="services-page">
+      <FeatureEducationHeader featureKey="services" />
       {/* Header */}
       <div className="page-header">
         <div>
@@ -379,6 +387,15 @@ export default function ServicesPage() {
                           <ExternalLink className="w-3.5 h-3.5 mr-1" /> Music Stand
                         </Button>
                       </Link>
+                      <Button
+                        size="sm"
+                        className="bg-green-600 text-white hover:bg-green-700"
+                        onClick={() => { setLiveModePlan(plan); setLiveItemIndex(0); }}
+                        title="Launch Live Mode for this service"
+                        data-testid={`live-mode-${plan.id}`}
+                      >
+                        <Play className="w-3.5 h-3.5 mr-1" /> Live Mode
+                      </Button>
                     </div>
 
                     {/* Items List */}
@@ -629,6 +646,71 @@ export default function ServicesPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Live Mode */}
+      {liveModeplan && (
+        <div className="fixed inset-0 z-[100] bg-slate-900 flex flex-col" data-testid="live-mode">
+          <div className="bg-slate-800 px-6 py-3 flex items-center justify-between border-b border-slate-700">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-white font-semibold">{liveModeplan.title}</span>
+              <span className="text-slate-400 text-sm">{liveModeplan.date}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-slate-400 text-sm">{liveItemIndex + 1} / {(liveModeplan.items || []).length}</span>
+              <button onClick={() => setLiveModePlan(null)} className="text-slate-400 hover:text-white px-3 py-1.5 border border-slate-600 rounded-lg text-sm" data-testid="close-live-mode">Exit</button>
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col items-center justify-center p-8">
+            {(liveModeplan.items || []).length === 0 ? (
+              <p className="text-slate-400 text-xl">No items in this plan</p>
+            ) : (
+              <>
+                <div className="text-center mb-12">
+                  <p className="text-slate-400 text-sm uppercase tracking-widest mb-2">
+                    {(liveModeplan.items[liveItemIndex]?.type || 'item').toUpperCase()}
+                    {liveModeplan.items[liveItemIndex]?.duration ? ` · ${liveModeplan.items[liveItemIndex].duration} min` : ''}
+                  </p>
+                  <h1 className="text-5xl font-bold text-white mb-4">{liveModeplan.items[liveItemIndex]?.title}</h1>
+                  {liveModeplan.items[liveItemIndex]?.notes && (
+                    <p className="text-xl text-slate-300 max-w-2xl">{liveModeplan.items[liveItemIndex].notes}</p>
+                  )}
+                  {liveModeplan.items[liveItemIndex]?.leader && (
+                    <p className="text-slate-500 mt-3">Led by: {liveModeplan.items[liveItemIndex].leader}</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-6">
+                  <button
+                    onClick={() => setLiveItemIndex(i => Math.max(0, i - 1))}
+                    disabled={liveItemIndex === 0}
+                    className="px-6 py-3 border border-slate-600 text-slate-300 rounded-xl text-lg disabled:opacity-30 hover:bg-slate-800"
+                  >
+                    ← Previous
+                  </button>
+                  <button
+                    onClick={() => setLiveItemIndex(i => Math.min((liveModeplan.items || []).length - 1, i + 1))}
+                    disabled={liveItemIndex >= (liveModeplan.items || []).length - 1}
+                    className="px-8 py-3 bg-green-600 text-white rounded-xl text-xl font-bold hover:bg-green-700 disabled:opacity-30 flex items-center gap-2"
+                    data-testid="live-mode-next"
+                  >
+                    Next <ChevronRight className="w-6 h-6" />
+                  </button>
+                </div>
+                {/* Mini timeline */}
+                <div className="flex gap-1.5 mt-10">
+                  {(liveModeplan.items || []).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setLiveItemIndex(i)}
+                      className={`w-2 h-2 rounded-full transition-all ${i === liveItemIndex ? 'bg-green-500 w-6' : i < liveItemIndex ? 'bg-slate-500' : 'bg-slate-700'}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

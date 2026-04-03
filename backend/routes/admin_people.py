@@ -490,3 +490,25 @@ async def get_person_custom_fields(request: Request, person_id: str):
     if not person:
         raise HTTPException(status_code=404, detail="Person not found")
     return {"person_id": person_id, "custom_fields": person.get("custom_fields", {})}
+
+
+@router.post("/admin/people/bulk-update")
+async def bulk_update_people(request: Request):
+    """Bulk update membership status or other fields for multiple people."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    body = await request.json()
+    ids = body.get("ids", [])
+    updates = body.get("updates", {})
+    if not ids:
+        raise HTTPException(status_code=400, detail="No IDs provided")
+    allowed_fields = {"membership_status", "campus", "status", "is_active"}
+    safe_updates = {k: v for k, v in updates.items() if k in allowed_fields}
+    if not safe_updates:
+        raise HTTPException(status_code=400, detail="No valid fields to update")
+    safe_updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.people.update_many(
+        {"id": {"$in": ids}, "tenant_id": tenant_id},
+        {"$set": safe_updates}
+    )
+    return {"updated": result.modified_count, "message": f"Updated {result.modified_count} people"}

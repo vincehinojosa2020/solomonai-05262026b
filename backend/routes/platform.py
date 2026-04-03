@@ -1937,7 +1937,63 @@ async def get_all_health_scores(request: Request):
         })
 
     results.sort(key=lambda x: x["health"]["score"], reverse=True)
-    return results
+    return {"churches": results}
+
+
+@router.get("/platform/churches")
+async def get_all_platform_churches(request: Request):
+    """List all church tenants with metrics and health scores."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    tenants = await db.tenants.find({"subscription_status": "active"}, {"_id": 0}).to_list(100)
+    churches = []
+    now = datetime.now(timezone.utc)
+    year_start = now.replace(month=1, day=1).strftime("%Y-%m-%d")
+    month_start = now.replace(day=1).strftime("%Y-%m-%d")
+
+    for t in tenants:
+        tid = t["id"]
+        cached = await db.dashboard_stats_cache.find_one({"tenant_id": tid}, {"_id": 0})
+        health = compute_health_score(cached, t)
+        # Giving metrics
+        alltime = await db.donations.aggregate([
+            {"$match": {"tenant_id": tid, "status": "completed"}},
+            {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}, "cnt": {"$sum": 1}}}
+        ]).to_list(1)
+        ytd_r = await db.donations.aggregate([
+            {"$match": {"tenant_id": tid, "donation_date": {"$gte": year_start}}},
+            {"$group": {"_id": None, "vol": {"$sum": "$amount"}}}
+        ]).to_list(1)
+        mtd_r = await db.donations.aggregate([
+            {"$match": {"tenant_id": tid, "donation_date": {"$gte": month_start}}},
+            {"$group": {"_id": None, "vol": {"$sum": "$amount"}}}
+        ]).to_list(1)
+        churches.append({
+            "id": tid,
+            "name": t.get("name", ""),
+            "city": t.get("city", ""),
+            "state": t.get("state", ""),
+            "plan": t.get("plan", "starter"),
+            "subdomain": t.get("subdomain", ""),
+            "total_members": cached.get("total_members", 0) if cached else 0,
+            "giving": round(alltime[0]["vol"] if alltime else 0, 2),
+            "fees": round(alltime[0]["fees"] if alltime else 0, 2),
+            "txn_count": alltime[0]["cnt"] if alltime else 0,
+            "ytd_giving": round(ytd_r[0]["vol"] if ytd_r else 0, 2),
+            "mtd_giving": round(mtd_r[0]["vol"] if mtd_r else 0, 2),
+            "health": health,
+        })
+
+    churches.sort(key=lambda x: x["giving"], reverse=True)
+    return {"churches": churches, "total": len(churches)}
 
 # ============== PLATFORM CHURCH ONBOARDING (Task 2) ==============
 

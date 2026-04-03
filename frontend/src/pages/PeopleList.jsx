@@ -47,6 +47,10 @@ export default function PeopleList({ type = 'people' }) {
   const [sortOrder, setSortOrder] = useState('asc');
   const [selectedIds, setSelectedIds] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showBulkUpdate, setShowBulkUpdate] = useState(false);
+  const [bulkStatus, setBulkStatus] = useState('');
+  const [bulkCampus, setBulkCampus] = useState('');
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   const statusCounts = {
     all: total,
@@ -153,29 +157,70 @@ export default function PeopleList({ type = 'people' }) {
         <div className="bulk-actions-bar" data-testid="bulk-actions-bar">
           <span className="selected-count">{selectedIds.length} selected</span>
           <div className="actions">
-            <button className="bulk-action-btn" data-testid="bulk-add-group">
+            <button className="bulk-action-btn" data-testid="bulk-update-status" onClick={() => setShowBulkUpdate(true)}>
+              <Check className="w-4 h-4" />
+              Update Status
+            </button>
+            <button className="bulk-action-btn" data-testid="bulk-add-group" onClick={() => toast.info('Group assignment coming soon')}>
               <UserPlus className="w-4 h-4" />
               Add to Group
             </button>
-            <button className="bulk-action-btn" data-testid="bulk-send-email">
+            <button className="bulk-action-btn" data-testid="bulk-send-email" onClick={() => { navigate('/communications'); }}>
               <Mail className="w-4 h-4" />
               Send Email
             </button>
-            <button className="bulk-action-btn" data-testid="bulk-export">
+            <button className="bulk-action-btn" data-testid="bulk-export" onClick={async () => {
+              const token = sessionStorage.getItem('session_token');
+              const res = await fetch(`${API_URL}/admin/people/bulk-export`, {
+                method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids: selectedIds }),
+              });
+              if (res.ok) { const blob = await res.blob(); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'people_export.csv'; a.click(); }
+              else { toast.info('Export CSV from the header button for all members'); }
+            }}>
               <Download className="w-4 h-4" />
               Export
             </button>
-            <button className="bulk-action-btn danger" data-testid="bulk-delete">
-              <Trash2 className="w-4 h-4" />
-              Delete
-            </button>
           </div>
-          <button 
-            className="ml-auto text-white/70 hover:text-white text-sm"
-            onClick={() => setSelectedIds([])}
-          >
+          <button className="ml-auto text-white/70 hover:text-white text-sm" onClick={() => setSelectedIds([])}>
             Clear selection
           </button>
+        </div>
+      )}
+
+      {/* Bulk Update Modal */}
+      {showBulkUpdate && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6">
+            <h3 className="font-semibold text-slate-900 mb-4">Update {selectedIds.length} People</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium text-slate-500">NEW STATUS</label>
+                <select className="w-full mt-1 border border-slate-200 rounded-lg px-3 py-2 text-sm" value={bulkStatus} onChange={e => setBulkStatus(e.target.value)}>
+                  <option value="">No change</option>
+                  <option value="member">Member</option>
+                  <option value="regular">Regular Attender</option>
+                  <option value="visitor">Visitor</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-5">
+              <Button variant="outline" className="flex-1" onClick={() => setShowBulkUpdate(false)}>Cancel</Button>
+              <Button className="flex-1 btn-primary" disabled={!bulkStatus || bulkLoading} onClick={async () => {
+                setBulkLoading(true);
+                const token = sessionStorage.getItem('session_token');
+                const res = await fetch(`${API_URL}/admin/people/bulk-update`, {
+                  method: 'POST',
+                  headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ ids: selectedIds, updates: { membership_status: bulkStatus } }),
+                });
+                if (res.ok) { toast.success(`Updated ${selectedIds.length} people`); setShowBulkUpdate(false); setSelectedIds([]); setBulkStatus(''); }
+                else toast.error('Update failed');
+                setBulkLoading(false);
+              }} data-testid="bulk-update-confirm">{bulkLoading ? 'Updating...' : 'Apply Update'}</Button>
+            </div>
+          </div>
         </div>
       )}
 

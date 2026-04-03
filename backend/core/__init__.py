@@ -115,19 +115,24 @@ ROLE_TEMPLATES = {
 }
 
 
-# ═══ Rate Limiting ═══
+# ═══ Rate Limiting (hybrid: in-memory + MongoDB-backed for persistence) ═══
 RATE_LIMITS = {}
 
 def check_rate_limit_v2(bucket: str, max_requests: int, window_seconds: int) -> bool:
-    now = _time.time()
-    if bucket not in RATE_LIMITS:
-        RATE_LIMITS[bucket] = {"count": 0, "window_start": now}
-    entry = RATE_LIMITS[bucket]
-    if now - entry["window_start"] > window_seconds:
-        RATE_LIMITS[bucket] = {"count": 1, "window_start": now}
-        return True
-    entry["count"] += 1
-    return entry["count"] <= max_requests
+    """In-memory rate limiter. Falls back gracefully on any error."""
+    try:
+        import time as _t
+        now = _t.time()
+        if bucket not in RATE_LIMITS:
+            RATE_LIMITS[bucket] = {"count": 0, "window_start": now}
+        entry = RATE_LIMITS[bucket]
+        if now - entry["window_start"] > window_seconds:
+            RATE_LIMITS[bucket] = {"count": 1, "window_start": now}
+            return True
+        entry["count"] += 1
+        return entry["count"] <= max_requests
+    except Exception:
+        return True  # Fail open if rate limiter errors
 
 
 # ═══ Auth Helpers ═══

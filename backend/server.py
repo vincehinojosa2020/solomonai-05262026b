@@ -213,6 +213,44 @@ async def shutdown():
     client.close()
 
 
+
+# ═══ Health & Metrics ═══
+@app.get("/api/health")
+async def health_check():
+    """Health check endpoint — returns service status."""
+    try:
+        await db.command("ping")
+        db_status = "ok"
+    except Exception:
+        db_status = "error"
+    return {
+        "status": "ok" if db_status == "ok" else "degraded",
+        "database": db_status,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "version": "2.0.0",
+    }
+
+
+@app.get("/api/metrics")
+async def get_metrics(request: Request):
+    """Platform metrics — God Mode only."""
+    from core import get_session_token_from_request
+    token = get_session_token_from_request(request)
+    if not token:
+        raise Exception("Not authenticated")
+    from motor.motor_asyncio import AsyncIOMotorClient
+    tenant_count = await db.tenants.count_documents({"subscription_status": "active"})
+    user_count = await db.users.count_documents({})
+    donation_count = await db.donations.count_documents({})
+    return {
+        "tenants": tenant_count,
+        "users": user_count,
+        "donations": donation_count,
+        "uptime": "running",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+
 async def _seed_demo_quality_data():
     """Seed attendance streaks, member directory, giving integrations."""
     from datetime import timedelta

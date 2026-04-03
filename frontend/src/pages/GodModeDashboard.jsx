@@ -4,7 +4,7 @@ import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 import {
   Globe, LayoutDashboard, ArrowLeftRight, Landmark, Users,
-  DollarSign, Building2, Headphones, LogOut
+  DollarSign, Building2, Headphones, LogOut, Plus
 } from 'lucide-react';
 
 import PlatformExecDashboard from './platform/PlatformExecDashboard';
@@ -14,6 +14,7 @@ import PlatformDonors from './platform/PlatformDonors';
 import PlatformRevenue from './platform/PlatformRevenue';
 import PlatformChurches from './platform/PlatformChurches';
 import PlatformSupport from './platform/PlatformSupport';
+import ChurchOnboardingWizard from '@/components/ChurchOnboardingWizard';
 
 const TABS = [
   { id: 'exec', label: 'Executive', icon: LayoutDashboard },
@@ -30,6 +31,7 @@ export default function GodModeDashboard() {
   const [activeTab, setActiveTab] = useState('exec');
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showAddChurch, setShowAddChurch] = useState(false);
   const token = sessionStorage.getItem('session_token');
 
   const fetchStats = useCallback(async () => {
@@ -84,16 +86,34 @@ export default function GodModeDashboard() {
             <p className="godmode-subtitle">Platform Admin Dashboard &middot; All churches, all data</p>
           </div>
         </div>
-        <button
-          onClick={() => navigate('/platform')}
-          className="godmode-back-btn"
-          title="Switch to the previous platform dashboard layout"
-          data-testid="back-to-platform"
-        >
-          <LogOut className="w-4 h-4" />
-          Previous Dashboard
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowAddChurch(true)}
+            className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+            data-testid="add-new-church-btn"
+          >
+            <Plus className="w-4 h-4" /> Add New Church
+          </button>
+          <button
+            onClick={() => navigate('/platform')}
+            className="godmode-back-btn"
+            title="Switch to the previous platform dashboard layout"
+            data-testid="back-to-platform"
+          >
+            <LogOut className="w-4 h-4" />
+            Previous Dashboard
+          </button>
+        </div>
       </div>
+
+      {/* Add New Church Wizard */}
+      {showAddChurch && (
+        <ChurchOnboardingWizard
+          isOpen={showAddChurch}
+          onClose={() => setShowAddChurch(false)}
+          onSuccess={() => { setShowAddChurch(false); fetchStats(); }}
+        />
+      )}
 
       {/* Tab Navigation */}
       <div className="godmode-tabs" data-testid="godmode-tabs">

@@ -4,6 +4,7 @@ import { useOutletContext } from 'react-router-dom';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import SolomonPayForm from '@/components/SolomonPayForm';
+import MultiPaymentSelector from '@/components/MultiPaymentSelector';
 
 const parseTime = (value) => {
   if (!value) return null;
@@ -458,17 +459,28 @@ export default function PortalCafe() {
                   />
                 </div>
               ) : (
-                <button
-                  onClick={placeOrder}
-                  style={{
-                    width: '100%', padding: '14px 0', background: '#111827', color: '#ffffff',
-                    border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 700,
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
-                  }}
-                  data-testid="cafe-checkout-btn"
-                >
-                  Pay with SolomonPay <ChevronRight style={{ width: 16, height: 16 }} />
-                </button>
+                <div className="space-y-3">
+                  <MultiPaymentSelector
+                    amount={cartTotal}
+                    onSelect={(pm) => {
+                      if (pm.type === 'card_on_file' || pm.type === 'guest_card') {
+                        setShowPaymentStep(true);
+                      }
+                    }}
+                    showCash={false}
+                  />
+                  <button
+                    onClick={placeOrder}
+                    style={{
+                      width: '100%', padding: '14px 0', background: '#111827', color: '#ffffff',
+                      border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 700,
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
+                    }}
+                    data-testid="cafe-checkout-btn"
+                  >
+                    Complete Order <ChevronRight style={{ width: 16, height: 16 }} />
+                  </button>
+                </div>
               )}
             </div>
           </div>

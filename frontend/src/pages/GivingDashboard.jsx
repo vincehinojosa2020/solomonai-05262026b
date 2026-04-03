@@ -16,6 +16,7 @@ import EnterDonationPanel from '@/components/modals/EnterDonationPanel';
 import DonationCheckout from '@/components/modals/DonationCheckout';
 import AdminRecurringGiving from '@/components/AdminRecurringGiving';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { FeatureEducationHeader } from '@/components/FeatureEducationHeader';
 import { toast } from 'sonner';
 
 const StatCard = ({ title, value, subtitle, icon: Icon }) => (
@@ -181,6 +182,7 @@ export default function GivingDashboard() {
 
   return (
     <div className="space-y-4" data-testid="giving-dashboard">
+      <FeatureEducationHeader featureKey="giving" />
       {/* Header */}
       <div className="page-header">
         <div>
