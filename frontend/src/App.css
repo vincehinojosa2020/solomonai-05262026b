@@ -482,7 +482,7 @@ textarea:focus-visible {
   height: 16px;
 }
 
-.giving-card .icon-box.stripe { color: #635BFF; }
+.giving-card .icon-box.solomonpay { color: #1e40af; }
 .giving-card .icon-box.paypal { color: #003087; }
 .giving-card .icon-box.venmo { color: #3D95CE; }
 .giving-card .icon-box.zelle { color: #6D1ED4; }
