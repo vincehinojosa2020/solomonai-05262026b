@@ -10,9 +10,9 @@
 - Email: shannonnieman1030@gmail.com
 - Password: Demo2026!
 - Role: church_admin
-- Access: /dashboard, all admin routes for Abundant East
+- Tenant: abundant-east-001
 
-## Portal Member
+## Portal Member (Abundant East)
 - Email: member@abundant.church
 - Password: Demo2026!
 - Role: member
@@ -22,13 +22,16 @@
 - Email: admin@pottershouse.org
 - Password: Demo2026!
 - Role: church_admin
+- Tenant: potters-house-001
 
 ## Church Admin (EdenX Ministries — Folsom CA)
 - Email: admin@edenx.church
 - Password: Demo2026!
 - Role: church_admin
+- Tenant: edenx-001
 
 ## Church Admin (City Reach Church — Cedar Park TX)
 - Email: admin@cityreach.church
 - Password: Demo2026!
 - Role: church_admin
+- Tenant: cityreach-001
