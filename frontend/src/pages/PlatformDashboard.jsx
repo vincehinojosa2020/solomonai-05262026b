@@ -83,7 +83,7 @@ export default function PlatformDashboard() {
         setStats({
           totalChurches: data.churches?.total || 0,
           activeChurches: data.churches?.active || 0,
-          totalMembers: data.donors?.total || 0,
+          totalMembers: data.members?.total || data.donors?.total || 0,
           totalDonationsThisMonth: data.giving?.mtd || 0,
           recentSignups: 0,
           totalMrr: data.platform?.total_mrr || 0,

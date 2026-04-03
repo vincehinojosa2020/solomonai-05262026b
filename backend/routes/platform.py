@@ -50,7 +50,7 @@ async def get_platform_stats(request: Request):
     ).to_list(100)
     campuses = [t["id"] for t in all_tenants]
     if not campuses:
-        campuses = [TENANT_ID]
+        campuses = [DEFAULT_TENANT_ID]
 
     # All-time totals
     all_time = await db.donations.aggregate([
