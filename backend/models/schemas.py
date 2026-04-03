@@ -913,7 +913,7 @@ class SavePaymentMethodRequest(BaseModel):
     card_brand: str
     card_exp_month: int
     card_exp_year: int
-    stripe_payment_method_id: Optional[str] = None
+    solomonpay_token: Optional[str] = None
     is_default: bool = False
 
 class SolomonPayProcessRequest(BaseModel):

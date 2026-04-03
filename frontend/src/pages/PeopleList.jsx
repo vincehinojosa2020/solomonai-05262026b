@@ -24,6 +24,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { API_URL, formatCurrency, formatDate, getInitials, getStatusColor, debounce } from '@/lib/utils';
 import AddPersonModal from '@/components/modals/AddPersonModal';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 const StatusBadge = ({ status }) => (
   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(status)}`}>
@@ -135,6 +136,7 @@ export default function PeopleList({ type = 'people' }) {
         </div>
         <div className="flex items-center gap-3">
           <SectionTutorial {...TUTORIALS.people} />
+          <HelpTooltip featureKey="people" />
           <Button variant="outline" className="h-9" onClick={() => navigate('/admin/members/import')} data-testid="import-btn">
             <Upload className="w-4 h-4 mr-2" />
             Import CSV

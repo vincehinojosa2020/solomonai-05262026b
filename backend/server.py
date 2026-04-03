@@ -149,6 +149,9 @@ app.add_middleware(
 # ═══ Startup / Shutdown ═══
 @app.on_event("startup")
 async def startup():
+    from services.recurring_scheduler import start_scheduler
+    asyncio.create_task(_delayed_scheduler_start())
+
     async def _seed():
         try:
             from core.seed import ensure_mobile_demo_accounts
@@ -196,8 +199,17 @@ async def startup():
     asyncio.create_task(_seed())
 
 
+async def _delayed_scheduler_start():
+    """Wait 30s for DB to warm up before starting scheduler."""
+    await asyncio.sleep(30)
+    from services.recurring_scheduler import start_scheduler
+    start_scheduler(db)
+
+
 @app.on_event("shutdown")
 async def shutdown():
+    from services.recurring_scheduler import stop_scheduler
+    stop_scheduler()
     client.close()
 
 

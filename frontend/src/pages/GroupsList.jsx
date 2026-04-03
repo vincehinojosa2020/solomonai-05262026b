@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { API_URL } from '@/lib/utils';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 const GroupCard = ({ group }) => {
   const capacityPercent = group.capacity 
@@ -160,6 +161,7 @@ export default function GroupsList() {
           <Plus className="w-4 h-4 mr-2" />
           Create Group
         </Button>
+        <HelpTooltip featureKey="groups" />
       </div>
 
       {/* Stats */}

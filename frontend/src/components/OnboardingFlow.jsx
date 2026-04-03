@@ -48,7 +48,7 @@ export default function OnboardingFlow({ user, onComplete }) {
       const brand = cardForm.number.startsWith('4') ? 'Visa' : cardForm.number.startsWith('5') ? 'Mastercard' : 'Card';
       await fetch(`${API_URL}/portal/payment-methods`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ stripe_payment_method_id: `pm_onboard_${Date.now()}`, card_brand: brand, card_last_four: last4, card_exp_month: parseInt(cardForm.exp_month) || 12, card_exp_year: parseInt(cardForm.exp_year) || 2028, is_default: true }),
+        body: JSON.stringify({ solomonpay_token: `sp_onboard_${Date.now()}`, card_brand: brand, card_last_four: last4, card_exp_month: parseInt(cardForm.exp_month) || 12, card_exp_year: parseInt(cardForm.exp_year) || 2028, is_default: true }),
       });
       toast.success('Card saved');
       setStep(2);

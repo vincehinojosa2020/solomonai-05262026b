@@ -47,7 +47,7 @@ const INTEGRATIONS = [
 ];
 
 const PROCESSORS = [
-  { id: 'stripe', name: 'Stripe', desc: 'Credit/debit cards, ACH, Apple Pay', color: '#635BFF', icon: CreditCard },
+  { id: 'solomon_pay', name: 'Solomon Pay', desc: 'Proprietary card, ACH, and Apple Pay processing', color: '#1e40af', icon: CreditCard },
   { id: 'pushpay', name: 'Pushpay', desc: 'Church-focused giving platform', color: '#48BB78', icon: CreditCard },
   { id: 'tithe_ly', name: 'Tithe.ly', desc: 'Digital giving for churches', color: '#2B6CB0', icon: CreditCard },
   { id: 'planning_center', name: 'Planning Center Giving', desc: 'Church Center ecosystem', color: '#667EEA', icon: Database },

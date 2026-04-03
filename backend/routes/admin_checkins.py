@@ -734,3 +734,68 @@ class SermonUpdate(BaseModel):
     category: Optional[str] = None
     published: Optional[bool] = None
 
+
+
+# ═══ Kiosk family lookup ═══
+
+@router.get("/admin/checkin/family-lookup")
+async def family_lookup_by_phone(request: Request, phone: str):
+    """Kiosk: look up children by guardian phone number."""
+    from core import get_session_token_from_request
+    token = get_session_token_from_request(request)
+    session = None
+    if token:
+        session = await db.user_sessions.find_one({"session_token": token}, {"_id": 0})
+    # Allow kiosk lookup without strict auth (family enters phone)
+    tenant_id = DEFAULT_TENANT_ID
+    if session:
+        user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+        if user:
+            tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+
+    phone_clean = phone.replace("-","").replace("(","").replace(")","").replace(" ","")
+
+    # Search people by phone
+    people = await db.people.find(
+        {
+            "tenant_id": tenant_id,
+            "$or": [
+                {"mobile_phone": {"$regex": phone_clean[-7:]}},
+                {"home_phone": {"$regex": phone_clean[-7:]}},
+                {"guardian_phone": {"$regex": phone_clean[-7:]}},
+            ]
+        },
+        {"_id": 0}
+    ).to_list(20)
+
+    children = []
+    for p in people:
+        # Include anyone with child-type membership or whose age < 18
+        age = p.get("age", 99)
+        dob = p.get("date_of_birth", "")
+        is_child = age < 18 if isinstance(age, int) else False
+        if not is_child and dob:
+            try:
+                birth = datetime.strptime(dob[:10], "%Y-%m-%d")
+                age_calc = (datetime.now() - birth).days // 365
+                is_child = age_calc < 18
+            except Exception:
+                pass
+
+        children.append({
+            "id": p.get("id"),
+            "name": f"{p.get('first_name','')} {p.get('last_name','')}".strip(),
+            "first_name": p.get("first_name", ""),
+            "last_name": p.get("last_name", ""),
+            "classroom": p.get("classroom") or p.get("grade") or "Children's Ministry",
+            "allergies": p.get("allergies", ""),
+            "allergies_detail": p.get("allergies_detail") or p.get("allergies", ""),
+            "parent_name": p.get("parent_name", ""),
+            "is_child": is_child,
+        })
+
+    if not children:
+        # Fallback: find by any people matching (kiosk fallback — show all)
+        return {"children": [], "message": "No family found"}
+
+    return {"children": children, "guardian_phone": phone}

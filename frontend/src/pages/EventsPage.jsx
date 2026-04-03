@@ -3,6 +3,7 @@ import { Calendar, MapPin, Users, Plus, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { API_URL, formatDateTime } from '@/lib/utils';
 import { SectionTutorial, TUTORIALS } from '@/components/SectionTutorial';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 const EventCard = ({ event }) => {
   const startDate = new Date(event.start_datetime);
@@ -86,6 +87,7 @@ export default function EventsPage() {
         </div>
         <div className="flex gap-2">
           <SectionTutorial {...TUTORIALS.events} />
+          <HelpTooltip featureKey="events" />
           <Button className="h-9 btn-primary" data-testid="create-event-btn">
           <Plus className="w-4 h-4 mr-2" />
           Create Event

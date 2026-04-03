@@ -58,7 +58,7 @@ prefix_map = {
     '/solomon/': 'solomon',
     '/platform/': 'platform',
     '/solomonpay/': 'payments', '/payment/': 'payments', '/admin/payment': 'payments',
-    '/webhook/stripe': 'payments', '/checkout/': 'payments',
+    '/webhook/solomonpay': 'payments', '/checkout/': 'payments',
     '/v1/agent': 'agent_api',
     '/health': 'public', '/search': 'public', '/tenant': 'public', '/register/': 'public',
     '/public/': 'public',

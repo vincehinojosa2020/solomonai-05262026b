@@ -270,8 +270,8 @@ export default function SettingsPage() {
                     <span className="text-purple-600 font-bold">S</span>
                   </div>
                   <div>
-                    <p className="font-medium text-slate-900">Stripe</p>
-                    <p className="text-sm text-slate-500">Accept card and ACH payments</p>
+                    <p className="font-medium text-slate-900">Solomon Pay</p>
+                    <p className="text-sm text-slate-500">Proprietary card and ACH processing</p>
                   </div>
                 </div>
                 <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-sm font-medium">
@@ -328,7 +328,7 @@ export default function SettingsPage() {
             <h3 className="font-semibold text-slate-900 mb-6">Available Integrations</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                { name: 'Stripe', desc: 'Payment processing', status: 'connected' },
+                { name: 'Solomon Pay', desc: 'Proprietary payment processing', status: 'connected' },
                 { name: 'Resend', desc: 'Email delivery', status: 'connected' },
                 { name: 'Twilio', desc: 'SMS messaging', status: 'available' },
                 { name: 'Mailchimp', desc: 'Email marketing', status: 'available' },

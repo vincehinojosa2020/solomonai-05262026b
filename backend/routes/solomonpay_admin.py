@@ -572,3 +572,108 @@ async def generate_qr_codes(request: Request):
         qr_codes.append({"label": f"Give to {f['name']}", "url": f"{base_url}/portal/give?fund={f['id']}", "fund": f["id"]})
 
     return {"qr_codes": qr_codes, "note": "Use any QR code generator to create scannable codes from these URLs."}
+
+
+
+# ═══ Recurring Giving Scheduler Admin ═══
+
+@router.get("/admin/solomonpay/scheduler/status")
+async def get_scheduler_status(request: Request):
+    """Get recurring giving scheduler status, stats, and recent runs."""
+    user = await _get_admin(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    # Active schedules
+    active_count = await db.recurring_giving.count_documents(
+        {"tenant_id": tenant_id, "is_active": True}
+    )
+    paused_count = await db.recurring_giving.count_documents(
+        {"tenant_id": tenant_id, "is_active": False, "paused_reason": {"$exists": True}}
+    )
+    # Due today
+    due_today = await db.recurring_giving.count_documents(
+        {"tenant_id": tenant_id, "is_active": True, "next_charge_date": {"$lte": today_str}}
+    )
+    # Failed queue
+    failed_queue = await db.recurring_giving.find(
+        {"tenant_id": tenant_id, "is_active": True, "consecutive_failures": {"$gt": 0}},
+        {"_id": 0, "id": 1, "person_id": 1, "amount": 1, "frequency": 1,
+         "consecutive_failures": 1, "last_failure_reason": 1, "next_charge_date": 1}
+    ).limit(20).to_list(20)
+    # Auto-paused
+    auto_paused = await db.recurring_giving.find(
+        {"tenant_id": tenant_id, "paused_reason": "auto_paused_3_failures"},
+        {"_id": 0, "id": 1, "person_id": 1, "amount": 1, "last_failure_reason": 1}
+    ).limit(20).to_list(20)
+
+    # Recent runs (platform-wide — runs are not tenant-scoped)
+    recent_runs = await db.recurring_giving_runs.find(
+        {}, {"_id": 0}
+    ).sort("started_at", -1).limit(10).to_list(10)
+
+    # Next scheduled run estimate (30s after startup + interval)
+    from services.recurring_scheduler import SCHEDULER_INTERVAL_SECONDS
+    next_run_approx = (datetime.now(timezone.utc) + timedelta(seconds=SCHEDULER_INTERVAL_SECONDS)).isoformat()
+
+    return {
+        "scheduler": {
+            "active": True,
+            "interval_seconds": SCHEDULER_INTERVAL_SECONDS,
+            "next_run_estimate": next_run_approx,
+        },
+        "stats": {
+            "active_schedules": active_count,
+            "paused_schedules": paused_count,
+            "due_today": due_today,
+            "failed_retry_queue": len(failed_queue),
+            "auto_paused_count": len(auto_paused),
+        },
+        "failed_queue": [serialize_doc(r) for r in failed_queue],
+        "auto_paused": [serialize_doc(r) for r in auto_paused],
+        "recent_runs": [serialize_doc(r) for r in recent_runs],
+    }
+
+
+@router.post("/admin/solomonpay/scheduler/run-now")
+async def trigger_scheduler_run(request: Request):
+    """Manually trigger a scheduler batch run immediately."""
+    user = await _get_admin(request)
+    from services.recurring_scheduler import run_recurring_batch
+    result = await run_recurring_batch(db)
+    return {
+        "message": "Batch run completed",
+        "run_id": result["id"],
+        "successful": result["successful"],
+        "failed": result["failed"],
+        "skipped": result["skipped"],
+        "total_scheduled": result["total_scheduled"],
+        "duration_ms": result["duration_ms"],
+    }
+
+
+@router.post("/admin/solomonpay/scheduler/resume/{schedule_id}")
+async def admin_resume_schedule(request: Request, schedule_id: str):
+    """Resume an auto-paused recurring giving schedule."""
+    user = await _get_admin(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    schedule = await db.recurring_giving.find_one(
+        {"id": schedule_id, "tenant_id": tenant_id}, {"_id": 0}
+    )
+    if not schedule:
+        raise HTTPException(status_code=404, detail="Schedule not found")
+
+    from routes.portal import _calculate_next_charge_date
+    next_date = _calculate_next_charge_date(schedule.get("frequency", "monthly"))
+    await db.recurring_giving.update_one(
+        {"id": schedule_id},
+        {"$set": {
+            "is_active": True,
+            "consecutive_failures": 0,
+            "paused_reason": None,
+            "last_failure_reason": None,
+            "next_charge_date": next_date,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }}
+    )
+    return {"message": "Schedule resumed", "next_charge_date": next_date}

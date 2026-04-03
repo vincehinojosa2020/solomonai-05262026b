@@ -572,6 +572,98 @@ async def get_rooms(request: Request):
         rooms = default_rooms
     return {"rooms": [{k: v for k, v in r.items() if k not in ["_id", "tenant_id"]} for r in rooms]}
 
+
+# ─── Full Calendar API ────────────────────────────────────────────────────────
+
+@router.get("/admin/events/calendar")
+async def get_calendar_events(
+    request: Request,
+    start: str = None,
+    end: str = None,
+    event_type: str = None,
+):
+    """Return events in FullCalendar-compatible format with date range filtering."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+
+    query: dict = {"tenant_id": tenant_id}
+    if start or end:
+        date_filter = {}
+        if start:
+            date_filter["$gte"] = start[:10]
+        if end:
+            date_filter["$lte"] = end[:10]
+        if date_filter:
+            query["event_date"] = date_filter
+    if event_type:
+        query["event_type"] = event_type
+
+    events = await db.events.find(query, {"_id": 0}).sort("event_date", 1).limit(500).to_list(500)
+
+    EVENT_COLORS = {
+        "service": "#1e40af",
+        "community": "#16a34a",
+        "conference": "#7c3aed",
+        "youth": "#db2777",
+        "group": "#d97706",
+        "training": "#0891b2",
+        "other": "#64748b",
+    }
+
+    fc_events = []
+    for e in events:
+        date = e.get("event_date", "")
+        start_time = e.get("start_time", "")
+        end_time = e.get("end_time", "")
+        etype = e.get("event_type", "other")
+
+        fc_event = {
+            "id": e.get("id"),
+            "title": e.get("name", "Event"),
+            "backgroundColor": EVENT_COLORS.get(etype, EVENT_COLORS["other"]),
+            "borderColor": EVENT_COLORS.get(etype, EVENT_COLORS["other"]),
+            "extendedProps": {
+                "description": e.get("description", ""),
+                "location": e.get("location", ""),
+                "capacity": e.get("capacity"),
+                "event_type": etype,
+                "requires_registration": e.get("requires_registration", False),
+                "is_public": e.get("is_public", True),
+                "price": e.get("price", 0),
+                "ticket_tiers": e.get("ticket_tiers", []),
+                "recurring": e.get("recurring", False),
+                "rrule": e.get("rrule", ""),
+            }
+        }
+
+        if start_time:
+            fc_event["start"] = f"{date}T{start_time}"
+            fc_event["end"] = f"{date}T{end_time}" if end_time else None
+        else:
+            fc_event["start"] = date
+            fc_event["allDay"] = True
+
+        fc_events.append(fc_event)
+
+    return {"events": fc_events}
+
+
+@router.post("/admin/events/{event_id}/clone")
+async def clone_event(request: Request, event_id: str):
+    """Clone an event for quick duplication."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id")
+    original = await db.events.find_one({"id": event_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not original:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    new_event = {**original, "id": str(uuid.uuid4()), "name": f"Copy of {original.get('name','')}",
+                 "created_at": datetime.now(timezone.utc).isoformat()}
+    await db.events.insert_one(new_event)
+    return {"message": "Event cloned", "event_id": new_event["id"]}
+
+
+
 # ============== PHASE 2: PEOPLE WORKFLOWS ==============
 
 class WorkflowCreate(BaseModel):

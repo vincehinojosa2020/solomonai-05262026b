@@ -26,6 +26,7 @@ export const navItems = [
     { name: 'Volunteers', path: '/volunteers', icon: HandHeart },
     { name: 'Courses', path: '/admin/courses', icon: GraduationCap },
     { name: 'Groups', path: '/admin/groups', icon: UsersRound },
+    { name: 'Calendar', path: '/calendar', icon: Calendar },
     { name: 'Events', path: '/admin/events', icon: Calendar },
     { name: 'Registrations', path: '/registrations', icon: ClipboardList },
     { name: 'Approvals', path: '/calendar/approvals', icon: CheckSquare },

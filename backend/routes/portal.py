@@ -1888,7 +1888,7 @@ async def get_church_members_for_sharing(request: Request, search: Optional[str]
     
     return {"members": members}
 
-# ============== STRIPE PAYMENT ROUTES ==============
+# ============== SOLOMONPAY PAYMENT METHOD ROUTES ==============
 
 
 @router.get("/portal/media/videos")
@@ -3129,7 +3129,7 @@ async def save_portal_payment_method(request: Request, method_data: SavePaymentM
         "card_brand": method_data.card_brand,
         "card_exp_month": method_data.card_exp_month,
         "card_exp_year": method_data.card_exp_year,
-        "stripe_payment_method_id": method_data.stripe_payment_method_id,
+        "solomonpay_token": method_data.solomonpay_token,
         "is_default": method_data.is_default,
         "is_active": True,
         "created_at": datetime.now(timezone.utc).isoformat()
@@ -3346,4 +3346,5 @@ async def checkout_with_giving_nudge(req: CheckoutWithNudgeRequest, request: Req
     }
 
 # ============== PLATFORM HEALTH MONITORING ==============
+
 

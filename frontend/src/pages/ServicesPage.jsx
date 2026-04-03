@@ -17,6 +17,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 const ITEM_TYPES = [
   { value: 'song', label: 'Song', icon: Music },
@@ -226,6 +227,7 @@ export default function ServicesPage() {
           <Button variant="outline" onClick={() => setShowTutorial(!showTutorial)} data-testid="services-tutorial-btn">
             <HelpCircle className="w-4 h-4 mr-2" /> How It Works
           </Button>
+          <HelpTooltip featureKey="services" />
           {templates.length > 0 && (
             <Button variant="outline" onClick={() => setShowTemplates(true)} data-testid="from-template-btn">
               <Bookmark className="w-4 h-4 mr-2" /> From Template

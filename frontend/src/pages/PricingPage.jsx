@@ -71,7 +71,7 @@ const PLANS = [
 const FAQ = [
   { q: 'Can I switch plans later?', a: 'Absolutely. Upgrade or downgrade any time from your Settings page. Changes take effect on your next billing cycle.' },
   { q: 'Is there a contract?', a: 'No long-term contracts. All plans are month-to-month. Cancel any time with no penalties.' },
-  { q: 'What payment processors are supported?', a: 'We support Stripe for credit/debit cards, ACH transfers, Apple Pay, Google Pay, and more. Pushpay integration coming soon.' },
+  { q: 'What payment processors are supported?', a: 'Solomon AI uses Solomon Pay — our proprietary payment processor built for churches. Solomon Pay supports credit/debit cards, ACH bank transfers, and digital wallets. No third-party accounts required.' },
   { q: 'Can we import data from Planning Center?', a: 'Yes! We offer one-click import from Planning Center, Church Community Builder, and CSV files.' },
 ];
 

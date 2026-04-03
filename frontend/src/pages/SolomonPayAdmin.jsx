@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { usePolling } from '@/hooks/usePolling';
-import { DollarSign, TrendingUp, RefreshCw, Users, FileText, Download, Search, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Building2, CreditCard, Settings, Clock, Filter, Eye, Zap, Archive, Plus, Pencil, X, QrCode, RotateCcw, Terminal, PieChart } from 'lucide-react';
+import { DollarSign, TrendingUp, RefreshCw, Users, FileText, Download, Search, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownRight, Building2, CreditCard, Settings, Clock, Filter, Eye, Zap, Archive, Plus, Pencil, X, QrCode, RotateCcw, Terminal, PieChart, PlayCircle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart as RPieChart, Pie, Cell } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { API_URL, formatCurrency, formatDate } from '@/lib/utils';
 import { toast } from 'sonner';
 import AdminRecurringGiving from '@/components/AdminRecurringGiving';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 const TABS = [
   { id: 'dashboard', label: 'Dashboard', icon: TrendingUp },
@@ -48,6 +49,8 @@ export default function SolomonPayAdmin() {
   const [loading, setLoading] = useState(false);
   const [showFundModal, setShowFundModal] = useState(false);
   const [editFund, setEditFund] = useState(null);
+  const [schedulerStatus, setSchedulerStatus] = useState(null);
+  const [schedulerRunning, setSchedulerRunning] = useState(false);
   const [fundForm, setFundForm] = useState({ name: '', description: '', goal_amount: '' });
   const [donorIQ, setDonorIQ] = useState(null);
   const [showVT, setShowVT] = useState(false);
@@ -96,12 +99,33 @@ export default function SolomonPayAdmin() {
     try { const res = await fetch(`${API_URL}/admin/solomonpay/settings`, { headers: headers() }); if (res.ok) setSettings(await res.json()); } catch (e) { console.error(e); }
   };
 
+  const fetchSchedulerStatus = async () => {
+    try { const res = await fetch(`${API_URL}/admin/solomonpay/scheduler/status`, { headers: headers() }); if (res.ok) setSchedulerStatus(await res.json()); } catch (e) { console.error(e); }
+  };
+
+  const triggerSchedulerRun = async () => {
+    setSchedulerRunning(true);
+    try {
+      const res = await fetch(`${API_URL}/admin/solomonpay/scheduler/run-now`, { method: 'POST', headers: headers() });
+      if (res.ok) { const d = await res.json(); toast.success(`Batch run complete: ${d.successful} processed, ${d.failed} failed`); fetchSchedulerStatus(); }
+      else { toast.error('Batch run failed'); }
+    } catch { toast.error('Failed to trigger run'); } finally { setSchedulerRunning(false); }
+  };
+
+  const resumeSchedule = async (scheduleId) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/solomonpay/scheduler/resume/${scheduleId}`, { method: 'POST', headers: headers() });
+      if (res.ok) { toast.success('Schedule resumed'); fetchSchedulerStatus(); }
+    } catch { toast.error('Failed to resume'); }
+  };
+
   useEffect(() => { fetchDashboard(); }, []);
   useEffect(() => { if (activeTab === 'transactions') fetchTransactions(); }, [activeTab, fetchTransactions]);
   useEffect(() => { if (activeTab === 'payouts') fetchPayouts(); }, [activeTab]);
   useEffect(() => { if (activeTab === 'funds') fetchFunds(); }, [activeTab]);
   useEffect(() => { if (activeTab === 'donors') fetchDonors(); }, [activeTab, fetchDonors]);
   useEffect(() => { if (activeTab === 'settings') fetchSettings(); }, [activeTab]);
+  useEffect(() => { if (activeTab === 'recurring') fetchSchedulerStatus(); }, [activeTab]);
 
   // Real-time polling (5s for giving/transactions, 30s for general)
   usePolling(fetchDashboard, 5000, activeTab === 'dashboard');
@@ -203,6 +227,7 @@ export default function SolomonPayAdmin() {
           <h1 className="page-title">SolomonPay</h1>
           <p className="page-subtitle">Payment processing & giving management</p>
         </div>
+        <HelpTooltip featureKey="giving" />
       </div>
 
       {/* Tab Navigation */}
@@ -477,7 +502,110 @@ export default function SolomonPayAdmin() {
 
       {/* === RECURRING TAB === */}
       {activeTab === 'recurring' && (
-        <div data-testid="solomonpay-recurring-tab">
+        <div className="space-y-4" data-testid="solomonpay-recurring-tab">
+          {/* Scheduler Status */}
+          <div className="bg-white border border-slate-200 rounded-xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-semibold text-slate-900">Recurring Giving Scheduler</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Automatically processes due recurring gifts via Solomon Pay</p>
+              </div>
+              <Button onClick={triggerSchedulerRun} disabled={schedulerRunning} size="sm" className="flex items-center gap-1.5" data-testid="run-scheduler-btn">
+                <RefreshCw className={`w-3.5 h-3.5 ${schedulerRunning ? 'animate-spin' : ''}`} />
+                {schedulerRunning ? 'Running...' : 'Run Now'}
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              {[
+                { label: 'Active Schedules', value: schedulerStatus?.stats?.active_schedules ?? '—' },
+                { label: 'Due Today', value: schedulerStatus?.stats?.due_today ?? '—' },
+                { label: 'Failed/Retry', value: schedulerStatus?.stats?.failed_retry_queue ?? '—' },
+                { label: 'Auto-Paused', value: schedulerStatus?.stats?.auto_paused_count ?? '—' },
+                { label: 'Paused Schedules', value: schedulerStatus?.stats?.paused_schedules ?? '—' },
+              ].map(s => (
+                <div key={s.label} className="bg-slate-50 rounded-lg p-3 text-center">
+                  <p className="text-xs text-slate-500">{s.label}</p>
+                  <p className="text-xl font-bold text-slate-900 mt-1">{s.value}</p>
+                </div>
+              ))}
+            </div>
+            {schedulerStatus?.scheduler?.next_run_estimate && (
+              <p className="text-xs text-slate-400 mt-3 flex items-center gap-1">
+                <Clock className="w-3 h-3" /> Next scheduled run: {new Date(schedulerStatus.scheduler.next_run_estimate).toLocaleString()}
+              </p>
+            )}
+          </div>
+
+          {/* Failed Retry Queue */}
+          {schedulerStatus?.failed_queue?.length > 0 && (
+            <div className="bg-white border border-amber-200 rounded-xl p-5">
+              <h3 className="font-semibold text-amber-700 mb-3">Failed / Retry Queue ({schedulerStatus.failed_queue.length})</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead><tr className="text-xs text-slate-500 border-b border-slate-100"><th className="text-left py-2">Schedule ID</th><th className="text-left py-2">Amount</th><th className="text-left py-2">Frequency</th><th className="text-left py-2">Failures</th><th className="text-left py-2">Reason</th><th className="text-left py-2">Next Attempt</th></tr></thead>
+                  <tbody>
+                    {schedulerStatus.failed_queue.map(r => (
+                      <tr key={r.id} className="border-b border-slate-50 hover:bg-amber-50">
+                        <td className="py-2 font-mono text-xs">{r.id?.slice(-8)}</td>
+                        <td className="py-2">{formatCurrency(r.amount)}</td>
+                        <td className="py-2 capitalize">{r.frequency}</td>
+                        <td className="py-2 text-amber-600 font-medium">{r.consecutive_failures}</td>
+                        <td className="py-2 text-xs text-slate-500 max-w-xs truncate">{r.last_failure_reason}</td>
+                        <td className="py-2 font-mono text-xs">{r.next_charge_date}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Auto-Paused */}
+          {schedulerStatus?.auto_paused?.length > 0 && (
+            <div className="bg-white border border-red-200 rounded-xl p-5">
+              <h3 className="font-semibold text-red-700 mb-3">Auto-Paused (3 failures) — {schedulerStatus.auto_paused.length}</h3>
+              <div className="space-y-2">
+                {schedulerStatus.auto_paused.map(r => (
+                  <div key={r.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                    <div>
+                      <p className="text-sm font-medium text-slate-800">{formatCurrency(r.amount)} — {r.last_failure_reason}</p>
+                      <p className="text-xs text-slate-500 font-mono">{r.id}</p>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => resumeSchedule(r.id)} data-testid={`resume-schedule-${r.id}`}>Resume</Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recent Runs */}
+          <div className="bg-white border border-slate-200 rounded-xl p-5">
+            <h3 className="font-semibold text-slate-900 mb-3">Recent Batch Runs</h3>
+            {(!schedulerStatus?.recent_runs || schedulerStatus.recent_runs.length === 0) ? (
+              <p className="text-sm text-slate-400 py-4 text-center">No batch runs yet. Click "Run Now" to trigger the first run.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead><tr className="text-xs text-slate-500 border-b border-slate-100"><th className="text-left py-2">Run ID</th><th className="text-left py-2">Date</th><th className="text-right py-2">Total</th><th className="text-right py-2">Success</th><th className="text-right py-2">Failed</th><th className="text-right py-2">Skipped</th><th className="text-right py-2">Duration</th></tr></thead>
+                  <tbody>
+                    {schedulerStatus.recent_runs.map(r => (
+                      <tr key={r.id} className="border-b border-slate-50 hover:bg-slate-50">
+                        <td className="py-2 font-mono text-xs">{r.id?.slice(-8)}</td>
+                        <td className="py-2 text-xs">{new Date(r.started_at).toLocaleString()}</td>
+                        <td className="py-2 text-right">{r.total_scheduled}</td>
+                        <td className="py-2 text-right text-green-600 font-medium">{r.successful}</td>
+                        <td className="py-2 text-right text-red-500 font-medium">{r.failed}</td>
+                        <td className="py-2 text-right text-slate-400">{r.skipped}</td>
+                        <td className="py-2 text-right text-xs text-slate-400">{r.duration_ms}ms</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Recurring Schedules List */}
           <AdminRecurringGiving />
         </div>
       )}

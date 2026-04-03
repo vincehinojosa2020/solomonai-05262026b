@@ -48,7 +48,7 @@ export default function PortalMe() {
       const res = await fetch(`${API_URL}/portal/payment-methods`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          stripe_payment_method_id: `pm_demo_${Date.now()}`,
+          solomonpay_token: `sp_demo_${Date.now()}`,
           card_brand: brand, card_last_four: last4,
           card_exp_month: parseInt(cardForm.exp_month), card_exp_year: parseInt(cardForm.exp_year),
           is_default: paymentMethods.length === 0, nickname: cardForm.nickname || `${brand} ****${last4}`,

@@ -8,12 +8,18 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { API_URL, formatDate } from '@/lib/utils';
 import { toast } from 'sonner';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 export default function CommunicationsPage() {
   const [communications, setCommunications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('compose');
   const [sending, setSending] = useState(false);
+  const [remoteTemplates, setRemoteTemplates] = useState([]);
+  const [mergeFields, setMergeFields] = useState([]);
+  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
+  const [newTemplateName, setNewTemplateName] = useState('');
+  const [scheduledComms, setScheduledComms] = useState([]);
   const [composeData, setComposeData] = useState({
     subject: '',
     body: '',
@@ -22,7 +28,7 @@ export default function CommunicationsPage() {
     scheduled_at: '',
   });
 
-  useEffect(() => { fetchCommunications(); }, []);
+  useEffect(() => { fetchCommunications(); fetchTemplates(); fetchScheduled(); }, []);
 
   const fetchCommunications = async () => {
     setLoading(true);
@@ -34,11 +40,41 @@ export default function CommunicationsPage() {
         const data = await response.json();
         setCommunications(data.communications || []);
       }
-    } catch (error) {
-      console.error('Failed to fetch communications:', error);
-    } finally {
-      setLoading(false);
-    }
+    } catch (error) { console.error('Failed to fetch communications:', error); }
+    finally { setLoading(false); }
+  };
+
+  const fetchTemplates = async () => {
+    try {
+      const token = sessionStorage.getItem('session_token');
+      const res = await fetch(`${API_URL}/admin/communications/templates`, { headers: { 'Authorization': `Bearer ${token}` } });
+      if (res.ok) { const d = await res.json(); setRemoteTemplates(d.templates || []); setMergeFields(d.merge_fields || []); }
+    } catch (e) { console.error(e); }
+  };
+
+  const fetchScheduled = async () => {
+    try {
+      const token = sessionStorage.getItem('session_token');
+      const res = await fetch(`${API_URL}/admin/communications/scheduled`, { headers: { 'Authorization': `Bearer ${token}` } });
+      if (res.ok) { const d = await res.json(); setScheduledComms(d.scheduled || []); }
+    } catch (e) { console.error(e); }
+  };
+
+  const saveTemplate = async () => {
+    if (!newTemplateName || !composeData.subject || !composeData.body) { toast.error('Name, subject, and body required'); return; }
+    const token = sessionStorage.getItem('session_token');
+    const res = await fetch(`${API_URL}/admin/communications/templates`, {
+      method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: newTemplateName, subject: composeData.subject, body: composeData.body, category: 'custom' }),
+    });
+    if (res.ok) { toast.success('Template saved!'); setShowSaveTemplate(false); setNewTemplateName(''); fetchTemplates(); }
+    else toast.error('Failed to save template');
+  };
+
+  const cancelScheduled = async (id) => {
+    const token = sessionStorage.getItem('session_token');
+    const res = await fetch(`${API_URL}/admin/communications/cancel/${id}`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+    if (res.ok) { toast.success('Cancelled'); fetchScheduled(); }
   };
 
   const handleSend = async () => {
@@ -73,13 +109,16 @@ export default function CommunicationsPage() {
     }
   };
 
-  const templates = [
-    { id: 1, name: 'Welcome Email', description: 'Send to new visitors', subject: 'Welcome to {church_name}!', body: 'Hi {first_name},\n\nWe are so glad you visited! We hope you felt at home with us.' },
-    { id: 2, name: 'Prayer Request Follow-up', description: 'Pastoral care response', subject: 'Your Prayer Request', body: 'Hi {first_name},\n\nWe received your prayer request and our pastoral team is praying for you.' },
-    { id: 3, name: 'Event Invitation', description: 'Promote upcoming events', subject: 'You are Invited!', body: 'Hi {first_name},\n\nWe have an exciting event coming up and we would love for you to join us!' },
-    { id: 4, name: 'Giving Statement', description: 'Annual contribution summary', subject: 'Your {year} Giving Statement', body: 'Hi {first_name},\n\nThank you for your generous giving this year. Attached is your contribution statement.' },
-    { id: 5, name: 'Volunteer Appreciation', description: 'Thank your team', subject: 'Thank You, Volunteer!', body: 'Hi {first_name},\n\nYour service makes such a difference. Thank you for giving your time!' },
+  const allTemplates = remoteTemplates.length > 0 ? remoteTemplates : [
+    { id: 1, name: 'Welcome Email', description: 'Send to new visitors', subject: 'Welcome to {{church_name}}, {{first_name}}!', body: 'Hi {{first_name}},\n\nWe are so glad you visited! We hope you felt at home with us.\n\nWith love,\n{{church_name}}' },
+    { id: 2, name: 'Event Invitation', description: 'Promote upcoming events', subject: 'You\'re invited — {{event_name}}!', body: 'Hi {{first_name}},\n\nWe\'d love to see you at {{event_name}}!\n\n{{church_name}}' },
+    { id: 3, name: 'Giving Statement', description: 'Annual contribution summary', subject: 'Your {{year}} Giving Statement', body: 'Hi {{first_name}},\n\nThank you for your generous giving this year.\n\n{{church_name}}' },
+    { id: 4, name: 'Volunteer Appreciation', description: 'Thank your team', subject: 'Thank You, {{first_name}}!', body: 'Hi {{first_name}},\n\nYour service makes such a difference. Thank you!\n\n{{church_name}}' },
   ];
+
+  const templates = allTemplates;
+
+  const sentComms = communications.filter(c => c.status === 'sent');
 
   const segments = [
     { id: 1, name: 'All Active Members', count: 4287, icon: Users },
@@ -89,9 +128,6 @@ export default function CommunicationsPage() {
     { id: 5, name: 'Recurring Givers', count: 30, icon: Users },
     { id: 6, name: 'Upcoming Birthdays', count: 156, icon: Calendar },
   ];
-
-  const sentComms = communications.filter(c => c.status === 'sent');
-  const scheduledComms = communications.filter(c => c.status === 'scheduled');
 
   const loadTemplate = (tpl) => {
     setComposeData(prev => ({ ...prev, subject: tpl.subject, body: tpl.body }));
@@ -109,6 +145,7 @@ export default function CommunicationsPage() {
         </div>
         <div className="flex items-center gap-2">
           <SectionTutorial {...TUTORIALS.communications} />
+          <HelpTooltip featureKey="communications" />
           <Button className="btn-primary" onClick={() => setActiveTab('compose')} data-testid="compose-email-btn">
             <Mail className="w-4 h-4 mr-1" />
             Compose
@@ -135,6 +172,21 @@ export default function CommunicationsPage() {
           <p className="text-xs text-slate-500 font-medium mt-1">Segments</p>
         </div>
       </div>
+
+      {/* Twilio SMS Setup Banner */}
+      {!sessionStorage.getItem('twilio_dismissed') && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start justify-between" data-testid="twilio-setup-banner">
+          <div className="flex items-start gap-3">
+            <MessageSquare className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-semibold text-blue-900">Connect Twilio to enable SMS messaging</p>
+              <p className="text-xs text-blue-700 mt-0.5">SMS lets you reach members directly. Once connected, all SMS features activate with zero code changes.</p>
+              <a href="/settings?tab=integrations" className="text-xs text-blue-600 font-medium underline mt-1 inline-block">→ Set up Twilio in Settings → Integrations</a>
+            </div>
+          </div>
+          <button onClick={() => { sessionStorage.setItem('twilio_dismissed','1'); window.location.reload(); }} className="text-blue-400 hover:text-blue-600 ml-4 flex-shrink-0 text-lg">&times;</button>
+        </div>
+      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-white border border-slate-200 p-1">
@@ -203,7 +255,14 @@ export default function CommunicationsPage() {
                   onChange={(e) => setComposeData(p => ({ ...p, body: e.target.value }))}
                   data-testid="body-input"
                 />
-                <p className="text-xs text-slate-400">Merge fields: {'{first_name}'}, {'{last_name}'}, {'{church_name}'}</p>
+                <p className="text-xs text-slate-400">Merge fields: {'{{'+'first_name'+'}}'}, {'{{'+'last_name'+'}}'}, {'{{'+'church_name'+'}}'}</p>
+                {mergeFields.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {mergeFields.slice(0,6).map(f => (
+                      <button key={f.key} onClick={() => setComposeData(p => ({...p, body: p.body + f.key}))} className="text-xs px-2 py-0.5 bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-mono transition-colors" title={f.description}>{f.key}</button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="space-y-1">
@@ -226,7 +285,20 @@ export default function CommunicationsPage() {
                   {sending ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Send className="w-4 h-4 mr-1" />}
                   {composeData.scheduled_at ? 'Schedule' : 'Send Now'}
                 </Button>
+                <Button variant="outline" size="sm" onClick={() => setShowSaveTemplate(true)} data-testid="save-template-btn">
+                  <FileText className="w-3.5 h-3.5 mr-1" /> Save as Template
+                </Button>
               </div>
+              {showSaveTemplate && (
+                <div className="border border-slate-200 rounded-lg p-3 space-y-2 bg-slate-50">
+                  <p className="text-xs font-semibold text-slate-700">Save as Template</p>
+                  <Input placeholder="Template name" value={newTemplateName} onChange={e => setNewTemplateName(e.target.value)} className="text-sm" />
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={saveTemplate}>Save</Button>
+                    <Button size="sm" variant="outline" onClick={() => setShowSaveTemplate(false)}>Cancel</Button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Quick Templates sidebar */}
@@ -317,12 +389,13 @@ export default function CommunicationsPage() {
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Channel</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Recipients</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Scheduled For</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {scheduledComms.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="text-center py-12 text-slate-400">
+                    <td colSpan={5} className="text-center py-12 text-slate-400">
                       <Clock className="w-8 h-8 mx-auto mb-2 opacity-40" />
                       <p className="text-sm">No scheduled messages</p>
                       <p className="text-xs mt-1">Use the compose tab to schedule future messages</p>
@@ -339,6 +412,9 @@ export default function CommunicationsPage() {
                       </td>
                       <td className="px-4 py-3 text-slate-500">{comm.recipient_type || 'All'}</td>
                       <td className="px-4 py-3 text-slate-500">{comm.scheduled_at ? new Date(comm.scheduled_at).toLocaleString() : '--'}</td>
+                      <td className="px-4 py-3">
+                        <button onClick={() => cancelScheduled(comm.id)} className="text-xs text-red-500 hover:underline" data-testid={`cancel-scheduled-${comm.id}`}>Cancel</button>
+                      </td>
                     </tr>
                   ))
                 )}

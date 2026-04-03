@@ -95,7 +95,9 @@ async def exchange_session(request: SessionRequest, response: Response):
             "user_id": user_id,
             "email": email,
             "name": name,
-            "picture": picture
+            "picture": picture,
+            "role": existing_user.get("role", "member") if existing_user else "member",
+            "session_token": session_token,
         }
         
     except httpx.RequestError as e:

@@ -21,6 +21,7 @@ import CommunicationsPage from "@/pages/CommunicationsPage";
 import ReportsPage from "@/pages/ReportsPage";
 import SettingsPage from "@/pages/SettingsPage";
 import EventsPage from "@/pages/EventsPage";
+import CalendarPage from "@/pages/CalendarPage";
 import IntegrationsPage from "@/pages/IntegrationsPage";
 import PlatformDashboard from "@/pages/PlatformDashboard";
 import GodModeDashboard from "@/pages/GodModeDashboard";
@@ -114,6 +115,7 @@ function AppRouter() {
         <Route path="/groups" element={<GroupsList />} />
         <Route path="/groups/:groupId" element={<GroupDetail />} />
         <Route path="/events" element={<EventsPage />} />
+        <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/attendance" element={<AttendancePage />} />
         <Route path="/giving" element={<GivingDashboard />} />
         <Route path="/solomonpay" element={<SolomonPayAdmin />} />

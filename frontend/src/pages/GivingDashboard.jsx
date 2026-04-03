@@ -15,6 +15,7 @@ import { API_URL, formatCurrency, formatDate } from '@/lib/utils';
 import EnterDonationPanel from '@/components/modals/EnterDonationPanel';
 import DonationCheckout from '@/components/modals/DonationCheckout';
 import AdminRecurringGiving from '@/components/AdminRecurringGiving';
+import { HelpTooltip } from '@/components/HelpTooltip';
 import { toast } from 'sonner';
 
 const StatCard = ({ title, value, subtitle, icon: Icon }) => (
@@ -48,7 +49,7 @@ export default function GivingDashboard() {
   const [batches, setBatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showDonationPanel, setShowDonationPanel] = useState(false);
-  const [showStripeCheckout, setShowStripeCheckout] = useState(false);
+  const [showDonationCheckout, setShowDonationCheckout] = useState(false);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [integrations, setIntegrations] = useState(null);
@@ -187,6 +188,7 @@ export default function GivingDashboard() {
           <p className="page-subtitle">Manage giving and financial operations</p>
         </div>
         <div className="flex items-center gap-2">
+          <HelpTooltip featureKey="giving" />
           <SectionTutorial {...TUTORIALS.giving} />
           <Button 
             variant="outline" 
@@ -310,8 +312,8 @@ export default function GivingDashboard() {
           <h3 className="giving-section-title">Payment Channels</h3>
         </div>
         <div className="giving-grid">
-          <a href="#" onClick={(e) => { e.preventDefault(); setShowStripeCheckout(true); }} className="giving-card" data-testid="give-card">
-            <div className="icon-box stripe"><CreditCard /></div>
+          <a href="#" onClick={(e) => { e.preventDefault(); setShowDonationCheckout(true); }} className="giving-card" data-testid="give-card">
+            <div className="icon-box solomonpay"><CreditCard /></div>
             <span className="label">Card / ACH</span>
             <span className="status">Active</span>
           </a>
@@ -530,10 +532,10 @@ export default function GivingDashboard() {
         />
       )}
 
-      {/* Stripe Checkout */}
-      {showStripeCheckout && (
+      {/* Solomon Pay Checkout */}
+      {showDonationCheckout && (
         <DonationCheckout 
-          onClose={() => setShowStripeCheckout(false)}
+          onClose={() => setShowDonationCheckout(false)}
         />
       )}
     </div>

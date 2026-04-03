@@ -245,7 +245,7 @@ class TestPhase3PaymentMethods:
         response = member_session.post(
             f"{BASE_URL}/api/portal/payment-methods",
             json={
-                "stripe_payment_method_id": f"pm_test_{datetime.now().timestamp()}",
+                "solomonpay_token": f"sp_test_{datetime.now().timestamp()}",
                 "card_brand": "Visa",
                 "card_last_four": "4242",
                 "card_exp_month": 12,
@@ -281,7 +281,7 @@ class TestPhase3PaymentMethods:
         add_response = member_session.post(
             f"{BASE_URL}/api/portal/payment-methods",
             json={
-                "stripe_payment_method_id": f"pm_delete_test_{datetime.now().timestamp()}",
+                "solomonpay_token": f"sp_delete_test_{datetime.now().timestamp()}",
                 "card_brand": "Mastercard",
                 "card_last_four": "5555",
                 "card_exp_month": 6,

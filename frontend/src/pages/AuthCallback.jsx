@@ -39,9 +39,25 @@ export default function AuthCallback() {
 
         const userData = await response.json();
         
-        // Clear the hash and navigate to dashboard with user data
+        // Store session token in sessionStorage for API calls
+        if (userData.session_token) {
+          sessionStorage.setItem('session_token', userData.session_token);
+          sessionStorage.setItem('user_data', JSON.stringify(userData));
+          sessionStorage.setItem('user_role', userData.role || 'member');
+        }
+
+        // Clear the hash
         window.history.replaceState(null, '', window.location.pathname);
-        navigate('/dashboard', { state: { user: userData }, replace: true });
+
+        // Route based on role
+        const role = userData.role || 'member';
+        if (role === 'member') {
+          navigate('/portal', { state: { user: userData }, replace: true });
+        } else if (role === 'platform_admin') {
+          navigate('/platform', { state: { user: userData }, replace: true });
+        } else {
+          navigate('/dashboard', { state: { user: userData }, replace: true });
+        }
       } catch (error) {
         console.error('Auth callback error:', error);
         navigate('/login');

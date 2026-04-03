@@ -444,3 +444,136 @@ async def admin_send_notification(request: Request):
 
 
 # ============== CHURCH HEALTH SCORE ==============
+
+
+# ═══ Email Template Builder ═══
+
+BUILTIN_TEMPLATES = [
+    {
+        "id": "welcome",
+        "name": "Welcome New Member",
+        "subject": "Welcome to {{church_name}}, {{first_name}}!",
+        "body": "Dear {{first_name}},\n\nWelcome to {{church_name}}! We're so thrilled you've joined our community.\n\nWe'd love to connect you with a small group and help you get plugged in. Reply to this email or reach out to {{campus_name}} to get started.\n\nWith love,\n{{church_name}} Team",
+        "category": "onboarding",
+        "is_builtin": True,
+    },
+    {
+        "id": "event_invite",
+        "name": "Event Invitation",
+        "subject": "You're invited — {{event_name}}!",
+        "body": "Hi {{first_name}},\n\nWe'd love to see you at {{event_name}} on {{event_date}} at {{event_time}}.\n\n{{event_description}}\n\nClick below to register and let us know you're coming!\n\nBlessings,\n{{church_name}}",
+        "category": "events",
+        "is_builtin": True,
+    },
+    {
+        "id": "giving_receipt",
+        "name": "Giving Receipt",
+        "subject": "Thank you for your generosity, {{first_name}}!",
+        "body": "Dear {{first_name}},\n\nThank you for your gift of {{gift_amount}} to {{church_name}} on {{gift_date}}. Your generosity makes a real difference in our community.\n\nTransaction ID: {{transaction_id}}\n\nThis email serves as your receipt for tax purposes.\n\nWith gratitude,\n{{church_name}}",
+        "category": "giving",
+        "is_builtin": True,
+    },
+    {
+        "id": "weekly_newsletter",
+        "name": "Weekly Newsletter",
+        "subject": "This week at {{church_name}} — {{date}}",
+        "body": "Hello {{church_name}} Family,\n\nHere's what's happening this week:\n\n{{weekly_highlights}}\n\n**Upcoming Events:**\n{{upcoming_events}}\n\n**Prayer Requests:**\n{{prayer_requests}}\n\nSee you Sunday!\n{{church_name}} Team",
+        "category": "newsletter",
+        "is_builtin": True,
+    },
+    {
+        "id": "prayer_update",
+        "name": "Prayer Update",
+        "subject": "Prayer requests from {{church_name}} — {{date}}",
+        "body": "Dear {{first_name}},\n\nThank you for being a prayer warrior for our community. Here are this week's prayer requests:\n\n{{prayer_list}}\n\n\"Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.\" — Philippians 4:6\n\nWith love,\n{{church_name}}",
+        "category": "spiritual",
+        "is_builtin": True,
+    },
+]
+
+MERGE_FIELDS = [
+    {"key": "{{first_name}}", "description": "Recipient's first name"},
+    {"key": "{{last_name}}", "description": "Recipient's last name"},
+    {"key": "{{church_name}}", "description": "Church name"},
+    {"key": "{{campus_name}}", "description": "Campus name"},
+    {"key": "{{event_name}}", "description": "Event name"},
+    {"key": "{{event_date}}", "description": "Event date"},
+    {"key": "{{event_time}}", "description": "Event start time"},
+    {"key": "{{event_description}}", "description": "Event description"},
+    {"key": "{{gift_amount}}", "description": "Donation amount"},
+    {"key": "{{gift_date}}", "description": "Donation date"},
+    {"key": "{{transaction_id}}", "description": "Transaction reference"},
+    {"key": "{{date}}", "description": "Today's date"},
+]
+
+
+@router.get("/admin/communications/templates")
+async def get_email_templates(request: Request):
+    """Get all email templates (built-in + custom)."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    custom = await db.email_templates.find(
+        {"tenant_id": tenant_id}, {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    return {
+        "templates": BUILTIN_TEMPLATES + [serialize_doc(t) for t in custom],
+        "merge_fields": MERGE_FIELDS,
+    }
+
+
+@router.post("/admin/communications/templates")
+async def save_email_template(request: Request):
+    """Save a custom email template."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    body = await request.json()
+    tmpl = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "name": body.get("name", "Untitled Template"),
+        "subject": body.get("subject", ""),
+        "body": body.get("body", ""),
+        "category": body.get("category", "other"),
+        "is_builtin": False,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_by": user.get("user_id"),
+    }
+    await db.email_templates.insert_one(tmpl)
+    return {"message": "Template saved", "template": {k: v for k, v in tmpl.items() if k != "_id"}}
+
+
+@router.delete("/admin/communications/templates/{template_id}")
+async def delete_email_template(request: Request, template_id: str):
+    """Delete a custom email template."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    result = await db.email_templates.delete_one({"id": template_id, "tenant_id": tenant_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Template not found or is built-in")
+    return {"message": "Template deleted"}
+
+
+@router.get("/admin/communications/scheduled")
+async def get_scheduled_communications(request: Request):
+    """Get scheduled (pending) communications."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    scheduled = await db.communications.find(
+        {"tenant_id": tenant_id, "status": "scheduled"},
+        {"_id": 0}
+    ).sort("scheduled_at", 1).to_list(50)
+    return {"scheduled": [serialize_doc(c) for c in scheduled]}
+
+
+@router.post("/admin/communications/cancel/{comm_id}")
+async def cancel_scheduled_communication(request: Request, comm_id: str):
+    """Cancel a scheduled communication."""
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    result = await db.communications.update_one(
+        {"id": comm_id, "tenant_id": tenant_id, "status": "scheduled"},
+        {"$set": {"status": "cancelled", "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Scheduled communication not found")
+    return {"message": "Communication cancelled"}

@@ -3,7 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import {
   Settings, MapPin, Monitor, Tag, AlertTriangle, Shield, BarChart3,
   Plus, Edit2, Trash2, Save, X, ChevronDown, ChevronUp, Users,
-  Loader2, Printer, UserCheck, Baby, Clock, Calendar, TrendingUp
+  Loader2, Printer, UserCheck, Baby, Clock, Calendar, TrendingUp, Tablet, Eye
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +15,9 @@ import {
 } from '@/components/ui/dialog';
 import { API_URL, formatDate } from '@/lib/utils';
 import { toast } from 'sonner';
+import KioskCheckin from '@/components/KioskCheckin';
+import { LabelPrinter } from '@/components/LabelPrinter';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 const STATION_MODES = [
   { id: 'self', label: 'Self Check-in', desc: 'Kiosk mode — families check in themselves', icon: '🖥️' },
@@ -52,6 +55,10 @@ export default function CheckInSetupPage() {
   const [showMedicalDialog, setShowMedicalDialog] = useState(false);
   const [editingChild, setEditingChild] = useState(null);
   const [medicalForm, setMedicalForm] = useState({ allergies: '', medical_notes: '', medical_severity: 'low' });
+
+  const [showKiosk, setShowKiosk] = useState(false);
+  const [showTestLabel, setShowTestLabel] = useState(false);
+  const [labelSize, setLabelSize] = useState('dymo_4x2');
 
   const [showGuardianForm, setShowGuardianForm] = useState(false);
   const [guardianChild, setGuardianChild] = useState(null);
@@ -186,6 +193,14 @@ export default function CheckInSetupPage() {
           </h1>
           <p className="text-sm text-slate-500 mt-1">Configure locations, stations, labels, and security settings</p>
         </div>
+        <Button
+          onClick={() => setShowKiosk(true)}
+          className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white"
+          data-testid="launch-kiosk-btn"
+        >
+          <Tablet className="w-4 h-4" /> Launch Kiosk Mode
+        </Button>
+        <HelpTooltip featureKey="checkin" />
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -193,6 +208,7 @@ export default function CheckInSetupPage() {
           <TabsTrigger value="locations" data-testid="tab-locations"><MapPin className="w-4 h-4 mr-1.5" />Locations</TabsTrigger>
           <TabsTrigger value="stations" data-testid="tab-stations"><Monitor className="w-4 h-4 mr-1.5" />Stations</TabsTrigger>
           <TabsTrigger value="labels" data-testid="tab-labels"><Tag className="w-4 h-4 mr-1.5" />Labels</TabsTrigger>
+          <TabsTrigger value="printers" data-testid="tab-printers"><Printer className="w-4 h-4 mr-1.5" />Printers</TabsTrigger>
           <TabsTrigger value="medical" data-testid="tab-medical"><AlertTriangle className="w-4 h-4 mr-1.5" />Medical Alerts</TabsTrigger>
           <TabsTrigger value="guardians" data-testid="tab-guardians"><Shield className="w-4 h-4 mr-1.5" />Guardians</TabsTrigger>
           <TabsTrigger value="reports" data-testid="tab-reports"><BarChart3 className="w-4 h-4 mr-1.5" />Reports</TabsTrigger>
@@ -371,6 +387,49 @@ export default function CheckInSetupPage() {
               </table>
             </div>
           )}
+        </TabsContent>
+
+        {/* PRINTERS TAB */}
+        <TabsContent value="printers" className="space-y-4 mt-4" data-testid="printers-tab">
+          <div className="bg-white border border-slate-200 rounded-xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-semibold text-slate-900">Label Printing</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Uses browser Web Print — works with DYMO, Brother, and standard printers</p>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => setShowTestLabel(true)} data-testid="print-test-label-btn">
+                <Eye className="w-3.5 h-3.5 mr-1.5" /> Print Test Label
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              {[
+                { id: 'dymo_4x2', label: 'DYMO LabelWriter', size: '2.25" × 4"', notes: 'LabelWriter 450/550 series' },
+                { id: 'brother_4x3', label: 'Brother QL Series', size: '2.4" × 3.9"', notes: 'QL-700, QL-800, QL-810' },
+                { id: 'standard', label: 'Standard Printer', size: '4" × 2.25"', notes: 'Any printer — full sheet per label' },
+              ].map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => setLabelSize(s.id)}
+                  className={`p-4 border rounded-xl text-left transition-all ${labelSize === s.id ? 'border-violet-500 bg-violet-50' : 'border-slate-200 hover:border-slate-300'}`}
+                  data-testid={`label-size-${s.id}`}
+                >
+                  <p className="font-semibold text-sm text-slate-800">{s.label}</p>
+                  <p className="text-xs text-violet-600 font-mono mt-0.5">{s.size}</p>
+                  <p className="text-xs text-slate-400 mt-1">{s.notes}</p>
+                </button>
+              ))}
+            </div>
+            <div className="bg-slate-50 rounded-lg p-4 text-sm text-slate-600">
+              <p className="font-semibold mb-2">How label printing works:</p>
+              <ol className="list-decimal list-inside space-y-1 text-xs text-slate-500">
+                <li>When a child is checked in, a "Print Labels" button appears automatically</li>
+                <li>Labels open in a print preview — click Print or Cmd+P</li>
+                <li>Select your label printer in the print dialog</li>
+                <li>Each child gets a child label + parent receipt + allergy alert (if applicable)</li>
+                <li>For kiosk mode, labels print automatically after check-in confirmation</li>
+              </ol>
+            </div>
+          </div>
         </TabsContent>
 
         {/* GUARDIANS TAB */}
@@ -651,6 +710,28 @@ export default function CheckInSetupPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Kiosk Mode */}
+      {showKiosk && (
+        <KioskCheckin
+          tenantId={tenant?.id}
+          onExit={() => setShowKiosk(false)}
+        />
+      )}
+
+      {/* Test Label Print */}
+      {showTestLabel && (
+        <LabelPrinter
+          checkins={[{
+            name: 'Emma Johnson', firstInitialLast: 'Emma J.',
+            classroom: 'Kindergarten — Room 104', serviceTime: 'Sunday 9:00 AM',
+            pickupCode: 'X7K2', allergies: 'Peanuts',
+            allergiesDetail: 'Severe peanut allergy — carry EpiPen',
+            parentName: 'Sarah Johnson', emergencyContact: '(555) 234-5678',
+          }]}
+          onClose={() => setShowTestLabel(false)}
+        />
+      )}
     </div>
   );
 }

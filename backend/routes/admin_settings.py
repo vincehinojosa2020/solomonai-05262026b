@@ -367,7 +367,7 @@ async def war_room_data(request: Request):
 # ============== PAYMENT ORCHESTRATION LAYER ==============
 
 PAYMENT_PROCESSORS = {
-    "stripe": {"name": "Stripe", "description": "Credit/debit cards, ACH, Apple Pay", "supported_methods": ["card", "ach", "apple_pay", "google_pay"]},
+    "solomon_pay": {"name": "Solomon Pay", "description": "Proprietary card, ACH, and digital wallet processing", "supported_methods": ["card", "ach", "apple_pay", "google_pay"]},
     "pushpay": {"name": "Pushpay", "description": "Church-focused giving platform", "supported_methods": ["card", "ach", "apple_pay"]},
     "tithe_ly": {"name": "Tithe.ly", "description": "Digital giving for churches", "supported_methods": ["card", "ach", "text_to_give"]},
     "planning_center": {"name": "Planning Center Giving", "description": "Part of Church Center ecosystem", "supported_methods": ["card", "ach"]},

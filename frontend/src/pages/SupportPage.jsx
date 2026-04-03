@@ -67,7 +67,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'How do I connect my payment processor?',
-    a: 'Navigate to Admin > Integrations and select your processor (Stripe, Pushpay, Tithe.ly, etc.). Follow the guided setup to connect your account. Giving flows through immediately.',
+    a: 'Navigate to Admin > Integrations and select Solomon Pay as your processor. Solomon Pay is built-in — giving flows through immediately with no third-party accounts required.',
   },
   {
     q: 'Can I manage multiple campuses?',
