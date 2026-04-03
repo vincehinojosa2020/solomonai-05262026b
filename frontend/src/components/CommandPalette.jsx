@@ -120,7 +120,7 @@ export default function CommandPalette({ onClose }) {
                 <div className="command-group-label">Quick Actions</div>
                 {quickActions.map((action, idx) => (
                   <div
-                    key={idx}
+                    key={action.path || action.title}
                     className="command-item cursor-pointer"
                     onClick={() => { navigate(action.path); onClose(); }}
                     data-testid={`quick-action-${idx}`}

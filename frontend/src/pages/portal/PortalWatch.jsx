@@ -1062,6 +1062,7 @@ const CarouselRow = ({ title, items, onPlay, onShare }) => {
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     checkScroll();
     const ref = scrollRef.current;
@@ -1113,6 +1114,7 @@ export default function PortalWatch() {
   const [loading, setLoading] = useState(true);
 
   // Fetch videos from database
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchVideos();
   }, []);

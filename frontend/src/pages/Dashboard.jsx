@@ -539,7 +539,7 @@ export default function Dashboard() {
               <p className="text-xs text-slate-400 py-6 text-center">No recent activity</p>
             ) : (
               activities.map((activity, idx) => (
-                <ActivityItem key={idx} activity={activity} />
+                <ActivityItem key={activity.id || `activity-${idx}`} activity={activity} />
               ))
             )}
           </div>
@@ -556,7 +556,7 @@ export default function Dashboard() {
               <p className="text-xs text-slate-400 py-6 text-center">No upcoming events</p>
             ) : (
               events.map((event, idx) => (
-                <EventCard key={idx} event={event} />
+                <EventCard key={event.id || `event-${idx}`} event={event} />
               ))
             )}
           </div>

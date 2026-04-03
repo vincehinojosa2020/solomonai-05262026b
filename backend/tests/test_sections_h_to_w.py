@@ -8,9 +8,10 @@ import os
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
-# Test tokens for sessions created in mongosh
-PLATFORM_TOKEN = "test_platform_session_h2w"
-CHURCH_TOKEN = "test_church_session_h2w"
+# Test tokens — loaded from environment; fall back to seeded values for local dev
+# Override via env vars in CI: TEST_PLATFORM_TOKEN, TEST_CHURCH_TOKEN
+PLATFORM_TOKEN = os.environ.get("TEST_PLATFORM_TOKEN", "test_platform_session_h2w")
+CHURCH_TOKEN = os.environ.get("TEST_CHURCH_TOKEN", "test_church_session_h2w")
 
 
 def platform_headers():

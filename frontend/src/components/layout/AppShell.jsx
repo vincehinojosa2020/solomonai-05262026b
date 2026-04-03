@@ -199,7 +199,7 @@ export default function AppShell() {
             if (filteredItems.length === 0) return null;
             
             return (
-            <div key={idx} className="nav-section">
+            <div key={section.section} className="nav-section">
               {!collapsed && (
                 <div className="nav-section-label">{section.section}</div>
               )}

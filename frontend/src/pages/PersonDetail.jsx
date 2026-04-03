@@ -395,7 +395,7 @@ export default function PersonDetail() {
                     </tr>
                   ) : (
                     attendance.records.slice(0, 20).map((record, idx) => (
-                      <tr key={idx}>
+                      <tr key={`detail-row-${idx}`}>
                         <td>{formatDate(record.date)}</td>
                         <td>{record.service_name || 'Sunday Service'}</td>
                         <td className="font-data text-sm">

@@ -150,7 +150,7 @@ export default function ChurchOnboardingWizard({ isOpen, onClose, onSuccess }) {
             <>
               <p className="text-sm text-slate-500">Define when services happen. You can change these later.</p>
               {form.service_times.map((st, idx) => (
-                <div key={idx} className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg">
+                <div key={`service-time-${idx}`} className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg">
                   <div className="flex-1">
                     <Label className="text-xs">Day</Label>
                     <select value={st.day} onChange={(e) => updateServiceTime(idx, 'day', e.target.value)} className="w-full h-9 rounded-md border border-slate-300 px-3 text-sm mt-1">

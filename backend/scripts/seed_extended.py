@@ -9,6 +9,7 @@ import random
 import uuid
 import hashlib
 from datetime import datetime, timezone, timedelta, date
+from typing import List, Dict, Any, Tuple, Generator
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 import logging
@@ -82,24 +83,24 @@ CARD_FEE_FLAT = 0.30
 ACH_FEE_RATE = 0.008
 ACH_FEE_FLAT = 0.30
 
-def calc_fee(amount, method="card"):
+def calc_fee(amount: float, method: str = "card") -> float:
     if method == "ach":
         return round(min(amount * ACH_FEE_RATE + ACH_FEE_FLAT, 5.0), 2)
     return round(amount * CARD_FEE_RATE + CARD_FEE_FLAT, 2)
 
-def rand_name():
+def rand_name() -> Tuple[str, str, str]:
     gender = random.choice(["M", "F"])
     first = random.choice(FIRST_NAMES_M if gender == "M" else FIRST_NAMES_F)
     last = random.choice(LAST_NAMES)
     return first, last, gender
 
-def date_range(start, end):
+def date_range(start: date, end: date) -> Generator[date, None, None]:
     current = start
     while current <= end:
         yield current
         current += timedelta(days=1)
 
-def all_sundays(start, end):
+def all_sundays(start: date, end: date) -> List[date]:
     d = start
     while d.weekday() != 6:
         d += timedelta(days=1)
@@ -109,20 +110,20 @@ def all_sundays(start, end):
         d += timedelta(days=7)
     return sundays
 
-def monthly_giving_factor(month):
+def monthly_giving_factor(month: int) -> float:
     """Seasonal giving multiplier."""
     factors = {1: 1.1, 2: 0.9, 3: 1.0, 4: 1.15, 5: 1.0, 6: 0.85,
                7: 0.80, 8: 0.90, 9: 1.0, 10: 1.05, 11: 1.10, 12: 1.55}
     return factors.get(month, 1.0)
 
-def yoy_factor(year):
+def yoy_factor(year: int) -> float:
     """Year-over-year growth."""
     base = 0.85  # 2023 = 85% of target
     if year == 2023: return base
     if year == 2024: return base * 1.04
     return base * 1.04 * 1.04
 
-async def seed_tenant(db, tenant):
+async def seed_tenant(db: Any, tenant: Dict[str, Any]) -> None:
     tid = tenant["id"]
     log.info(f"Seeding {tenant['name']} ({tid})...")
 
@@ -356,7 +357,7 @@ async def seed_tenant(db, tenant):
     log.info(f"  {tenant['name']} seeded: {n_members} people, {len(donations)} donations, ${total_donations:,.0f} total.")
 
 
-async def main():
+async def main() -> None:
     client = AsyncIOMotorClient(MONGO_URL)
     db = client[DB_NAME]
     log.info(f"Connected to {DB_NAME}. Seeding {len(NEW_TENANTS)} new tenants...")

@@ -165,7 +165,7 @@ export default function SmartListsPage() {
             <div>
               <label className="form-label" style={{ marginBottom: 10 }}>Filter Rules</label>
               {formData.rules.map((rule, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
+                <div key={`filter-${idx}`} style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
                   {idx > 0 && <span style={{ fontSize: 11, fontWeight: 700, color: '#3b82f6', width: 30 }}>AND</span>}
                   {idx === 0 && <span style={{ width: 30 }} />}
                   <select className="form-input" value={rule.field} style={{ fontSize: 13, flex: 1 }}

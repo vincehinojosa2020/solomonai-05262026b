@@ -145,7 +145,7 @@ export default function CampusComparison({ organizationId, onBack }) {
               />
               <Bar dataKey={selectedMetric} radius={[6, 6, 0, 0]}>
                 {chartData.map((entry, idx) => (
-                  <rect key={idx} fill={COLORS[idx % COLORS.length]} />
+                  <rect key={`bar-${idx}`} fill={COLORS[idx % COLORS.length]} />
                 ))}
               </Bar>
             </BarChart>

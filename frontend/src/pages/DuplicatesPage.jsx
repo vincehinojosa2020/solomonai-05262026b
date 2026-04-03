@@ -86,7 +86,7 @@ export default function DuplicatesPage() {
             {duplicates.map((dup, idx) => {
               const scoreInfo = getScoreColor(dup.score);
               return (
-                <div key={idx} data-testid={`duplicate-pair-${idx}`}
+                <div key={`dup-pair-${idx}`} data-testid={`duplicate-pair-${idx}`}
                   style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 24px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

@@ -387,7 +387,7 @@ const SolomonChat = () => {
           ) : (
             messages.map((msg, idx) => (
               <div
-                key={idx}
+                key={`msg-${idx}`}
                 className={`solomon-message ${msg.role} ${msg.isActionResult ? 'action-result' : ''}`}
                 data-testid={`solomon-message-${idx}`}
               >

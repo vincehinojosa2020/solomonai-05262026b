@@ -266,7 +266,7 @@ export default function PortalHome() {
             {nextSteps.steps && nextSteps.steps.length > 0 && (
               <div className="mt-4 space-y-2">
                 {nextSteps.steps.slice(0, 4).map((step, i) => (
-                  <div key={i} className="flex items-center gap-3 text-sm">
+                  <div key={`item-${i}`} className="flex items-center gap-3 text-sm">
                     <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${step.completed ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
                       {step.completed ? <Heart className="w-3 h-3" /> : <span className="text-xs font-bold">{i + 1}</span>}
                     </div>

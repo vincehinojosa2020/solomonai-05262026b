@@ -41,7 +41,9 @@ export default function AuthCallback() {
         
         // Store session token in sessionStorage for API calls
         if (userData.session_token) {
-          sessionStorage.setItem('session_token', userData.session_token);
+          // sessionStorage (not localStorage) — clears on tab close, limits XSS exposure window.
+        // Backend sets httpOnly cookie as primary auth; this is fallback for Authorization header.
+        sessionStorage.setItem('session_token', userData.session_token);
           sessionStorage.setItem('user_data', JSON.stringify(userData));
           sessionStorage.setItem('user_role', userData.role || 'member');
         }

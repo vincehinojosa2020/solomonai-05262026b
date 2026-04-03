@@ -43,34 +43,34 @@ export default function SolomonPayForm({ amount, onSuccess, onCancel, context = 
     && cardholderName.trim().length >= 2
     && billingZip.length === 5;
 
+  // Split the 14-dep callback into derived values + a leaner callback
+  const cardData = {
+    card_last_four: cardNumber.replace(/\s/g, '').slice(-4),
+    card_brand: brand || 'Unknown',
+    card_exp_month: expiry.split('/')[0],
+    card_exp_year: expiry.split('/')[1],
+    cardholder_name: cardholderName.trim(),
+    billing_zip: billingZip,
+    save_card: saveCard,
+    amount: totalAmount,
+    cover_fees: coverFees,
+    context: context,
+  };
+
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (!isValid || loading) return;
-
     setLoading(true);
     setError('');
-
-    const payload = {
-      card_last_four: cardNumber.replace(/\s/g, '').slice(-4),
-      card_brand: brand || 'Unknown',
-      card_exp_month: expiry.split('/')[0],
-      card_exp_year: expiry.split('/')[1],
-      cardholder_name: cardholderName.trim(),
-      billing_zip: billingZip,
-      save_card: saveCard,
-      amount: totalAmount,
-      cover_fees: coverFees,
-      context: context,
-    };
-
     try {
-      if (onSuccess) await onSuccess(payload);
+      if (onSuccess) await onSuccess(cardData);
     } catch (err) {
       setError(err.message || 'Payment could not be processed. Please try again.');
     } finally {
       setLoading(false);
     }
-  }, [cardNumber, expiry, cvv, cardholderName, billingZip, saveCard, coverFees, totalAmount, amount, brand, context, isValid, loading, onSuccess]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isValid, loading, onSuccess, cardNumber, expiry, cardholderName, billingZip, saveCard, coverFees, totalAmount, context]);
 
   const inputStyle = {
     width: '100%', padding: '12px 14px', fontSize: 15, border: '1px solid #d1d5db',

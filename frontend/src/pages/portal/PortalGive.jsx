@@ -403,7 +403,7 @@ export default function PortalGive() {
               <span>Method</span>
             </div>
             {givingHistory.slice(0, 10).map((donation, idx) => (
-              <div key={idx} className="portal-history-row" data-testid={`donation-row-${idx}`}>
+              <div key={donation.id || `donation-${idx}`} className="portal-history-row" data-testid={`donation-row-${idx}`}>
                 <span>{donation.donation_date}</span>
                 <span>{donation.fund_name}</span>
                 <span className="font-semibold">{formatCurrency(donation.amount)}</span>

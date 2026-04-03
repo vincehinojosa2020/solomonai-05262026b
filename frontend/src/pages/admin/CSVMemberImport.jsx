@@ -273,7 +273,7 @@ export default function CSVMemberImport() {
               </thead>
               <tbody>
                 {getMappedPreview().map((row, idx) => (
-                  <tr key={idx} className="border-t border-slate-100 hover:bg-slate-50">
+                  <tr key={`csv-row-${idx}`} className="border-t border-slate-100 hover:bg-slate-50">
                     {parseResult.system_fields.filter(sf => mapping[sf.key]).map(sf => (
                       <td key={sf.key} className="px-4 py-2.5 text-slate-700">{row[sf.label] || <span className="text-slate-300">--</span>}</td>
                     ))}
@@ -330,7 +330,7 @@ export default function CSVMemberImport() {
                 <AlertCircle className="w-4 h-4" /> Error Details
               </h4>
               {importResult.errors.map((err, idx) => (
-                <p key={idx} className="text-xs text-red-700">Row {err.row}: {err.error}</p>
+                <p key={`csv-err-${idx}`} className="text-xs text-red-700">Row {err.row}: {err.error}</p>
               ))}
             </div>
           )}

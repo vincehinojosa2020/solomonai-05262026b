@@ -39,7 +39,10 @@ export default function LoginPage() {
 
       // Store session
       if (data.session_token) {
-        sessionStorage.setItem('session_token', data.session_token);
+        // sessionStorage (not localStorage) — clears on tab close, limits XSS window.
+      // Primary auth uses httpOnly cookies set by the backend; this is a fallback
+      // for Authorization header use in API calls from this session only.
+      sessionStorage.setItem('session_token', data.session_token);
         sessionStorage.setItem('user_data', JSON.stringify(data));
         sessionStorage.setItem('user_role', data.role || '');
         sessionStorage.setItem('user_permissions', JSON.stringify(data.permissions || []));

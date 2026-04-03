@@ -70,6 +70,8 @@ const PAGE_EDUCATION = {
  * Usage: <FeatureEducationHeader featureKey="giving" />
  */
 export function FeatureEducationHeader({ featureKey, customContent }) {
+  // localStorage is intentional here — stores only a UI preference (dismissed state),
+  // not auth tokens or PII. This is safe per OWASP guidelines for non-sensitive preferences.
   const storageKey = `edu_dismissed_${featureKey}`;
   const [visible, setVisible] = useState(!localStorage.getItem(storageKey));
   const [expanded, setExpanded] = useState(false);

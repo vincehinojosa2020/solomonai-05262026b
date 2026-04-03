@@ -55,7 +55,7 @@ function GivingSparkline({ data }) {
         const h = Math.max(8, (d.amount / max) * 70);
         const isToday = i === data.length - 1;
         return (
-          <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+          <div key={`item-${i}`} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
             <div
               style={{
                 width: '100%', height: h, borderRadius: 4,
@@ -217,7 +217,7 @@ export default function WarRoom() {
             {kpiCards.map((kpi, i) => {
               const Icon = kpi.icon;
               return (
-                <div key={i} style={{
+                <div key={`item-${i}`} style={{
                   background: 'rgba(15,23,42,0.8)', border: '1px solid rgba(51,65,85,0.5)',
                   borderRadius: 14, padding: '20px 22px', transition: 'border-color 0.3s',
                 }} data-testid={`kpi-${kpi.label.toLowerCase().replace(/\s+/g, '-')}`}>
@@ -245,7 +245,7 @@ export default function WarRoom() {
               </div>
               <div style={{ maxHeight: 360, overflowY: 'auto' }}>
                 {data?.activity_feed?.length > 0 ? (
-                  data.activity_feed.map((item, i) => <FeedItem key={i} item={item} />)
+                  data.activity_feed.map((item, i) => <FeedItem key={`item-${i}`} item={item} />)
                 ) : (
                   <p style={{ textAlign: 'center', padding: 40, color: '#475569', fontSize: 14 }}>Waiting for Sunday morning activity...</p>
                 )}

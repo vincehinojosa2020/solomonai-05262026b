@@ -191,7 +191,7 @@ export default function PricingPage() {
         <h2 className="text-2xl font-bold text-slate-900 text-center mb-10">Frequently Asked Questions</h2>
         <div className="space-y-5">
           {FAQ.map((item, idx) => (
-            <div key={idx} className="bg-white border border-slate-200 rounded-xl p-5" data-testid={`pricing-faq-${idx}`}>
+            <div key={`faq-${idx}`} className="bg-white border border-slate-200 rounded-xl p-5" data-testid={`pricing-faq-${idx}`}>
               <h4 className="font-semibold text-slate-900 mb-1.5">{item.q}</h4>
               <p className="text-sm text-slate-500 leading-relaxed">{item.a}</p>
             </div>

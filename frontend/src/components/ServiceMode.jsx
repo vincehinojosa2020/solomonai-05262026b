@@ -193,7 +193,7 @@ export const AttendanceStreakCard = ({
           <span className="badges-label">Earned Badges:</span>
           <div className="badges-list">
             {badges.map((badge, idx) => (
-              <div key={idx} className="badge-item" title={badge.name}>
+              <div key={badge.name || `badge-${idx}`} className="badge-item" title={badge.name}>
                 <span className="badge-icon">{badge.icon}</span>
               </div>
             ))}

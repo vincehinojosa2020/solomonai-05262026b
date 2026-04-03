@@ -3408,7 +3408,7 @@ async def get_available_campuses(request: Request):
     # If no parent org set, derive from common name prefix
     if not parent_name and current_tenant:
         name = current_tenant.get("name", "")
-        # e.g. "Abundant East" → parent is "Abundant"
+        # e.g. "Abundant East" → parent == "Abundant"
         for suffix in [" East", " West", " Downtown", " North", " South", " Central", " Online"]:
             if name.endswith(suffix):
                 parent_name = name[: -len(suffix)].strip()

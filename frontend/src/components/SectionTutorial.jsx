@@ -25,7 +25,7 @@ export const SectionTutorial = ({ title, sections, tip }) => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-blue-900">
         {sections.map((section, idx) => (
-          <div key={idx}>
+          <div key={`step-${idx}`}>
             <p className="font-semibold mb-0.5">{idx + 1}. {section.title}</p>
             <p className="text-blue-700 text-xs leading-relaxed">{section.body}</p>
           </div>

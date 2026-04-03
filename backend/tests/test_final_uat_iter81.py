@@ -16,12 +16,13 @@ import time
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
-# Test tokens derived from DB query
-PLATFORM_TOKEN = "sess_a9c7bcc3955d40e3acb6854d6a4eb0f1"  # platform_admin_001
-CHURCH_TOKEN = "sess_43834471bcce414fa7db5344ffd494fa"    # shannon_nieman_001 (abundant-east)
-MEMBER_TOKEN = "sess_4eff10e84d2b4dd785acf9136c7072b3"    # member_abundant
-POTTERS_TOKEN = "test_potters_session_81"                   # admin@pottershouse.org
-CITYREACH_TOKEN = "test_cityreach_session_81"              # admin@cityreach.church
+# Test tokens — loaded from environment; fall back to seeded values for local dev.
+# In CI/CD, set these via environment variables so no secrets live in source code.
+PLATFORM_TOKEN = os.environ.get("TEST_PLATFORM_TOKEN", "sess_a9c7bcc3955d40e3acb6854d6a4eb0f1")
+CHURCH_TOKEN = os.environ.get("TEST_CHURCH_TOKEN", "sess_43834471bcce414fa7db5344ffd494fa")
+MEMBER_TOKEN = os.environ.get("TEST_MEMBER_TOKEN", "sess_4eff10e84d2b4dd785acf9136c7072b3")
+POTTERS_TOKEN = os.environ.get("TEST_POTTERS_TOKEN", "test_potters_session_81")
+CITYREACH_TOKEN = os.environ.get("TEST_CITYREACH_TOKEN", "test_cityreach_session_81")
 
 
 def platform_headers():

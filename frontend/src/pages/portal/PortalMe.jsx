@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Edit2, Mail, Phone, MapPin, Calendar, Download, ChevronRight, CreditCard, Plus, Trash2, Star, ChevronDown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -30,14 +30,14 @@ export default function PortalMe() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
-  useEffect(() => { fetchPaymentMethods(); }, []);
-
-  const fetchPaymentMethods = async () => {
+  const fetchPaymentMethods = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/portal/payment-methods`);
       if (res.ok) { const d = await res.json(); setPaymentMethods(d.payment_methods || []); }
     } catch (e) { console.error(e); }
-  };
+  }, []);
+
+  useEffect(() => { fetchPaymentMethods(); }, [fetchPaymentMethods]);
 
   const saveCard = async () => {
     if (!cardForm.number || !cardForm.exp_month || !cardForm.exp_year || !cardForm.cvc) { toast.error('Fill all card fields'); return; }

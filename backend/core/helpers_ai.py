@@ -211,29 +211,56 @@ When someone asks "how do I...?" or "where is...?" about a feature, guide them s
 If you don't know the exact answer to a configuration question, respond: "I'm not sure about that specific configuration. Send an email to support@solomonai.us and our team will get back to you within 24 hours." """
 
 
-async def get_church_context(user=None) -> str:
-    """Gather current church data for Solomon's context"""
-    tenant_id = (user or {}).get("tenant_id", DEFAULT_TENANT_ID)
+async def _get_church_membership_stats(tenant_id: str, today) -> dict:
+    """Extract membership counts for Solomon context. Extracted for complexity reduction."""
     total_members = await db.people.count_documents({"tenant_id": tenant_id})
     active_members = await db.people.count_documents({"tenant_id": tenant_id, "membership_status": "member"})
     visitors = await db.people.count_documents({"tenant_id": tenant_id, "membership_status": "visitor"})
     total_groups = await db.groups.count_documents({"tenant_id": tenant_id, "is_active": True})
     media_count = await db.media_videos.count_documents({"tenant_id": tenant_id})
-    today = datetime.now(timezone.utc)
+    return {"total_members": total_members, "active_members": active_members, "visitors": visitors,
+            "total_groups": total_groups, "media_count": media_count}
+
+
+async def _get_church_giving_summary(tenant_id: str, today) -> dict:
+    """Extract giving totals for Solomon context. Extracted for complexity reduction."""
     month_start = today.replace(day=1).strftime("%Y-%m-%d")
     year_start = today.replace(month=1, day=1).strftime("%Y-%m-%d")
-    mtd_pipeline = [{"$match": {"tenant_id": tenant_id, "donation_date": {"$gte": month_start}}}, {"$group": {"_id": None, "total": {"$sum": "$amount"}}}]
-    mtd_result = await db.donations.aggregate(mtd_pipeline).to_list(1)
-    mtd_giving = mtd_result[0]["total"] if mtd_result else 0
-    ytd_pipeline = [{"$match": {"tenant_id": tenant_id, "donation_date": {"$gte": year_start}}}, {"$group": {"_id": None, "total": {"$sum": "$amount"}}}]
-    ytd_result = await db.donations.aggregate(ytd_pipeline).to_list(1)
-    ytd_giving = ytd_result[0]["total"] if ytd_result else 0
+    mtd_result = await db.donations.aggregate([
+        {"$match": {"tenant_id": tenant_id, "donation_date": {"$gte": month_start}}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+    ]).to_list(1)
+    ytd_result = await db.donations.aggregate([
+        {"$match": {"tenant_id": tenant_id, "donation_date": {"$gte": year_start}}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+    ]).to_list(1)
+    return {
+        "mtd_giving": mtd_result[0]["total"] if mtd_result else 0,
+        "ytd_giving": ytd_result[0]["total"] if ytd_result else 0,
+    }
+
+
+async def _get_church_events_text(tenant_id: str, today) -> str:
+    """Format upcoming events for Solomon context. Extracted for complexity reduction."""
     next_week = (today + timedelta(days=7)).strftime("%Y-%m-%d")
-    upcoming_events = await db.events.find({"tenant_id": tenant_id, "start_datetime": {"$gte": today.strftime("%Y-%m-%d"), "$lte": next_week}}, {"_id": 0, "name": 1, "start_datetime": 1, "location": 1, "description": 1}).sort("start_datetime", 1).to_list(10)
-    events_text = "\n".join([f"- {e.get('name', 'Event')} on {e.get('start_datetime', 'TBD')} at {e.get('location', 'Church')}" for e in upcoming_events]) or "No events in the next 7 days."
-    announcements = await db.announcements.find({"tenant_id": tenant_id}, {"_id": 0, "title": 1, "message": 1, "created_at": 1}).sort("created_at", -1).to_list(3)
-    ann_text = "\n".join([f"- {a.get('title', '')}: {a.get('message', '')[:100]}" for a in announcements]) or "No recent announcements."
-    service_plans = await db.service_plans.find({"tenant_id": tenant_id, "date": {"$gte": today.strftime("%Y-%m-%d"), "$lte": next_week}}, {"_id": 0}).to_list(5)
+    upcoming_events = await db.events.find(
+        {"tenant_id": tenant_id, "start_datetime": {"$gte": today.strftime("%Y-%m-%d"), "$lte": next_week}},
+        {"_id": 0, "name": 1, "start_datetime": 1, "location": 1}
+    ).sort("start_datetime", 1).to_list(10)
+    return "\n".join(
+        f"- {e.get('name', 'Event')} on {e.get('start_datetime', 'TBD')} at {e.get('location', 'Church')}"
+        for e in upcoming_events
+    ) or "No events in the next 7 days."
+
+
+async def _get_service_plan_text(tenant_id: str, today) -> str:
+    """Format this week's service plan for Solomon context. Extracted for complexity reduction."""
+    next_week = (today + timedelta(days=7)).strftime("%Y-%m-%d")
+    service_plans = await db.service_plans.find(
+        {"tenant_id": tenant_id, "date": {"$gte": today.strftime("%Y-%m-%d"), "$lte": next_week}}, {"_id": 0}
+    ).to_list(5)
+    if not service_plans:
+        return "No service plan created for this week yet."
     plan_text = ""
     for sp in service_plans:
         plan_text += f"\n{sp.get('title', 'Service')} on {sp.get('date', '')}:\n"
@@ -241,10 +268,37 @@ async def get_church_context(user=None) -> str:
             plan_text += f"  - {item.get('type', 'Item')}: {item.get('title', '')} {item.get('key', '')} {item.get('reference', '')}\n"
         for ta in sp.get("team_assignments", []):
             plan_text += f"  - {ta.get('role', 'Role')}: {ta.get('user_name', 'TBD')}\n"
-    if not plan_text:
-        plan_text = "No service plan created for this week yet."
-    groups = await db.groups.find({"tenant_id": tenant_id, "is_active": True}, {"_id": 0, "name": 1, "meeting_day": 1, "meeting_time": 1, "group_type": 1}).to_list(50)
-    groups_text = "\n".join([f"- {g.get('name', '')} ({g.get('group_type', 'small_group')}) meets {g.get('meeting_day', 'TBD')} at {g.get('meeting_time', 'TBD')}" for g in groups]) or "No active groups."
+    return plan_text
+
+
+async def get_church_context(user=None) -> str:
+    """Gather current church data for Solomon's context.
+    Broken into helper functions to reduce cyclomatic complexity.
+    """
+    tenant_id = (user or {}).get("tenant_id", DEFAULT_TENANT_ID)
+    today = datetime.now(timezone.utc)
+
+    # Gather data via focused helpers
+    membership = await _get_church_membership_stats(tenant_id, today)
+    giving = await _get_church_giving_summary(tenant_id, today)
+    events_text = await _get_church_events_text(tenant_id, today)
+    plan_text = await _get_service_plan_text(tenant_id, today)
+
+    announcements = await db.announcements.find(
+        {"tenant_id": tenant_id}, {"_id": 0, "title": 1, "message": 1}
+    ).sort("created_at", -1).to_list(3)
+    ann_text = "\n".join(
+        f"- {a.get('title', '')}: {a.get('message', '')[:100]}" for a in announcements
+    ) or "No recent announcements."
+
+    groups = await db.groups.find(
+        {"tenant_id": tenant_id, "is_active": True},
+        {"_id": 0, "name": 1, "meeting_day": 1, "meeting_time": 1, "group_type": 1}
+    ).to_list(50)
+    groups_text = "\n".join(
+        f"- {g.get('name', '')} ({g.get('group_type', 'small_group')}) meets {g.get('meeting_day', 'TBD')} at {g.get('meeting_time', 'TBD')}"
+        for g in groups
+    ) or "No active groups."
     member_text = ""
     if user:
         user_name = user.get("name", "Member")
@@ -305,13 +359,13 @@ async def get_church_context(user=None) -> str:
     return f"""
 CURRENT CHURCH DATA (as of {today.strftime('%B %d, %Y')}):
 
-MEMBERSHIP: {total_members:,} total, {active_members:,} active, {visitors:,} visitors
-GROUPS: {total_groups} active groups
-MEDIA: {media_count} videos
+MEMBERSHIP: {membership['total_members']:,} total, {membership['active_members']:,} active, {membership['visitors']:,} visitors
+GROUPS: {membership['total_groups']} active groups
+MEDIA: {membership['media_count']} videos
 
 GIVING:
-- Month-to-Date: ${mtd_giving:,.2f}
-- Year-to-Date: ${ytd_giving:,.2f}
+- Month-to-Date: ${giving['mtd_giving']:,.2f}
+- Year-to-Date: ${giving['ytd_giving']:,.2f}
 
 UPCOMING EVENTS (NEXT 7 DAYS):
 {events_text}
