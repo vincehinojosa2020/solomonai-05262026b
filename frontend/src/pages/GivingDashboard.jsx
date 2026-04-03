@@ -233,73 +233,30 @@ export default function GivingDashboard() {
         />
       </div>
 
-      {/* Giving Platform Integrations */}
+      {/* Solomon Pay Status */}
       <div className="bento-card" data-testid="giving-integrations-section">
-        <div className="card-header" style={{ marginBottom: '16px' }}>
+        <div className="card-header" style={{ marginBottom: '12px' }}>
           <div className="flex items-center gap-2">
-            <Settings2 className="w-4 h-4 text-slate-500" />
-            <h3 className="card-title">Giving Platform</h3>
+            <Zap className="w-4 h-4 text-blue-600" />
+            <h3 className="card-title">Solomon Pay</h3>
           </div>
-          <span className="text-xs text-slate-400">
-            {integrations?.active_processor 
-              ? <span className="flex items-center gap-1"><CheckCircle2 className="w-3 h-3 text-emerald-500" /> Connected</span>
-              : <span className="flex items-center gap-1"><Circle className="w-3 h-3 text-slate-300" /> No processor active</span>
-            }
+          <span className="flex items-center gap-1 text-xs text-emerald-600 font-medium">
+            <CheckCircle2 className="w-3 h-3" /> Active — Proprietary Processor
           </span>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {integrations && Object.entries(integrations.processors || {}).map(([key, proc]) => {
-            const isActive = integrations.active_processor === key;
-            const isConnecting = connectingProcessor === key;
-            return (
-              <div
-                key={key}
-                className="relative rounded-lg border p-4 transition-all"
-                style={{
-                  borderColor: isActive ? '#10b981' : '#e2e8f0',
-                  background: isActive ? '#f0fdf4' : '#fafafa',
-                }}
-                data-testid={`processor-${key}`}
-              >
-                {isActive && (
-                  <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                    ACTIVE
-                  </div>
-                )}
-                <div className="flex items-center gap-2 mb-2">
-                  {key === 'solomon_pay' && <Zap className="w-4 h-4 text-blue-600" />}
-                  {key === 'pushpay' && <CreditCard className="w-4 h-4 text-green-600" />}
-                  {key === 'securegive' && <Building2 className="w-4 h-4 text-purple-600" />}
-                  <span className="font-semibold text-sm text-slate-800">{proc.label || key}</span>
-                </div>
-                <p className="text-xs text-slate-500 mb-3 leading-relaxed">{proc.description}</p>
-                {isActive ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full text-xs"
-                    onClick={() => handleDisconnectProcessor(key)}
-                    disabled={isConnecting}
-                    data-testid={`disconnect-${key}`}
-                  >
-                    {isConnecting ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Unlink className="w-3 h-3 mr-1" />}
-                    Disconnect
-                  </Button>
-                ) : (
-                  <Button
-                    size="sm"
-                    className="w-full text-xs"
-                    onClick={() => handleConnectProcessor(key)}
-                    disabled={isConnecting}
-                    data-testid={`connect-${key}`}
-                  >
-                    {isConnecting ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Link2 className="w-3 h-3 mr-1" />}
-                    Connect
-                  </Button>
-                )}
-              </div>
-            );
-          })}
+        <div className="grid grid-cols-3 gap-3 text-center">
+          <div className="bg-slate-50 rounded-lg p-3">
+            <p className="text-xs text-slate-500">Card Rate</p>
+            <p className="text-sm font-semibold text-slate-800">1.9% + $0.30</p>
+          </div>
+          <div className="bg-slate-50 rounded-lg p-3">
+            <p className="text-xs text-slate-500">ACH Rate</p>
+            <p className="text-sm font-semibold text-slate-800">0.8% + $0.30</p>
+          </div>
+          <div className="bg-emerald-50 rounded-lg p-3">
+            <p className="text-xs text-slate-500">vs Industry</p>
+            <p className="text-sm font-semibold text-emerald-700">Save 24%+</p>
+          </div>
         </div>
       </div>
 

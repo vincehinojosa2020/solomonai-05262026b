@@ -367,12 +367,8 @@ async def war_room_data(request: Request):
 # ============== PAYMENT ORCHESTRATION LAYER ==============
 
 PAYMENT_PROCESSORS = {
-    "solomon_pay": {"name": "Solomon Pay", "description": "Proprietary card, ACH, and digital wallet processing", "supported_methods": ["card", "ach", "apple_pay", "google_pay"]},
-    "pushpay": {"name": "Pushpay", "description": "Church-focused giving platform", "supported_methods": ["card", "ach", "apple_pay"]},
-    "tithe_ly": {"name": "Tithe.ly", "description": "Digital giving for churches", "supported_methods": ["card", "ach", "text_to_give"]},
-    "planning_center": {"name": "Planning Center Giving", "description": "Part of Church Center ecosystem", "supported_methods": ["card", "ach"]},
-    "subsplash": {"name": "Subsplash Giving", "description": "Mobile-first church giving", "supported_methods": ["card", "ach", "apple_pay"]},
-    "manual": {"name": "Manual / Cash & Check", "description": "Record offline gifts manually", "supported_methods": ["cash", "check", "other"]},
+    "solomon_pay": {"name": "Solomon Pay", "description": "Proprietary card, ACH, and digital wallet processing — built-in, no third-party account needed", "supported_methods": ["card", "ach", "apple_pay", "google_pay"]},
+    "manual": {"name": "Cash & Check", "description": "Record offline gifts, cash collections, and check deposits manually", "supported_methods": ["cash", "check", "other"]},
 }
 
 

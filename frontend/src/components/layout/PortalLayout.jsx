@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Home, DollarSign, Users, Calendar, User, Bell, BellRing, LogOut, Menu, X, Tv, GraduationCap, BookOpen, ShoppingBag, Coffee, MessageSquare, Heart, BookUser } from 'lucide-react';
+import { Home, DollarSign, Users, Calendar, User, Bell, BellRing, LogOut, Menu, X, Tv, GraduationCap, BookOpen, ShoppingBag, Coffee, MessageSquare, Heart, BookUser, ChevronDown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { API_URL } from '@/lib/utils';
 import SolomonChat from '@/components/SolomonChat';
@@ -9,12 +9,14 @@ import { usePushNotifications } from '@/hooks/usePushNotifications';
 import NotificationBell from '@/components/NotificationBell';
 import DemoWalkthrough from '@/components/DemoWalkthrough';
 import OnboardingFlow from '@/components/OnboardingFlow';
+import CampusSelectorModal from '@/components/CampusSelectorModal';
 
 export default function PortalLayout() {
   const [user, setUser] = useState(null);
   const [memberData, setMemberData] = useState(null);
   const [tenant, setTenant] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showCampusSelector, setShowCampusSelector] = useState(false);
   const [isPWA, setIsPWA] = useState(false);
   const { isSubscribed, isSupported, subscribe } = usePushNotifications();
   const location = useLocation();
@@ -74,6 +76,12 @@ export default function PortalLayout() {
       }
       
       setUser(userData);
+      
+      // Show campus selector on first login for multi-campus churches
+      if (!userData.campus_selected && !sessionStorage.getItem('campus_selector_shown')) {
+        sessionStorage.setItem('campus_selector_shown', '1');
+        setShowCampusSelector(true);
+      }
 
       if (profileRes.ok) {
         const profileData = await profileRes.json();
@@ -105,14 +113,19 @@ export default function PortalLayout() {
   const navItems = [
     { name: 'Home', path: '/portal', icon: Home, exact: true },
     { name: 'Kids Check-in', path: '/portal/kids', icon: Users },
-    { name: 'Watch', path: '/portal/watch', icon: Tv },
-    { name: 'Merch', path: '/portal/merch', icon: ShoppingBag },
-    { name: 'Cafe', path: '/portal/cafe', icon: Coffee },
     { name: 'Give', path: '/portal/give', icon: DollarSign },
     { name: 'Groups', path: '/portal/groups', icon: Users },
     { name: 'Events', path: '/portal/events', icon: Calendar },
+  ];
+
+  const shopItems = [
+    { name: 'Cafe', path: '/portal/cafe', icon: Coffee },
+    { name: 'Merch', path: '/portal/merch', icon: ShoppingBag },
+  ];
+
+  const learnItems = [
+    { name: 'Watch', path: '/portal/watch', icon: Tv },
     { name: 'Courses', path: '/portal/courses', icon: GraduationCap },
-    { name: 'Me', path: '/portal/me', icon: User },
   ];
 
   const getInitials = (name) => {
@@ -120,16 +133,18 @@ export default function PortalLayout() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
-  // Get church display name (simplified)
+  // Get church display name (simplified — strips campus suffix for multi-campus)
   const getChurchDisplayName = () => {
     if (tenant?.name) {
-      // Shorten common church name patterns
-      const name = tenant.name
-        .replace(' Living Faith Center', '')
-        .replace(' Church', '')
-        .replace(' Ministries', '')
-        .toUpperCase();
-      return name;
+      const name = tenant.name;
+      // For multi-campus: strip "East", "West", "Downtown" etc. to show parent brand
+      const suffixes = [' East', ' West', ' Downtown', ' North', ' South', ' Central', ' Online', ' Living Faith Center', ' Church', ' Ministries'];
+      for (const suffix of suffixes) {
+        if (name.endsWith(suffix)) {
+          return name.slice(0, -suffix.length).toUpperCase();
+        }
+      }
+      return name.toUpperCase();
     }
     return 'ABUNDANT';
   };
@@ -160,7 +175,7 @@ export default function PortalLayout() {
 
           {/* Desktop Nav */}
           <nav className="portal-nav-desktop" data-testid="portal-nav">
-            {navItems.filter(item => !item.exact && item.name !== 'Me').map((item) => (
+            {navItems.filter(item => !item.exact).map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
@@ -173,6 +188,32 @@ export default function PortalLayout() {
                 {item.name}
               </NavLink>
             ))}
+            {/* Shop dropdown */}
+            <div className="relative group">
+              <button className="portal-nav-item flex items-center gap-1" data-testid="portal-nav-shop">
+                Shop <ChevronDown className="w-3 h-3" />
+              </button>
+              <div className="absolute top-full left-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg py-1 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50 min-w-[140px]">
+                {shopItems.map(item => (
+                  <NavLink key={item.path} to={item.path} className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50" data-testid={`portal-nav-${item.name.toLowerCase()}`}>
+                    <item.icon className="w-4 h-4 text-slate-400" /> {item.name}
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+            {/* Learn dropdown */}
+            <div className="relative group">
+              <button className="portal-nav-item flex items-center gap-1" data-testid="portal-nav-learn">
+                Learn <ChevronDown className="w-3 h-3" />
+              </button>
+              <div className="absolute top-full left-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg py-1 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50 min-w-[140px]">
+                {learnItems.map(item => (
+                  <NavLink key={item.path} to={item.path} className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50" data-testid={`portal-nav-${item.name.toLowerCase()}`}>
+                    <item.icon className="w-4 h-4 text-slate-400" /> {item.name}
+                  </NavLink>
+                ))}
+              </div>
+            </div>
           </nav>
 
           {/* Right Actions */}
@@ -224,7 +265,7 @@ export default function PortalLayout() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="portal-mobile-menu md:hidden">
-            {navItems.map((item) => (
+            {[...navItems, ...shopItems, ...learnItems, { name: 'Me', path: '/portal/me', icon: User }].map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
@@ -272,6 +313,18 @@ export default function PortalLayout() {
       />
       {/* First Sign-In Onboarding */}
       <OnboardingFlow user={user} onComplete={fetchMemberData} />
+      
+      {/* Campus Selector — first login for multi-campus */}
+      {showCampusSelector && (
+        <CampusSelectorModal
+          user={user}
+          onSelect={(campus) => {
+            setShowCampusSelector(false);
+            setUser(prev => prev ? {...prev, home_campus_id: campus?.id, campus_selected: true} : prev);
+          }}
+          onSkip={() => setShowCampusSelector(false)}
+        />
+      )}
     </div>
   );
 }

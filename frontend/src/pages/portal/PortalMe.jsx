@@ -206,6 +206,7 @@ export default function PortalMe() {
                 </div>
               )}
             </div>
+            {(giving.ytd_total || 0) > 0 ? (
             <div className="space-y-2 mt-4" data-testid="me-tax-statement-section">
               <p className="text-xs font-medium text-slate-500">DOWNLOAD TAX STATEMENT</p>
               <div className="grid grid-cols-2 gap-2">
@@ -216,6 +217,11 @@ export default function PortalMe() {
                 ))}
               </div>
             </div>
+            ) : (
+            <div className="mt-4 p-3 bg-slate-50 rounded-lg text-center" data-testid="me-tax-statement-section">
+              <p className="text-xs text-slate-400">Statements available after your first gift</p>
+            </div>
+            )}
             <div className="portal-giving-chart-placeholder mt-4">
               <p className="text-slate-400 text-sm">24-month giving chart coming soon</p>
             </div>
@@ -233,9 +239,14 @@ export default function PortalMe() {
 
             {showAddCard && (
               <div className="bg-slate-50 rounded-lg p-4 mb-4 space-y-3" data-testid="add-card-form">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 mb-2">
+                  <p className="text-xs text-blue-700 flex items-center gap-1.5">
+                    <span>🔒</span> Card data is encrypted and tokenized by Solomon Pay. Raw card numbers are never stored.
+                  </p>
+                </div>
                 <div>
                   <label className="text-xs font-medium text-slate-500">CARD NUMBER</label>
-                  <input type="text" maxLength="19" value={cardForm.number} onChange={e => setCardForm({...cardForm, number: e.target.value.replace(/\D/g,'')})} placeholder="4242 4242 4242 4242" className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-300" data-testid="card-number-input" />
+                  <input type="text" maxLength="19" value={cardForm.number.replace(/\d(?=\d{4})/g, '•').slice(-19)} onChange={e => setCardForm({...cardForm, number: e.target.value.replace(/\D/g,'')})} placeholder="•••• •••• •••• ••••" className="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-300 font-mono tracking-widest" data-testid="card-number-input" />
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div>

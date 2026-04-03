@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import GroupChat from '@/components/GroupChat';
 
 export default function PortalGroups() {
-  const { user, memberData } = useOutletContext();
+  const { user, memberData, tenant } = useOutletContext();
   const [allGroups, setAllGroups] = useState([]);
   const [myGroups, setMyGroups] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -222,7 +222,7 @@ export default function PortalGroups() {
         <>
           <div className="portal-page-header">
             <h1 className="portal-page-title">Discover Groups</h1>
-            <p className="portal-page-subtitle">Connect with others at Abundant Church</p>
+            <p className="portal-page-subtitle">Connect with others at {tenant?.name || 'our church'}</p>
           </div>
 
           {myGroups.length > 0 && (

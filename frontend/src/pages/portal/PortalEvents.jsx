@@ -140,7 +140,7 @@ export default function PortalEvents() {
             <div className="events-hero-actions">
               {!registeredEventIds.includes(nextMajorEvent.id) ? (
                 <button className="events-hero-btn primary" onClick={() => handleRegister(nextMajorEvent.id)} data-testid="hero-register-btn">
-                  Register Now
+                  Save My Spot
                 </button>
               ) : (
                 <span className="events-hero-registered"><CheckCircle className="w-5 h-5" /> You're Registered!</span>
@@ -404,7 +404,7 @@ export default function PortalEvents() {
                       {getCapacityInfo(selectedEvent)?.isFull ? (
                         <><AlertCircle className="w-4 h-4" /> Join Waitlist</>
                       ) : (
-                        <><CheckCircle className="w-4 h-4" /> Register Now</>
+                        <><CheckCircle className="w-4 h-4" /> Save My Spot</>
                       )}
                     </button>
                   )

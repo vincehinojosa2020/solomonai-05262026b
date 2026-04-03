@@ -77,15 +77,15 @@ export default function PlatformDashboard() {
 
   const fetchPlatformStats = async () => {
     try {
-      const res = await fetch(`${API_URL}/platform/stats`);
+      const res = await fetch(`${API_URL}/platform/stats`, { headers: getAuthHeaders() });
       if (res.ok) {
         const data = await res.json();
         setStats({
-          totalChurches: data.churches.total,
-          activeChurches: data.churches.active,
-          totalMembers: data.members.total_users,
-          totalDonationsThisMonth: data.giving.mtd_total,
-          recentSignups: data.members.recent_signups,
+          totalChurches: data.churches?.total || 0,
+          activeChurches: data.churches?.active || 0,
+          totalMembers: data.donors?.total || 0,
+          totalDonationsThisMonth: data.giving?.mtd || 0,
+          recentSignups: 0,
           totalMrr: data.platform?.total_mrr || 0,
           totalArr: data.platform?.arr || 0,
         });

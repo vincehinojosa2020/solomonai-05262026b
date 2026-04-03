@@ -2,7 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { API_URL } from '@/lib/utils';
 import { ChevronLeft, ChevronRight, Landmark, AlertCircle } from 'lucide-react';
 
-const fmt = (n) => `$${Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+const fmt = (n) => {
+  const v = Number(n ?? 0);
+  if (isNaN(v)) return '$0';
+  return v >= 1e6 ? `$${(v/1e6).toFixed(1)}M` : v >= 1e3 ? `$${(v/1e3).toFixed(0)}K` : `$${v.toFixed(0)}`;
+};
 
 export default function PlatformPayouts({ token }) {
   const [data, setData] = useState(null);

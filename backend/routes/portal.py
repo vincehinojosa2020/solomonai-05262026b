@@ -3348,3 +3348,78 @@ async def checkout_with_giving_nudge(req: CheckoutWithNudgeRequest, request: Req
 # ============== PLATFORM HEALTH MONITORING ==============
 
 
+
+
+# ════════════════════════════════════════════════════════════
+# MULTI-CAMPUS MANAGEMENT
+# ════════════════════════════════════════════════════════════
+
+@router.get("/portal/campuses")
+async def get_available_campuses(request: Request):
+    """Get all campuses for the user's organization (for campus selector)."""
+    user = await get_current_member_user(request)
+    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+
+    # Get current tenant
+    current_tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0, "name": 1, "parent_organization": 1})
+    parent_name = current_tenant.get("parent_organization") if current_tenant else None
+
+    # If no parent org set, derive from common name prefix
+    if not parent_name and current_tenant:
+        name = current_tenant.get("name", "")
+        # e.g. "Abundant East" → parent is "Abundant"
+        for suffix in [" East", " West", " Downtown", " North", " South", " Central", " Online"]:
+            if name.endswith(suffix):
+                parent_name = name[: -len(suffix)].strip()
+                break
+
+    campuses = []
+    if parent_name:
+        # Find all tenants that share the same parent
+        all_tenants = await db.tenants.find(
+            {"name": {"$regex": f"^{parent_name}", "$options": "i"}},
+            {"_id": 0, "id": 1, "name": 1, "address": 1, "city": 1}
+        ).to_list(10)
+        for t in all_tenants:
+            label = t["name"].replace(parent_name, "").strip() or "Main"
+            campuses.append({
+                "id": t["id"],
+                "name": t["name"],
+                "label": label if label else t["name"],
+                "parent_name": parent_name,
+                "address": t.get("address", ""),
+                "city": t.get("city", ""),
+            })
+    else:
+        campuses = [{"id": tenant_id, "name": current_tenant.get("name", "Main Campus"), "label": "Main Campus"}]
+
+    user_campus = user.get("home_campus_id") or tenant_id
+
+    return {
+        "campuses": campuses,
+        "parent_name": parent_name,
+        "home_campus_id": user_campus,
+        "is_multi_campus": len(campuses) > 1,
+    }
+
+
+@router.post("/portal/campus/select")
+async def select_home_campus(request: Request):
+    """Set the member's home campus."""
+    user = await get_current_member_user(request)
+    body = await request.json()
+    campus_id = body.get("campus_id")
+    if not campus_id:
+        raise HTTPException(status_code=400, detail="campus_id required")
+
+    # Verify campus exists
+    campus = await db.tenants.find_one({"id": campus_id}, {"_id": 0, "name": 1})
+    if not campus:
+        raise HTTPException(status_code=404, detail="Campus not found")
+
+    await db.users.update_one(
+        {"user_id": user["user_id"]},
+        {"$set": {"home_campus_id": campus_id, "home_campus_name": campus["name"],
+                  "campus_selected": True, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"message": "Home campus set", "campus_id": campus_id, "campus_name": campus["name"]}

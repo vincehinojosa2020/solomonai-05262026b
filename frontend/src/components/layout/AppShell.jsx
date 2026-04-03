@@ -135,7 +135,7 @@ export default function AppShell() {
         <div className="flex items-center justify-between h-12 px-3 border-b border-slate-700">
           {!collapsed && (
             <span className="logo-text" data-testid="app-logo" style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.02em' }}>
-              {tenant?.church_name || tenant?.name || 'Church Admin'}
+              {user?.role === 'platform_admin' ? 'Solomon AI' : (tenant?.church_name || tenant?.name || 'Church Admin')}
             </span>
           )}
           <button
@@ -316,6 +316,7 @@ export default function AppShell() {
                   className="px-3 py-1.5 text-xs font-semibold rounded-md transition-all"
                   style={{ background: '#0f172a', color: 'white' }}
                   data-testid="mode-admin"
+                  title="Admin view — manage your church"
                 >
                   Admin
                 </button>
@@ -323,6 +324,7 @@ export default function AppShell() {
                   className="px-3 py-1.5 text-xs font-semibold rounded-md transition-all text-slate-500 hover:text-slate-700"
                   onClick={() => { localStorage.setItem('portal_mode', 'true'); navigate('/portal'); }}
                   data-testid="mode-member"
+                  title="Preview what your members see in the portal"
                 >
                   Member
                 </button>
@@ -396,18 +398,7 @@ export default function AppShell() {
               )
             )}
 
-            {/* Preview Portal Link - Hide for platform admin unless impersonating */}
-            {(user?.role !== 'platform_admin' || impersonatedTenant) && (
-              <a
-                href="/portal"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-blue-600 hover:underline flex items-center gap-1"
-                data-testid="preview-portal-link"
-              >
-                ↗ Preview Member Portal
-              </a>
-            )}
+            {/* Preview Portal Link removed — use Member toggle above */}
 
             {/* User Menu */}
             <DropdownMenu>

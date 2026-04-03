@@ -87,10 +87,11 @@ export default function GodModeDashboard() {
         <button
           onClick={() => navigate('/platform')}
           className="godmode-back-btn"
+          title="Switch to the previous platform dashboard layout"
           data-testid="back-to-platform"
         >
           <LogOut className="w-4 h-4" />
-          Legacy View
+          Previous Dashboard
         </button>
       </div>
 

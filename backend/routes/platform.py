@@ -154,8 +154,26 @@ async def get_platform_stats(request: Request):
     prev_ytd_vol = prev_ytd[0]["vol"] if prev_ytd else 0
     yoy_change = round((ytd_vol - prev_ytd_vol) / max(prev_ytd_vol, 1) * 100, 1) if prev_ytd_vol else 0
 
+    # MRR / ARR calculation from active recurring schedules
+    recurring_pipeline = [
+        {"$match": {"tenant_id": {"$in": campuses}, "is_active": True}},
+        {"$group": {"_id": "$frequency", "total_amount": {"$sum": "$amount"}, "count": {"$sum": 1}}},
+    ]
+    recurring_data = await db.recurring_giving.aggregate(recurring_pipeline).to_list(10)
+    mrr = 0
+    for rd in recurring_data:
+        freq = rd["_id"]
+        monthly_equiv = rd["total_amount"] * (
+            4.33 if freq == "weekly" else 2.17 if freq == "biweekly" else
+            1.0 if freq == "monthly" else 1/12 if freq == "annually" else 1.0
+        )
+        mrr += monthly_equiv * SOLOMON_FEE_RATE
+
+    total_member_count = await db.people.count_documents({"tenant_id": {"$in": campuses}})
+
     return {
         "churches": {"total": total_churches, "active": active_churches},
+        "members": {"total": total_member_count},
         "giving": {
             "all_time": round(all_time_vol, 2),
             "ytd": round(ytd_vol, 2),
@@ -170,6 +188,12 @@ async def get_platform_stats(request: Request):
             "mtd": round(mtd_fees, 2),
             "wtd": round(wtd_fees, 2),
             "today": round(today_fees, 2),
+        },
+        "platform": {
+            "total_mrr": round(mrr, 2),
+            "arr": round(mrr * 12, 2),
+            "total_churches": total_churches,
+            "total_members": total_member_count,
         },
         "transactions": {"total": all_time_cnt, "avg_amount": avg_txn},
         "donors": {"total": total_donors},
@@ -2692,7 +2716,29 @@ async def get_platform_payouts(request: Request, page: int = 1, limit: int = 50,
 
     total = await db.payouts.count_documents(query)
     skip = (page - 1) * limit
-    payouts = await db.payouts.find(query, {"_id": 0}).sort("payout_date", -1).skip(skip).limit(limit).to_list(limit)
+    raw_payouts = await db.payouts.find(query, {"_id": 0}).sort("payout_date", -1).skip(skip).limit(limit).to_list(limit)
+
+    # Normalize field names and enrich with church name
+    tenant_cache = {}
+    payouts = []
+    for p in raw_payouts:
+        tid = p.get("tenant_id", "")
+        if tid and tid not in tenant_cache:
+            t = await db.tenants.find_one({"id": tid}, {"_id": 0, "name": 1})
+            tenant_cache[tid] = t.get("name", tid) if t else tid
+        normalized = {
+            "id": p.get("id", ""),
+            "payout_date": p.get("payout_date") or p.get("period_end") or p.get("created_at", "")[:10] if p.get("created_at") else "",
+            "church_name": p.get("church_name") or tenant_cache.get(tid, tid),
+            "gross_amount": round(float(p.get("gross_amount") or p.get("amount") or 0), 2),
+            "total_fees": round(float(p.get("total_fees") or p.get("fee_amount") or 0), 2),
+            "net_payout": round(float(p.get("net_payout") or p.get("net_amount") or 0), 2),
+            "transaction_count": p.get("transaction_count") or p.get("txn_count") or 0,
+            "status": p.get("status", "completed"),
+            "bank_account": f"****{p.get('bank_last_four', '????')}",
+            "tenant_id": tid,
+        }
+        payouts.append(normalized)
 
     # Pending balances: sum of donations since last payout for each church
     pending = []

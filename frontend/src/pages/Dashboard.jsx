@@ -13,10 +13,10 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { API_URL, formatCurrency, formatNumber, formatRelativeTime } from '@/lib/utils';
 
-const StatCard = ({ title, value, change, changeType, icon: Icon }) => (
+const StatCard = ({ title, value, change, changeType, icon: Icon, link }) => (
   <div className="stat-card" data-testid={`stat-${title.toLowerCase().replace(/\s+/g, '-')}`}>
     <div className="flex items-start justify-between">
-      <div>
+      <div className="flex-1">
         <p className="stat-label">{title}</p>
         <p className="stat-value">{value}</p>
         {change && (
@@ -28,6 +28,9 @@ const StatCard = ({ title, value, change, changeType, icon: Icon }) => (
             )}
             {change}
           </p>
+        )}
+        {link && (
+          <a href={link} className="text-xs text-blue-500 hover:underline mt-1 block">View details →</a>
         )}
       </div>
       <div className="p-2 bg-slate-100">
@@ -216,7 +219,9 @@ export default function Dashboard() {
     );
   }
 
-  const mtdProgress = stats ? (stats.mtd_giving / stats.mtd_goal) * 100 : 0;
+  const mtdProgress = (stats && stats.mtd_goal && stats.mtd_goal > 0)
+    ? Math.min((stats.mtd_giving / stats.mtd_goal) * 100, 100)
+    : 0;
 
   return (
     <div className="space-y-4" data-testid="dashboard-page">
@@ -299,6 +304,7 @@ export default function Dashboard() {
           change={`+${stats?.new_this_week || 0} this week`}
           changeType="positive"
           icon={Users}
+          link="/people"
         />
         <StatCard
           title="ACTIVE MEMBERS"
@@ -306,6 +312,7 @@ export default function Dashboard() {
           change="Last 30 days"
           changeType="positive"
           icon={UsersRound}
+          link="/people"
         />
         <StatCard
           title="LAST SUNDAY"
@@ -313,13 +320,15 @@ export default function Dashboard() {
           change={`+${stats?.last_attendance_change || 0} vs prior`}
           changeType="positive"
           icon={Calendar}
+          link="/attendance"
         />
         <StatCard
           title="MTD GIVING"
           value={formatCurrency(stats?.mtd_giving || 0)}
-          change={`${Math.round(mtdProgress)}% of goal`}
+          change={mtdProgress > 0 ? `${Math.round(mtdProgress)}% of goal` : 'No goal set'}
           changeType="positive"
           icon={DollarSign}
+          link="/giving"
         />
         <StatCard
           title="YTD GIVING"
@@ -327,6 +336,7 @@ export default function Dashboard() {
           change="+12% vs LY"
           changeType="positive"
           icon={TrendingUp}
+          link="/giving"
         />
         <StatCard
           title="RECURRING"
@@ -334,6 +344,7 @@ export default function Dashboard() {
           change="Active schedules"
           changeType="positive"
           icon={RefreshCw}
+          link="/solomonpay"
         />
       </div>
 

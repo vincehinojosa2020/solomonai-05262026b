@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { usePolling } from '@/hooks/usePolling';
-import { CreditCard, DollarSign, Download, CheckCircle, ChevronDown } from 'lucide-react';
+import { CreditCard, DollarSign, Download, CheckCircle, ChevronDown, MapPin } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import SolomonPayForm from '@/components/SolomonPayForm';
@@ -9,7 +9,7 @@ import RecurringGivingManager from '@/components/RecurringGivingManager';
 import GivingGoalTracker from '@/components/GivingGoalTracker';
 
 export default function PortalGive() {
-  const { user, memberData, refreshData } = useOutletContext();
+  const { user, memberData, refreshData, tenant } = useOutletContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const [amount, setAmount] = useState('');
   const [fund, setFund] = useState('general');
@@ -21,6 +21,9 @@ export default function PortalGive() {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [campuses, setCampuses] = useState([]);
+  const [selectedCampus, setSelectedCampus] = useState(user?.home_campus_id || tenant?.id || '');
+  const [isMultiCampus, setIsMultiCampus] = useState(false);
 
   const quickAmounts = [25, 50, 100, 250];
 
@@ -28,6 +31,7 @@ export default function PortalGive() {
     fetchFunds();
     fetchGivingHistory();
     fetchSavedPaymentMethods();
+    fetchCampuses();
   }, []);
 
   const fetchSavedPaymentMethods = async () => {
@@ -46,7 +50,21 @@ export default function PortalGive() {
     fetchFunds();
     fetchGivingHistory();
     fetchSavedPaymentMethods();
+    fetchCampuses();
   }, []);
+
+  const fetchCampuses = async () => {
+    try {
+      const token = sessionStorage.getItem('session_token');
+      const res = await fetch(`${API_URL}/portal/campuses`, { headers: { 'Authorization': `Bearer ${token}` } });
+      if (res.ok) {
+        const d = await res.json();
+        setCampuses(d.campuses || []);
+        setIsMultiCampus(d.is_multi_campus || false);
+        if (!selectedCampus && d.home_campus_id) setSelectedCampus(d.home_campus_id);
+      }
+    } catch (e) { console.error(e); }
+  };
 
   const fetchFunds = async () => {
     try {
@@ -160,7 +178,7 @@ export default function PortalGive() {
   return (
     <div className="portal-give" data-testid="portal-give">
       <div className="portal-page-header">
-        <h1 className="portal-page-title">Give to Abundant Church</h1>
+        <h1 className="portal-page-title">Give to {tenant?.name || 'Your Church'}</h1>
         <p className="portal-page-subtitle">Securely give online using your preferred method</p>
       </div>
 
@@ -212,6 +230,23 @@ export default function PortalGive() {
               </button>
             </div>
           </div>
+
+          {/* Campus (for multi-campus churches) */}
+          {isMultiCampus && campuses.length > 1 && (
+            <div className="portal-form-section">
+              <label className="portal-form-label flex items-center gap-1"><MapPin className="w-3 h-3" /> CAMPUS</label>
+              <select
+                value={selectedCampus}
+                onChange={(e) => setSelectedCampus(e.target.value)}
+                className="portal-select"
+                data-testid="give-campus-select"
+              >
+                {campuses.map((c) => (
+                  <option key={c.id} value={c.id}>{c.label || c.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Fund */}
           <div className="portal-form-section">

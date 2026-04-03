@@ -291,12 +291,18 @@ export default function ServicesPage() {
       {plans.length === 0 ? (
         <div className="bg-white border border-slate-200 rounded-xl p-12 text-center" data-testid="services-empty">
           <Music className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-slate-900 mb-1">No service plans yet</h3>
-          <p className="text-sm text-slate-500 mb-4">Create your first service plan to start building your worship order.</p>
-          <Button className="btn-primary" onClick={() => setShowCreate(true)} data-testid="services-empty-create-btn">
-            <Plus className="w-4 h-4 mr-2" />
-            Create Service Plan
-          </Button>
+          <h3 className="text-lg font-semibold text-slate-900 mb-1">Create your first service plan</h3>
+          <p className="text-sm text-slate-500 mb-1">Plan your Sunday worship services — songs, message, team, and the order of everything from start to finish.</p>
+          <p className="text-sm text-slate-400 mb-5">This replaces spreadsheets and group texts.</p>
+          <div className="flex gap-3 justify-center">
+            <Button className="btn-primary" onClick={() => setShowCreate(true)} data-testid="services-empty-create-btn">
+              <Plus className="w-4 h-4 mr-2" />
+              Create Your First Service Plan
+            </Button>
+            <Button variant="outline" onClick={() => setShowTutorial(true)}>
+              See How It Works
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="space-y-4">

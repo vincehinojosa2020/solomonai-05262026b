@@ -8,35 +8,55 @@ const fmt = (n) => n >= 1e6 ? `$${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `$${(n/1e3)
 
 export default function PlatformExecDashboard({ stats }) {
   if (!stats) return <div className="p-8 text-slate-400">Loading...</div>;
-  const { giving, fees, transactions, donors, giving_trend, campus_breakdown, fee_config } = stats;
+  const { giving, fees, transactions, donors, giving_trend, campus_breakdown, fee_config, platform, churches, members } = stats;
+
+  // Hero KPIs
+  const heroKPIs = [
+    { label: 'Platform GMV (All Time)', value: fmt(giving?.all_time || 0), sub: 'Total giving processed', color: '#2563eb' },
+    { label: 'Platform Revenue (All Time)', value: fmt(fees?.all_time || 0), sub: 'Solomon Pay fees earned', color: '#059669' },
+    { label: 'MRR', value: fmt(platform?.total_mrr || 0), sub: 'Monthly recurring revenue', color: '#7c3aed' },
+    { label: 'ARR', value: fmt(platform?.arr || 0), sub: 'Annual recurring revenue', color: '#0891b2' },
+  ];
 
   const metrics = [
-    { label: 'Total Giving (All Time)', value: fmt(giving.all_time), icon: DollarSign, color: '#2563eb' },
-    { label: 'Fees Earned (All Time)', value: fmt(fees.all_time), icon: TrendingUp, color: '#059669' },
-    { label: 'YTD Giving', value: fmt(giving.ytd), sub: `${giving.yoy_change > 0 ? '+' : ''}${giving.yoy_change}% YoY`, icon: ArrowUpRight, color: '#7c3aed' },
-    { label: 'YTD Fees', value: fmt(fees.ytd), icon: TrendingUp, color: '#059669' },
-    { label: 'This Month', value: fmt(giving.mtd), icon: Activity, color: '#0891b2' },
-    { label: 'MTD Fees', value: fmt(fees.mtd), icon: CreditCard, color: '#059669' },
-    { label: 'Total Transactions', value: transactions.total.toLocaleString(), icon: CreditCard, color: '#6366f1' },
-    { label: 'Total Donors', value: donors.total.toLocaleString(), icon: Users, color: '#0891b2' },
-    { label: 'Avg Transaction', value: `$${transactions.avg_amount}`, icon: DollarSign, color: '#f59e0b' },
-    { label: 'Churches', value: stats.churches.active, icon: Building2, color: '#7c3aed' },
-    { label: 'Today Giving', value: fmt(giving.today), icon: DollarSign, color: '#2563eb' },
-    { label: 'Today Fees', value: fmt(fees.today), icon: TrendingUp, color: '#059669' },
+    { label: 'YTD Giving', value: fmt(giving?.ytd || 0), sub: `${giving?.yoy_change > 0 ? '+' : ''}${giving?.yoy_change || 0}% YoY`, icon: ArrowUpRight, color: '#7c3aed' },
+    { label: 'YTD Revenue', value: fmt(fees?.ytd || 0), icon: TrendingUp, color: '#059669' },
+    { label: 'This Month', value: fmt(giving?.mtd || 0), icon: Activity, color: '#0891b2' },
+    { label: 'MTD Revenue', value: fmt(fees?.mtd || 0), icon: CreditCard, color: '#059669' },
+    { label: 'Total Transactions', value: (transactions?.total || 0).toLocaleString(), icon: CreditCard, color: '#6366f1' },
+    { label: 'Total Donors', value: (donors?.total || 0).toLocaleString(), icon: Users, color: '#0891b2' },
+    { label: 'Active Churches', value: churches?.active || 0, icon: Building2, color: '#7c3aed' },
+    { label: 'Total Members', value: ((members?.total || platform?.total_members || 0)).toLocaleString(), icon: Users, color: '#2563eb' },
+    { label: 'Avg Transaction', value: `$${transactions?.avg_amount || 0}`, icon: DollarSign, color: '#f59e0b' },
+    { label: 'Today Giving', value: fmt(giving?.today || 0), icon: DollarSign, color: '#2563eb' },
+    { label: 'Today Revenue', value: fmt(fees?.today || 0), icon: TrendingUp, color: '#059669' },
+    { label: 'This Week', value: fmt(giving?.wtd || 0), icon: Activity, color: '#0891b2' },
   ];
 
   const trendData = (giving_trend || []).map(m => ({
     month: m.month,
-    giving: Math.round(m.total_giving),
-    fees: Math.round(m.total_fees),
-    txns: m.txn_count,
-    ...Object.fromEntries(Object.entries(m.by_campus || {}).map(([k, v]) => [k, Math.round(v)])),
+    giving: Math.round(m.total_giving || 0),
+    fees: Math.round(m.total_fees || 0),
+    txns: m.txn_count || 0,
+    ...Object.fromEntries(Object.entries(m.by_campus || {}).map(([k, v]) => [k, Math.round(v || 0)])),
   }));
 
-  const pieData = (campus_breakdown || []).map(c => ({ name: c.name, value: Math.round(c.giving) }));
+  const pieData = (campus_breakdown || []).map(c => ({ name: c.name, value: Math.round(c.giving || 0) }));
 
   return (
     <div className="space-y-6">
+      {/* Hero KPI Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4" data-testid="hero-kpis">
+        {heroKPIs.map((k, i) => (
+          <div key={k.label} className="bg-white rounded-xl border border-slate-100 p-5 hover:shadow-md transition-shadow" data-testid={`hero-kpi-${i}`}>
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{k.label}</p>
+            <p className="text-3xl font-bold tracking-tight" style={{ color: k.color }}>{k.value}</p>
+            <p className="text-xs text-slate-400 mt-1">{k.sub}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Secondary Metrics Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3" data-testid="exec-metrics-grid">
         {metrics.map((m, i) => (
           <div key={m.label} className="bg-white rounded-xl border border-slate-100 p-4 hover:shadow-md transition-shadow" data-testid={`metric-${i}`}>
@@ -47,7 +67,7 @@ export default function PlatformExecDashboard({ stats }) {
             </div>
             <div className="text-xl font-bold text-slate-900">{m.value}</div>
             <div className="text-xs text-slate-500 mt-0.5">{m.label}</div>
-            {m.sub && <div className="text-xs font-semibold mt-1" style={{ color: giving.yoy_change >= 0 ? '#059669' : '#dc2626' }}>{m.sub}</div>}
+            {m.sub && <div className="text-xs font-semibold mt-1" style={{ color: (giving?.yoy_change || 0) >= 0 ? '#059669' : '#dc2626' }}>{m.sub}</div>}
           </div>
         ))}
       </div>

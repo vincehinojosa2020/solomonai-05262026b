@@ -628,6 +628,10 @@ async def get_dashboard_stats(request: Request):
 
     cached = await db.dashboard_stats_cache.find_one({"tenant_id": tenant_id}, {"_id": 0})
     if cached:
+        # Ensure mtd_goal has a sensible fallback to prevent NaN
+        if not cached.get("mtd_goal"):
+            ytd = cached.get("ytd_giving", 0) or 0
+            cached["mtd_goal"] = max(round(ytd / 10, -3), 50000)  # 1 month of typical giving
         cached.pop("tenant_id", None)
         cached.pop("updated_at", None)
         return cached

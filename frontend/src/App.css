@@ -10163,8 +10163,8 @@ textarea:focus-visible {
 .atv-page {
   position: relative;
   min-height: 100vh;
-  background: #0a0a0a;
-  color: #ffffff;
+  background: #f8fafc;
+  color: #0f172a;
   overflow-x: hidden;
 }
 
@@ -10178,7 +10178,8 @@ textarea:focus-visible {
   justify-content: space-between;
   align-items: center;
   padding: 16px 32px;
-  background: rgba(0, 0, 0, 0.8);
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .atv-logo {
@@ -10201,9 +10202,10 @@ textarea:focus-visible {
 }
 
 .atv-logo-text {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.5px;
+  color: #0f172a;
 }
 
 .atv-logo-tagline {

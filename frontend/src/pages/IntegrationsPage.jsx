@@ -13,46 +13,42 @@ const INTEGRATIONS = [
     category: 'Communication',
     integrations: [
       { id: 'twilio', name: 'Twilio SMS', description: 'Send SMS messages to individuals or groups.', icon: MessageSquare, color: '#F22F46', status: 'active', features: ['Individual SMS', 'Bulk messaging', 'Templates'] },
-      { id: 'resend', name: 'Resend Email', description: 'Transactional emails for receipts and newsletters.', icon: Mail, color: '#000000', status: 'coming_soon', features: ['Transactional emails', 'Templates', 'Analytics'] },
+      { id: 'resend', name: 'Resend Email', description: 'Transactional emails for receipts and newsletters.', icon: Mail, color: '#000000', status: 'active', features: ['Transactional emails', 'Templates', 'Analytics'] },
       { id: 'whatsapp', name: 'WhatsApp Business', description: 'Reach members on WhatsApp.', icon: MessageSquare, color: '#25D366', status: 'coming_soon', features: ['WhatsApp messaging', 'Media sharing'] },
+    ],
+  },
+  {
+    category: 'Media & Worship',
+    integrations: [
+      { id: 'youtube', name: 'YouTube Live', description: 'Stream services and auto-embed.', icon: Video, color: '#FF0000', status: 'active', features: ['Live stream embed', 'Auto-archive', 'Sermon clips'] },
+      { id: 'spotify', name: 'Spotify', description: 'Worship playlists for your church.', icon: Music, color: '#1DB954', status: 'coming_soon', features: ['Playlist embed', 'Worship sets'] },
+      { id: 'ccli', name: 'CCLI Reporting', description: 'Automatically track and report song usage for CCLI licensing.', icon: Music, color: '#8B5CF6', status: 'coming_soon', features: ['Song tracking', 'Auto-reports', 'License compliance'] },
     ],
   },
   {
     category: 'Automation',
     integrations: [
       { id: 'zapier', name: 'Zapier', description: 'Connect to 5,000+ apps.', icon: Zap, color: '#FF4A00', status: 'active', features: ['Automated workflows', '5000+ apps', 'Triggers & actions'] },
-    ],
-  },
-  {
-    category: 'Media',
-    integrations: [
-      { id: 'youtube', name: 'YouTube Live', description: 'Stream services and auto-embed.', icon: Video, color: '#FF0000', status: 'active', features: ['Live stream embed', 'Auto-archive', 'Sermon clips'] },
-      { id: 'spotify', name: 'Spotify', description: 'Worship playlists for your church.', icon: Music, color: '#1DB954', status: 'coming_soon', features: ['Playlist embed', 'Worship sets'] },
-    ],
-  },
-  {
-    category: 'Scheduling',
-    integrations: [
-      { id: 'calendly', name: 'Calendly', description: 'Appointment scheduling for pastoral meetings.', icon: Calendar, color: '#006BFF', status: 'active', features: ['Appointments', 'Calendar sync'] },
       { id: 'google_calendar', name: 'Google Calendar', description: 'Sync church events with staff calendars.', icon: Calendar, color: '#4285F4', status: 'coming_soon', features: ['Two-way sync', 'Event sharing'] },
     ],
   },
   {
-    category: 'AI & Productivity',
+    category: 'Authentication',
     integrations: [
-      { id: 'openai', name: 'AI Assistant', description: 'GPT-powered sermon notes and engagement scoring.', icon: Bot, color: '#10A37F', status: 'coming_soon', features: ['Sermon summaries', 'Engagement scoring'] },
-      { id: 'slack', name: 'Slack', description: 'Staff notifications for new members, donations, and events.', icon: MessageSquare, color: '#4A154B', status: 'coming_soon', features: ['Notifications', 'Commands'] },
+      { id: 'google_oauth', name: 'Google Sign-In', description: 'Members and staff can sign in with their Google account.', icon: Shield, color: '#4285F4', status: 'active', features: ['One-click sign-in', 'SSO', 'Secure sessions'] },
+    ],
+  },
+  {
+    category: 'Compliance',
+    integrations: [
+      { id: 'background_checks', name: 'Background Checks', description: 'Run background checks on volunteers and staff.', icon: Shield, color: '#059669', status: 'coming_soon', features: ['Volunteer screening', 'Staff checks', 'Checkr / PMM'] },
     ],
   },
 ];
 
 const PROCESSORS = [
-  { id: 'solomon_pay', name: 'Solomon Pay', desc: 'Proprietary card, ACH, and Apple Pay processing', color: '#1e40af', icon: CreditCard },
-  { id: 'pushpay', name: 'Pushpay', desc: 'Church-focused giving platform', color: '#48BB78', icon: CreditCard },
-  { id: 'tithe_ly', name: 'Tithe.ly', desc: 'Digital giving for churches', color: '#2B6CB0', icon: CreditCard },
-  { id: 'planning_center', name: 'Planning Center Giving', desc: 'Church Center ecosystem', color: '#667EEA', icon: Database },
-  { id: 'subsplash', name: 'Subsplash Giving', desc: 'Mobile-first church giving', color: '#ED8936', icon: Smartphone },
-  { id: 'manual', name: 'Manual / Cash & Check', desc: 'Record offline gifts manually', color: '#718096', icon: CreditCard },
+  { id: 'solomon_pay', name: 'Solomon Pay', desc: 'Proprietary card, ACH, and digital wallet processing — built in, no account needed', color: '#1e40af', icon: CreditCard },
+  { id: 'manual', name: 'Cash & Check', desc: 'Record offline gifts, cash collections, and check deposits manually', color: '#718096', icon: CreditCard },
 ];
 
 export default function IntegrationsPage() {

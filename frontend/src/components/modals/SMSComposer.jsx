@@ -40,7 +40,7 @@ export default function SMSComposer({ onClose, preselectedRecipient, preselected
     if (template) {
       // Replace placeholders with defaults for preview
       let content = template.content;
-      content = content.replace('{church_name}', 'Abundant Church');
+      content = content.replace('{church_name}', tenant?.name || 'Our Church');
       content = content.replace('{event_name}', 'Sunday Service');
       content = content.replace('{event_date}', 'this Sunday');
       content = content.replace('{group_name}', 'Your Group');
