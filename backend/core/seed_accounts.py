@@ -20,11 +20,9 @@ async def ensure_mobile_demo_accounts():
     demo_password_hash = hashlib.sha256("Demo2026!".encode()).hexdigest()
 
     tenant_defaults = [
-        {"id": "abundant-east-001", "name": "Abundant East", "subdomain": "abundant-east", "subscription_status": "active", "created_at": now_iso, "organization_id": "abundant-org-001", "organization_name": "Abundant Church", "city": "Charlotte", "state": "NC", "plan": "enterprise", "monthly_rate": 2999, "senior_pastor": "Shannon Nieman"},
-        {"id": "abundant-downtown-001", "name": "Abundant Downtown", "subdomain": "abundant-downtown", "subscription_status": "active", "created_at": now_iso, "organization_id": "abundant-org-001", "organization_name": "Abundant Church", "city": "Charlotte", "state": "NC", "plan": "enterprise", "monthly_rate": 2999, "senior_pastor": "Shannon Nieman"},
-        {"id": "abundant-west-001", "name": "Abundant West", "subdomain": "abundant-west", "subscription_status": "active", "created_at": now_iso, "organization_id": "abundant-org-001", "organization_name": "Abundant Church", "city": "Charlotte", "state": "NC", "plan": "enterprise", "monthly_rate": 2999, "senior_pastor": "Shannon Nieman"},
-        {"id": "cristoviene-church-001", "name": "Cristo Viene", "subdomain": "cristoviene", "subscription_status": "active", "created_at": now_iso, "plan": "starter", "monthly_rate": 499},
-        {"id": "pottershouse-church-001", "name": "The Potter's House", "subdomain": "pottershouse", "subscription_status": "active", "created_at": now_iso, "plan": "growth", "monthly_rate": 1499},
+        {"id": "abundant-east-001", "name": "Abundant East", "subdomain": "abundant-east", "subscription_status": "active", "created_at": now_iso, "organization_id": "abundant-org-001", "organization_name": "Abundant Church", "city": "El Paso", "state": "TX", "plan": "enterprise", "monthly_rate": 2999, "senior_pastor": "Pastor David Martinez"},
+        {"id": "abundant-downtown-001", "name": "Abundant Northeast", "subdomain": "abundant-northeast", "subscription_status": "active", "created_at": now_iso, "organization_id": "abundant-org-001", "organization_name": "Abundant Church", "city": "El Paso", "state": "TX", "plan": "enterprise", "monthly_rate": 2999, "senior_pastor": "Pastor David Martinez"},
+        {"id": "abundant-west-001", "name": "Abundant West", "subdomain": "abundant-west", "subscription_status": "active", "created_at": now_iso, "organization_id": "abundant-org-001", "organization_name": "Abundant Church", "city": "El Paso", "state": "TX", "plan": "enterprise", "monthly_rate": 2999, "senior_pastor": "Pastor David Martinez"},
     ]
 
     for tenant in tenant_defaults:
@@ -48,14 +46,7 @@ async def ensure_mobile_demo_accounts():
         {"email": "vince@charlottesoftwareengineering.com", "user_id": "cc7a823c-4d38-45d9-bb09-1df8caffe258", "name": "Vince Hinojosa", "first_name": "Vince", "last_name": "Hinojosa", "role": "member", "tenant_id": "abundant-east-001"},
         {"email": "admin@solomonai.us", "user_id": "platform_admin_001", "name": "Solomon Platform Admin", "first_name": "Solomon", "last_name": "Admin", "role": "platform_admin", "tenant_id": None},
         {"email": "member@abundant.church", "user_id": "member_abundant", "name": "Maria Garcia", "first_name": "Maria", "last_name": "Garcia", "role": "member", "tenant_id": "abundant-east-001"},
-        {"email": "member@cristoviene.church", "user_id": "member_cristoviene", "name": "Carlos", "first_name": "Carlos", "last_name": "", "role": "member", "tenant_id": "cristoviene-church-001"},
-        {"email": "admin@abundant.church", "user_id": "admin_abundant", "name": "Pastor David Rivera", "first_name": "David", "last_name": "Rivera", "role": "church_admin", "tenant_id": "abundant-east-001"},
-        {"email": "admin@cristoviene.church", "user_id": "admin_cristoviene", "name": "Cristo Viene Admin", "first_name": "Cristo", "last_name": "Viene Admin", "role": "church_admin", "tenant_id": "cristoviene-church-001"},
-        {"email": "admin@pottershouse.church", "user_id": "admin_pottershouse", "name": "Potter's House Admin", "first_name": "Potter's House", "last_name": "Admin", "role": "church_admin", "tenant_id": "pottershouse-church-001"},
-        {"email": "admin@abundant-downtown.church", "user_id": "admin_abundant_downtown", "name": "Pastor Sarah Chen", "first_name": "Sarah", "last_name": "Chen", "role": "church_admin", "tenant_id": "abundant-downtown-001"},
-        {"email": "admin@abundant-west.church", "user_id": "admin_abundant_west", "name": "Pastor Michael Reyes", "first_name": "Michael", "last_name": "Reyes", "role": "church_admin", "tenant_id": "abundant-west-001"},
-        {"email": "member@abundant-downtown.church", "user_id": "member_abundant_downtown", "name": "Isabella Torres", "first_name": "Isabella", "last_name": "Torres", "role": "member", "tenant_id": "abundant-downtown-001"},
-        {"email": "member@abundant-west.church", "user_id": "member_abundant_west", "name": "Sofia Martinez", "first_name": "Sofia", "last_name": "Martinez", "role": "member", "tenant_id": "abundant-west-001"},
+        {"email": "admin@abundant.church", "user_id": "admin_abundant", "name": "Pastor David Martinez", "first_name": "David", "last_name": "Martinez", "role": "church_admin", "tenant_id": "abundant-east-001"},
     ]
 
     god_mode_emails = {"shannonnieman1030@gmail.com", "jacobpacheco@abundanteast.com"}

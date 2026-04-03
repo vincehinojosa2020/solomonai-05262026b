@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://platform-god-mode.preview.emergentagent.com/api
+https://solomonpay-ledger.preview.emergentagent.com/api
 ```
 
 ### Authentication

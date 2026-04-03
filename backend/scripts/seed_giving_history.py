@@ -12,7 +12,7 @@ from datetime import datetime, timezone, timedelta
 import motor.motor_asyncio
 
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "test_database")
+DB_NAME = os.environ.get("DB_NAME", "solomonai")
 
 # ── Fee Config ──
 CARD_RATE = 0.019

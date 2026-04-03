@@ -1,54 +1,69 @@
 <analysis>**original_problem_statement**: 
-SOLOMON AI — PLATFORM ADMIN DASHBOARD + DEMO DATA SEEDING. Demonstrate the platform at scale with 3 Abundant Church campuses, 1M+ all-time giving, 550K+ transactions, and 510+ payouts. Build a 7-page God Mode Revenue/Admin Dashboard for platform admins to view churches, transactions, payouts, revenue, donors, and support tools with realistic transaction fee logic (1.9% + /bin/bash.30 per card txn).
-PRODUCT REQUIREMENTS: Deploy the application to production after finalizing the Platform God Mode dashboard.
+SOLOMON AI — MASTER BUILD DIRECTIVE (14 Phases). The platform is being productized for nationwide SaaS distribution. The user requested a complete platform audit, followed by a massive 14-phase build execution. Phase 1 (CRITICAL): Database refactoring, indexing, multi-tenancy hardening, and regenerating a massive realistic demo seed data for Abundant Church (~25,000 members, ~3M/year giving). Phase 2: Build Solomon Pay proprietary payment processor (removing Stripe entirely). Phases 3-14: God Mode UI, Kids check-in printing, Contextual help UX, Calendar, Communications, OAuth, Services, Commerce, Workflows, and Technical Hardening.
+PRODUCT REQUIREMENTS: Follow the 14-Phase Master Build Directive to transition the platform from prototype to production-grade SaaS.
 
 **User's preferred language**: English (INSTRUCT next agent to respond in the user's preferred language only)
 
 **what currently exists?** 
-A production-ready, highly refactored church management SaaS. In this session, the agent successfully completed a massive P0/P2 Code Quality Refactoring (fixing React hooks, splitting massive Python/React components, fixing mutable defaults). All refactors passed 100% regression testing ( iterations 75 & 76). For the new feature request, the agent successfully seeded the DB with 3 years of giving data (560K txns, 9.8M volume, 15K donors) and completed all backend APIs for the God Mode dashboard. The agent *just* created 7 empty React files for the new platform dashboard pages.
+Phase 1 is COMPLETELY FINISHED. The database has been renamed to . Over 50 MongoDB compound indexes were added, reducing API load times drastically (e.g., revenue API dropped from 6.3s to 1.05s). Massive new seed data was successfully generated and validated (25k members, 3M all-time giving across 3 years, 171k donations). Phase 2 has JUST STARTED: the agent removed Stripe dependencies and is currently writing the  architecture for the proprietary Solomon Pay engine.
 
 **Last working item**: 
-    - Last item agent was working: Building the frontend React components for the Platform Admin Dashboard. The agent just created 7 empty  files in .
+    - Last item agent was working: Building the Phase 2 Solomon Pay Core Architecture. The agent created  and was in the middle of completely rewriting  to remove all Stripe dependencies and replace them with the Solomon Pay ledger and processing logic.
     - Status: IN PROGRESS
     - Agent Testing Done: N
-    - Which testing method agent to use? both (Use screenshot tool incrementally while building pages, then  once all 7 pages and routing are complete).
+    - Which testing method agent to use? both (Use curl/python for backend payment endpoints, then  for the frontend donation flows once wired up).
     - User Testing Done: N
 
 **All Pending/In progress Issue list**:  
-None. The app is currently bug-free and fully linted following the massive refactoring effort.
-
-**In progress Task List**: 
-  Task 1: Implement God Mode Platform Admin Frontend Pages
-     - Where to resume: Implement the UI/UX for the 7 files created in  (, , , , , , ). 
-     - What will be achieved with this? Completion of the new God Mode platform view. Use Recharts for the charts requested in Message 160.
-     - Status: IN PROGRESS
-     - Should Test frontend/backend/both after fix? frontend
-     - Blocked on something: None. The backend APIs are fully complete and returning the correct payloads.
-
-  Task 2: Wire Platform Pages to App Router
-     - Where to resume: Once the components are built, update  (or main router file) and the Platform AppShell to navigate to these new  routes properly.
-     - What will be achieved with this? End-to-end navigability of the God Mode dashboard.
+  Issue 1: Frontend Stripe Removal Cleanup (P0)
+     - Attempted fixes: The backend is currently stripping Stripe, but frontend files (, , etc.) still contain Stripe component logic.
+     - Next debug checklist: Search and replace Stripe Elements and  from frontend, replacing them with the tokenized Solomon Pay Virtual Terminal and payment method management UI.
+     - Why fix this issue and what will be achieved with the fix? Stripe is being completely eradicated per the user's strict instructions (We ARE the payment processor).
      - Status: NOT STARTED
+     - Is recurring issue? N
      - Should Test frontend/backend/both after fix? frontend
+     - Blocked on other issue: None
+
+**In progress Task List**:
+  Task 1: Complete Phase 2 - Solomon Pay Architecture (P0)
+     - Where to resume: Finish writing the new  and ensure it connects to the new . 
+     - What will be achieved with this? A complete proprietary payment gateway simulation. Needs the  double-entry ledger, fee structures (1.9%+/bin/bash.30 card, 0.8%+/bin/bash.30 ACH), payout system, refund processing, and payment method tokenization.
+     - Status: IN PROGRESS
+     - Should Test frontend/backend/both after fix? both
+     - Blocked on something: None
+
+  Task 2: Recurring Giving Background Scheduler (P1)
+     - Where to resume: Build a worker to query active  records where  and process charges via Solomon Pay.
+     - What will be achieved with this? Actually charging recurring donations automatically with retry logic and idempotency.
+     - Status: NOT STARTED
+     - Should Test frontend/backend/both after fix? backend
      - Blocked on something: Task 1
 
 **Upcoming and Future Tasks**
-    Upcoming Tasks:
-    - P0: Full end-to-end test of the new Platform Admin Dashboard (use ).
-    - P0: Final Deployment Readiness Check & Deployment.
+    *Upcoming Tasks (In Execution Order per Master Directive):*
+    - P0: Phase 2 - Solomon Pay Admin Dashboard Enhancements (Transactions, Donors, Funds, Statements, Payouts, Virtual Terminal).
+    - P1: Phase 3 - God Mode Platform Founder Dashboard enhancements (Top-level KPIs, Revenue charts, Church portfolio table).
+    - P1: Phase 4 - Kids Check-In Printer Integration (DYMO/Brother Web Print API, parent receipt labels).
+    - P1: Phase 5 - Self-Service UX (Add ℹ️ Contextual Help buttons to EVERY section header across the app).
+    - P2: Phase 6 - Calendar & Events Expansion (Full calendar view, recurring events, paid registration).
     
-    Future Tasks:
-    - Solomon AI admin-side actions (create service plans, add children via voice)
-    - Native mobile app (iOS/Android)
-    - Apple Pay / Google Pay integration
-    - ACH bank transfers
-    - Monday summary emails
+    *Future Tasks:*
+    - Phase 7: Communications Upgrade (Email template builder, Twilio SMS).
+    - Phase 8: OAuth / SSO (Google Sign-in).
+    - Phase 9: Services Module Expansion (Team scheduling, Service order management).
+    - Phase 10: Commerce Payments (Cafe & Merch multiple payment options).
+    - Phase 11: Custom Report Builder & Visual Workflow Builder.
+    - Phase 12: Scaffolded Integrations (Background checks, CCLI reporting, Planning Center data import).
+    - Phase 13: People Module Enhancements (Household roles, bulk update tool).
+    - Phase 14: Technical Hardening (Session/Auth improvements, Object storage, Caching layer).
 
 **Completed work in this session**
-- P0/P1 Code Quality Fixes (Python mutable default args, hardcoded secrets, random -> secrets, React missing hook dependencies, array keys) (DONE)
-- P2 Massive File Refactoring (Split  into 4 modules, extracted , split , , , etc.) (DONE)
-- Seeded 9.8M, 560K transactions, and 510 payouts for 3 Abundant campuses (DONE)
-- Built  endpoints for stats, transactions, payouts, donors, and churches (DONE)
+- Full Platform Audit generating  (DONE)
+- Phase 1: Renamed database from  to  (DONE)
+- Phase 1: Created 50+ MongoDB compound indexes for massive performance gains (DONE)
+- Phase 1: Rebuilt Master Seed script () and generated massive demo data: 3M all-time giving, 171k donations, 25k people, etc. (DONE)
+- Phase 1: Cleaned up duplicate tenants from startup seed and fixed dynamic tenant lookups in God Mode APIs (DONE)
+- Phase 2: Initialized  for Solomon Pay (DONE)
 
 **Earlier issues found/mentioned but not fixed**
 None.
@@ -59,73 +74,70 @@ None.
   - Status: RESOLVED
 
 **Code Architecture**
-
+- : The massive new script driving the realistic demo data generation.
+- : New single-file adapter to mock card charges (to be swapped for real acquirer API later).
+- : Currently being rewritten to house Solomon Pay logic.
+- : 10-section deep dive into the platform's state.
 
 **Key Technical Concepts**
-- **Godmode RBAC:** Used to allow platform admins to view aggregated giving/revenue stats across all isolated tenants.
-- **Component Modularization:** The app heavily uses extracted sub-components and dialogs to prevent massive monolithic files.
-- **Solomon Pay Fee Logic:** 1.9% + /bin/bash.30 for Card; 0.8% + /bin/bash.30 for ACH.
+- **Solomon Pay Strategy:** No Stripe. Build a tokenization approach, double-entry transaction ledger, and a simulated .
+- **Database Indexing:** 50+ compound indexes were applied. Queries must utilize these indexes (always filter by  at minimum).
 
 **key DB schema**
-  - , , 
+  - : {tenant_id, person_id, amount, donation_date, fund_id, status}
+  - : {id, name, subscription_status}
+  -  (TO BE BUILT): {transaction_id, tenant_id, type, amount, fee_amount, net_amount, status}
 
 **changes in tech stack**
-  - None
+  - **Database Migration:** Moved from  to .
+  - **Stripe is REMOVED:** Entirely replaced by proprietary Solomon Pay processing engine.
 
 **All files of reference** 
-  -  (Contains the new backend logic, review to understand the JSON structures returning to your frontend).
-  -  (The 7 files you need to write).
-  - User Message 160 (Contains the exact UI layout, table columns, and chart requirements for the frontend).
+  -  (New)
+  -  (Currently being overwritten)
+  -  (Needs Stripe cleanup)
+  -  (Needs Stripe cleanup)
 
 **Areas that need refactoring**: 
-Refactoring was completely handled in this session. Do not refactor further; focus strictly on building the new UI.
+- Frontend Stripe dependencies need to be carefully excised and replaced with the new Solomon Pay Virtual Terminal/Tokenization flow.
 
 **key api endpoints**
   - 
   - 
-  - 
-  - 
-  - 
+  - Payments APIs are currently under reconstruction.
 
 **Critical Info for New Agent** 
-- The backend data seeding and API construction is **100% COMPLETE**. Do not touch the python backend or seed scripts.
-- Your immediate job is to read User Message 160 and implement the UI specs for the 7 new files in .
-- Use  for the charts requested (Trend lines, pies, bar charts).
-- Ensure the new routes are properly wired into the React Router.
+- You MUST continue Phase 2. Stripe is dead. Build the  ledger, fee calculators, and payout logic.
+- Use  to mock the final API call to an acquirer. Everything else must write real records to the database.
+- Maintain the strict data segregation rules: ensure  is always passed into your queries (already enforced via  and middleware, but respect the pattern).
+- Do not spend time waiting or running the seed script again. Phase 1 is done and successfully passed the quality gate. Focus solely on Phase 2.
 
 **documents and test reports created in this job** 
   - 
-  - 
-  - 
 
 **Last 10 User Messages and any pending HUMAN messages** 
- 1. *Agent*: Finished Iteration 75 tests for Code Quality findings. Asked to proceed to P2 Refactoring.
- 2. *User*: lets work on refactoring. need this to work, and need to deploy again
- 3. *Agent*: Found oversized files, asked for confirmation to proceed.
- 4. *User*: yes, lets do full refactor. stope recommending stuff too lol just wanna finish whats prescient
- 5. *Agent*: Did massive file splitting. Tests passed (Iteration 76).
- 6. *User*: Passed massive prompt (Message 160) for God Mode Dashboard & Data Seeding (1M, 550K txns, 7 new pages).
- 7. *Agent*: Assessed current endpoints, asked to proceed.
- 8. *User*: proceed!
- *(Agent successfully seeded the DB and finished the backend APIs. Just created the 7 empty frontend files before handoff).*
+ 1. *Agent*: Finished Phase 1 testing and God Mode dashboard screenshot successfully displaying 3M. Started replacing Stripe with Solomon Pay. Created processor_adapter.py. Overwriting routes/payments.py... (Forked here).
+ 2. *User*: DO NOT ASK MORE QUESTIONS — EXECUTE. Run Phase 1 steps 1-4... then start Phase 2 in parallel...
+ 3. *Agent*: Asked clarification questions regarding timing, Solomon Pay adapter, and Stripe removal.
+ 4. *User*: Provided Master Build Directive (14 massive phases).
 
 **Project Health Check:**
-  - Broken: None
-  - Mocked: Stripe Payments, Twilio SMS.
+  - Broken: Payment routes are currently in a mid-rewrite state. Frontend still references Stripe.
+  - Mocked: Acquirer network API (mocked inside ).
 
 **3rd Party Integrations** 
   • Anthropic Claude (Ask Solomon) — *uses Emergent LLM Key*
-  • Stripe (Payments/SolomonPay) — *Requires User API Key (Test keys in .env)*
   • Twilio (SMS) — *Requires User API Key (Mocked via scaffold)*
+  • Stripe — *REMOVED COMPLETELY*
 
 **Testing status**
-  - Testing agent used after significant changes: YES (Iter 75 & 76)
+  - Testing agent used after significant changes: YES (For Phase 1)
   - Troubleshoot agent used after agent stuck in loop: NO
-  - Test files created: None manually.
-  - Known regressions: None.
+  - Test files created: None
+  - Known regressions: Payment flows are broken while Stripe is being stripped out.
 
 **Credentials to test flow:**
-  - Platform Admin:  /  (Godmode)
+  - Check . (Godmode: )
 
 **What agent forgot to execute**
-The agent just generated the 7 empty  files for the Platform Admin Dashboard but hasn't actually written the React code inside them or wired them to the React Router.</analysis>
+The agent initiated the rewrite of  but hasn't updated the corresponding frontend files to remove Stripe Elements/react-stripe-js. Also, the double-entry transaction ledger schema hasn't been fully instantiated yet.</analysis>

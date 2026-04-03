@@ -44,12 +44,18 @@ async def get_platform_stats(request: Request):
     year_start = today.replace(month=1, day=1).strftime("%Y-%m-%d")
     week_start = (today - timedelta(days=today.weekday())).strftime("%Y-%m-%d")
 
-    campuses = ["abundant-east-001", "abundant-west-001", "abundant-downtown-001"]
+    # Get all active tenants
+    all_tenants = await db.tenants.find(
+        {"subscription_status": "active"}, {"_id": 0, "id": 1}
+    ).to_list(100)
+    campuses = [t["id"] for t in all_tenants]
+    if not campuses:
+        campuses = [TENANT_ID]
 
     # All-time totals
     all_time = await db.donations.aggregate([
         {"$match": {"tenant_id": {"$in": campuses}}},
-        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}, "cnt": {"$sum": 1}}},
+        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", {"$ifNull": ["$solomon_fee", 0]}]}}, "cnt": {"$sum": 1}}},
     ]).to_list(1)
     all_time_vol = all_time[0]["vol"] if all_time else 0
     all_time_fees = all_time[0]["fees"] if all_time else 0
@@ -58,7 +64,7 @@ async def get_platform_stats(request: Request):
     # YTD
     ytd = await db.donations.aggregate([
         {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": year_start}}},
-        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}, "cnt": {"$sum": 1}}},
+        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}, "cnt": {"$sum": 1}}},
     ]).to_list(1)
     ytd_vol = ytd[0]["vol"] if ytd else 0
     ytd_fees = ytd[0]["fees"] if ytd else 0
@@ -66,7 +72,7 @@ async def get_platform_stats(request: Request):
     # MTD
     mtd = await db.donations.aggregate([
         {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": month_start}}},
-        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}, "cnt": {"$sum": 1}}},
+        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}, "cnt": {"$sum": 1}}},
     ]).to_list(1)
     mtd_vol = mtd[0]["vol"] if mtd else 0
     mtd_fees = mtd[0]["fees"] if mtd else 0
@@ -74,7 +80,7 @@ async def get_platform_stats(request: Request):
     # This week
     wtd = await db.donations.aggregate([
         {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": week_start}}},
-        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}}},
+        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}}},
     ]).to_list(1)
     wtd_vol = wtd[0]["vol"] if wtd else 0
     wtd_fees = wtd[0]["fees"] if wtd else 0
@@ -82,7 +88,7 @@ async def get_platform_stats(request: Request):
     # Today
     today_data = await db.donations.aggregate([
         {"$match": {"tenant_id": {"$in": campuses}, "donation_date": today_str}},
-        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}}},
+        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}}},
     ]).to_list(1)
     today_vol = today_data[0]["vol"] if today_data else 0
     today_fees = today_data[0]["fees"] if today_data else 0
@@ -103,7 +109,7 @@ async def get_platform_stats(request: Request):
         {"$match": {"tenant_id": {"$in": campuses}}},
         {"$addFields": {"month": {"$substr": ["$donation_date", 0, 7]}}},
         {"$match": {"month": {"$gte": twelve_months_ago}}},
-        {"$group": {"_id": {"month": "$month", "tenant": "$tenant_id"}, "vol": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}, "cnt": {"$sum": 1}}},
+        {"$group": {"_id": {"month": "$month", "tenant": "$tenant_id"}, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}, "cnt": {"$sum": 1}}},
         {"$sort": {"_id.month": 1}},
     ]
     trend_raw = await db.donations.aggregate(trend_pipeline).to_list(200)
@@ -123,7 +129,7 @@ async def get_platform_stats(request: Request):
     # Campus breakdown
     campus_pipe = [
         {"$match": {"tenant_id": {"$in": campuses}}},
-        {"$group": {"_id": "$tenant_id", "vol": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}, "cnt": {"$sum": 1}}},
+        {"$group": {"_id": "$tenant_id", "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}, "cnt": {"$sum": 1}}},
         {"$sort": {"vol": -1}},
     ]
     campus_raw = await db.donations.aggregate(campus_pipe).to_list(10)
@@ -2421,7 +2427,7 @@ async def get_platform_revenue(request: Request):
         {"$group": {
             "_id": "$tenant_id",
             "total_volume": {"$sum": "$amount"},
-            "total_fees": {"$sum": "$solomon_fee"},
+            "total_fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}},
             "txn_count": {"$sum": 1},
         }},
         {"$sort": {"total_volume": -1}},
@@ -2451,7 +2457,7 @@ async def get_platform_revenue(request: Request):
         {"$group": {
             "_id": "$year",
             "total_volume": {"$sum": "$amount"},
-            "total_fees": {"$sum": "$solomon_fee"},
+            "total_fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}},
             "txn_count": {"$sum": 1},
         }},
         {"$sort": {"_id": 1}},
@@ -2474,7 +2480,7 @@ async def get_platform_revenue(request: Request):
         {"$group": {
             "_id": {"tenant_id": "$tenant_id", "year": "$year"},
             "volume": {"$sum": "$amount"},
-            "fees": {"$sum": "$solomon_fee"},
+            "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}},
             "txn_count": {"$sum": 1},
         }},
         {"$sort": {"_id.year": 1}},
@@ -2502,7 +2508,7 @@ async def get_platform_revenue(request: Request):
         {"$group": {
             "_id": "$month",
             "volume": {"$sum": "$amount"},
-            "fees": {"$sum": "$solomon_fee"},
+            "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}},
             "txn_count": {"$sum": 1},
         }},
         {"$sort": {"_id": -1}},
@@ -2690,23 +2696,24 @@ async def get_platform_payouts(request: Request, page: int = 1, limit: int = 50,
 
     # Pending balances: sum of donations since last payout for each church
     pending = []
-    campuses = ["abundant-east-001", "abundant-west-001", "abundant-downtown-001"]
-    for tid in campuses:
+    pending_tenants = await db.tenants.find(
+        {"subscription_status": "active"}, {"_id": 0, "id": 1, "name": 1}
+    ).to_list(100)
+    for tenant_doc in pending_tenants:
+        tid = tenant_doc["id"]
         last_payout = await db.payouts.find_one({"tenant_id": tid}, {"_id": 0, "payout_date": 1}, sort=[("payout_date", -1)])
         since = last_payout["payout_date"] if last_payout else "2023-01-01"
         pipe = [
             {"$match": {"tenant_id": tid, "donation_date": {"$gt": since}, "status": "completed"}},
-            {"$group": {"_id": None, "gross": {"$sum": "$amount"}, "fees": {"$sum": "$solomon_fee"}}},
+            {"$group": {"_id": None, "gross": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}}},
         ]
         result = await db.donations.aggregate(pipe).to_list(1)
         if result:
-            tenant = await db.tenants.find_one({"id": tid}, {"_id": 0, "name": 1})
-            bank_labels = {"abundant-east-001": "BoA ****6789", "abundant-west-001": "Chase ****4321", "abundant-downtown-001": "Wells ****8765"}
             pending.append({
                 "tenant_id": tid,
-                "church_name": tenant.get("name", tid) if tenant else tid,
+                "church_name": tenant_doc.get("name", tid),
                 "available_balance": round(result[0]["gross"] - result[0]["fees"], 2),
-                "bank_account": bank_labels.get(tid, ""),
+                "bank_account": f"****{tid[-4:]}",
                 "payout_method": "ACH - Standard",
             })
 
@@ -2739,7 +2746,13 @@ async def get_platform_donor_stats(request: Request):
     today = dt.now(timezone.utc)
     d90 = (today - timedelta(days=90)).strftime("%Y-%m-%d")
     d30 = (today - timedelta(days=30)).strftime("%Y-%m-%d")
-    campuses = ["abundant-east-001", "abundant-west-001", "abundant-downtown-001"]
+    # Dynamic tenant lookup
+    all_tenants_d = await db.tenants.find(
+        {"subscription_status": "active"}, {"_id": 0, "id": 1}
+    ).to_list(100)
+    campuses = [t["id"] for t in all_tenants_d]
+    if not campuses:
+        campuses = [DEFAULT_TENANT_ID]
 
     total_donors = await db.platform_donors.count_documents({"tenant_id": {"$in": campuses}})
 
@@ -2754,7 +2767,7 @@ async def get_platform_donor_stats(request: Request):
 
     # Recurring donors
     recurring_pipe = [
-        {"$match": {"tenant_id": {"$in": campuses}, "frequency": "recurring"}},
+        {"$match": {"tenant_id": {"$in": campuses}, "is_recurring": True}},
         {"$group": {"_id": "$person_id"}},
         {"$count": "count"},
     ]
