@@ -41,7 +41,7 @@ async def structured_500_handler(request: Request, exc):
     cid = f"req_{uuid.uuid4().hex[:12]}"
     logger.error(f"[{cid}] Internal error: {exc}")
     return JSONResponse(status_code=500, content={
-        "error": "INTERNAL_ERROR", "message": "An unexpected error occurred",
+        "error": "INTERNAL_ERROR", "message": "Something went wrong on our end. Please try again, or reach out at support@solomonai.us.",
         "code": 500, "correlation_id": cid,
     })
 

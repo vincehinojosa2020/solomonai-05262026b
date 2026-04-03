@@ -7,6 +7,7 @@ import { API_URL, formatCurrency, formatDate } from '@/lib/utils';
 import { toast } from 'sonner';
 import AdminRecurringGiving from '@/components/AdminRecurringGiving';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { FeatureEducationHeader } from '@/components/FeatureEducationHeader';
 
 const TABS = [
   { id: 'dashboard', label: 'Dashboard', icon: TrendingUp },
@@ -242,6 +243,7 @@ export default function SolomonPayAdmin() {
       {/* === DASHBOARD TAB === */}
       {activeTab === 'dashboard' && dashData && (
         <div className="space-y-4" data-testid="solomonpay-dashboard-tab">
+        <FeatureEducationHeader featureKey="solomonpay" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <StatCard title="Today" value={formatCurrency(dashData.today.total)} subtitle={`${dashData.today.count} gifts`} />
             <StatCard title="This Week" value={formatCurrency(dashData.week.total)} subtitle={`${dashData.week.count} gifts`} />

@@ -19,8 +19,8 @@ export default function PortalMe() {
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
-    { id: 'giving', label: 'My Giving' },
-    { id: 'payments', label: 'Payment Methods' },
+    { id: 'giving', label: 'Your Generosity' },
+    { id: 'payments', label: 'How You Give' },
     { id: 'groups', label: 'My Groups' },
     { id: 'communications', label: 'Communications' },
   ];
@@ -342,10 +342,34 @@ export default function PortalMe() {
                 { id: 'groups', label: 'Group updates', checked: true },
               ].map((pref) => (
                 <label key={pref.id} className="portal-pref-item">
+                  <input type="checkbox" defaultChecked={pref.checked} className="portal-checkbox" />
+                  <span>{pref.label}</span>
+                </label>
+              ))}
+            </div>
+
+            <h3 className="portal-info-title mt-6">Directory Privacy</h3>
+            <p className="text-xs text-slate-400 mb-3">Control what other members can see about you in the church directory. Admins always see full details.</p>
+            <div className="portal-prefs-list" data-testid="directory-privacy-section">
+              {[
+                { id: 'share_email', label: 'Show my email in the directory', defaultChecked: true },
+                { id: 'share_phone', label: 'Show my phone number in the directory', defaultChecked: false },
+                { id: 'share_address', label: 'Show my address in the directory', defaultChecked: false },
+                { id: 'directory_visible', label: 'Include me in the member directory', defaultChecked: true },
+              ].map((pref) => (
+                <label key={pref.id} className="portal-pref-item" data-testid={`privacy-${pref.id}`}>
                   <input
                     type="checkbox"
-                    defaultChecked={pref.checked}
+                    defaultChecked={pref.defaultChecked}
                     className="portal-checkbox"
+                    onChange={async (e) => {
+                      const token = sessionStorage.getItem('session_token');
+                      await fetch(`${API_URL}/portal/profile/privacy`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ [pref.id]: e.target.checked }),
+                      });
+                    }}
                   />
                   <span>{pref.label}</span>
                 </label>

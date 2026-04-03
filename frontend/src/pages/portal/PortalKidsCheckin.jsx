@@ -346,7 +346,7 @@ export default function PortalKidsCheckin() {
                       />
                     </div>
                     <div className="kc-pickup-code">
-                      <span className="kc-code-label">Pickup Code</span>
+                      <span className="kc-code-label">Security Code</span>
                       <span className="kc-code-value" style={{fontSize: 48, letterSpacing: 8, fontFamily: 'monospace', fontWeight: 700}}>{checkinInfo?.pickup_code}</span>
                     </div>
                     <p style={{fontSize: 13, color:'#64748b', marginTop: 4}}>Show this to pick up your child at checkout</p>
@@ -432,7 +432,7 @@ export default function PortalKidsCheckin() {
               </div>
               
               <div className="kc-success-code">
-                <span className="kc-success-code-label">Pickup Code</span>
+                <span className="kc-success-code-label">Security Code</span>
                 <span className="kc-success-code-value" data-testid="pickup-code-display" style={{fontSize: 48, letterSpacing: 8, fontFamily: 'monospace', fontWeight: 700}}>{showSuccess.pickup_code}</span>
               </div>
               

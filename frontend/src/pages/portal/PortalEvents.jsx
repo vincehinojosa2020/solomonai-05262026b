@@ -348,7 +348,7 @@ export default function PortalEvents() {
                     <div style={{ background: '#f8fafc', borderRadius: '10px', padding: '12px', marginBottom: '16px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '600', marginBottom: '6px' }}>
                         <span style={{ color: '#475569' }}>{cap.count} / {cap.capacity} spots filled</span>
-                        {cap.isFull && <span style={{ color: '#ef4444' }}>Event Full</span>}
+                        {cap.isFull && <span style={{ color: '#ef4444' }}>This event is full — join the waitlist?</span>}
                       </div>
                       <div style={{ height: '6px', background: '#e5e7eb', borderRadius: '3px', overflow: 'hidden' }}>
                         <div style={{ height: '100%', width: `${cap.pct}%`, background: cap.isFull ? '#ef4444' : '#3b82f6', borderRadius: '3px' }} />

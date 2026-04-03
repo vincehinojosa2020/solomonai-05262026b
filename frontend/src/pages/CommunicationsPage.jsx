@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { API_URL, formatDate } from '@/lib/utils';
 import { toast } from 'sonner';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { FeatureEducationHeader } from '@/components/FeatureEducationHeader';
 
 export default function CommunicationsPage() {
   const [communications, setCommunications] = useState([]);
@@ -137,6 +138,7 @@ export default function CommunicationsPage() {
 
   return (
     <div className="space-y-4" data-testid="communications-page">
+      <FeatureEducationHeader featureKey="communications" />
       {/* Header */}
       <div className="page-header">
         <div>

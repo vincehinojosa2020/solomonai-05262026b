@@ -115,11 +115,34 @@ ROLE_TEMPLATES = {
 }
 
 
-# ═══ Rate Limiting (hybrid: in-memory + MongoDB-backed for persistence) ═══
-RATE_LIMITS = {}
+# ═══ Rate Limiting (MongoDB-backed for persistence across restarts) ═══
+RATE_LIMITS = {}  # In-memory fallback
+
+async def check_rate_limit_mongo(bucket: str, max_requests: int, window_seconds: int) -> bool:
+    """MongoDB-backed persistent rate limiter."""
+    try:
+        import time as _t
+        now = _t.time()
+        window_start = now - window_seconds
+        # Count recent requests in this window
+        result = await db.rate_limits.find_one_and_update(
+            {"bucket": bucket},
+            {
+                "$setOnInsert": {"bucket": bucket, "window_start": now, "count": 0},
+                "$push": {"requests": {"$each": [now], "$slice": -max_requests * 2}},  # keep recent
+            },
+            upsert=True,
+            return_document=True,
+        )
+        if not result:
+            return True
+        recent = [r for r in (result.get("requests") or []) if r > window_start]
+        return len(recent) <= max_requests
+    except Exception:
+        return True  # Fail open
 
 def check_rate_limit_v2(bucket: str, max_requests: int, window_seconds: int) -> bool:
-    """In-memory rate limiter. Falls back gracefully on any error."""
+    """Sync in-memory rate limiter (for use in sync contexts)."""
     try:
         import time as _t
         now = _t.time()
@@ -132,7 +155,35 @@ def check_rate_limit_v2(bucket: str, max_requests: int, window_seconds: int) -> 
         entry["count"] += 1
         return entry["count"] <= max_requests
     except Exception:
-        return True  # Fail open if rate limiter errors
+        return True
+
+# ═══ In-memory caching ═══
+_cache: dict = {}
+_cache_ttl: dict = {}
+
+async def cache_get(key: str):
+    """Get cached value if not expired."""
+    import time
+    if key in _cache and time.time() < _cache_ttl.get(key, 0):
+        return _cache[key]
+    return None
+
+async def cache_set(key: str, value, ttl_seconds: int = 300):
+    """Cache a value with TTL."""
+    import time
+    _cache[key] = value
+    _cache_ttl[key] = time.time() + ttl_seconds
+
+def cache_invalidate(pattern: str = None):
+    """Invalidate all cache or keys matching pattern."""
+    if pattern:
+        to_delete = [k for k in _cache if pattern in k]
+        for k in to_delete:
+            _cache.pop(k, None)
+            _cache_ttl.pop(k, None)
+    else:
+        _cache.clear()
+        _cache_ttl.clear()
 
 
 # ═══ Auth Helpers ═══

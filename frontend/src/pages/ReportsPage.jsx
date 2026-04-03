@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { API_URL, formatCurrency, formatDate } from '@/lib/utils';
 import { toast } from 'sonner';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { FeatureEducationHeader } from '@/components/FeatureEducationHeader';
 
 const COLORS = ['#2563eb', '#059669', '#7c3aed', '#dc2626', '#f59e0b', '#0891b2', '#ec4899', '#6366f1'];
 
@@ -114,6 +115,7 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-4 animate-fade-in" data-testid="reports-page">
+      <FeatureEducationHeader featureKey="reports" />
       {/* Header */}
       <div className="page-header">
         <div>

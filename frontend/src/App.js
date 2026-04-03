@@ -19,6 +19,7 @@ import PrinterConfig from "@/pages/PrinterConfig";
 import AttendancePage from "@/pages/AttendancePage";
 import CommunicationsPage from "@/pages/CommunicationsPage";
 import ReportsPage from "@/pages/ReportsPage";
+import CustomReportBuilder from "@/pages/CustomReportBuilder";
 import SettingsPage from "@/pages/SettingsPage";
 import EventsPage from "@/pages/EventsPage";
 import CalendarPage from "@/pages/CalendarPage";
@@ -122,6 +123,7 @@ function AppRouter() {
         <Route path="/printers" element={<PrinterConfig />} />
         <Route path="/communications" element={<CommunicationsPage />} />
         <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/reports/builder" element={<CustomReportBuilder />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/integrations" element={<IntegrationsPage />} />
         <Route path="/media" element={<MediaManagerPage />} />

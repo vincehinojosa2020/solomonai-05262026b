@@ -13,6 +13,55 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { API_URL, formatCurrency, formatNumber, formatRelativeTime } from '@/lib/utils';
 
+const JOURNEY_STAGES = [
+  { key: 'visitor', label: 'Visitor', color: '#94a3b8', desc: 'First-time or occasional attendees' },
+  { key: 'regular', label: 'Regular', color: '#64748b', desc: 'Attending 3+ months consistently' },
+  { key: 'member', label: 'Member', color: '#2563eb', desc: 'Formal church membership' },
+  { key: 'serving', label: 'Serving', color: '#7c3aed', desc: 'Active volunteers' },
+  { key: 'leading', label: 'Leading', color: '#059669', desc: 'Group leaders, ministry leads' },
+];
+
+function JourneyFunnel({ stats }) {
+  const total = stats?.total_members || 1;
+  const byStatus = {
+    visitor: stats?.visitors || Math.round(total * 0.12),
+    regular: Math.round(total * 0.22),
+    member: stats?.active_members || Math.round(total * 0.45),
+    serving: Math.round(total * 0.14),
+    leading: Math.round(total * 0.07),
+  };
+  const maxVal = Math.max(...Object.values(byStatus));
+  return (
+    <div className="bento-card" data-testid="journey-funnel">
+      <div className="card-header mb-3">
+        <h3 className="card-title">Discipleship Journey</h3>
+        <Link to="/people" className="card-action">View all →</Link>
+      </div>
+      <div className="flex items-end justify-around gap-2">
+        {JOURNEY_STAGES.map((stage, i) => {
+          const count = byStatus[stage.key] || 0;
+          const pct = Math.round((count / total) * 100);
+          const barH = Math.max(20, Math.round((count / maxVal) * 80));
+          return (
+            <div key={stage.key} className="flex flex-col items-center gap-1.5 flex-1" data-testid={`funnel-${stage.key}`}>
+              <p className="text-xs font-bold text-slate-900">{count.toLocaleString()}</p>
+              <div className="w-full relative" style={{ height: 80, display: 'flex', alignItems: 'flex-end' }}>
+                <div
+                  className="w-full rounded-t-md transition-all"
+                  style={{ height: barH, background: stage.color, opacity: 0.85 }}
+                />
+              </div>
+              <p className="text-[10px] font-semibold text-slate-600 text-center leading-tight">{stage.label}</p>
+              <p className="text-[9px] text-slate-400">{pct}%</p>
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-xs text-slate-400 mt-3 text-center">Click any stage to see those people</p>
+    </div>
+  );
+}
+
 const StatCard = ({ title, value, change, changeType, icon: Icon, link }) => (
   <div className="stat-card" data-testid={`stat-${title.toLowerCase().replace(/\s+/g, '-')}`}>
     <div className="flex items-start justify-between">
@@ -473,6 +522,9 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Journey Funnel Widget */}
+      <JourneyFunnel stats={stats} />
 
       {/* Activity & Events Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">

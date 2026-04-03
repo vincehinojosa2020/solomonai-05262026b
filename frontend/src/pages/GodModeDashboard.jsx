@@ -132,7 +132,7 @@ export default function GodModeDashboard() {
 
       {/* Active Tab Content */}
       <div className="godmode-content" data-testid="godmode-content">
-        {activeTab === 'exec' && <PlatformExecDashboard stats={stats} />}
+        {activeTab === 'exec' && <PlatformExecDashboard stats={stats} token={token} />}
         {activeTab === 'transactions' && <PlatformTransactions token={token} />}
         {activeTab === 'payouts' && <PlatformPayouts token={token} />}
         {activeTab === 'donors' && <PlatformDonors token={token} />}

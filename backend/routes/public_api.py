@@ -613,7 +613,8 @@ async def get_tenant(request: Request):
 # --- DASHBOARD ROUTES ---
 @router.get("/dashboard/stats")
 async def get_dashboard_stats(request: Request):
-    """Return tenant-scoped dashboard stats from cache, falling back to defaults."""
+    """Return tenant-scoped dashboard stats from cache (5-min TTL), falling back to defaults."""
+    from core import cache_get, cache_set
     tenant_id = DEFAULT_TENANT_ID
     try:
         session_token = get_session_token_from_request(request)
@@ -626,20 +627,26 @@ async def get_dashboard_stats(request: Request):
     except Exception:
         pass
 
+    # Check in-memory cache first (5-min TTL)
+    cache_key = f"dashboard_stats_{tenant_id}"
+    cached_result = await cache_get(cache_key)
+    if cached_result:
+        return cached_result
+
     cached = await db.dashboard_stats_cache.find_one({"tenant_id": tenant_id}, {"_id": 0})
     if cached:
-        # Ensure mtd_goal has a sensible fallback to prevent NaN
         if not cached.get("mtd_goal"):
             ytd = cached.get("ytd_giving", 0) or 0
-            cached["mtd_goal"] = max(round(ytd / 10, -3), 50000)  # 1 month of typical giving
+            cached["mtd_goal"] = max(round(ytd / 10, -3), 50000)
         cached.pop("tenant_id", None)
         cached.pop("updated_at", None)
+        await cache_set(cache_key, cached, ttl_seconds=300)
         return cached
 
-    return {
+    fallback = {
         "total_members": 0, "active_members": 0, "visitors": 0,
         "active_groups": 0, "open_groups": 0,
-        "mtd_giving": 0, "ytd_giving": 0, "mtd_goal": 0,
+        "mtd_giving": 0, "ytd_giving": 0, "mtd_goal": 50000,
         "last_attendance": 0, "last_attendance_change": 0,
         "new_this_week": 0, "recurring_givers": 0,
         "cafe_orders_week": 0, "cafe_giving_added": 0,
@@ -647,6 +654,8 @@ async def get_dashboard_stats(request: Request):
         "event_registrations_month": 0, "at_risk_members": 0,
         "kids_checked_in_today": 0
     }
+    await cache_set(cache_key, fallback, ttl_seconds=300)
+    return fallback
 
 
 @router.get("/dashboard/giving-trend")

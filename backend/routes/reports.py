@@ -556,3 +556,133 @@ async def admin_export_report(request: Request, payload: dict):
 
 # ============== SERVICES / WORSHIP PLANNING ==============
 
+
+# ─── Custom Report Builder ────────────────────────────────────────────────────
+
+ALLOWED_COLLECTIONS = {
+    "people": "people",
+    "donations": "donations",
+    "attendance": "attendance",
+    "groups": "groups",
+    "checkins": "checkins",
+}
+
+ALLOWED_FIELDS = {
+    "people": ["first_name", "last_name", "email", "mobile_phone", "membership_status", "campus", "membership_date", "created_at"],
+    "donations": ["donor_name", "amount", "fund_name", "donation_date", "payment_method", "status", "is_recurring"],
+    "attendance": ["person_id", "service_date", "service_type", "check_in_time"],
+    "groups": ["name", "group_type", "meeting_day", "meeting_time", "member_count", "is_open"],
+    "checkins": ["child_name", "classroom", "service_date", "pickup_code", "status", "checked_in_at"],
+}
+
+
+@router.get("/admin/reports/custom")
+async def list_custom_reports(request: Request):
+    """List saved custom reports."""
+    from core import get_current_admin_user
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    reports = await db.custom_reports.find({"tenant_id": tenant_id}, {"_id": 0}).sort("created_at", -1).to_list(50)
+    return {"reports": [serialize_doc(r) for r in reports]}
+
+
+@router.post("/admin/reports/custom")
+async def save_custom_report(request: Request):
+    """Save a custom report configuration."""
+    from core import get_current_admin_user
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    body = await request.json()
+    report = {
+        "id": str(uuid.uuid4()),
+        "tenant_id": tenant_id,
+        "name": body.get("name", "Untitled Report"),
+        "source": body.get("source"),
+        "fields": body.get("fields", []),
+        "filters": body.get("filters", []),
+        "group_by": body.get("group_by"),
+        "aggregation": body.get("aggregation", "count"),
+        "created_by": user.get("user_id"),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.custom_reports.insert_one(report)
+    return {"message": "Report saved", "report": {k: v for k, v in report.items() if k != "_id"}}
+
+
+@router.post("/admin/reports/custom/preview")
+async def preview_custom_report(request: Request):
+    """Execute a custom report query and return preview rows."""
+    from core import get_current_admin_user
+    user = await get_current_admin_user(request)
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    body = await request.json()
+
+    source = body.get("source", "people")
+    if source not in ALLOWED_COLLECTIONS:
+        raise HTTPException(status_code=400, detail="Invalid data source")
+
+    collection_name = ALLOWED_COLLECTIONS[source]
+    raw_fields = body.get("fields", [])
+    allowed = ALLOWED_FIELDS.get(source, [])
+    fields = [f for f in raw_fields if f in allowed]
+    if not fields:
+        fields = allowed[:4]
+
+    limit = min(int(body.get("limit", 50)), 500)
+    filters_raw = body.get("filters", [])
+
+    # Build query
+    query = {"tenant_id": tenant_id}
+    for f in filters_raw:
+        field = f.get("field")
+        op = f.get("op", "=")
+        value = f.get("value", "")
+        if field and field in allowed and value:
+            if op == "=": query[field] = value
+            elif op == "!=": query[field] = {"$ne": value}
+            elif op == "contains": query[field] = {"$regex": value, "$options": "i"}
+            elif op == ">": query[field] = {"$gt": value}
+            elif op == "<": query[field] = {"$lt": value}
+
+    projection = {"_id": 0, **{f: 1 for f in fields}}
+    coll = getattr(db, collection_name)
+    total = await coll.count_documents(query)
+    docs = await coll.find(query, projection).limit(limit).to_list(limit)
+
+    rows = [{f: str(doc.get(f, "")) for f in fields} for doc in docs]
+    return {"columns": fields, "rows": rows, "total_count": total, "returned": len(rows)}
+
+
+@router.post("/admin/reports/custom/export")
+async def export_custom_report(request: Request):
+    """Export a custom report as CSV."""
+    import io
+    from fastapi.responses import StreamingResponse
+    from core import get_current_admin_user
+    user = await get_current_admin_user(request)
+    body = await request.json()
+
+    source = body.get("source", "people")
+    if source not in ALLOWED_COLLECTIONS:
+        raise HTTPException(status_code=400, detail="Invalid source")
+    collection_name = ALLOWED_COLLECTIONS[source]
+    allowed = ALLOWED_FIELDS.get(source, [])
+    fields = [f for f in body.get("fields", allowed) if f in allowed]
+
+    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    coll = getattr(db, collection_name)
+    docs = await coll.find({"tenant_id": tenant_id}, {"_id": 0}).limit(500).to_list(500)
+
+    buf = io.StringIO()
+    buf.write(",".join(fields) + "\n")
+    for doc in docs:
+        row = ",".join(f'"{str(doc.get(f,""))}"' for f in fields)
+        buf.write(row + "\n")
+
+    buf.seek(0)
+    return StreamingResponse(
+        iter([buf.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=custom_report.csv"}
+    )
+

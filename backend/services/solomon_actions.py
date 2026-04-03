@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 SUPPORTED_ACTIONS = {
     "cafe_order": {
         "label": "Cafe Order",
-        "description": "Order items from Abundant Cafe",
+        "description": "Order items from the church cafe",
         "required_params": ["items"],
         "optional_params": ["pickup_time", "notes"],
     },
@@ -24,19 +24,37 @@ SUPPORTED_ACTIONS = {
         "optional_params": ["notes"],
     },
     "donation": {
-        "label": "Donation",
+        "label": "Gift",
         "description": "Make a one-time gift",
         "required_params": ["amount"],
         "optional_params": ["fund", "note"],
     },
     "recurring_giving": {
-        "label": "Recurring Giving",
-        "description": "Set up recurring donations",
+        "label": "Scheduled Giving",
+        "description": "Set up recurring giving",
         "required_params": ["amount", "frequency"],
         "optional_params": ["fund"],
     },
+    "recurring_giving_pause": {
+        "label": "Pause Giving",
+        "description": "Pause an active recurring giving schedule",
+        "required_params": [],
+        "optional_params": [],
+    },
+    "recurring_giving_resume": {
+        "label": "Resume Giving",
+        "description": "Resume a paused recurring giving schedule",
+        "required_params": [],
+        "optional_params": [],
+    },
+    "recurring_giving_cancel": {
+        "label": "Cancel Giving",
+        "description": "Cancel a recurring giving schedule",
+        "required_params": [],
+        "optional_params": [],
+    },
     "event_registration": {
-        "label": "Event Registration",
+        "label": "Save My Spot",
         "description": "Register for a church event",
         "required_params": ["event_name"],
         "optional_params": [],
@@ -47,11 +65,35 @@ SUPPORTED_ACTIONS = {
         "required_params": ["group_name"],
         "optional_params": [],
     },
+    "group_leave": {
+        "label": "Step Away from Group",
+        "description": "Leave a church group",
+        "required_params": ["group_name"],
+        "optional_params": [],
+    },
+    "prayer_request": {
+        "label": "Prayer Request",
+        "description": "Submit a prayer request",
+        "required_params": ["text"],
+        "optional_params": ["is_public"],
+    },
     "checkin": {
         "label": "Kids Check-In",
         "description": "Check in children for service",
         "required_params": ["child_name"],
         "optional_params": ["classroom"],
+    },
+    "member_checkin": {
+        "label": "Check In",
+        "description": "Check in for today's service",
+        "required_params": [],
+        "optional_params": ["service_type"],
+    },
+    "generate_statement": {
+        "label": "Year-End Giving Summary",
+        "description": "Generate giving statement PDF",
+        "required_params": ["year"],
+        "optional_params": [],
     },
 }
 
@@ -71,9 +113,16 @@ class SolomonActionExecutor:
             "merch_order": self._create_merch_order,
             "donation": self._create_donation,
             "recurring_giving": self._create_recurring,
+            "recurring_giving_pause": self._pause_recurring,
+            "recurring_giving_resume": self._resume_recurring,
+            "recurring_giving_cancel": self._cancel_recurring,
             "event_registration": self._register_event,
             "group_join": self._join_group,
+            "group_leave": self._leave_group,
+            "prayer_request": self._create_prayer_request,
             "checkin": self._checkin_child,
+            "member_checkin": self._member_checkin,
+            "generate_statement": self._generate_statement,
         }
         handler = handlers.get(action_type)
         if not handler:
@@ -397,6 +446,235 @@ class SolomonActionExecutor:
                 "success": False,
                 "message": "No children found on your account. Please add them in the Kids section first.",
             }
+
+        existing = await db.checkins.find_one(
+            {"child_id": child["id"], "status": "checked_in"}, {"_id": 0}
+        )
+        if existing:
+            return {
+                "success": True,
+                "message": f"{child['name']} is already checked in! Security code: {existing.get('pickup_code', 'N/A')}",
+                "navigate": "/portal/kids",
+            }
+
+        import secrets
+        import string
+        pickup_code = "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(4))
+        classroom = params.get("classroom", "Sunday School")
+
+        user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+        checkin = {
+            "id": str(uuid.uuid4()),
+            "tenant_id": tenant_id,
+            "child_id": child["id"],
+            "child_name": child.get("name", child_name),
+            "parent_user_id": user_id,
+            "parent_name": user.get("name", "Parent") if user else "Parent",
+            "parent_phone": user.get("phone", "") if user else "",
+            "pickup_code": pickup_code,
+            "classroom": classroom,
+            "status": "checked_in",
+            "source": "solomon_ai",
+            "checked_in_at": datetime.now(timezone.utc).isoformat(),
+        }
+        await db.checkins.insert_one(checkin)
+        return {
+            "success": True,
+            "message": f"{child['name']} is checked in to {classroom}! Security code: {pickup_code}",
+            "pickup_code": pickup_code,
+            "navigate": "/portal/kids",
+        }
+
+    async def _pause_recurring(self, params: Dict, user_id: str, tenant_id: str) -> Dict:
+        schedule = await db.recurring_giving.find_one(
+            {"person_id": user_id, "tenant_id": tenant_id, "is_active": True}, {"_id": 0}
+        )
+        if not schedule:
+            return {"success": False, "message": "No active recurring giving schedule found."}
+        await db.recurring_giving.update_one(
+            {"id": schedule["id"]},
+            {"$set": {"is_active": False, "status": "paused", "paused_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        return {"success": True, "message": f"Your scheduled giving of ${schedule['amount']:.2f}/{schedule['frequency']} has been paused. You can resume anytime — just ask me.", "navigate": "/portal/give"}
+
+    async def _resume_recurring(self, params: Dict, user_id: str, tenant_id: str) -> Dict:
+        schedule = await db.recurring_giving.find_one(
+            {"person_id": user_id, "tenant_id": tenant_id, "is_active": False, "status": "paused"}, {"_id": 0}
+        )
+        if not schedule:
+            return {"success": False, "message": "No paused giving schedule found."}
+        from datetime import timedelta
+        next_date = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
+        await db.recurring_giving.update_one(
+            {"id": schedule["id"]},
+            {"$set": {"is_active": True, "status": "active", "next_charge_date": next_date, "resumed_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        return {"success": True, "message": f"Your scheduled giving is back on! ${schedule['amount']:.2f}/{schedule['frequency']} will resume tomorrow. Thank you for your generosity.", "navigate": "/portal/give"}
+
+    async def _cancel_recurring(self, params: Dict, user_id: str, tenant_id: str) -> Dict:
+        schedule = await db.recurring_giving.find_one(
+            {"person_id": user_id, "tenant_id": tenant_id, "is_active": True}, {"_id": 0}
+        )
+        if not schedule:
+            return {"success": False, "message": "No active recurring giving schedule found."}
+        await db.recurring_giving.update_one(
+            {"id": schedule["id"]},
+            {"$set": {"is_active": False, "status": "cancelled", "cancelled_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        return {"success": True, "message": f"Your scheduled giving has been cancelled. We're grateful for every gift you've made. You can set up a new giving plan anytime.", "navigate": "/portal/give"}
+
+    async def _leave_group(self, params: Dict, user_id: str, tenant_id: str) -> Dict:
+        group_name = params.get("group_name", "")
+        group = await db.groups.find_one(
+            {"tenant_id": tenant_id, "is_active": True, "name": {"$regex": group_name, "$options": "i"}},
+            {"_id": 0}
+        )
+        if not group:
+            return {"success": False, "message": f"Couldn't find a group matching '{group_name}'."}
+        person = await db.people.find_one({"tenant_id": tenant_id, "user_id": user_id}, {"_id": 0})
+        person_id = person.get("id", user_id) if person else user_id
+        await db.group_members.update_many(
+            {"group_id": group["id"], "person_id": person_id},
+            {"$set": {"is_active": False, "left_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        await db.groups.update_one({"id": group["id"]}, {"$inc": {"member_count": -1}})
+        return {"success": True, "message": f"You've stepped away from {group['name']}. Thank you for the time you invested there.", "navigate": "/portal/groups"}
+
+    async def _create_prayer_request(self, params: Dict, user_id: str, tenant_id: str) -> Dict:
+        text = params.get("text", "")
+        if not text:
+            return {"success": False, "message": "What would you like prayer for?"}
+        is_public = params.get("is_public", True)
+        user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+        prayer = {
+            "id": str(uuid.uuid4()),
+            "tenant_id": tenant_id,
+            "user_id": user_id,
+            "author_name": user.get("name", "Anonymous") if user else "Anonymous",
+            "text": text,
+            "is_public": is_public,
+            "category": "general",
+            "status": "active",
+            "prayer_count": 0,
+            "source": "solomon_ai",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+        await db.prayer_requests.insert_one(prayer)
+        visibility = "shared with your community" if is_public else "kept private"
+        return {"success": True, "message": f"Your prayer request has been submitted and {visibility}. The team is with you. 🙏", "navigate": "/portal/prayer"}
+
+    async def _member_checkin(self, params: Dict, user_id: str, tenant_id: str) -> Dict:
+        user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+        service_type = params.get("service_type", "sunday_service")
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        existing = await db.member_checkins.find_one({"user_id": user_id, "service_date": today, "tenant_id": tenant_id})
+        if existing:
+            return {"success": True, "message": "You're already checked in for today! Great to see you here."}
+        checkin = {
+            "id": str(uuid.uuid4()),
+            "tenant_id": tenant_id,
+            "user_id": user_id,
+            "user_name": user.get("name", "") if user else "",
+            "service_date": today,
+            "service_type": service_type,
+            "check_in_type": "self",
+            "check_in_time": datetime.now(timezone.utc).isoformat(),
+            "source": "solomon_ai",
+        }
+        await db.member_checkins.insert_one(checkin)
+        return {"success": True, "message": "Welcome! Great to see you today. You're checked in. 🎉"}
+
+    async def _generate_statement(self, params: Dict, user_id: str, tenant_id: str) -> Dict:
+        """Generate a giving statement PDF using ReportLab."""
+        import io
+        try:
+            from reportlab.lib.pagesizes import letter
+            from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+            from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+            from reportlab.lib import colors
+            from reportlab.lib.units import inch
+        except ImportError:
+            return {"success": False, "message": "PDF generation is not available right now. Please download your statement from the portal."}
+
+        year = int(params.get("year", datetime.now(timezone.utc).year))
+        user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+        tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+        person_name = user.get("name", "Valued Member") if user else "Valued Member"
+        church_name = tenant.get("name", "Solomon AI Church") if tenant else "Solomon AI Church"
+
+        # Get donations for the year
+        donations = await db.donations.find(
+            {"person_id": user_id, "tenant_id": tenant_id, "donation_date": {"$regex": f"^{year}"}},
+            {"_id": 0, "amount": 1, "donation_date": 1, "fund_name": 1, "payment_method": 1}
+        ).sort("donation_date", 1).to_list(500)
+
+        total = sum(d.get("amount", 0) for d in donations)
+
+        # Build PDF
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=72)
+        styles = getSampleStyleSheet()
+        elements = []
+
+        # Header
+        elements.append(Paragraph(church_name, ParagraphStyle('Church', fontSize=18, fontName='Helvetica-Bold', textColor=colors.HexColor('#1e40af'))))
+        elements.append(Spacer(1, 6))
+        elements.append(Paragraph(f"{year} Contribution Statement", styles['Heading2']))
+        elements.append(Spacer(1, 4))
+        elements.append(Paragraph(f"Prepared for: {person_name}", styles['Normal']))
+        elements.append(Paragraph(f"Generated: {datetime.now(timezone.utc).strftime('%B %d, %Y')}", styles['Normal']))
+        elements.append(Spacer(1, 20))
+
+        # Table
+        data = [['Date', 'Fund', 'Method', 'Amount']]
+        for d in donations:
+            data.append([
+                d.get('donation_date', '')[:10],
+                d.get('fund_name', 'General Fund'),
+                d.get('payment_method', 'card').capitalize(),
+                f"${d.get('amount', 0):,.2f}",
+            ])
+        data.append(['', '', 'TOTAL', f"${total:,.2f}"])
+
+        table = Table(data, colWidths=[1.2*inch, 2.5*inch, 1.3*inch, 1.0*inch])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e40af')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -2), [colors.white, colors.HexColor('#f8fafc')]),
+            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+            ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
+            ('ALIGN', (3, 0), (3, -1), 'RIGHT'),
+            ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ]))
+        elements.append(table)
+        elements.append(Spacer(1, 20))
+        elements.append(Paragraph("This statement constitutes an official record for tax purposes. No goods or services were provided in exchange for contributions.", ParagraphStyle('Disclaimer', fontSize=8, textColor=colors.gray)))
+
+        doc.build(elements)
+        pdf_bytes = buffer.getvalue()
+
+        # Store in DB for download
+        pdf_id = uuid.uuid4().hex[:12]
+        await db.generated_pdfs.insert_one({
+            "id": pdf_id,
+            "user_id": user_id,
+            "tenant_id": tenant_id,
+            "type": "giving_statement",
+            "year": year,
+            "content": pdf_bytes,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        })
+
+        return {
+            "success": True,
+            "message": f"Here's your {year} Year-End Giving Summary, {person_name.split()[0]}. You gave **${total:,.2f}** across {len(donations)} gifts. Thank you for your generosity.",
+            "pdf_download": f"/api/portal/giving/statement-pdf/{pdf_id}",
+            "pdf_label": f"Download {year} Giving Summary",
+                }
+
 
         existing = await db.checkins.find_one(
             {"child_id": child["id"], "status": "checked_in"}, {"_id": 0}

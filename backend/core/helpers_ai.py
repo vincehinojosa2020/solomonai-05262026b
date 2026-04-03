@@ -163,18 +163,37 @@ Action types and their params:
 - cafe_order: {"items": [{"name": "Latte", "quantity": 1, "price": 5.00}], "pickup_time": "ASAP"}
 - merch_order: {"items": [{"name": "T-Shirt", "quantity": 1, "price": 25.00, "size": "M"}]}
 - donation: {"amount": 50, "fund": "General Fund"}
-- recurring_giving: {"amount": 25, "frequency": "weekly", "fund": "General Fund"}
+- recurring_giving: {"amount": 25, "frequency": "monthly", "fund": "General Fund"}
+- recurring_giving_pause: {} (no params needed, finds active schedule automatically)
+- recurring_giving_resume: {} (no params needed)
+- recurring_giving_cancel: {} (no params needed)
 - event_registration: {"event_name": "Men's Breakfast"}
 - group_join: {"group_name": "Young Professionals"}
+- group_leave: {"group_name": "Young Professionals"}
+- prayer_request: {"text": "Please pray for healing", "is_public": true}
 - checkin: {"child_name": "Emma", "classroom": "Sunday School"}
+- member_checkin: {"service_type": "sunday_service"}
+- generate_statement: {"year": 2025}
 
 IMPORTANT RULES for action detection:
 1. ONLY include the action block when the user clearly wants to PERFORM an action, not just ASK about something
 2. For cafe orders, use these standard prices: Coffee $4, Latte $5, Cappuccino $5, Espresso $3.50, Tea $3, Pastry $4, Muffin $3.50
 3. For merch, use $25 for t-shirts, $45 for hoodies, $15 for hats, $20 for mugs
-4. Frequency values: "weekly", "biweekly", "monthly"
+4. Frequency values: "weekly", "biweekly", "monthly", "annually"
 5. Always write a warm, confirming message BEFORE the action block
 6. If the user says something ambiguous, ask a clarifying question instead of including an action block
+
+**SOLOMON'S VOICE — FRANK LUNTZ PRINCIPLES:**
+- "Let me take care of that for you." NOT "Processing your request."
+- "Your gift of $100 to the Building Fund is confirmed. Thank you for your generosity." NOT "Transaction completed."
+- "You're all set for the Men's Retreat! See you there." NOT "Registration confirmed."
+- "Last year you gave $1,240 across three funds. Want me to break it down?" NOT "Your data shows..."
+- "Sound good?" NOT "Do you want to proceed?"
+- Be like a sharp, warm friend at church who knows everything. Not robotic. Not churchy-cheesy.
+- Use first names when you know them.
+- When things go wrong: "Let me look into that for you" not "An error occurred."
+
+**FALLBACK:** If you don't have the information: "I don't have that right now. Send a note to support@solomonai.us and they'll get back to you within 24 hours."
 
 **FEATURE GUIDE — How to answer how-to questions:**
 When someone asks "how do I...?" or "where is...?" about a feature, guide them step by step. Key navigation:
@@ -229,10 +248,60 @@ async def get_church_context(user=None) -> str:
     member_text = ""
     if user:
         user_name = user.get("name", "Member")
+        user_id = user.get("user_id")
         member_text = f"\nCURRENT MEMBER: {user_name}"
-        user_groups = await db.group_memberships.find({"user_id": user.get("user_id"), "tenant_id": tenant_id}, {"_id": 0, "group_name": 1}).to_list(20)
+        # Groups
+        user_groups = await db.group_memberships.find({"user_id": user_id, "tenant_id": tenant_id}, {"_id": 0, "group_name": 1}).to_list(20)
+        group_members_also = await db.group_members.find({"person_id": {"$in": [user_id]}, "is_active": True, "tenant_id": tenant_id}, {"_id": 0}).to_list(10)
         if user_groups:
-            member_text += f"\nTheir groups: {', '.join(g.get('group_name', '') for g in user_groups)}"
+            member_text += f"\nGroups: {', '.join(g.get('group_name', '') for g in user_groups)}"
+        elif group_members_also:
+            gids = [gm.get("group_id") for gm in group_members_also]
+            grps = await db.groups.find({"id": {"$in": gids}}, {"_id": 0, "name": 1}).to_list(10)
+            if grps:
+                member_text += f"\nGroups: {', '.join(g['name'] for g in grps)}"
+        # Personal giving
+        year_start_str = today.replace(month=1, day=1).strftime("%Y-%m-%d")
+        member_ytd = await db.donations.aggregate([
+            {"$match": {"tenant_id": tenant_id, "person_id": user_id, "donation_date": {"$gte": year_start_str}}},
+            {"$group": {"_id": None, "total": {"$sum": "$amount"}, "count": {"$sum": 1}}}
+        ]).to_list(1)
+        member_lifetime = await db.donations.aggregate([
+            {"$match": {"tenant_id": tenant_id, "person_id": user_id}},
+            {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+        ]).to_list(1)
+        member_last_gift = await db.donations.find_one(
+            {"tenant_id": tenant_id, "person_id": user_id}, {"_id": 0, "amount": 1, "donation_date": 1, "fund_name": 1},
+            sort=[("donation_date", -1)]
+        )
+        if member_ytd:
+            member_text += f"\nYTD Giving: ${member_ytd[0]['total']:,.2f} ({member_ytd[0]['count']} gifts)"
+        if member_lifetime:
+            member_text += f"\nLifetime Giving: ${member_lifetime[0]['total']:,.2f}"
+        if member_last_gift:
+            member_text += f"\nLast Gift: ${member_last_gift['amount']:,.2f} to {member_last_gift.get('fund_name','General Fund')} on {member_last_gift.get('donation_date','')}"
+        # Recurring giving
+        recurring = await db.recurring_giving.find_one({"person_id": user_id, "tenant_id": tenant_id, "is_active": True}, {"_id": 0})
+        if recurring:
+            member_text += f"\nScheduled Giving: ${recurring['amount']:,.2f}/{recurring['frequency']} to {recurring.get('fund_name','General Fund')}"
+        # Payment methods
+        saved_cards = await db.payment_methods.find({"user_id": user_id, "is_active": True}, {"_id": 0, "card_brand": 1, "card_last_four": 1, "is_default": 1}).to_list(5)
+        if saved_cards:
+            default_card = next((c for c in saved_cards if c.get("is_default")), saved_cards[0])
+            member_text += f"\nDefault Payment: {default_card.get('card_brand','Visa')} ending {default_card.get('card_last_four','????')}"
+        # Upcoming events registered for
+        registered = await db.event_registrations.find({"user_id": user_id, "tenant_id": tenant_id}, {"_id": 0, "event_id": 1}).to_list(10)
+        if registered:
+            reg_event_ids = [r["event_id"] for r in registered]
+            reg_events = await db.events.find({"id": {"$in": reg_event_ids}}, {"_id": 0, "name": 1, "event_date": 1}).to_list(5)
+            if reg_events:
+                member_text += f"\nRegistered Events: {', '.join(e.get('name','') for e in reg_events)}"
+        # Campus
+        campus_id = user.get("home_campus_id")
+        if campus_id:
+            campus = await db.tenants.find_one({"id": campus_id}, {"_id": 0, "name": 1})
+            if campus:
+                member_text += f"\nHome Campus: {campus.get('name','')}"
     return f"""
 CURRENT CHURCH DATA (as of {today.strftime('%B %d, %Y')}):
 

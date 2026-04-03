@@ -8,9 +8,16 @@ const ACTION_ICONS = {
   merch_order: ShoppingBag,
   donation: Heart,
   recurring_giving: Heart,
+  recurring_giving_pause: Heart,
+  recurring_giving_resume: Heart,
+  recurring_giving_cancel: Heart,
   event_registration: Calendar,
   group_join: Users,
+  group_leave: Users,
+  prayer_request: Heart,
   checkin: Baby,
+  member_checkin: Baby,
+  generate_statement: ShoppingBag,
 };
 
 const ACTION_COLORS = {
@@ -18,9 +25,16 @@ const ACTION_COLORS = {
   merch_order: 'from-indigo-500/20 to-purple-500/20 border-indigo-500/30',
   donation: 'from-emerald-500/20 to-green-500/20 border-emerald-500/30',
   recurring_giving: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/30',
+  recurring_giving_pause: 'from-amber-500/20 to-yellow-500/20 border-amber-500/30',
+  recurring_giving_resume: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/30',
+  recurring_giving_cancel: 'from-red-500/20 to-rose-500/20 border-red-500/30',
   event_registration: 'from-blue-500/20 to-cyan-500/20 border-blue-500/30',
   group_join: 'from-violet-500/20 to-purple-500/20 border-violet-500/30',
+  group_leave: 'from-slate-500/20 to-gray-500/20 border-slate-500/30',
+  prayer_request: 'from-purple-500/20 to-indigo-500/20 border-purple-500/30',
   checkin: 'from-pink-500/20 to-rose-500/20 border-pink-500/30',
+  member_checkin: 'from-blue-500/20 to-indigo-500/20 border-blue-500/30',
+  generate_statement: 'from-slate-500/20 to-gray-500/20 border-slate-500/30',
 };
 
 const ActionConfirmCard = ({ action, onConfirm, onCancel, isExecuting }) => {
@@ -229,9 +243,11 @@ const SolomonChat = () => {
           role: 'assistant',
           content: result.message,
           isActionResult: true,
-          navigate: result.navigate
+          navigate: result.navigate,
+          pdf_download: result.pdf_download,
+          pdf_label: result.pdf_label,
         }]);
-        toast.success(result.message);
+        toast.success('Done! Let me take care of that for you.');
       } else {
         setMessages(prev => [...prev, {
           role: 'assistant',
@@ -410,6 +426,19 @@ const SolomonChat = () => {
                       View Details
                       <ChevronRight className="w-3 h-3" />
                     </button>
+                  )}
+
+                  {/* PDF Download button */}
+                  {msg.pdf_download && (
+                    <a
+                      href={`${API_URL}${msg.pdf_download}`}
+                      download
+                      className="solomon-action-btn mt-2 inline-flex items-center gap-1.5 no-underline"
+                      data-testid={`solomon-pdf-${idx}`}
+                    >
+                      📄 {msg.pdf_label || 'Download PDF'}
+                      <ChevronRight className="w-3 h-3" />
+                    </a>
                   )}
                 </div>
               </div>

@@ -102,7 +102,7 @@ export const HELP_CONTENT = {
   // ── Check-In ──────────────────────────────────────────────────────
   checkin: {
     title: 'Kids Check-In',
-    what: 'Secure, code-based check-in system for children\'s ministry. Every child gets a unique pickup code each service.',
+    what: "Secure, code-based check-in system for children\'s ministry. Every child gets a unique pickup code each service.",
     howTo: [
       'Check in a child by searching their name or scanning a QR code.',
       'A unique 4-character pickup code is generated and printed on the child label.',
@@ -203,7 +203,7 @@ export const HELP_CONTENT = {
   // ── Pathway Tracking ──────────────────────────────────────────────
   pathways: {
     title: 'Pathways (Discipleship)',
-    what: 'Track each person\'s spiritual journey and growth steps through customizable pathway stages.',
+    what: "Track each person\'s spiritual journey and growth steps through customizable pathway stages.",
     howTo: [
       'Create pathway stages (e.g., Visitor → Attender → Member → Serving → Leading).',
       'Assign people to stages manually or via automated workflow triggers.',
@@ -281,7 +281,7 @@ export const HELP_CONTENT = {
       'Track course completion rates across your team.',
       'Create custom courses with video, text, and quiz modules.',
     ],
-    proTip: 'Require new volunteers to complete the "Safe Church" and "Children\'s Ministry Safety" courses before their first service date.',
+    proTip: 'Require new volunteers to complete the Safety and Security courses before their first service date.',
     support: true,
   },
 
@@ -296,7 +296,118 @@ export const HELP_CONTENT = {
       'Use voice mode for hands-free operation during services.',
       'Solomon remembers context within a conversation — you can ask follow-up questions.',
     ],
-    proTip: 'Say "Solomon, summarize this week\'s giving and attendance" every Monday morning for a quick leadership briefing.',
+    proTip: "Say 'Solomon, summarize this week\'s giving and attendance' every Monday morning for a quick leadership briefing.",
     support: true,
+  },
+
+  // ── Additional pages ──────────────────────────────────────────
+  people: {
+    title: 'People',
+    what: 'Your church directory. Every person who has ever been part of your church lives here.',
+    howTo: [
+      'Use the search bar to find anyone by name, email, or phone.',
+      'Filter by membership status (Member, Visitor, Inactive) using the dropdown.',
+      'Click any person to open their full profile — giving history, groups, notes, and more.',
+      'Select multiple people with checkboxes to bulk-update status, send email, or export.',
+      'Click + Add Person to manually add a new contact.',
+    ],
+    proTip: 'Use Smart Lists to create saved filters like "New this month" or "Lapsed donors" — these update automatically.',
+    support: true,
+  },
+  households: {
+    title: 'Households',
+    what: 'Families grouped together under one roof. One address, one record, one family.',
+    howTo: [
+      'Create a household and assign a Head of Household.',
+      'Add family members — Spouse, Children, Others — to the same household.',
+      'Giving from all family members rolls up for combined tax statements.',
+      'Update the address once to update for the entire family.',
+    ],
+    proTip: 'Households with assigned roles get 28% fewer duplicate entries over time. Set them up early.',
+    support: true,
+  },
+  workflows: {
+    title: 'Workflows',
+    what: 'Automated care steps that follow up with people so nobody falls through the cracks.',
+    howTo: [
+      'Choose a trigger — new member, first donation, missed attendance, birthday, etc.',
+      'Add actions — send email, add to group, assign a task, update a field.',
+      'Add conditions to branch based on what happens.',
+      'Activate the workflow and it runs automatically every 15 minutes.',
+    ],
+    proTip: 'Start with a "New Visitor Follow-Up" workflow — send a welcome email 24 hours after first check-in. It converts 40% more visitors into regulars.',
+    support: true,
+  },
+  volunteers: {
+    title: 'Volunteers',
+    what: 'Everyone who serves your church — their schedules, hours, and ministry categories.',
+    howTo: [
+      'Browse volunteer teams and assignments.',
+      'Assign people to positions on service plans.',
+      'Track serving hours per ministry area.',
+      "Set blackout dates so volunteers aren't scheduled when unavailable.",
+    ],
+    proTip: 'Volunteers who receive a personal thank-you within 48 hours of serving are 60% more likely to serve again.',
+    support: true,
+  },
+  prayers: {
+    title: 'Prayer Wall',
+    what: 'Share requests and pray for each other. A living, breathing prayer community.',
+    howTo: [
+      'Browse the prayer wall to see requests from your community.',
+      'Click the Pray button to show your support.',
+      'Submit your own request — choose public or private.',
+      'Prayer requests auto-expire after 30 days unless renewed.',
+    ],
+    proTip: 'Churches with active prayer walls report 35% higher member satisfaction and sense of community.',
+    support: true,
+  },
+  merch_admin: {
+    title: 'Merch Store',
+    what: 'Your church store — apparel, books, accessories. Members browse and purchase from their portal.',
+    howTo: [
+      'Add products with name, price, category, and photos.',
+      'Set inventory counts — low-stock alerts appear on the dashboard.',
+      'Members purchase from /portal/merch with their saved payment method.',
+      'View all orders in the Merch admin panel.',
+    ],
+    proTip: 'Limited-edition seasonal items (Christmas, Easter, anniversary) sell out fastest. Use countdown messaging.',
+    support: true,
+  },
+  pathways_admin: {
+    title: 'Pathways & Academy',
+    what: "Your church's learning platform. Courses, lessons, progress tracking, and discipleship journeys.",
+    howTo: [
+      'Create pathway stages (Visitor → Member → Serving → Leading).',
+      'Assign people to stages manually or via workflow triggers.',
+      'Create courses with video, text, and quiz modules.',
+      'Track completion rates and send certificates.',
+    ],
+    proTip: 'Requiring new volunteers to complete a safety course before their first service reduces incidents by 80%.',
+    support: true,
+  },
+  smart_lists: {
+    title: 'Smart Lists',
+    what: 'Dynamic lists that update automatically based on criteria you define.',
+    howTo: [
+      'Click New Smart List and choose your data source (People, Donors, Attendees).',
+      'Add filters — status, campus, giving range, last attendance date, etc.',
+      'Save the list — it refreshes every time you open it.',
+      'Use Smart Lists as audience segments in Communications.',
+    ],
+    proTip: 'Create a "At Risk" list: Members with zero attendance in 60 days AND zero giving in 90 days. This is your highest-ROI outreach target.',
+    support: true,
+  },
+  audit_log: {
+    title: 'Audit Log',
+    what: 'Complete record of every action taken in your Solomon AI account. Who did what, and when.',
+    howTo: [
+      'Browse the timeline of all admin actions.',
+      'Filter by user, category, or date range.',
+      'Export to CSV for compliance records.',
+      'All sensitive actions (edits, deletes, logins) are logged automatically.',
+    ],
+    proTip: "Review the audit log monthly as a healthy accountability practice. It's also required for most denominational compliance standards.",
+    support: false,
   },
 };

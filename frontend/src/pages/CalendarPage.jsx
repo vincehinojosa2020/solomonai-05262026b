@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { FeatureEducationHeader } from '@/components/FeatureEducationHeader';
 
 const EVENT_TYPES = [
   { id: 'service', label: 'Service', color: '#1e40af' },
@@ -127,6 +128,7 @@ export default function CalendarPage() {
 
   return (
     <div className="space-y-4 animate-fade-in" data-testid="calendar-page">
+        <FeatureEducationHeader featureKey="calendar" />
       {/* Header */}
       <div className="page-header">
         <div>

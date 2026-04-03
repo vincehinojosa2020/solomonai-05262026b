@@ -24,6 +24,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { API_URL, formatCurrency, formatDate, getInitials, getStatusColor, debounce } from '@/lib/utils';
 import AddPersonModal from '@/components/modals/AddPersonModal';
+import { FeatureEducationHeader } from '@/components/FeatureEducationHeader';
 import { HelpTooltip } from '@/components/HelpTooltip';
 
 const StatusBadge = ({ status }) => (
@@ -132,6 +133,7 @@ export default function PeopleList({ type = 'people' }) {
 
   return (
     <div className="space-y-6 animate-fade-in" data-testid="people-list-page">
+      <FeatureEducationHeader featureKey="people" />
       {/* Header */}
       <div className="page-header">
         <div>

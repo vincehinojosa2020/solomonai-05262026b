@@ -156,8 +156,8 @@ export default function DonationCheckout({ onClose, preselectedFund }) {
       <div className="slide-panel" onClick={e => e.stopPropagation()}>
         <div className="slide-panel-header">
           <div>
-            <h2 className="slide-panel-title">Make a Gift</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Secure payment via SolomonPay</p>
+            <h2 className="slide-panel-title">Give</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Your gift is secure and goes directly to the church.</p>
           </div>
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-600" data-testid="donation-close">
             <X className="w-5 h-5" />
@@ -224,7 +224,7 @@ export default function DonationCheckout({ onClose, preselectedFund }) {
           {getFinalAmount() > 0 && (
             <div className="bg-slate-50 p-4 border border-slate-200">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600">{isRecurring ? 'Monthly Gift' : 'One-time Gift'}</span>
+                <span className="text-sm text-slate-600">{isRecurring ? 'Monthly Gift' : 'One-Time Gift'}</span>
                 <span className="text-xl font-mono font-semibold text-slate-900">{formatCurrency(getFinalAmount())}</span>
               </div>
             </div>

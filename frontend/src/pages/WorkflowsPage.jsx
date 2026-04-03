@@ -1,307 +1,458 @@
 import { useState, useEffect } from 'react';
 import {
-  GitBranch, Plus, Trash2, Edit, Users, Play, Pause,
-  ChevronRight, Loader2, CheckCircle, Clock, Mail, Phone, UserPlus, ArrowRight
+  GitBranch, Plus, Trash2, Edit2, Play, Pause, Users, ChevronRight,
+  Loader2, CheckCircle, Clock, Mail, Phone, UserPlus, ArrowRight,
+  Zap, MessageSquare, Bell, Tag, FileText, Filter, AlertTriangle,
+  Calendar, Heart, X, Save, Settings, Activity, ToggleLeft, ToggleRight
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
-} from '@/components/ui/dialog';
+import { FeatureEducationHeader } from '@/components/FeatureEducationHeader';
 
-const STEP_TYPES = [
-  { value: 'email', label: 'Send Email', icon: Mail, color: '#3b82f6' },
-  { value: 'task', label: 'Assign Task', icon: CheckCircle, color: '#22c55e' },
-  { value: 'call', label: 'Phone Call', icon: Phone, color: '#f59e0b' },
-  { value: 'add_to_group', label: 'Add to Group', icon: UserPlus, color: '#8b5cf6' },
-  { value: 'wait', label: 'Wait Period', icon: Clock, color: '#94a3b8' },
+const TRIGGERS = [
+  { value: 'new_member', label: 'New Member Added', icon: UserPlus, color: '#059669', desc: 'Fires when a new person is created' },
+  { value: 'first_visit', label: 'First-Time Visitor Check-In', icon: CheckCircle, color: '#2563eb', desc: 'Fires after first check-in' },
+  { value: 'first_donation', label: 'First Donation', icon: Heart, color: '#dc2626', desc: 'Fires after first gift' },
+  { value: 'missed_attendance', label: 'Missed Attendance (3+ weeks)', icon: Calendar, color: '#f59e0b', desc: 'Fires after 3 consecutive missed Sundays' },
+  { value: 'group_join', label: 'Group Join', icon: Users, color: '#7c3aed', desc: 'Fires when someone joins a group' },
+  { value: 'group_leave', label: 'Group Leave', icon: Users, color: '#6b7280', desc: 'Fires when someone leaves a group' },
+  { value: 'event_registration', label: 'Event Registration', icon: Calendar, color: '#0891b2', desc: 'Fires on event sign-up' },
+  { value: 'birthday', label: 'Birthday (7 days before)', icon: Heart, color: '#ec4899', desc: 'Fires 7 days before birthday' },
+  { value: 'giving_milestone', label: 'Giving Milestone', icon: Heart, color: '#059669', desc: 'Fires at $1K, $5K, $10K lifetime' },
+  { value: 'lapsed_donor', label: 'Lapsed Donor (90 days)', icon: AlertTriangle, color: '#f59e0b', desc: 'Gave before, silent 90+ days' },
+  { value: 'membership_change', label: 'Membership Status Change', icon: Tag, color: '#2563eb', desc: 'Fires when status is updated' },
+  { value: 'manual', label: 'Manual Trigger', icon: Zap, color: '#64748b', desc: 'Run manually or via API' },
 ];
+
+const ACTIONS = [
+  { value: 'send_email', label: 'Send Email', icon: Mail, color: '#2563eb', desc: 'Send from a saved template' },
+  { value: 'send_sms', label: 'Send SMS', icon: MessageSquare, color: '#7c3aed', desc: 'Send via Twilio' },
+  { value: 'push_notification', label: 'Push Notification', icon: Bell, color: '#0891b2', desc: 'Send mobile push' },
+  { value: 'assign_task', label: 'Assign Task to Staff', icon: CheckCircle, color: '#059669', desc: 'Create a follow-up task' },
+  { value: 'add_to_group', label: 'Add to Group', icon: UserPlus, color: '#7c3aed', desc: 'Auto-enroll in a group' },
+  { value: 'remove_from_group', label: 'Remove from Group', icon: Users, color: '#6b7280', desc: 'Remove from a group' },
+  { value: 'update_field', label: 'Update Custom Field', icon: Settings, color: '#f59e0b', desc: 'Change a person field value' },
+  { value: 'add_note', label: 'Add Note', icon: FileText, color: '#64748b', desc: 'Add internal note to profile' },
+  { value: 'add_tag', label: 'Add Tag', icon: Tag, color: '#ec4899', desc: 'Tag this person' },
+];
+
+const CONDITIONS = [
+  { value: 'campus_is', label: 'Campus is', field: 'campus' },
+  { value: 'status_is', label: 'Status is', field: 'membership_status' },
+  { value: 'giving_tier', label: 'Giving tier is', field: 'giving_tier' },
+  { value: 'age_above', label: 'Age is above', field: 'age' },
+  { value: 'in_group', label: 'Is in group', field: 'group' },
+  { value: 'giving_above', label: 'YTD giving above $', field: 'ytd_giving' },
+];
+
+const NODE_COLORS = {
+  trigger: '#059669',
+  action: '#2563eb',
+  condition: '#d97706',
+  delay: '#f59e0b',
+  end: '#dc2626',
+};
+
+function NodeCard({ node, onDelete, onEdit }) {
+  const isAction = ACTIONS.find(a => a.value === node.type);
+  const isTrigger = TRIGGERS.find(t => t.value === node.type);
+  const isCondition = node.nodeType === 'condition';
+  const isDelay = node.nodeType === 'delay';
+  const isEnd = node.nodeType === 'end';
+
+  const color = isEnd ? '#dc2626' : isDelay ? '#f59e0b' : isCondition ? '#d97706' : isAction?.color || isTrigger?.color || '#64748b';
+  const label = isEnd ? 'End' : isDelay ? `Wait ${node.days || 1} day(s)` : isCondition ? `If ${node.field} ${node.operator} "${node.value}"` : isAction?.label || isTrigger?.label || node.type;
+  const Icon = isEnd ? X : isDelay ? Clock : isCondition ? Filter : isAction?.icon || isTrigger?.icon || Zap;
+  const nodeType = isEnd ? 'End' : isDelay ? 'Delay' : isCondition ? 'Condition' : isAction ? 'Action' : 'Trigger';
+
+  return (
+    <div className="relative flex flex-col items-center" data-testid={`workflow-node-${node.id}`}>
+      <div
+        className="rounded-xl border-2 p-4 w-64 bg-white shadow-sm hover:shadow-md transition-shadow group"
+        style={{ borderColor: color }}
+      >
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${color}20` }}>
+              <Icon className="w-4 h-4" style={{ color }} />
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color }}>{nodeType}</p>
+              <p className="text-sm font-semibold text-slate-800 leading-tight">{label}</p>
+            </div>
+          </div>
+          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            {onEdit && <button onClick={() => onEdit(node)} className="p-1 text-slate-400 hover:text-blue-600"><Edit2 className="w-3 h-3" /></button>}
+            {onDelete && <button onClick={() => onDelete(node.id)} className="p-1 text-slate-400 hover:text-red-500"><Trash2 className="w-3 h-3" /></button>}
+          </div>
+        </div>
+        {node.description && <p className="text-xs text-slate-500">{node.description}</p>}
+      </div>
+    </div>
+  );
+}
+
+function AddNodeButton({ onAdd }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex flex-col items-center">
+      <div className="w-0.5 h-6 bg-slate-200" />
+      {open ? (
+        <div className="bg-white border border-slate-200 rounded-xl shadow-lg p-3 w-72 z-10">
+          <div className="grid grid-cols-2 gap-1.5">
+            {[
+              { label: 'Action', type: 'action_select', color: '#2563eb', icon: Zap },
+              { label: 'Condition', type: 'condition', color: '#d97706', icon: Filter },
+              { label: 'Delay', type: 'delay', color: '#f59e0b', icon: Clock },
+              { label: 'End', type: 'end', color: '#dc2626', icon: X },
+            ].map(opt => (
+              <button
+                key={opt.type}
+                onClick={() => { onAdd(opt.type); setOpen(false); }}
+                className="flex items-center gap-2 p-2 border border-slate-200 rounded-lg hover:bg-slate-50 text-left"
+              >
+                <opt.icon className="w-4 h-4" style={{ color: opt.color }} />
+                <span className="text-sm font-medium text-slate-700">{opt.label}</span>
+              </button>
+            ))}
+          </div>
+          <button onClick={() => setOpen(false)} className="w-full mt-2 text-xs text-slate-400 hover:text-slate-600">Cancel</button>
+        </div>
+      ) : (
+        <button
+          onClick={() => setOpen(true)}
+          className="w-8 h-8 rounded-full border-2 border-dashed border-slate-300 hover:border-blue-400 flex items-center justify-center text-slate-400 hover:text-blue-500 transition-all"
+          data-testid="add-node-btn"
+        >
+          <Plus className="w-4 h-4" />
+        </button>
+      )}
+      <div className="w-0.5 h-6 bg-slate-200" />
+    </div>
+  );
+}
+
+const defaultWfForm = {
+  name: '', description: '', trigger: 'new_member', is_active: false,
+  nodes: [
+    { id: 'trigger-1', nodeType: 'trigger', type: 'new_member', description: 'Fires when a new person is added' },
+  ]
+};
 
 export default function WorkflowsPage() {
   const [workflows, setWorkflows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showBuilder, setShowBuilder] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [showEnrollments, setShowEnrollments] = useState(null);
-  const [enrollments, setEnrollments] = useState([]);
-  const [wfForm, setWfForm] = useState({
-    name: '', description: '', trigger: 'manual',
-    steps: [{ id: 's1', order: 1, type: 'email', title: 'Send Welcome Email', description: '', assignee: '', due_days: 1 }]
-  });
+  const [wfForm, setWfForm] = useState(defaultWfForm);
+  const [showActionPicker, setShowActionPicker] = useState(false);
+  const [addingAfterIndex, setAddingAfterIndex] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const token = sessionStorage.getItem('session_token');
+  const headers = token ? { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+
+  useEffect(() => { fetchWorkflows(); }, []);
 
   const fetchWorkflows = async () => {
     try {
-      const res = await fetch(`${API_URL}/admin/workflows`);
+      const res = await fetch(`${API_URL}/admin/workflows`, { headers });
       if (res.ok) { const d = await res.json(); setWorkflows(d.workflows || []); }
     } catch {} finally { setLoading(false); }
   };
 
-  useEffect(() => { fetchWorkflows(); }, []);
+  const addNode = (type, afterIndex) => {
+    const newNode = { id: `node-${Date.now()}`, nodeType: type };
+    if (type === 'action_select') {
+      // default to first action
+      newNode.type = 'send_email';
+      newNode.nodeType = 'action';
+      newNode.description = 'Send welcome email from template';
+    } else if (type === 'condition') {
+      newNode.field = 'campus';
+      newNode.operator = '=';
+      newNode.value = '';
+    } else if (type === 'delay') {
+      newNode.days = 1;
+    } else if (type === 'end') {
+      // end node
+    }
+    const nodes = [...wfForm.nodes];
+    nodes.splice(afterIndex + 1, 0, newNode);
+    setWfForm(f => ({ ...f, nodes }));
+  };
+
+  const deleteNode = (id) => {
+    if (wfForm.nodes.length <= 1) { toast.error('A workflow must have at least a trigger'); return; }
+    setWfForm(f => ({ ...f, nodes: f.nodes.filter(n => n.id !== id) }));
+  };
 
   const saveWorkflow = async () => {
-    if (!wfForm.name) { toast.error('Name is required'); return; }
-    const url = editing
-      ? `${API_URL}/admin/workflows/${editing}`
-      : `${API_URL}/admin/workflows`;
+    if (!wfForm.name) { toast.error('Workflow name is required'); return; }
+    setSaving(true);
     try {
-      const res = await fetch(url, {
-        method: editing ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(wfForm)
+      const payload = {
+        name: wfForm.name,
+        description: wfForm.description,
+        trigger: wfForm.trigger,
+        is_active: wfForm.is_active,
+        steps: wfForm.nodes.filter(n => n.nodeType === 'action').map((n, i) => ({
+          id: n.id, order: i + 1, type: n.type, title: n.label || n.type, description: n.description || '', due_days: n.days || 1
+        })),
+        nodes: wfForm.nodes,
+      };
+      const url = editing ? `${API_URL}/admin/workflows/${editing}` : `${API_URL}/admin/workflows`;
+      const res = await fetch(url, { method: editing ? 'PUT' : 'POST', headers, body: JSON.stringify(payload) });
+      if (res.ok) {
+        toast.success(editing ? 'Workflow updated!' : 'Workflow created and ready to run.');
+        setShowBuilder(false); setEditing(null); setWfForm(defaultWfForm); fetchWorkflows();
+      } else { toast.error('Failed to save workflow'); }
+    } catch { toast.error('Error saving workflow'); } finally { setSaving(false); }
+  };
+
+  const toggleActive = async (wf) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/workflows/${wf.id}`, {
+        method: 'PUT', headers, body: JSON.stringify({ ...wf, is_active: !wf.is_active })
       });
-      if (res.ok) {
-        toast.success(editing ? 'Workflow updated' : 'Workflow created');
-        setShowBuilder(false);
-        setEditing(null);
-        resetForm();
-        fetchWorkflows();
-      }
-    } catch { toast.error('Failed to save'); }
-  };
-
-  const deleteWorkflow = async (id) => {
-    if (!confirm('Delete this workflow?')) return;
-    try {
-      await fetch(`${API_URL}/admin/workflows/${id}`, { method: 'DELETE' });
-      toast.success('Workflow deleted');
-      fetchWorkflows();
-    } catch { toast.error('Failed to delete'); }
-  };
-
-  const loadEnrollments = async (wfId) => {
-    try {
-      const res = await fetch(`${API_URL}/admin/workflows/${wfId}/enrollments`);
-      if (res.ok) {
-        const d = await res.json();
-        setEnrollments(d.enrollments || []);
-        setShowEnrollments(wfId);
-      }
-    } catch {}
-  };
-
-  const resetForm = () => {
-    setWfForm({
-      name: '', description: '', trigger: 'manual',
-      steps: [{ id: 's1', order: 1, type: 'email', title: 'Send Welcome Email', description: '', assignee: '', due_days: 1 }]
-    });
+      if (res.ok) { toast.success(wf.is_active ? 'Workflow paused' : 'Workflow activated'); fetchWorkflows(); }
+    } catch { toast.error('Failed to update'); }
   };
 
   const openEdit = (wf) => {
-    setWfForm({ name: wf.name, description: wf.description || '', trigger: wf.trigger || 'manual', steps: wf.steps || [] });
     setEditing(wf.id);
+    setWfForm({
+      name: wf.name || '',
+      description: wf.description || '',
+      trigger: wf.trigger || 'manual',
+      is_active: wf.is_active || false,
+      nodes: wf.nodes?.length ? wf.nodes : [
+        { id: 'trigger-1', nodeType: 'trigger', type: wf.trigger || 'manual', description: '' },
+        ...( wf.steps || []).map(s => ({ id: s.id || `s-${s.order}`, nodeType: 'action', type: s.type, description: s.description || '' })),
+      ],
+    });
     setShowBuilder(true);
   };
 
-  const addStep = () => {
-    const order = wfForm.steps.length + 1;
-    setWfForm({
-      ...wfForm,
-      steps: [...wfForm.steps, { id: `s${Date.now()}`, order, type: 'task', title: '', description: '', assignee: '', due_days: 3 }]
-    });
-  };
+  if (showBuilder) {
+    const triggerNode = wfForm.nodes.find(n => n.nodeType === 'trigger') || wfForm.nodes[0];
+    const otherNodes = wfForm.nodes.filter(n => n !== triggerNode);
+    const allNodes = [triggerNode, ...otherNodes];
 
-  const removeStep = (idx) => {
-    const steps = wfForm.steps.filter((_, i) => i !== idx).map((s, i) => ({ ...s, order: i + 1 }));
-    setWfForm({ ...wfForm, steps });
-  };
+    return (
+      <div className="animate-fade-in" data-testid="workflow-builder">
+        {/* Builder Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <button onClick={() => { setShowBuilder(false); setEditing(null); setWfForm(defaultWfForm); }} className="text-sm text-blue-600 hover:underline flex items-center gap-1 mb-1">
+              ← All Workflows
+            </button>
+            <input
+              className="text-xl font-bold text-slate-900 border-none outline-none w-full bg-transparent"
+              value={wfForm.name}
+              onChange={e => setWfForm(f => ({...f, name: e.target.value}))}
+              placeholder="Name this workflow..."
+              data-testid="workflow-name-input"
+            />
+            <input
+              className="text-sm text-slate-500 border-none outline-none w-full bg-transparent mt-0.5"
+              value={wfForm.description}
+              onChange={e => setWfForm(f => ({...f, description: e.target.value}))}
+              placeholder="What does this workflow do? (optional)"
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
+              <input type="checkbox" checked={wfForm.is_active} onChange={e => setWfForm(f => ({...f, is_active: e.target.checked}))} className="rounded" />
+              Active
+            </label>
+            <Button onClick={saveWorkflow} disabled={saving} className="btn-primary flex items-center gap-1.5" data-testid="save-workflow-btn">
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              {saving ? 'Saving...' : 'Save Workflow'}
+            </Button>
+          </div>
+        </div>
 
-  const updateStep = (idx, field, value) => {
-    const steps = [...wfForm.steps];
-    steps[idx] = { ...steps[idx], [field]: value };
-    setWfForm({ ...wfForm, steps });
-  };
+        {/* Visual Canvas */}
+        <div className="bg-slate-50 rounded-2xl p-8 min-h-[500px] border border-slate-200">
+          <div className="flex flex-col items-center gap-0">
+            {allNodes.map((node, i) => (
+              <div key={node.id} className="flex flex-col items-center">
+                {i === 0 ? (
+                  // Trigger — show selector
+                  <div className="bg-white border-2 border-emerald-400 rounded-xl p-4 w-72 shadow-sm">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Zap className="w-4 h-4 text-emerald-600" />
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">Trigger</p>
+                    </div>
+                    <select
+                      value={wfForm.trigger}
+                      onChange={e => { setWfForm(f => ({...f, trigger: e.target.value, nodes: [{...f.nodes[0], type: e.target.value}, ...f.nodes.slice(1)]})); }}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                      data-testid="trigger-select"
+                    >
+                      {TRIGGERS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                    </select>
+                    <p className="text-xs text-slate-500 mt-1">{TRIGGERS.find(t => t.value === wfForm.trigger)?.desc}</p>
+                  </div>
+                ) : node.nodeType === 'action' ? (
+                  <div className="bg-white border-2 border-blue-400 rounded-xl p-4 w-72 shadow-sm group relative">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-blue-600" />
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-700">Action</p>
+                      </div>
+                      <button onClick={() => deleteNode(node.id)} className="text-slate-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                    <select
+                      value={node.type}
+                      onChange={e => { const nodes = wfForm.nodes.map(n => n.id === node.id ? {...n, type: e.target.value} : n); setWfForm(f => ({...f, nodes})); }}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm mb-2"
+                    >
+                      {ACTIONS.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
+                    </select>
+                    <input
+                      value={node.description || ''}
+                      onChange={e => { const nodes = wfForm.nodes.map(n => n.id === node.id ? {...n, description: e.target.value} : n); setWfForm(f => ({...f, nodes})); }}
+                      placeholder="Add a note about this action..."
+                      className="w-full text-xs border border-slate-200 rounded-lg px-2 py-1.5"
+                    />
+                  </div>
+                ) : node.nodeType === 'condition' ? (
+                  <div className="bg-amber-50 border-2 border-amber-400 rounded-xl p-4 w-72 shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Filter className="w-4 h-4 text-amber-600" />
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-700">Condition</p>
+                      </div>
+                      <button onClick={() => deleteNode(node.id)} className="text-slate-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                    <div className="flex gap-1.5">
+                      <select
+                        value={node.field || 'campus'}
+                        onChange={e => { const nodes = wfForm.nodes.map(n => n.id === node.id ? {...n, field: e.target.value} : n); setWfForm(f => ({...f, nodes})); }}
+                        className="flex-1 border border-amber-200 rounded-lg px-2 py-1.5 text-xs bg-white"
+                      >
+                        {CONDITIONS.map(c => <option key={c.value} value={c.field}>{c.label}</option>)}
+                      </select>
+                      <input
+                        value={node.value || ''}
+                        onChange={e => { const nodes = wfForm.nodes.map(n => n.id === node.id ? {...n, value: e.target.value} : n); setWfForm(f => ({...f, nodes})); }}
+                        placeholder="value"
+                        className="w-20 border border-amber-200 rounded-lg px-2 py-1.5 text-xs bg-white"
+                      />
+                    </div>
+                  </div>
+                ) : node.nodeType === 'delay' ? (
+                  <div className="bg-orange-50 border-2 border-orange-400 rounded-xl p-4 w-72 shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-orange-600" />
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-orange-700">Delay</p>
+                      </div>
+                      <button onClick={() => deleteNode(node.id)} className="text-slate-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-slate-600">Wait</span>
+                      <input
+                        type="number" min={1} max={365}
+                        value={node.days || 1}
+                        onChange={e => { const nodes = wfForm.nodes.map(n => n.id === node.id ? {...n, days: parseInt(e.target.value)} : n); setWfForm(f => ({...f, nodes})); }}
+                        className="w-16 border border-orange-200 rounded-lg px-2 py-1.5 text-sm bg-white text-center"
+                      />
+                      <span className="text-sm text-slate-600">day(s)</span>
+                    </div>
+                  </div>
+                ) : node.nodeType === 'end' ? (
+                  <div className="bg-red-50 border-2 border-red-400 rounded-xl p-3 w-40 shadow-sm text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <X className="w-4 h-4 text-red-500" />
+                      <p className="text-sm font-semibold text-red-700">End</p>
+                      <button onClick={() => deleteNode(node.id)} className="text-slate-300 hover:text-red-500 transition-colors ml-1"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </div>
+                ) : null}
+                {i < allNodes.length - 1 && (
+                  <AddNodeButton onAdd={(type) => addNode(type, i)} />
+                )}
+              </div>
+            ))}
+            {/* Add node after last */}
+            {allNodes.length > 0 && allNodes[allNodes.length - 1]?.nodeType !== 'end' && (
+              <AddNodeButton onAdd={(type) => addNode(type, allNodes.length - 1)} />
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="page-container" data-testid="workflows-page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
+    <div className="space-y-4 animate-fade-in" data-testid="workflows-page">
+      <FeatureEducationHeader featureKey="workflows" />
+      <div className="page-header">
         <div>
-          <h1 style={{ fontSize: 28, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>Workflows</h1>
-          <p style={{ fontSize: 14, color: '#64748b', marginTop: 4 }}>
-            Automate multi-step follow-up processes for your church
-          </p>
+          <h1 className="page-title">Workflows</h1>
+          <p className="page-subtitle">Automated care — nobody falls through the cracks</p>
         </div>
-        <Button onClick={() => { resetForm(); setEditing(null); setShowBuilder(true); }} data-testid="new-workflow-btn">
-          <Plus className="w-4 h-4 mr-2" /> New Workflow
+        <Button className="btn-primary" onClick={() => { setEditing(null); setWfForm(defaultWfForm); setShowBuilder(true); }} data-testid="new-workflow-btn">
+          <Plus className="w-4 h-4 mr-1" /> New Workflow
         </Button>
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: 60 }}><Loader2 className="w-6 h-6 animate-spin" style={{ margin: '0 auto', color: '#64748b' }} /></div>
+        <div className="flex items-center justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-blue-600" /></div>
       ) : workflows.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 60, color: '#94a3b8' }}>
-          <GitBranch className="w-10 h-10" style={{ margin: '0 auto 12px' }} />
-          <p style={{ fontSize: 15, fontWeight: 600 }}>No workflows yet</p>
-          <p style={{ fontSize: 13, marginTop: 4 }}>Create your first workflow to automate follow-up processes</p>
+        <div className="bg-white border border-slate-200 rounded-xl p-12 text-center" data-testid="workflows-empty">
+          <GitBranch className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-slate-900 mb-1">Automate your follow-ups</h3>
+          <p className="text-sm text-slate-500 mb-1">Create your first workflow to ensure no one falls through the cracks.</p>
+          <p className="text-sm text-slate-400 mb-5">Start with a "New Visitor Follow-Up" — it converts 40% more visitors into regulars.</p>
+          <Button className="btn-primary" onClick={() => { setWfForm(defaultWfForm); setShowBuilder(true); }} data-testid="create-first-workflow-btn">
+            <Plus className="w-4 h-4 mr-2" /> Create Your First Workflow
+          </Button>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {workflows.map(wf => (
-            <div key={wf.id} data-testid={`workflow-${wf.id}`}
-              style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 14, padding: '20px 24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                    <GitBranch className="w-4 h-4" style={{ color: '#3b82f6' }} />
-                    <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a' }}>{wf.name}</h3>
-                    <span style={{
-                      fontSize: 11, fontWeight: 600, padding: '2px 10px', borderRadius: 100,
-                      background: wf.is_active ? '#dcfce7' : '#f1f5f9', color: wf.is_active ? '#166534' : '#64748b'
-                    }}>
-                      {wf.is_active ? 'Active' : 'Paused'}
-                    </span>
-                  </div>
-                  {wf.description && <p style={{ fontSize: 13, color: '#64748b', marginBottom: 8 }}>{wf.description}</p>}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
-                    {(wf.steps || []).map((step, i) => {
-                      const stepType = STEP_TYPES.find(t => t.value === step.type) || STEP_TYPES[1];
-                      const StepIcon = stepType.icon;
-                      return (
-                        <div key={step.id} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <div style={{
-                            display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px',
-                            background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 12, color: '#374151'
-                          }}>
-                            <StepIcon className="w-3 h-3" style={{ color: stepType.color }} />
-                            <span style={{ fontWeight: 500 }}>{step.title || stepType.label}</span>
-                          </div>
-                          {i < (wf.steps || []).length - 1 && <ArrowRight className="w-3 h-3" style={{ color: '#d1d5db' }} />}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div style={{ display: 'flex', gap: 16, marginTop: 10, fontSize: 12, color: '#94a3b8' }}>
-                    <span>{(wf.steps || []).length} steps</span>
-                    <span>{wf.enrolled_count || 0} enrolled</span>
-                    <span>{wf.completed_count || 0} completed</span>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-                  <Button size="sm" variant="outline" onClick={() => loadEnrollments(wf.id)}>
-                    <Users className="w-3.5 h-3.5" />
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => openEdit(wf)}>
-                    <Edit className="w-3.5 h-3.5" />
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => deleteWorkflow(wf.id)} className="text-red-500 hover:text-red-700">
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Workflow Builder Dialog */}
-      <Dialog open={showBuilder} onOpenChange={setShowBuilder}>
-        <DialogContent className="sm:max-w-[600px]" style={{ maxHeight: '85vh', overflowY: 'auto' }}>
-          <DialogHeader>
-            <DialogTitle>{editing ? 'Edit Workflow' : 'New Workflow'}</DialogTitle>
-            <DialogDescription>Define the steps for your automated follow-up process</DialogDescription>
-          </DialogHeader>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 8 }}>
-            <div>
-              <label className="form-label">Workflow Name *</label>
-              <input className="form-input" value={wfForm.name} data-testid="wf-name"
-                onChange={e => setWfForm({ ...wfForm, name: e.target.value })} placeholder="New Visitor Follow-up" />
-            </div>
-            <div>
-              <label className="form-label">Description</label>
-              <textarea className="form-input" rows={2} value={wfForm.description}
-                onChange={e => setWfForm({ ...wfForm, description: e.target.value })} placeholder="Describe the workflow..." />
-            </div>
-            <div>
-              <label className="form-label">Trigger</label>
-              <select className="form-input" value={wfForm.trigger}
-                onChange={e => setWfForm({ ...wfForm, trigger: e.target.value })}>
-                <option value="manual">Manual enrollment</option>
-                <option value="new_visitor">New visitor added</option>
-                <option value="form_submission">Form submission</option>
-                <option value="first_donation">First donation</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="form-label" style={{ marginBottom: 10 }}>Steps</label>
-              {wfForm.steps.map((step, idx) => (
-                <div key={step.id} style={{ display: 'flex', gap: 8, marginBottom: 10, padding: 12, background: '#f8fafc', borderRadius: 10, border: '1px solid #e5e7eb' }}>
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#0f172a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 2 }}>
-                    {idx + 1}
-                  </div>
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                      <select className="form-input" value={step.type}
-                        onChange={e => updateStep(idx, 'type', e.target.value)} style={{ fontSize: 13 }}>
-                        {STEP_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-                      </select>
-                      <input className="form-input" value={step.title} placeholder="Step title"
-                        onChange={e => updateStep(idx, 'title', e.target.value)} style={{ fontSize: 13 }} />
+        <div className="space-y-3">
+          {workflows.map(wf => {
+            const trigger = TRIGGERS.find(t => t.value === wf.trigger);
+            const TriggerIcon = trigger?.icon || Zap;
+            return (
+              <div key={wf.id} className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow" data-testid={`workflow-${wf.id}`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: `${trigger?.color || '#64748b'}15` }}>
+                      <TriggerIcon className="w-5 h-5" style={{ color: trigger?.color || '#64748b' }} />
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                      <input className="form-input" value={step.assignee || ''} placeholder="Assignee (optional)"
-                        onChange={e => updateStep(idx, 'assignee', e.target.value)} style={{ fontSize: 13 }} />
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ fontSize: 12, color: '#64748b', whiteSpace: 'nowrap' }}>Due in</span>
-                        <input className="form-input" type="number" min="1" value={step.due_days || 1}
-                          onChange={e => updateStep(idx, 'due_days', parseInt(e.target.value) || 1)} style={{ fontSize: 13, width: 60 }} />
-                        <span style={{ fontSize: 12, color: '#64748b' }}>days</span>
+                    <div>
+                      <h3 className="font-semibold text-slate-900">{wf.name}</h3>
+                      <p className="text-xs text-slate-500 mt-0.5">{wf.description || trigger?.desc}</p>
+                      <div className="flex items-center gap-3 mt-2 text-xs text-slate-400">
+                        <span>Trigger: {trigger?.label || wf.trigger}</span>
+                        <span>{(wf.steps || []).length} actions</span>
+                        <span>{wf.enrolled_count || 0} enrolled</span>
                       </div>
                     </div>
                   </div>
-                  {wfForm.steps.length > 1 && (
-                    <button onClick={() => removeStep(idx)} style={{ padding: 4, color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>
-                      <Trash2 className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => toggleActive(wf)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${wf.is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}
+                      data-testid={`workflow-toggle-${wf.id}`}
+                    >
+                      {wf.is_active ? <><Activity className="w-3 h-3" /> Active</> : <><Pause className="w-3 h-3" /> Paused</>}
                     </button>
-                  )}
+                    <Button variant="outline" size="sm" onClick={() => openEdit(wf)} data-testid={`edit-workflow-${wf.id}`}>
+                      <Edit2 className="w-3.5 h-3.5 mr-1" /> Edit
+                    </Button>
+                  </div>
                 </div>
-              ))}
-              <button onClick={addStep} data-testid="add-step-btn"
-                style={{ width: '100%', padding: '10px', border: '2px dashed #d1d5db', borderRadius: 10, background: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                <Plus className="w-4 h-4" /> Add Step
-              </button>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 4 }}>
-              <Button variant="outline" onClick={() => { setShowBuilder(false); setEditing(null); }}>Cancel</Button>
-              <Button onClick={saveWorkflow} data-testid="save-workflow-btn">
-                {editing ? 'Update Workflow' : 'Create Workflow'}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Enrollments Dialog */}
-      <Dialog open={!!showEnrollments} onOpenChange={() => setShowEnrollments(null)}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Workflow Enrollments</DialogTitle>
-          </DialogHeader>
-          <div style={{ maxHeight: 400, overflowY: 'auto' }}>
-            {enrollments.length === 0 ? (
-              <p style={{ textAlign: 'center', color: '#94a3b8', padding: 32 }}>No enrollments yet</p>
-            ) : enrollments.map(e => (
-              <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid #f1f5f9' }}>
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#64748b' }}>
-                  {(e.person_name || '?').charAt(0)}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: '#0f172a' }}>{e.person_name || 'Unknown'}</p>
-                  <p style={{ fontSize: 12, color: '#94a3b8' }}>{e.person_email}</p>
-                </div>
-                <span style={{
-                  fontSize: 11, fontWeight: 600, padding: '2px 10px', borderRadius: 100,
-                  background: e.status === 'active' ? '#dcfce7' : '#f1f5f9',
-                  color: e.status === 'active' ? '#166534' : '#64748b'
-                }}>
-                  Step {e.current_step + 1}
-                </span>
               </div>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

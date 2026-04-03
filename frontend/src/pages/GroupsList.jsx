@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select';
 import { API_URL } from '@/lib/utils';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { FeatureEducationHeader } from '@/components/FeatureEducationHeader';
 
 const GroupCard = ({ group }) => {
   const capacityPercent = group.capacity 
@@ -151,6 +152,7 @@ export default function GroupsList() {
 
   return (
     <div className="space-y-6 animate-fade-in" data-testid="groups-list-page">
+      <FeatureEducationHeader featureKey="groups" />
       {/* Header */}
       <div className="page-header">
         <div>

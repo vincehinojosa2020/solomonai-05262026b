@@ -159,7 +159,7 @@ export default function PortalGive() {
     return (
       <div className="relative" data-testid="tax-statement-section">
         <button onClick={() => setShowYears(!showYears)} className="portal-download-btn w-full" data-testid="download-statement-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-          <Download className="w-4 h-4" /> Download Tax Statement <ChevronDown className={`w-3 h-3 transition-transform ${showYears ? 'rotate-180' : ''}`} />
+          <Download className="w-4 h-4" /> Download Year-End Giving Summary <ChevronDown className={`w-3 h-3 transition-transform ${showYears ? 'rotate-180' : ''}`} />
         </button>
         {showYears && (
           <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-10 overflow-hidden" data-testid="year-selector">
@@ -179,7 +179,7 @@ export default function PortalGive() {
     <div className="portal-give" data-testid="portal-give">
       <div className="portal-page-header">
         <h1 className="portal-page-title">Give to {tenant?.name || 'Your Church'}</h1>
-        <p className="portal-page-subtitle">Securely give online using your preferred method</p>
+        <p className="portal-page-subtitle">Your generosity changes lives. Every gift matters.</p>
       </div>
 
       {/* Success Message Banner */}
@@ -280,7 +280,7 @@ export default function PortalGive() {
             </select>
           </div>
 
-          {/* Payment Method */}
+          {/* How You Give */}
           <div className="portal-form-section">
             <label className="portal-form-label">PAYMENT</label>
             
