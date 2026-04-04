@@ -307,13 +307,20 @@ def generate_pickup_code():
 
 
 def compute_health_score(cached_stats, tenant):
-    """Universal Church Health Score (0-100)."""
+    """Universal Church Health Score (0-100). Uses monthly average giving to avoid MTD=0 edge case."""
     c = cached_stats or {}
     members = c.get("total_members", 0)
     if members == 0:
         return {"score": 0, "grade": "N/A", "dimensions": {}}
     active = c.get("active_members", 0)
-    mtd_giving = c.get("mtd_giving", 0)
+    # Use monthly average (ytd / months elapsed) if MTD is zero — avoids seed-data edge case
+    mtd_giving = c.get("mtd_giving", 0) or 0
+    ytd_giving = c.get("ytd_giving", 0) or 0
+    if mtd_giving == 0 and ytd_giving > 0:
+        # Use monthly average from YTD
+        from datetime import datetime
+        month_of_year = datetime.now().month
+        mtd_giving = ytd_giving / max(month_of_year, 1)
     attendance = c.get("last_attendance", 0)
     groups = c.get("active_groups", 0)
     recurring = c.get("recurring_givers", 0)
