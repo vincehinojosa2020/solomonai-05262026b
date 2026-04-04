@@ -150,51 +150,72 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup():
     """
-    Startup event — MUST return quickly so uvicorn can start serving requests
-    and pass the deployment health-check probe within 30s.
-    
-    ALL seed and scheduler tasks are deferred by 60s minimum to allow:
-      1. Atlas MongoDB connection pool to fully establish
-      2. Health check probes to detect the server as ready
-      3. The event loop to remain free during initial startup
+    Startup event — returns in MILLISECONDS.
+    All work is deferred so uvicorn starts accepting health probes immediately.
     """
-    asyncio.create_task(_deferred_startup())
-    logger.info("Startup event complete — server ready for requests")
+    # Fire-and-forget: _deferred_startup runs 60s later in the background.
+    # Any exception inside it is fully caught — it can never crash the server.
+    loop = asyncio.get_event_loop()
+    loop.call_later(0, lambda: asyncio.ensure_future(_deferred_startup()))
+    logger.info("Startup event complete — uvicorn ready for health probes")
 
 
-async def _deferred_startup():
-    """All heavy startup work runs here, deferred by 60s after server start."""
-    # Wait for server to be fully ready and Atlas connection to warm up
-    await asyncio.sleep(60)
-
-    # Warn-only: seed operations are best-effort and must never crash startup
+async def _deferred_startup() -> None:
+    """
+    All heavy/DB work here, deferred 60 s to give Atlas time to warm up.
+    Fully exception-isolated: a crash here CANNOT propagate to the server.
+    """
     try:
-        from core.seed import ensure_mobile_demo_accounts
-        await ensure_mobile_demo_accounts()
-        await asyncio.sleep(1)   # yield to event loop between each heavy op
-        await seed_vol_data()
-        await asyncio.sleep(1)
-        await seed_academy_course()
-        await asyncio.sleep(1)
-        await seed_academy_courses_v2()
+        # ── 60-second grace period ──────────────────────────────────────
+        # Lets Atlas connection pool settle and health-check probes pass.
+        await asyncio.sleep(60)
+
+        # ── Seed operations (best-effort, never crash on failure) ────────
+        try:
+            from core.seed import ensure_mobile_demo_accounts
+            await ensure_mobile_demo_accounts()
+        except Exception as exc:
+            logger.warning(f"[startup] ensure_mobile_demo_accounts skipped: {exc}")
+
+        await asyncio.sleep(1)   # yield between every operation
+
+        try:
+            await seed_vol_data()
+        except Exception as exc:
+            logger.warning(f"[startup] seed_vol_data skipped: {exc}")
+
         await asyncio.sleep(1)
 
-        # TTL indexes (idempotent — safe to re-run)
         try:
-            await db.idempotency_keys.create_index("created_at", expireAfterSeconds=86400)
-        except Exception:
-            pass
-        try:
-            await db.user_sessions.create_index("expires_at", expireAfterSeconds=0)
-        except Exception:
-            pass
+            await seed_academy_course()
+        except Exception as exc:
+            logger.warning(f"[startup] seed_academy_course skipped: {exc}")
 
-        # Kids team seed
+        await asyncio.sleep(1)
+
         try:
-            existing_team = await db.volunteer_teams.find_one(
+            await seed_academy_courses_v2()
+        except Exception as exc:
+            logger.warning(f"[startup] seed_academy_courses_v2 skipped: {exc}")
+
+        await asyncio.sleep(1)
+
+        # ── TTL indexes (idempotent, safe to retry) ─────────────────────
+        for coll, field, ttl in [
+            ("idempotency_keys", "created_at", 86400),
+            ("user_sessions", "expires_at", 0),
+        ]:
+            try:
+                await getattr(db, coll).create_index(field, expireAfterSeconds=ttl)
+            except Exception:
+                pass
+
+        # ── Kids check-in team seed ──────────────────────────────────────
+        try:
+            existing = await db.volunteer_teams.find_one(
                 {"id": "kids-checkin-team", "tenant_id": "abundant-east-001"}
             )
-            if not existing_team:
+            if not existing:
                 await db.volunteer_teams.insert_one({
                     "id": "kids-checkin-team", "tenant_id": "abundant-east-001",
                     "team_name": "Kids Check-In Team", "ministry": "Children's Ministry",
@@ -207,8 +228,7 @@ async def _deferred_startup():
                 {"$set": {
                     "id": str(uuid.uuid4()),
                     "user_id": "f1d0f1d8-de66-4fc0-a8c7-8f81f679ce22",
-                    "team_id": "kids-checkin-team",
-                    "tenant_id": "abundant-east-001",
+                    "team_id": "kids-checkin-team", "tenant_id": "abundant-east-001",
                     "role_title": "Team Lead",
                     "assigned_at": datetime.now(timezone.utc).isoformat(),
                     "assigned_by": "system",
@@ -216,27 +236,29 @@ async def _deferred_startup():
                 upsert=True,
             )
         except Exception as exc:
-            logger.warning(f"Kids team seed skipped: {exc}")
+            logger.warning(f"[startup] kids team seed skipped: {exc}")
 
         await asyncio.sleep(1)
-        await _seed_demo_quality_data()
-        logger.info("Deferred startup seed complete")
+
+        try:
+            await _seed_demo_quality_data()
+        except Exception as exc:
+            logger.warning(f"[startup] demo quality data skipped: {exc}")
+
+        logger.info("[startup] Deferred seed complete")
+
+        # ── Recurring giving scheduler (starts 30s after seed settles) ───
+        await asyncio.sleep(30)
+        try:
+            from services.recurring_scheduler import start_scheduler
+            start_scheduler(db)
+            logger.info("[startup] Recurring giving scheduler started")
+        except Exception as exc:
+            logger.error(f"[startup] Scheduler start failed (non-fatal): {exc}")
+
     except Exception as exc:
-        logger.error(f"Deferred startup seed failed (non-fatal): {exc}")
-
-    # Start recurring giving scheduler (90s delay — after seed settles)
-    await asyncio.sleep(30)
-    try:
-        from services.recurring_scheduler import start_scheduler
-        start_scheduler(db)
-        logger.info("Recurring giving scheduler started")
-    except Exception as exc:
-        logger.error(f"Scheduler start failed (non-fatal): {exc}")
-
-
-async def _delayed_scheduler_start():
-    """Legacy — kept for backwards compatibility but no longer called directly."""
-    pass
+        # Outermost catch — nothing should ever escape to the server process
+        logger.error(f"[startup] _deferred_startup crashed (non-fatal): {exc}")
 
 
 @app.on_event("shutdown")
@@ -248,25 +270,26 @@ async def shutdown():
 
 
 # ═══ Health & Metrics ═══
+# Both endpoints MUST respond in <100ms with ZERO database calls.
+# They are the only routes that run before Atlas has connected.
 
 @app.get("/health")
 async def health_check_root():
-    """Root health check — responds immediately without any DB call.
-    Used by deployment orchestrator readiness probes that check / or /health directly.
     """
-    return {"status": "ok", "timestamp": datetime.now(timezone.utc).isoformat()}
+    Bare /health — no /api prefix.
+    Deployment readiness probes often check this path directly on port 8001.
+    Zero DB calls. Always returns 200 immediately.
+    """
+    return {"status": "ok"}
 
 
 @app.get("/api/health")
-async def health_check():
-    """API-prefixed health check — also responds immediately.
-    Avoids DB ping so it can respond even before Atlas connection is established.
+async def health_check_api():
     """
-    return {
-        "status": "ok",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "version": "2.0.0",
-    }
+    /api/health — standard API-prefixed path.
+    Zero DB calls. Always returns 200 immediately.
+    """
+    return {"status": "ok", "version": "2.0.0"}
 
 
 @app.get("/api/metrics")

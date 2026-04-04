@@ -24,15 +24,22 @@ db_name = os.environ["DB_NAME"]
 
 client = AsyncIOMotorClient(
     mongo_url,
+    # ── Timeouts tuned for Atlas cold-start ──────────────────────────────
+    # serverSelectionTimeoutMS: how long Motor waits to find a primary.
+    #   30s gives Atlas time to respond without blocking indefinitely.
     serverSelectionTimeoutMS=30000,
+    # connectTimeoutMS: max time to open a TCP connection to Atlas.
+    #   20s is enough for cross-region Atlas clusters.
     connectTimeoutMS=20000,
+    # socketTimeoutMS: max time waiting for a response on an open socket.
     socketTimeoutMS=45000,
+    # ── Pool: small pool keeps cold-start fast ───────────────────────────
     maxPoolSize=5,
     minPoolSize=0,
     maxIdleTimeMS=60000,
+    # ── Reliability ──────────────────────────────────────────────────────
     retryWrites=True,
     retryReads=True,
-    w="majority",
     heartbeatFrequencyMS=10000,
     appname="solomon-ai",
 )
