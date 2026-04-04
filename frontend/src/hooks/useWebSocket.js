@@ -16,8 +16,10 @@ export function useWebSocket(onMessage, { enabled = true } = {}) {
     const userId = userData.user_id;
     if (!tenantId || !userId) return;
 
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
-    const wsUrl = backendUrl.replace(/^http/, 'ws') + `/ws/${tenantId}/${userId}`;
+    // Derive WebSocket URL from the current page's origin so it works on any domain.
+    // Avoids relying on REACT_APP_BACKEND_URL which is baked at build time.
+    const origin = window.location.origin;
+    const wsUrl = origin.replace(/^http/, 'ws') + `/ws/${tenantId}/${userId}`;
 
     try {
       const ws = new WebSocket(wsUrl);

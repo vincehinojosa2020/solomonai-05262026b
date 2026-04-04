@@ -119,9 +119,11 @@ export default function PlatformDashboard() {
 
   const fetchHealthScores = async () => {
     try {
-      const res = await fetch(`${API_URL}/platform/health-scores`);
+      const res = await fetch(`${API_URL}/platform/health-scores`, { headers: getAuthHeaders() });
       if (res.ok) {
-        setHealthScores(await res.json());
+        const data = await res.json();
+        // API returns { churches: [...] } — extract the array
+        setHealthScores(Array.isArray(data) ? data : (data.churches || []));
       }
     } catch (error) {
       console.error('Failed to fetch health scores:', error);
