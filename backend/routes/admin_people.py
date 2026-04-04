@@ -65,14 +65,18 @@ async def get_admin_member_directory(
         query,
         {"_id": 0, "password_hash": 0}
     ).sort(sort_by, sort_dir).skip(skip).limit(limit).to_list(limit)
-    
+
     total = await db.users.count_documents(query)
-    
-    # Enrich with tenant names
-    for member in members:
-        if member.get("tenant_id"):
-            tenant = await db.tenants.find_one({"id": member["tenant_id"]}, {"_id": 0, "name": 1})
-            member["church_name"] = tenant["name"] if tenant else "Unknown"
+
+    # Enrich with tenant names — single batch lookup instead of N+1 queries
+    tenant_ids = list({m["tenant_id"] for m in members if m.get("tenant_id")})
+    if tenant_ids:
+        tenant_docs = await db.tenants.find(
+            {"id": {"$in": tenant_ids}}, {"_id": 0, "id": 1, "name": 1}
+        ).to_list(len(tenant_ids))
+        tenant_map = {t["id"]: t.get("name", "Unknown") for t in tenant_docs}
+        for member in members:
+            member["church_name"] = tenant_map.get(member.get("tenant_id", ""), "Unknown")
     
     return {
         "members": members,
