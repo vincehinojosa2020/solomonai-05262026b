@@ -781,55 +781,78 @@ export default function PlatformDashboard() {
           {activeSection === 'revenue' && (
             <div className="space-y-4" data-testid="revenue-section">
               <h2 className="text-lg font-bold text-slate-900">Platform Revenue</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { label: 'All-Time Revenue', value: fmtCur(fees.all_time, true), color: '#059669' },
-                  { label: 'YTD Revenue', value: fmtCur(fees.ytd, true), color: '#2563eb' },
-                  { label: 'MTD Revenue', value: fmtCur(fees.mtd, true), color: '#7c3aed' },
-                  { label: 'Blended Rate', value: `${(fees.all_time / Math.max(giving.all_time, 1) * 100).toFixed(2)}%`, color: '#0891b2' },
-                ].map(s => (
-                  <div key={s.label} className="bg-white rounded-xl border border-slate-100 p-5">
-                    <p className="text-xs text-slate-500 mb-1">{s.label}</p>
-                    <p className="text-3xl font-black" style={{ color: s.color }}>{s.value}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="bg-white rounded-xl border border-slate-100 p-5">
-                <h3 className="font-semibold text-slate-900 mb-4">Monthly Revenue Trend</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={revenueTrend}>
-                    <defs>
-                      <linearGradient id="revGrad2" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#059669" stopOpacity={0.2}/>
-                        <stop offset="95%" stopColor="#059669" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                    <XAxis dataKey="month" tick={{ fontSize: 11 }} tickFormatter={v => v.slice(5)} />
-                    <YAxis tickFormatter={v => `$${(v/1000).toFixed(0)}K`} tick={{ fontSize: 11 }} />
-                    <Tooltip formatter={v => fmtCur(v)} />
-                    <Area type="monotone" dataKey="revenue" stroke="#059669" fill="url(#revGrad2)" strokeWidth={2} name="Revenue" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="bg-white rounded-xl border border-slate-100 p-5">
-                <h3 className="font-semibold text-slate-900 mb-3">Revenue by Church</h3>
-                <div className="space-y-3">
-                  {churches.map(c => {
-                    const pct = (c.fees / Math.max(fees.all_time, 1)) * 100;
-                    return (
-                      <div key={c.tenant_id} className="flex items-center gap-3">
-                        <div className="w-28 text-xs text-slate-600 truncate">{c.name.split(' ')[0]}</div>
-                        <div className="flex-1 h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                          <div className="h-full rounded-full" style={{ width: `${pct}%`, background: getColor(c.name) }} />
-                        </div>
-                        <div className="text-xs font-semibold text-slate-900 w-16 text-right">{fmtCur(c.fees, true)}</div>
-                        <div className="text-xs text-slate-400 w-10 text-right">{pct.toFixed(1)}%</div>
+              {!revenue ? (
+                <div className="text-center py-12 text-slate-400 text-sm">Loading revenue data...</div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[
+                      { label: 'All-Time Fees', value: fmtCur(revenue?.summary?.all_time_fees || revenue?.summary?.total_fees_earned || fees.all_time || 0, true), color: '#059669' },
+                      { label: 'YTD Revenue', value: fmtCur(fees.ytd, true), color: '#2563eb' },
+                      { label: 'Blended Rate', value: `${(revenue?.summary?.avg_fee_rate || 0).toFixed(2)}%`, color: '#7c3aed' },
+                      { label: 'Total Processed', value: fmtCur(revenue?.summary?.all_time_giving || giving.all_time || 0, true), color: '#0891b2' },
+                    ].map(s => (
+                      <div key={s.label} className="bg-white rounded-xl border border-slate-100 p-5">
+                        <p className="text-xs text-slate-500 mb-1">{s.label}</p>
+                        <p className="text-3xl font-black" style={{ color: s.color }}>{s.value}</p>
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
+                    ))}
+                  </div>
+                  <div className="bg-white rounded-xl border border-slate-100 p-5">
+                    <h3 className="font-semibold text-slate-900 mb-4">Monthly Revenue Trend</h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <AreaChart data={(revenue?.monthly_trend || revenueTrend).map(m => ({ month: m.month || m._id, revenue: m.fees || m.revenue || 0 }))}>
+                        <defs><linearGradient id="revGrad2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#059669" stopOpacity={0.2}/><stop offset="95%" stopColor="#059669" stopOpacity={0}/></linearGradient></defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                        <XAxis dataKey="month" tick={{ fontSize: 11 }} tickFormatter={v => v.slice(5)} />
+                        <YAxis tickFormatter={v => `$${(v/1000).toFixed(0)}K`} tick={{ fontSize: 11 }} />
+                        <Tooltip formatter={v => fmtCur(v)} />
+                        <Area type="monotone" dataKey="revenue" stroke="#059669" fill="url(#revGrad2)" strokeWidth={2} name="Revenue" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="bg-white rounded-xl border border-slate-100 p-5">
+                    <h3 className="font-semibold text-slate-900 mb-3">Revenue by Church</h3>
+                    <div className="space-y-3">
+                      {(revenue?.by_church || churches).map(c => {
+                        const totalFees = revenue?.summary?.all_time_fees || fees.all_time || 1;
+                        const churchFees = c.total_fees || c.fees || 0;
+                        const pct = (churchFees / Math.max(totalFees, 1)) * 100;
+                        return (
+                          <div key={c.tenant_id || c.id} className="flex items-center gap-3">
+                            <div className="w-32 text-xs text-slate-600 truncate">{(c.name || '').split(' ').slice(0,2).join(' ')}</div>
+                            <div className="flex-1 h-2.5 bg-slate-100 rounded-full overflow-hidden"><div className="h-full rounded-full" style={{ width: `${pct}%`, background: getColor(c.name) }} /></div>
+                            <div className="text-xs font-semibold text-slate-900 w-16 text-right">{fmtCur(churchFees, true)}</div>
+                            <div className="text-xs text-slate-400 w-10 text-right">{pct.toFixed(1)}%</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  {/* By Year */}
+                  {revenue?.by_year?.length > 0 && (
+                    <div className="bg-white rounded-xl border border-slate-100 p-5">
+                      <h3 className="font-semibold text-slate-900 mb-3">Revenue by Year</h3>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead><tr className="text-xs text-slate-500 border-b"><th className="text-left py-2">Year</th><th className="text-right py-2">Giving Volume</th><th className="text-right py-2">Fees Earned</th><th className="text-right py-2">Transactions</th><th className="text-right py-2">Rate</th></tr></thead>
+                          <tbody className="divide-y divide-slate-50">
+                            {revenue.by_year.map(y => (
+                              <tr key={y.year} className="hover:bg-slate-50/50">
+                                <td className="py-2 font-semibold text-slate-900">{y.year}</td>
+                                <td className="py-2 text-right text-slate-700">{fmtCur(y.total_volume, true)}</td>
+                                <td className="py-2 text-right font-semibold text-emerald-700">{fmtCur(y.total_fees, true)}</td>
+                                <td className="py-2 text-right text-slate-500">{fmtNum(y.txn_count)}</td>
+                                <td className="py-2 text-right text-slate-400">{y.total_volume > 0 ? (y.total_fees/y.total_volume*100).toFixed(2) : 0}%</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           )}
 
@@ -840,36 +863,107 @@ export default function PlatformDashboard() {
           {activeSection === 'donors' && (
             <div className="space-y-4" data-testid="donors-section">
               <h2 className="text-lg font-bold text-slate-900">Platform Donors</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { label: 'Total Unique Donors', value: fmtNum(churches.reduce((a, c) => a + (c.active_donors || 0), 0) * 3), color: '#2563eb' },
-                  { label: 'Active (90-day)', value: fmtNum(churches.reduce((a, c) => a + (c.active_donors || 0), 0)), color: '#059669' },
-                  { label: 'Total Transactions', value: fmtNum(stats?.transactions?.total || 0), color: '#7c3aed' },
-                  { label: 'Avg Gift Size', value: fmtCur(stats?.transactions?.avg_amount || 0), color: '#f59e0b' },
-                ].map(s => (
-                  <div key={s.label} className="bg-white rounded-xl border border-slate-100 p-5">
-                    <p className="text-xs text-slate-500 mb-1">{s.label}</p>
-                    <p className="text-3xl font-black" style={{ color: s.color }}>{s.value}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="bg-white rounded-xl border border-slate-100 p-5">
-                <h3 className="font-semibold text-slate-900 mb-3">Active Donors by Church</h3>
-                <div className="space-y-3">
-                  {churches.map(c => (
-                    <div key={c.tenant_id} className="flex items-center gap-3">
-                      <div className="w-32 text-xs text-slate-600 truncate">{c.name}</div>
-                      <div className="flex-1 h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full" style={{ width: `${(c.active_donors / Math.max(...churches.map(x => x.active_donors), 1)) * 100}%`, background: getColor(c.name) }} />
+              {!donorStats ? (
+                <div className="text-center py-16 text-slate-400 text-sm">Loading donor data...</div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[
+                      { label: 'Total Unique Donors', value: fmtNum(donorStats.total_donors || 0), color: '#2563eb' },
+                      { label: 'Active (90-day)', value: fmtNum(donorStats.active_donors || 0), color: '#059669' },
+                      { label: 'Recurring Donors', value: fmtNum(donorStats.recurring_donors || 0), color: '#7c3aed' },
+                      { label: 'Avg Lifetime Value', value: fmtCur(donorStats.avg_lifetime_value || 0, true), color: '#f59e0b' },
+                    ].map(s => (
+                      <div key={s.label} className="bg-white rounded-xl border border-slate-100 p-5">
+                        <p className="text-xs text-slate-500 mb-1">{s.label}</p>
+                        <p className="text-3xl font-black" style={{ color: s.color }}>{s.value}</p>
                       </div>
-                      <div className="text-xs font-semibold text-slate-900 w-16 text-right">{fmtNum(c.active_donors)}</div>
+                    ))}
+                  </div>
+
+                  {/* DonorIQ Stages */}
+                  <div className="bg-white rounded-xl border border-slate-100 p-5">
+                    <h3 className="font-semibold text-slate-900 mb-4">DonorIQ Breakdown</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {Object.entries(donorStats.donor_stages || {}).map(([stage, count]) => {
+                        const stageLabels = { recurring: { label: 'Recurring', color: '#2563eb' }, regular: { label: 'Regular', color: '#059669' }, occasional: { label: 'Occasional', color: '#7c3aed' }, first_time: { label: 'First Time', color: '#f59e0b' }, at_risk: { label: 'At Risk', color: '#f97316' }, lapsed: { label: 'Lapsed', color: '#dc2626' } };
+                        const cfg = stageLabels[stage] || { label: stage, color: '#64748b' };
+                        return (
+                          <div key={stage} className="bg-slate-50 rounded-xl p-4 text-center">
+                            <p className="text-2xl font-black" style={{ color: cfg.color }}>{fmtNum(count)}</p>
+                            <p className="text-xs text-slate-500 mt-1">{cfg.label}</p>
+                          </div>
+                        );
+                      })}
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+
+                  {/* Top Donors */}
+                  {donorStats.top_donors?.length > 0 && (
+                    <div className="bg-white rounded-xl border border-slate-100 p-5">
+                      <h3 className="font-semibold text-slate-900 mb-3">Top 20 Donors — All-Time</h3>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead><tr className="text-xs text-slate-500 border-b border-slate-100">
+                            <th className="text-left py-2 font-semibold">#</th>
+                            <th className="text-left py-2 font-semibold">Donor</th>
+                            <th className="text-left py-2 font-semibold">Church</th>
+                            <th className="text-right py-2 font-semibold">Lifetime Giving</th>
+                            <th className="text-right py-2 font-semibold">Gifts</th>
+                          </tr></thead>
+                          <tbody className="divide-y divide-slate-50">
+                            {donorStats.top_donors.map((d, i) => (
+                              <tr key={i} className="hover:bg-slate-50/50">
+                                <td className="py-2 text-slate-400 text-xs">{i + 1}</td>
+                                <td className="py-2 font-medium text-slate-800">{d.name || 'Anonymous'}</td>
+                                <td className="py-2 text-xs text-slate-500">{d.church?.split(' ').slice(0, 2).join(' ')}</td>
+                                <td className="py-2 text-right font-bold text-slate-900">{fmtCur(d.total, true)}</td>
+                                <td className="py-2 text-right text-slate-500 text-xs">{fmtNum(d.donation_count)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Retention + active by church */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white rounded-xl border border-slate-100 p-5">
+                      <h3 className="font-semibold text-slate-900 mb-3">Key Metrics</h3>
+                      <div className="space-y-2 text-sm">
+                        {[
+                          { label: 'YoY Donor Retention', value: `${donorStats.retention_rate_yoy || 0}%` },
+                          { label: 'Avg Gift Size', value: fmtCur(donorStats.avg_gift || 0) },
+                          { label: 'First-Time Givers (30d)', value: fmtNum(donorStats.first_time_donors_30d || 0) },
+                          { label: 'Total Transactions', value: fmtNum(stats?.transactions?.total || 0) },
+                        ].map(m => (
+                          <div key={m.label} className="flex justify-between py-1.5 border-b border-slate-50">
+                            <span className="text-slate-600">{m.label}</span>
+                            <span className="font-semibold text-slate-900">{m.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-xl border border-slate-100 p-5">
+                      <h3 className="font-semibold text-slate-900 mb-3">Active Donors by Church</h3>
+                      <div className="space-y-3">
+                        {churches.map(c => (
+                          <div key={c.tenant_id} className="flex items-center gap-3">
+                            <div className="w-32 text-xs text-slate-600 truncate">{c.name}</div>
+                            <div className="flex-1 h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                              <div className="h-full rounded-full" style={{ width: `${(c.active_donors / Math.max(...churches.map(x => x.active_donors), 1)) * 100}%`, background: getColor(c.name) }} />
+                            </div>
+                            <div className="text-xs font-semibold text-slate-900 w-16 text-right">{fmtNum(c.active_donors)}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           )}
-
           {/* ════════ REPORTS ════════ */}
           {activeSection === 'reports' && <PlatformReports churches={churches} stats={stats} revenueTrend={revenueTrend} />}
 

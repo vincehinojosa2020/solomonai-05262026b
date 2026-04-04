@@ -102,8 +102,13 @@ async def get_platform_stats(request: Request):
     today_vol = today_data[0]["vol"] if today_data else 0
     today_fees = today_data[0]["fees"] if today_data else 0
 
-    # Donor count
-    total_donors = await db.platform_donors.count_documents({"tenant_id": {"$in": campuses}})
+    # Total unique donors — query donations collection (platform_donors is not populated by seed)
+    total_donors_agg = await db.donations.aggregate([
+        {"$match": {"tenant_id": {"$in": campuses}}},
+        {"$group": {"_id": "$person_id"}},
+        {"$count": "count"},
+    ]).to_list(1)
+    total_donors = total_donors_agg[0]["count"] if total_donors_agg else 0
 
     # Average transaction
     avg_txn = round(all_time_vol / max(all_time_cnt, 1), 2)
@@ -254,24 +259,47 @@ async def get_platform_activity(request: Request, limit: int = 20):
     real_tenants = {t["id"]: t["name"] for t in all_tenants if not t["name"].startswith("TEST_")}
     campuses = list(real_tenants.keys())
 
-    # Recent large donations (>= $500)
-    recent_donations = await db.donations.find(
-        {"tenant_id": {"$in": campuses}, "amount": {"$gte": 500}, "status": "completed"},
-        {"_id": 0, "tenant_id": 1, "amount": 1, "donation_date": 1, "donor_name": 1, "fund_name": 1, "created_at": 1}
-    ).sort("created_at", -1).limit(30).to_list(30)
-
     # Recent recurring signups
     recent_recurring = await db.recurring_giving.find(
         {"tenant_id": {"$in": campuses}, "is_active": True},
         {"_id": 0, "tenant_id": 1, "amount": 1, "frequency": 1, "created_at": 1}
     ).sort("created_at", -1).limit(10).to_list(10)
 
-    events = []
-    for d in recent_donations:
+    # Use aggregation $lookup to get donor names in one query
+    donations_with_names = await db.donations.aggregate([
+        {"$match": {"tenant_id": {"$in": campuses}, "amount": {"$gte": 500}}},
+        {"$sort": {"created_at": -1}},
+        {"$limit": 40},
+        {"$lookup": {
+            "from": "people",
+            "localField": "person_id",
+            "foreignField": "id",
+            "as": "person_info",
+        }},
+        {"$project": {
+            "_id": 0,
+            "tenant_id": 1,
+            "amount": 1,
+            "donation_date": 1,
+            "created_at": 1,
+            "first_name": {"$arrayElemAt": ["$person_info.first_name", 0]},
+            "last_name": {"$arrayElemAt": ["$person_info.last_name", 0]},
+            "donor_name": 1,
+        }},
+    ]).to_list(40)
+
+    activities = []
+    for d in donations_with_names:
         church = real_tenants.get(d["tenant_id"], "A church")
-        name_parts = (d.get("donor_name") or "Anonymous").split()
-        masked = f"{name_parts[0]} {name_parts[-1][0]}." if len(name_parts) > 1 else name_parts[0] if name_parts else "Anonymous"
-        events.append({
+        fn = d.get("first_name") or ""
+        ln = d.get("last_name") or ""
+        raw_name = f"{fn} {ln}".strip() if fn else (d.get("donor_name") or "")
+        if raw_name and raw_name.strip().lower() not in ("", "anonymous", "none"):
+            parts = raw_name.strip().split()
+            masked = f"{parts[0]} {parts[-1][0]}." if len(parts) > 1 else parts[0]
+        else:
+            masked = "A member"
+        activities.append({
             "type": "donation",
             "icon": "gift",
             "church": church,
@@ -283,19 +311,19 @@ async def get_platform_activity(request: Request, limit: int = 20):
 
     for r in recent_recurring:
         church = real_tenants.get(r["tenant_id"], "A church")
-        events.append({
+        activities.append({
             "type": "recurring",
             "icon": "repeat",
             "church": church,
-            "message": f"{church}: New recurring donor (${r['amount']:,.0f}/{r.get('frequency','month')})",
+            "message": f"{church}: New scheduled giving (${r['amount']:,.0f}/{r.get('frequency','month')})",
             "amount": r["amount"],
             "timestamp": r.get("created_at", ""),
             "color": "blue",
         })
 
     # Sort by timestamp descending and return top N
-    events.sort(key=lambda x: str(x.get("timestamp", "")), reverse=True)
-    return {"events": events[:limit]}
+    activities.sort(key=lambda x: str(x.get("timestamp", "")), reverse=True)
+    return {"events": activities[:limit]}
 
 
 
@@ -2014,6 +2042,12 @@ async def get_all_health_scores(request: Request):
     tenants = await db.tenants.find({}, {"_id": 0}).to_list(100)
     results = []
     for t in tenants:
+        # Skip TEST_ churches and empty stubs
+        if t.get("name", "").startswith("TEST_"):
+            continue
+        donation_cnt = await db.donations.count_documents({"tenant_id": t["id"]})
+        if donation_cnt < 10:
+            continue
         cached = await db.dashboard_stats_cache.find_one({"tenant_id": t["id"]}, {"_id": 0})
         health = compute_health_score(cached, t)
         results.append({
@@ -2050,6 +2084,14 @@ async def get_all_platform_churches(request: Request):
 
     for t in tenants:
         tid = t["id"]
+        name = t.get("name", "")
+        # Skip TEST_ churches and empty stubs
+        if name.startswith("TEST_"):
+            continue
+        # Count donations — skip stubs with < 100 donations
+        donation_count = await db.donations.count_documents({"tenant_id": tid})
+        if donation_count < 100:
+            continue
         cached = await db.dashboard_stats_cache.find_one({"tenant_id": tid}, {"_id": 0})
         health = compute_health_score(cached, t)
         # Giving metrics
@@ -2590,9 +2632,19 @@ async def get_platform_revenue(request: Request):
     if not user or user.get("role") != "platform_admin":
         raise HTTPException(status_code=403, detail="Platform admin access required")
 
-    # Revenue by church
+    # Revenue by church — include ALL donations regardless of source field
+    real_tenants_r = await db.tenants.find({"subscription_status": "active"}, {"_id": 0, "id": 1, "name": 1}).to_list(50)
+    real_ids_r = []
+    for t in real_tenants_r:
+        if not t["name"].startswith("TEST_"):
+            cnt = await db.donations.count_documents({"tenant_id": t["id"]})
+            if cnt > 10:
+                real_ids_r.append(t["id"])
+    if not real_ids_r:
+        real_ids_r = [DEFAULT_TENANT_ID]
+
     church_pipeline = [
-        {"$match": {"source": "solomonpay", "status": "completed"}},
+        {"$match": {"tenant_id": {"$in": real_ids_r}}},
         {"$group": {
             "_id": "$tenant_id",
             "total_volume": {"$sum": "$amount"},
@@ -2621,7 +2673,7 @@ async def get_platform_revenue(request: Request):
 
     # Revenue by year
     year_pipeline = [
-        {"$match": {"source": "solomonpay", "status": "completed"}},
+        {"$match": {"tenant_id": {"$in": real_ids_r}}},
         {"$addFields": {"year": {"$substr": ["$donation_date", 0, 4]}}},
         {"$group": {
             "_id": "$year",
@@ -2642,9 +2694,9 @@ async def get_platform_revenue(request: Request):
             "txn_count": r["txn_count"],
         })
 
-    # Revenue by year by church (for detailed breakdown)
+    # Revenue by year by church
     detail_pipeline = [
-        {"$match": {"source": "solomonpay", "status": "completed"}},
+        {"$match": {"tenant_id": {"$in": real_ids_r}}},
         {"$addFields": {"year": {"$substr": ["$donation_date", 0, 4]}}},
         {"$group": {
             "_id": {"tenant_id": "$tenant_id", "year": "$year"},
@@ -2670,9 +2722,9 @@ async def get_platform_revenue(request: Request):
             "txn_count": r["txn_count"],
         }
 
-    # Monthly trend (last 12 months)
+    # Monthly trend (last 36 months)
     monthly_pipeline = [
-        {"$match": {"source": "solomonpay", "status": "completed"}},
+        {"$match": {"tenant_id": {"$in": real_ids_r}}},
         {"$addFields": {"month": {"$substr": ["$donation_date", 0, 7]}}},
         {"$group": {
             "_id": "$month",
@@ -2703,11 +2755,14 @@ async def get_platform_revenue(request: Request):
         "summary": {
             "total_processing_volume": round(total_volume, 2),
             "total_fees_earned": round(total_fees, 2),
+            "all_time_fees": round(total_fees, 2),         # alias — frontend checks this key
+            "all_time_giving": round(total_volume, 2),     # alias
             "total_transactions": total_txns,
             "active_churches": len(churches),
             "fee_rate": f"{SOLOMON_FEE_RATE * 100:.1f}% + ${SOLOMON_FEE_FLAT:.2f}",
             "industry_rate": "2.5% + $0.30",
             "savings_vs_industry": "24% cheaper",
+            "avg_fee_rate": round(total_fees / max(total_volume, 1) * 100, 2),
         },
         "by_church": churches,
         "by_year": by_year,
@@ -2921,6 +2976,12 @@ async def get_platform_payouts(request: Request, page: int = 1, limit: int = 50,
 
 # ═══════════════════ PLATFORM DONOR ANALYTICS ═══════════════════
 
+@router.get("/platform/donors")
+async def get_platform_donors_alias(request: Request):
+    """Alias for /platform/donors/stats — frontend calls this path."""
+    return await get_platform_donor_stats(request)
+
+
 @router.get("/platform/donors/stats")
 async def get_platform_donor_stats(request: Request):
     """Platform-wide donor analytics."""
@@ -2938,15 +2999,27 @@ async def get_platform_donor_stats(request: Request):
     today = dt.now(timezone.utc)
     d90 = (today - timedelta(days=90)).strftime("%Y-%m-%d")
     d30 = (today - timedelta(days=30)).strftime("%Y-%m-%d")
-    # Dynamic tenant lookup
+    # Get real campus IDs (exclude TEST_ and empty stubs)
     all_tenants_d = await db.tenants.find(
-        {"subscription_status": "active"}, {"_id": 0, "id": 1}
+        {"subscription_status": "active"}, {"_id": 0, "id": 1, "name": 1}
     ).to_list(100)
-    campuses = [t["id"] for t in all_tenants_d]
+    real_tenants_d = [t for t in all_tenants_d if not t["name"].startswith("TEST_")]
+    campuses = []
+    for t in real_tenants_d:
+        cnt = await db.donations.count_documents({"tenant_id": t["id"]})
+        if cnt > 10:
+            campuses.append(t["id"])
     if not campuses:
         campuses = [DEFAULT_TENANT_ID]
 
-    total_donors = await db.platform_donors.count_documents({"tenant_id": {"$in": campuses}})
+    # Total unique donors from donations collection (not platform_donors which is empty)
+    total_pipe = [
+        {"$match": {"tenant_id": {"$in": campuses}}},
+        {"$group": {"_id": "$person_id"}},
+        {"$count": "count"},
+    ]
+    total_res = await db.donations.aggregate(total_pipe).to_list(1)
+    total_donors = total_res[0]["count"] if total_res else 0
 
     # Active donors (gift in last 90 days)
     active_pipe = [
@@ -3033,11 +3106,35 @@ async def get_platform_donor_stats(request: Request):
     # Donors by campus
     campus_pipe = [
         {"$match": {"tenant_id": {"$in": campuses}}},
-        {"$group": {"_id": "$tenant_id", "count": {"$sum": 1}}},
+        {"$group": {"_id": "$tenant_id", "donors": {"$addToSet": "$person_id"}}},
+        {"$project": {"_id": 1, "count": {"$size": "$donors"}}},
     ]
     campus_donors = {}
-    async for d in db.platform_donors.aggregate(campus_pipe):
+    async for d in db.donations.aggregate(campus_pipe):
         campus_donors[d["_id"]] = d["count"]
+
+    # Top donors (by total lifetime giving)
+    top_donors_pipe = [
+        {"$match": {"tenant_id": {"$in": campuses}}},
+        {"$group": {"_id": "$person_id", "total": {"$sum": "$amount"}, "count": {"$sum": 1},
+                    "tenant_id": {"$first": "$tenant_id"}, "name": {"$first": "$donor_name"}}},
+        {"$sort": {"total": -1}},
+        {"$limit": 20},
+    ]
+    top_donors_raw = await db.donations.aggregate(top_donors_pipe).to_list(20)
+    # Look up church name for each
+    tenant_map = {}
+    for t in real_tenants_d:
+        tenant_map[t["id"]] = t["name"]
+    top_donors = []
+    for d in top_donors_raw:
+        top_donors.append({
+            "person_id": d["_id"],
+            "name": d.get("name") or "Member",
+            "total": round(d["total"], 2),
+            "donation_count": d["count"],
+            "church": tenant_map.get(d.get("tenant_id", ""), ""),
+        })
 
     return {
         "total_donors": total_donors,
@@ -3049,6 +3146,7 @@ async def get_platform_donor_stats(request: Request):
         "avg_gift": avg_gift,
         "retention_rate_yoy": retention_rate,
         "donor_stages": stages,
+        "top_donors": top_donors,
         "by_campus": campus_donors,
     }
 

@@ -78,9 +78,14 @@ async def solomon_chat(request: Request, payload: SolomonChatRequest):
         if not api_key:
             raise HTTPException(status_code=500, detail="Solomon AI is not configured")
 
-        church_context = await get_church_context(user)
-        competitor_context = f"\n\n{COMPETITOR_KNOWLEDGE}" if COMPETITOR_KNOWLEDGE else ""
-        full_system_prompt = f"{SOLOMON_SYSTEM_PROMPT}{competitor_context}\n\n{church_context}"
+        # ── Route to platform admin context if needed ──────────────────────
+        if user_role == "platform_admin":
+            from core.helpers_ai import build_platform_admin_context
+            full_system_prompt = await build_platform_admin_context()
+        else:
+            church_context = await get_church_context(user)
+            competitor_context = f"\n\n{COMPETITOR_KNOWLEDGE}" if COMPETITOR_KNOWLEDGE else ""
+            full_system_prompt = f"{SOLOMON_SYSTEM_PROMPT}{competitor_context}\n\n{church_context}"
 
         if session_id not in solomon_sessions:
             chat = LlmChat(

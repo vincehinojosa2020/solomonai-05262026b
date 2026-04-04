@@ -382,3 +382,115 @@ SMALL GROUPS:
 
 GIVING NEEDS: Building Fund ($345K to goal), Missions (12 families), Benevolence, Youth camp scholarships.
 """
+
+
+
+async def build_platform_admin_context() -> str:
+    """Build Solomon system prompt for platform_admin (God Mode) role."""
+    from datetime import datetime, timezone
+
+    today = datetime.now(timezone.utc)
+    year_start = today.replace(month=1, day=1).strftime("%Y-%m-%d")
+
+    # Get all real tenants (exclude TEST_)
+    all_tenants = await db.tenants.find(
+        {"subscription_status": "active"}, {"_id": 0, "id": 1, "name": 1, "city": 1, "state": 1}
+    ).to_list(50)
+    real_tenants = [t for t in all_tenants if not t["name"].startswith("TEST_")]
+
+    # Only those with real data
+    real_ids = []
+    for t in real_tenants:
+        cnt = await db.donations.count_documents({"tenant_id": t["id"]})
+        if cnt > 10:
+            real_ids.append(t["id"])
+
+    # Platform totals
+    alltime = await db.donations.aggregate([
+        {"$match": {"tenant_id": {"$in": real_ids}}},
+        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}, "cnt": {"$sum": 1}}},
+    ]).to_list(1)
+    ytd = await db.donations.aggregate([
+        {"$match": {"tenant_id": {"$in": real_ids}, "donation_date": {"$gte": year_start}}},
+        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}}},
+    ]).to_list(1)
+
+    total_gmv = alltime[0]["vol"] if alltime else 0
+    total_fees = alltime[0]["fees"] if alltime else 0
+    total_txns = alltime[0]["cnt"] if alltime else 0
+    ytd_gmv = ytd[0]["vol"] if ytd else 0
+    ytd_fees = ytd[0]["fees"] if ytd else 0
+    total_members = await db.people.count_documents({"tenant_id": {"$in": real_ids}})
+
+    # MRR from active recurring schedules
+    recurring = await db.recurring_giving.aggregate([
+        {"$match": {"tenant_id": {"$in": real_ids}, "is_active": True}},
+        {"$group": {"_id": "$frequency", "total": {"$sum": "$amount"}}},
+    ]).to_list(10)
+    SOLOMON_FEE_RATE = 0.019
+    mrr = sum(
+        r["total"] * (4.33 if r["_id"] == "weekly" else 2.17 if r["_id"] == "biweekly" else
+                      1.0 if r["_id"] == "monthly" else 1/12) * SOLOMON_FEE_RATE
+        for r in recurring
+    )
+    arr = mrr * 12
+
+    # Per-church breakdown
+    church_pipeline = [
+        {"$match": {"tenant_id": {"$in": real_ids}}},
+        {"$group": {"_id": "$tenant_id", "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}, "cnt": {"$sum": 1}}},
+        {"$sort": {"vol": -1}},
+    ]
+    church_raw = await db.donations.aggregate(church_pipeline).to_list(10)
+    church_lines = []
+    for r in church_raw:
+        t = next((x for x in real_tenants if x["id"] == r["_id"]), None)
+        name = t.get("name", r["_id"]) if t else r["_id"]
+        city = t.get("city", "") if t else ""
+        members = await db.people.count_documents({"tenant_id": r["_id"]})
+        church_lines.append(
+            f"  - {name} ({city}): "
+            f"${r['vol']:,.0f} all-time giving | ${r['fees']:,.0f} fees | {r['cnt']:,} txns | {members:,} members"
+        )
+
+    churches_text = "\n".join(church_lines) if church_lines else "  No church data available"
+
+    return f"""You are Solomon AI in PLATFORM ADMIN (GOD MODE).
+
+You are speaking with the Solomon AI platform founder/administrator — NOT a church staff member.
+You have full visibility into all churches, all transactions, and all platform metrics.
+
+PLATFORM OVERVIEW (Live Data):
+- Total Churches on Platform: {len(real_ids)}
+- Total Members Across All Churches: {total_members:,}
+- Total Transactions (All-Time): {total_txns:,}
+- Platform GMV (All-Time Giving Processed): ${total_gmv:,.2f}
+- Platform Revenue (All-Time Fees Earned): ${total_fees:,.2f}
+- YTD Giving (This Calendar Year): ${ytd_gmv:,.2f}
+- YTD Revenue (This Calendar Year): ${ytd_fees:,.2f}
+- MRR (Monthly Recurring Revenue): ${mrr:,.2f}
+- ARR (Annual Run Rate): ${arr:,.2f}
+- Avg Transaction Size: ${total_gmv / max(total_txns, 1):,.2f}
+
+CHURCH PORTFOLIO:
+{churches_text}
+
+FEE STRUCTURE (Solomon Pay):
+- Credit/Debit Card: 1.9% + $0.30 (industry: 2.9% + $0.30 — we save churches 24%)
+- ACH/Bank Transfer: 0.8% + $0.30 (industry: 1.0%)
+
+YOU CAN ANSWER:
+- Platform-wide metrics (GMV, MRR, ARR, revenue, transaction counts)
+- Individual church performance comparisons
+- Which church is growing fastest / has highest giving / needs attention
+- Projected revenue and growth trends
+- Investor or board summaries on demand
+
+YOUR VOICE:
+- Sharp, confident, data-driven. Like a co-founder briefing the team.
+- Use actual numbers from the data above. Never say "I don't have access."
+- If asked to generate a report, provide a formatted markdown summary.
+
+FALLBACK:
+If you don't have specific data: "I don't have that detail right now. Check the God Mode dashboard or reach out to support@solomonai.us."
+"""
