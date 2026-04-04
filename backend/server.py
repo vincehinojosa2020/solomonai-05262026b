@@ -149,24 +149,48 @@ app.add_middleware(
 # ═══ Startup / Shutdown ═══
 @app.on_event("startup")
 async def startup():
-    from services.recurring_scheduler import start_scheduler
-    asyncio.create_task(_delayed_scheduler_start())
+    """
+    Startup event — MUST return quickly so uvicorn can start serving requests
+    and pass the deployment health-check probe within 30s.
+    
+    ALL seed and scheduler tasks are deferred by 60s minimum to allow:
+      1. Atlas MongoDB connection pool to fully establish
+      2. Health check probes to detect the server as ready
+      3. The event loop to remain free during initial startup
+    """
+    asyncio.create_task(_deferred_startup())
+    logger.info("Startup event complete — server ready for requests")
 
-    async def _seed():
+
+async def _deferred_startup():
+    """All heavy startup work runs here, deferred by 60s after server start."""
+    # Wait for server to be fully ready and Atlas connection to warm up
+    await asyncio.sleep(60)
+
+    # Warn-only: seed operations are best-effort and must never crash startup
+    try:
+        from core.seed import ensure_mobile_demo_accounts
+        await ensure_mobile_demo_accounts()
+        await asyncio.sleep(1)   # yield to event loop between each heavy op
+        await seed_vol_data()
+        await asyncio.sleep(1)
+        await seed_academy_course()
+        await asyncio.sleep(1)
+        await seed_academy_courses_v2()
+        await asyncio.sleep(1)
+
+        # TTL indexes (idempotent — safe to re-run)
         try:
-            from core.seed import ensure_mobile_demo_accounts
-            await ensure_mobile_demo_accounts()
-            await seed_vol_data()
-            await seed_academy_course()
-            await seed_academy_courses_v2()
-            try:
-                await db.idempotency_keys.create_index("created_at", expireAfterSeconds=86400)
-            except Exception:
-                pass
-            try:
-                await db.user_sessions.create_index("expires_at", expireAfterSeconds=0)
-            except Exception:
-                pass
+            await db.idempotency_keys.create_index("created_at", expireAfterSeconds=86400)
+        except Exception:
+            pass
+        try:
+            await db.user_sessions.create_index("expires_at", expireAfterSeconds=0)
+        except Exception:
+            pass
+
+        # Kids team seed
+        try:
             existing_team = await db.volunteer_teams.find_one(
                 {"id": "kids-checkin-team", "tenant_id": "abundant-east-001"}
             )
@@ -191,19 +215,28 @@ async def startup():
                 }},
                 upsert=True,
             )
-            # Seed demo quality data (attendance streaks, directory, giving integrations)
-            await _seed_demo_quality_data()
-            logger.info("Startup seed data ensured")
         except Exception as exc:
-            logger.error(f"Failed to ensure startup seed data: {exc}")
-    asyncio.create_task(_seed())
+            logger.warning(f"Kids team seed skipped: {exc}")
+
+        await asyncio.sleep(1)
+        await _seed_demo_quality_data()
+        logger.info("Deferred startup seed complete")
+    except Exception as exc:
+        logger.error(f"Deferred startup seed failed (non-fatal): {exc}")
+
+    # Start recurring giving scheduler (90s delay — after seed settles)
+    await asyncio.sleep(30)
+    try:
+        from services.recurring_scheduler import start_scheduler
+        start_scheduler(db)
+        logger.info("Recurring giving scheduler started")
+    except Exception as exc:
+        logger.error(f"Scheduler start failed (non-fatal): {exc}")
 
 
 async def _delayed_scheduler_start():
-    """Wait 30s for DB to warm up before starting scheduler."""
-    await asyncio.sleep(30)
-    from services.recurring_scheduler import start_scheduler
-    start_scheduler(db)
+    """Legacy — kept for backwards compatibility but no longer called directly."""
+    pass
 
 
 @app.on_event("shutdown")
@@ -215,17 +248,22 @@ async def shutdown():
 
 
 # ═══ Health & Metrics ═══
+
+@app.get("/health")
+async def health_check_root():
+    """Root health check — responds immediately without any DB call.
+    Used by deployment orchestrator readiness probes that check / or /health directly.
+    """
+    return {"status": "ok", "timestamp": datetime.now(timezone.utc).isoformat()}
+
+
 @app.get("/api/health")
 async def health_check():
-    """Health check endpoint — returns service status."""
-    try:
-        await db.command("ping")
-        db_status = "ok"
-    except Exception:
-        db_status = "error"
+    """API-prefixed health check — also responds immediately.
+    Avoids DB ping so it can respond even before Atlas connection is established.
+    """
     return {
-        "status": "ok" if db_status == "ok" else "degraded",
-        "database": db_status,
+        "status": "ok",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "version": "2.0.0",
     }

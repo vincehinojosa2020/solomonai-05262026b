@@ -24,16 +24,16 @@ db_name = os.environ["DB_NAME"]
 
 client = AsyncIOMotorClient(
     mongo_url,
-    serverSelectionTimeoutMS=45000,
-    connectTimeoutMS=45000,
-    socketTimeoutMS=60000,
-    maxPoolSize=10,
+    serverSelectionTimeoutMS=30000,
+    connectTimeoutMS=20000,
+    socketTimeoutMS=45000,
+    maxPoolSize=5,
     minPoolSize=0,
     maxIdleTimeMS=60000,
     retryWrites=True,
     retryReads=True,
     w="majority",
-    heartbeatFrequencyMS=30000,
+    heartbeatFrequencyMS=10000,
     appname="solomon-ai",
 )
 db = client[db_name]
