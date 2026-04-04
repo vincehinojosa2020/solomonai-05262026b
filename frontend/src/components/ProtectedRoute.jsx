@@ -80,6 +80,10 @@ export default function ProtectedRoute({ children, requiredRole }) {
     if (requiredRole === 'admin' && userRole === 'member' && !hasAdminPerms) {
       return <Navigate to="/portal" replace />;
     }
+    // Platform admin routes — require platform_admin role
+    if (requiredRole === 'platform_admin' && userRole !== 'platform_admin') {
+      return <Navigate to="/dashboard" replace />;
+    }
   }
 
   return children;

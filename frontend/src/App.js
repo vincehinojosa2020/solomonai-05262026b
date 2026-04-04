@@ -99,6 +99,16 @@ function AppRouter() {
       <Route path="/demo" element={<DemoPage />} />
       <Route path="/register/:eventId" element={<PublicRegistrationPage />} />
       
+      {/* Platform Admin (God Mode) — standalone, no AppShell sidebar */}
+      <Route
+        path="/platform"
+        element={
+          <ProtectedRoute requiredRole="platform_admin">
+            <PlatformDashboard />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Admin Protected routes */}
       <Route element={
         <ProtectedRoute requiredRole="admin">
@@ -106,7 +116,6 @@ function AppRouter() {
         </ProtectedRoute>
       }>
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/platform" element={<PlatformDashboard />} />
         <Route path="/godmode" element={<GodModeDashboard />} />
         <Route path="/people" element={<PeopleList />} />
         <Route path="/people/:personId" element={<PersonDetail />} />
