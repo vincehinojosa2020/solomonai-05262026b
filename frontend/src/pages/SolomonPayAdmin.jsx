@@ -260,7 +260,7 @@ export default function SolomonPayAdmin() {
           <div className="bg-white border border-slate-200 rounded-xl p-5" data-testid="giving-trend-chart">
             <h3 className="text-sm font-semibold text-slate-800 mb-4">Giving Trend (12 Months)</h3>
             <div className="h-64" style={{ minWidth: '200px', minHeight: '200px' }}>
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={dashData.trend}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                   <XAxis dataKey="month" tick={{ fontSize: 11 }} tickFormatter={v => { const [y,m] = v.split('-'); return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m)-1]; }} />

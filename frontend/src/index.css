@@ -145,10 +145,14 @@
   
   .stat-card .stat-value {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 600;
     color: var(--color-gray-900);
     line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
   }
   
   .stat-card .stat-change {

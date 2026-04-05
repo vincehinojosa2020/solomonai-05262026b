@@ -154,6 +154,7 @@ textarea:focus-visible {
 .app-sidebar.collapsed {
   width: 56px;
   min-width: 56px;
+  transition: width 0.2s ease, min-width 0.2s ease;
 }
 
 .app-main {

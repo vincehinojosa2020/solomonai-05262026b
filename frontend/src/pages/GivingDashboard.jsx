@@ -169,13 +169,18 @@ export default function GivingDashboard() {
 
   if (loading && !stats) {
     return (
-      <div className="space-y-4">
-        <div className="h-6 bg-slate-200 w-48"></div>
+      <div className="space-y-4 animate-pulse">
+        <div className="h-6 bg-slate-200 rounded w-48"/>
         <div className="grid grid-cols-4 gap-3">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-24 bg-slate-200"></div>
+          {[...Array(4)].map((_,i)=>(
+            <div key={i} className="h-24 bg-slate-200 rounded-xl"/>
           ))}
         </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="h-64 bg-slate-200 rounded-xl"/>
+          <div className="h-64 bg-slate-200 rounded-xl"/>
+        </div>
+        <div className="h-48 bg-slate-200 rounded-xl"/>
       </div>
     );
   }
@@ -318,7 +323,7 @@ export default function GivingDashboard() {
             <h3 className="card-title">Giving by Method (YTD)</h3>
           </div>
           <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={260}>
               <PieChart>
                 <Pie
                   data={methodData}

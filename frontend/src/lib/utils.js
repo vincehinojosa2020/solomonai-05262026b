@@ -6,13 +6,20 @@ export function cn(...inputs) {
 }
 
 export function formatCurrency(amount, options = {}) {
-  const { currency = 'USD', minimumFractionDigits = 0, maximumFractionDigits = 0 } = options;
+  const { currency = 'USD', minimumFractionDigits = 0, maximumFractionDigits = 0, compact = false } = options;
+  const v = Number(amount || 0);
+  // Auto-compact for KPI cards: values over $10K get shortened
+  if (compact || v >= 1000000) {
+    if (v >= 1000000000) return `$${(v/1000000000).toFixed(2)}B`;
+    if (v >= 1000000)    return `$${(v/1000000).toFixed(1)}M`;
+    if (v >= 10000)      return `$${(v/1000).toFixed(1)}K`;
+  }
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
     minimumFractionDigits,
     maximumFractionDigits,
-  }).format(amount);
+  }).format(v);
 }
 
 export function formatNumber(num) {

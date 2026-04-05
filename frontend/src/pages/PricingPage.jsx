@@ -5,39 +5,41 @@ import { Button } from '@/components/ui/button';
 const PLANS = [
   {
     name: 'Starter',
-    price: 0,
-    period: 'forever',
+    price: 499,
+    period: '/month',
+    members: 'Under 1,000 members',
     desc: 'Perfect for new church plants and small congregations getting started.',
     icon: Zap,
     accent: '#3b82f6',
     features: [
-      { text: 'Up to 250 members', included: true },
+      { text: 'Up to 1,000 members', included: true },
       { text: 'Member portal', included: true },
-      { text: 'Online giving (2.9% + 30c)', included: true },
-      { text: 'Service check-in', included: true },
-      { text: 'Basic reporting', included: true },
-      { text: 'Kids check-in', included: false },
+      { text: 'Solomon Pay (1.9% + $0.30 card)', included: true },
+      { text: 'Online giving + recurring', included: true },
+      { text: 'Basic Kids Check-In', included: true },
+      { text: 'Core reporting', included: true },
       { text: 'Ask Solomon AI', included: false },
       { text: 'Multi-campus', included: false },
       { text: 'Custom branding', included: false },
     ],
-    cta: 'Get Started Free',
+    cta: 'Get Started',
     popular: false,
   },
   {
     name: 'Growth',
-    price: 99,
+    price: 999,
     period: '/month',
+    members: '1,000 – 4,999 members',
     desc: 'For growing churches ready to engage their congregation at scale.',
     icon: Building2,
     accent: '#8b5cf6',
     features: [
-      { text: 'Up to 5,000 members', included: true },
+      { text: '1,000–4,999 members', included: true },
       { text: 'Everything in Starter', included: true },
-      { text: 'Kids check-in with QR', included: true },
+      { text: 'Kids check-in with QR + kiosk', included: true },
       { text: 'Ask Solomon AI assistant', included: true },
       { text: 'Volunteer scheduling', included: true },
-      { text: 'Service planning', included: true },
+      { text: 'Service planning + Live Mode', included: true },
       { text: 'Advanced analytics', included: true },
       { text: 'Custom branding', included: true },
       { text: 'Multi-campus', included: false },
@@ -46,22 +48,45 @@ const PLANS = [
     popular: true,
   },
   {
-    name: 'Enterprise',
-    price: 249,
+    name: 'Professional',
+    price: 1499,
     period: '/month',
+    members: '5,000 – 9,999 members',
+    desc: 'For established churches with complex ministry needs.',
+    icon: Building2,
+    accent: '#10b981',
+    features: [
+      { text: '5,000–9,999 members', included: true },
+      { text: 'Everything in Growth', included: true },
+      { text: 'Multi-campus support', included: true },
+      { text: 'Household management', included: true },
+      { text: 'Custom report builder', included: true },
+      { text: 'Workflow automation', included: true },
+      { text: 'Priority support (4h SLA)', included: true },
+      { text: 'API access', included: true },
+      { text: 'Dedicated account manager', included: false },
+    ],
+    cta: 'Contact Sales',
+    popular: false,
+  },
+  {
+    name: 'Enterprise',
+    price: 2000,
+    period: '/month+',
+    members: '10,000+ members',
     desc: 'Full platform power for large churches and multi-campus organizations.',
     icon: Crown,
     accent: '#f59e0b',
     features: [
       { text: 'Unlimited members', included: true },
-      { text: 'Everything in Growth', included: true },
-      { text: 'Multi-campus support', included: true },
-      { text: 'Household management', included: true },
+      { text: 'Everything in Professional', included: true },
+      { text: 'Unlimited campuses', included: true },
       { text: 'Church directory', included: true },
       { text: 'War room analytics', included: true },
-      { text: 'Priority support', included: true },
       { text: 'Custom integrations', included: true },
       { text: 'Dedicated account manager', included: true },
+      { text: 'Custom SLA', included: true },
+      { text: 'On-site training', included: true },
     ],
     cta: 'Contact Sales',
     popular: false,
@@ -140,14 +165,19 @@ export default function PricingPage() {
               )}
 
               <div className="p-6 flex-1 flex flex-col">
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-2">
                   <plan.icon className="w-5 h-5" style={{ color: plan.accent }} />
                   <h3 className="text-lg font-bold text-slate-900">{plan.name}</h3>
                 </div>
+                {plan.members && (
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full mb-3 inline-block w-fit" style={{ background: `${plan.accent}20`, color: plan.accent }}>
+                    {plan.members}
+                  </span>
+                )}
 
                 <div className="mb-3">
                   <span className="text-4xl font-extrabold text-slate-900">
-                    {plan.price === 0 ? 'Free' : `$${plan.price}`}
+                    {plan.price === 0 ? 'Free' : `$${plan.price.toLocaleString()}`}
                   </span>
                   {plan.price > 0 && (
                     <span className="text-sm text-slate-500 ml-1">{plan.period}</span>

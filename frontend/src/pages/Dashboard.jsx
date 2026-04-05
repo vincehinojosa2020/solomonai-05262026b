@@ -373,7 +373,7 @@ export default function Dashboard() {
         />
         <StatCard
           title="MTD GIVING"
-          value={formatCurrency(stats?.mtd_giving || 0)}
+          value={formatCurrency(stats?.mtd_giving || 0, {compact:true})}
           change={mtdProgress > 0 ? `${Math.round(mtdProgress)}% of goal` : 'No goal set'}
           changeType="positive"
           icon={DollarSign}
@@ -381,7 +381,7 @@ export default function Dashboard() {
         />
         <StatCard
           title="YTD GIVING"
-          value={formatCurrency(stats?.ytd_giving || 0)}
+          value={formatCurrency(stats?.ytd_giving || 0, {compact:true})}
           change="+12% vs LY"
           changeType="positive"
           icon={TrendingUp}
@@ -456,7 +456,7 @@ export default function Dashboard() {
             <Link to="/attendance" className="card-action">View all →</Link>
           </div>
           <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={260}>
               <AreaChart data={attendanceTrend}>
                 <defs>
                   <linearGradient id="attendanceGradient" x1="0" y1="0" x2="0" y2="1">
@@ -498,7 +498,7 @@ export default function Dashboard() {
             <Link to="/giving" className="card-action">View all →</Link>
           </div>
           <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={260}>
               <BarChart data={givingTrend}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis 
