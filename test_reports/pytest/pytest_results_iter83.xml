@@ -1,1 +1,306 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="32" time="268.372" timestamp="2026-04-04T20:34:08.671995+00:00" hostname="agent-env-38042ce3-866b-43c2-91a8-5ed9b6212c45"><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP03Revenue" name="test_revenue_returns_200" time="23.928" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP03Revenue" name="test_revenue_all_time_fees_over_1m" time="23.193" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP03Revenue" name="test_revenue_by_year_non_empty" time="23.704" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP03Revenue" name="test_revenue_by_church_non_empty" time="24.073" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP11Churches" name="test_churches_returns_200" time="4.101" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP11Churches" name="test_churches_count_is_7" time="4.031" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP11Churches" name="test_churches_no_test_entries" time="4.025" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP11Churches" name="test_churches_have_health_badges" time="4.005" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP11Churches" name="test_churches_include_abundant" time="4.036" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP11Churches" name="test_churches_include_potters_house" time="4.019" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP11HealthScores" name="test_health_scores_returns_200" time="0.803" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP11HealthScores" name="test_health_scores_no_test_entries" time="0.813" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP11HealthScores" name="test_health_scores_have_grades" time="0.784" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP12AbundantHealthScore" name="test_abundant_health_grade_b_or_better" time="0.784" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP12AbundantHealthScore" name="test_abundant_health_in_churches_endpoint" time="3.980" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP13ActivityFeed" name="test_activity_feed_returns_200" time="4.824" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP13ActivityFeed" name="test_activity_feed_has_events" time="4.662" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP13ActivityFeed" name="test_activity_feed_has_real_names" time="4.610" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestP13ActivityFeed" name="test_activity_feed_donation_events_have_amounts" time="4.563" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestPlatformStatsUpdated" name="test_platform_gmv_over_90m" time="19.202" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestPlatformStatsUpdated" name="test_platform_total_members_over_80k" time="19.342" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestPlatformStatsUpdated" name="test_platform_transactions_over_2m" time="19.206" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestPlatformStatsUpdated" name="test_platform_mrr_over_10k" time="19.181" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestPlatformStatsUpdated" name="test_platform_revenue_over_1_5m" time="19.253" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestPlatformStatsUpdated" name="test_platform_arr_over_120k" time="19.163" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestChurchAdminBlocked" name="test_church_admin_blocked_from_stats" time="0.463" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestPlatformTransactions" name="test_transactions_returns_200" time="1.700" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestPlatformTransactions" name="test_transactions_total_count" time="1.694" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestPlatformTransactions" name="test_transactions_filter_by_church" time="0.248" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestPlatformPayouts" name="test_payouts_returns_200" time="3.615" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestImpersonate" name="test_impersonate_returns_token" time="0.164" /><testcase classname="backend.tests.test_p0_p1_fixes_iter83.TestImpersonate" name="test_impersonate_invalid_tenant" time="0.108" /></testsuite></testsuites>
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="29" time="221.144" timestamp="2026-04-05T13:32:55.642251+00:00" hostname="agent-env-38042ce3-866b-43c2-91a8-5ed9b6212c45"><testcase classname="backend.tests.test_easter_sprint_iter83.TestHealth" name="test_health" time="0.245" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestStats" name="test_gmv_over_100m" time="26.783" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestStats" name="test_yoy_positive" time="0.000" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestStats" name="test_sub_mrr_positive" time="0.000" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestStats" name="test_processing_mrr_over_10k" time="0.000" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestStats" name="test_arr_over_200k" time="0.000" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestStats" name="test_8_churches" time="0.000" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestStats" name="test_hill_country_in_breakdown" time="0.000" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestStats" name="test_100k_members" time="0.000" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestStats" name="test_2_7m_txns" time="0.000" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestStats" name="test_revenue_over_1_5m" time="0.000" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestHealthScores" name="test_returns_8_churches" time="0.830" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestHealthScores" name="test_no_na_grades" time="0.801" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestHealthScores" name="test_abundant_east_a_plus" time="0.796" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestHealthScores" name="test_hill_country_in_scores" time="0.805" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestReports" name="test_giving_monthly_trend" time="15.080"><failure message="requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=15)">/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:534: in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:571: in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/http/client.py:1415: in getresponse
+    response.begin()
+/usr/local/lib/python3.11/http/client.py:330: in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/http/client.py:291: in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/socket.py:718: in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/ssl.py:1314: in recv_into
+    return self.read(nbytes, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/ssl.py:1166: in read
+    return self._sslobj.read(len, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TimeoutError: The read operation timed out
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:644: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:841: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:490: in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/util/util.py:39: in reraise
+    raise value
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:787: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:536: in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:367: in _raise_timeout
+    raise ReadTimeoutError(
+E   urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=15)
+
+During handling of the above exception, another exception occurred:
+backend/tests/test_easter_sprint_iter83.py:135: in test_giving_monthly_trend
+    r = requests.get(f"{BASE_URL}/api/platform/reports/giving", headers=headers, timeout=15)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:589: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:703: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:690: in send
+    raise ReadTimeout(e, request=request)
+E   requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=15)</failure></testcase><testcase classname="backend.tests.test_easter_sprint_iter83.TestReports" name="test_attendance_data" time="15.071"><failure message="requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=15)">/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:534: in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:571: in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/http/client.py:1415: in getresponse
+    response.begin()
+/usr/local/lib/python3.11/http/client.py:330: in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/http/client.py:291: in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/socket.py:718: in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/ssl.py:1314: in recv_into
+    return self.read(nbytes, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/ssl.py:1166: in read
+    return self._sslobj.read(len, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TimeoutError: The read operation timed out
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:644: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:841: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:490: in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/util/util.py:39: in reraise
+    raise value
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:787: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:536: in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:367: in _raise_timeout
+    raise ReadTimeoutError(
+E   urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=15)
+
+During handling of the above exception, another exception occurred:
+backend/tests/test_easter_sprint_iter83.py:142: in test_attendance_data
+    r = requests.get(f"{BASE_URL}/api/platform/reports/attendance", headers=headers, timeout=15)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:589: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:703: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:690: in send
+    raise ReadTimeout(e, request=request)
+E   requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=15)</failure></testcase><testcase classname="backend.tests.test_easter_sprint_iter83.TestReports" name="test_groups_ok" time="0.957" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestReports" name="test_membership_ok" time="1.202" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestReports" name="test_audit_ok" time="0.821" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestRetentionCohort" name="test_returns_200" time="22.109" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestRetentionCohort" name="test_has_cohorts" time="21.896" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestRetentionCohort" name="test_structure" time="22.141" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestDonors" name="test_donors_ok" time="30.093"><failure message="requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=30)">/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:534: in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:571: in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/http/client.py:1415: in getresponse
+    response.begin()
+/usr/local/lib/python3.11/http/client.py:330: in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/http/client.py:291: in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/socket.py:718: in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/ssl.py:1314: in recv_into
+    return self.read(nbytes, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/ssl.py:1166: in read
+    return self._sslobj.read(len, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TimeoutError: The read operation timed out
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:644: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:841: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:490: in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/util/util.py:39: in reraise
+    raise value
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:787: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:536: in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:367: in _raise_timeout
+    raise ReadTimeoutError(
+E   urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=30)
+
+During handling of the above exception, another exception occurred:
+backend/tests/test_easter_sprint_iter83.py:196: in test_donors_ok
+    r = requests.get(f"{BASE_URL}/api/platform/donors", headers=headers, timeout=30)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:589: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:703: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:690: in send
+    raise ReadTimeout(e, request=request)
+E   requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=30)</failure></testcase><testcase classname="backend.tests.test_easter_sprint_iter83.TestDonors" name="test_top_donors_real_names" time="30.140"><failure message="requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=30)">/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:534: in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:571: in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/http/client.py:1415: in getresponse
+    response.begin()
+/usr/local/lib/python3.11/http/client.py:330: in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/http/client.py:291: in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/socket.py:718: in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/ssl.py:1314: in recv_into
+    return self.read(nbytes, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/ssl.py:1166: in read
+    return self._sslobj.read(len, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TimeoutError: The read operation timed out
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:644: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:841: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:490: in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/util/util.py:39: in reraise
+    raise value
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:787: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:536: in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:367: in _raise_timeout
+    raise ReadTimeoutError(
+E   urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=30)
+
+During handling of the above exception, another exception occurred:
+backend/tests/test_easter_sprint_iter83.py:203: in test_top_donors_real_names
+    r = requests.get(f"{BASE_URL}/api/platform/donors", headers=headers, timeout=30)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:589: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:703: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:690: in send
+    raise ReadTimeout(e, request=request)
+E   requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=30)</failure></testcase><testcase classname="backend.tests.test_easter_sprint_iter83.TestDonors" name="test_donor_profile" time="30.104"><failure message="requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=30)">/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:534: in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/connection.py:571: in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/http/client.py:1415: in getresponse
+    response.begin()
+/usr/local/lib/python3.11/http/client.py:330: in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/http/client.py:291: in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/socket.py:718: in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/ssl.py:1314: in recv_into
+    return self.read(nbytes, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/ssl.py:1166: in read
+    return self._sslobj.read(len, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TimeoutError: The read operation timed out
+
+The above exception was the direct cause of the following exception:
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:644: in send
+    resp = conn.urlopen(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:841: in urlopen
+    retries = retries.increment(
+/root/.venv/lib/python3.11/site-packages/urllib3/util/retry.py:490: in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/urllib3/util/util.py:39: in reraise
+    raise value
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:787: in urlopen
+    response = self._make_request(
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:536: in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+/root/.venv/lib/python3.11/site-packages/urllib3/connectionpool.py:367: in _raise_timeout
+    raise ReadTimeoutError(
+E   urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=30)
+
+During handling of the above exception, another exception occurred:
+backend/tests/test_easter_sprint_iter83.py:212: in test_donor_profile
+    r = requests.get(f"{BASE_URL}/api/platform/donors", headers=headers, timeout=30)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:73: in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/api.py:59: in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:589: in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/sessions.py:703: in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/adapters.py:690: in send
+    raise ReadTimeout(e, request=request)
+E   requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='solomonpay-ledger.preview.emergentagent.com', port=443): Read timed out. (read timeout=30)</failure></testcase><testcase classname="backend.tests.test_easter_sprint_iter83.TestAuthProtection" name="test_stats_requires_auth" time="0.152" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestAuthProtection" name="test_cohort_requires_auth" time="0.101" /><testcase classname="backend.tests.test_easter_sprint_iter83.TestAuthProtection" name="test_church_admin_blocked" time="0.432" /></testsuite></testsuites>
