@@ -155,8 +155,9 @@ export default function PlatformDashboard() {
   const [stats, setStats] = useState(null);
   const [healthScores, setHealthScores] = useState({});
   const [activity, setActivity] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [showWizard, setShowWizard] = useState(false);
-  const [dateRange, setDateRange] = useState('all');
   const [txns, setTxns] = useState([]);
   const [txnTotal, setTxnTotal] = useState(0);
   const [txnPage, setTxnPage] = useState(1);
@@ -175,8 +176,23 @@ export default function PlatformDashboard() {
   const actRef = useRef();
 
   const fetchStats = useCallback(async () => {
-    try { const r=await fetch(`${API_URL}/platform/stats`,{headers:getAuth()}); if(r.ok)setStats(await r.json()); } catch {}
-  },[]);
+    setLoading(true);
+    setError(null);
+    try {
+      const headers = getAuth();
+      const r = await fetch(`${API_URL}/platform/stats`, { headers });
+      if (r.status === 401) { setError('Session expired — please sign in again'); return; }
+      if (r.status === 429) { setError('Too many requests — please wait a moment and refresh'); return; }
+      if (!r.ok) { setError(`API error ${r.status} — refresh to retry`); return; }
+      const d = await r.json();
+      setStats(d);
+    } catch (e) {
+      setError(`Network error: ${e.message} — check your connection`);
+      console.error('fetchStats error:', e);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
   const fetchHealthScores = useCallback(async () => {
     try {
       const r=await fetch(`${API_URL}/platform/health-scores`,{headers:getAuth()});
@@ -303,6 +319,20 @@ export default function PlatformDashboard() {
         </div>
 
         <div className="p-6 space-y-6">
+
+          {/* Error / Loading Banner */}
+          {(loading || error) && (
+            <div className={`rounded-xl px-5 py-4 flex items-center gap-3 ${error ? 'bg-red-50 border border-red-200' : 'bg-blue-50 border border-blue-200'}`}>
+              {loading ? (
+                <><div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin flex-shrink-0"/>
+                <span className="text-sm text-blue-700 font-medium">Loading platform data... (aggregating {fmtNum(stats?.transactions?.total || 0)} records)</span></>
+              ) : (
+                <><AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0"/>
+                <span className="text-sm text-red-700 font-medium">{error}</span>
+                <button onClick={fetchStats} className="ml-auto px-3 py-1 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700">Retry</button></>
+              )}
+            </div>
+          )}
 
           {/* ══════ DASHBOARD ══════ */}
           {section==='dashboard'&&(

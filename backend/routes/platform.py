@@ -27,7 +27,9 @@ router = APIRouter()
 
 @router.get("/platform/stats")
 async def get_platform_stats(request: Request):
-    """Get platform-wide statistics for God Mode executive dashboard"""
+    """Get platform-wide statistics for God Mode executive dashboard.
+    Uses pre-computed campus totals when possible for fast response.
+    """
     session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
