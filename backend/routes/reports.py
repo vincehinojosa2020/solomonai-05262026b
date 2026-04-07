@@ -644,7 +644,14 @@ async def preview_custom_report(request: Request):
             elif op == ">": query[field] = {"$gt": value}
             elif op == "<": query[field] = {"$lt": value}
 
-    projection = {"_id": 0, **{f: 1 for f in fields}}
+    # Build projection — ONLY use inclusion projection to avoid MongoDB 31254 error
+    # Rule: {"_id": 0} + included fields is valid; never set non-_id fields to 0
+    if fields:
+        projection = {"_id": 0, **{f: 1 for f in fields if f != "_id"}}
+    else:
+        # No explicit fields — use all allowed fields for this source
+        projection = {"_id": 0, **{f: 1 for f in allowed[:10]}}
+    
     coll = getattr(db, collection_name)
     total = await coll.count_documents(query)
     docs = await coll.find(query, projection).limit(limit).to_list(limit)
@@ -671,7 +678,10 @@ async def export_custom_report(request: Request):
 
     tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
     coll = getattr(db, collection_name)
-    docs = await coll.find({"tenant_id": tenant_id}, {"_id": 0}).limit(500).to_list(500)
+    # Use explicit inclusion-only projection to avoid MongoDB 31254 error
+    export_fields = fields if fields else allowed[:8]
+    export_projection = {"_id": 0, **{f: 1 for f in export_fields if f != "_id"}}
+    docs = await coll.find({"tenant_id": tenant_id}, export_projection).limit(500).to_list(500)
 
     buf = io.StringIO()
     buf.write(",".join(fields) + "\n")

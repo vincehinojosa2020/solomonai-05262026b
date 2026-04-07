@@ -550,13 +550,14 @@ async def donor_retention_cohort(request: Request):
     session = await db.user_sessions.find_one({"session_token": token}, {"_id": 0})
     if not session: raise HTTPException(status_code=401)
     campuses = await _get_real_campuses(db)
+    from datetime import date as _date  # explicit import to avoid NameError
     # Build quarterly cohorts from 2023 Q2 through 2025 Q4
     cohorts = []
     for year in [2023, 2024]:
         for q in range(1, 5):
-            q_start = date(year, (q - 1) * 3 + 1, 1).isoformat()
+            q_start = _date(year, (q - 1) * 3 + 1, 1).isoformat()
             q_end_month = min(q * 3, 12)
-            q_end = date(year, q_end_month, 28).isoformat()
+            q_end = _date(year, q_end_month, 28).isoformat()
             # Donors in this cohort (first gift in this quarter)
             cohort_donors = await db.donations.aggregate([
                 {"$match": {"tenant_id": {"$in": campuses}}},
@@ -570,8 +571,8 @@ async def donor_retention_cohort(request: Request):
             # Check retention in subsequent quarters
             retention = [{"quarter": 0, "pct": 100.0}]
             for offset in range(1, 5):
-                next_start = date(year + (q + offset - 2) // 4, ((q + offset - 2) % 4) * 3 + 1, 1).isoformat()
-                next_end = date(year + (q + offset - 1) // 4, ((q + offset - 1) % 4) * 3 + 1, 28).isoformat()
+                next_start = _date(year + (q + offset - 2) // 4, ((q + offset - 2) % 4) * 3 + 1, 1).isoformat()
+                next_end = _date(year + (q + offset - 1) // 4, ((q + offset - 1) % 4) * 3 + 1, 28).isoformat()
                 if next_start > "2026-04-01":
                     break
                 retained = await db.donations.distinct(
