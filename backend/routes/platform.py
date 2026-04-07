@@ -207,11 +207,13 @@ async def get_platform_stats(request: Request):
     total_member_count = await db.people.count_documents({"tenant_id": {"$in": campuses}})
 
     # Subscription MRR from subscriptions collection
-    sub_plans = {'standard': 299, 'growth': 499, 'enterprise': 799}
+    sub_plans = {'standard': 499, 'growth': 999, 'professional': 1499, 'enterprise': 2000}
     sub_mrr = 0
     for t in real_tenants_map.values():
-        plan = t.get('plan', 'growth')
-        sub_mrr += sub_plans.get(plan, 499)
+        plan = t.get('plan', 'enterprise')
+        # Use subscription_price if set directly, otherwise fall back to plan table
+        price = t.get('subscription_price', sub_plans.get(plan, 2000))
+        sub_mrr += price
 
     yoy_change_positive = max(yoy_change, 3.8)  # Floor at 3.8% for healthy display
 
