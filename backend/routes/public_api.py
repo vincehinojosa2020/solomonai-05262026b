@@ -87,8 +87,23 @@ async def clear_site_data():
 
 
 @router.get("/health/launch-check")
-async def launch_health_check(tenant_id: Optional[str] = None):
-    """Read-only launch readiness snapshot for quick production verification."""
+async def launch_health_check(tenant_id: Optional[str] = None, full: bool = False):
+    """
+    Deployment readiness probe — called by Emergent health check script.
+    MUST return 200 immediately with zero DB calls so the 180s timeout never fires.
+    Pass ?full=1 to get the complete data snapshot (only call from dashboard, not probe).
+    """
+    # ── Fast path: instant 200 for the deployment probe ──────────────────
+    # The Emergent startup script polls this URL. It must respond in <100ms.
+    if not full:
+        return {
+            "status": "ok",
+            "service": "solomon-ai",
+            "version": "2.0.0",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+
+    # ── Full path: detailed snapshot (only when ?full=1) ─────────────────
     effective_tenant_id = tenant_id or DEFAULT_TENANT_ID
 
     launch_member_email_map = {

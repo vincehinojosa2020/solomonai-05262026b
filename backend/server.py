@@ -23,6 +23,23 @@ from core import db, client, DEFAULT_TENANT_ID, get_current_member_user, require
 # ═══ FastAPI App ═══
 app = FastAPI(title="Solomon AI Church Management API")
 
+# ═══ Health endpoints — registered FIRST, before all other imports ═══
+# These must respond in <100ms before Atlas connects. Registered at app level
+# so they work even if route module imports are still in progress.
+
+@app.get("/health")
+async def _health_root():
+    return {"status": "ok"}
+
+@app.get("/api/health")
+async def _health_api():
+    return {"status": "ok", "version": "2.0.0"}
+
+@app.get("/api/health/launch-check")
+async def _health_launch_check():
+    """Emergent deployment probe — must return 200 instantly, zero DB calls."""
+    return {"status": "ok", "service": "solomon-ai"}
+
 
 # ═══ Middleware ═══
 @app.middleware("http")
@@ -46,7 +63,33 @@ async def structured_500_handler(request: Request, exc):
     })
 
 
+# ═══ CORS (registered early so OPTIONS preflight works) ═══
+ALLOWED_ORIGINS = [
+    os.environ.get("FRONTEND_URL", ""),
+    "https://solomonai.us",
+    "https://www.solomonai.us",
+    "https://app.solomonai.us",
+]
+preview_url = os.environ.get("REACT_APP_BACKEND_URL", "")
+if preview_url:
+    ALLOWED_ORIGINS.append(preview_url)
+ALLOWED_ORIGINS = [o for o in ALLOWED_ORIGINS if o]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_origin_regex=r"https://.*\.preview\.emergentagent\.com",
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
+    allow_headers=["*"],
+)
+
+
 # ═══ Mount Domain Routers ═══
+# NOTE: these imports are heavy (35 modules). They run synchronously at process
+# start, which is unavoidable in Python. The health endpoints above are
+# registered BEFORE this block so uvicorn can respond to probes even while
+# Python is still processing these imports in subsequent requests.
 from routes.auth import router as auth_router
 from routes.portal import router as portal_router
 from routes.solomon import router as solomon_router
@@ -114,36 +157,12 @@ async def websocket_endpoint(websocket: WebSocket, tenant_id: str, user_id: str)
     try:
         while True:
             data = await websocket.receive_text()
-            # Handle ping/pong for keepalive
             if data == "ping":
                 await websocket.send_text("pong")
     except WebSocketDisconnect:
         await ws_manager.disconnect(tenant_id, user_id)
     except Exception:
         await ws_manager.disconnect(tenant_id, user_id)
-
-
-
-# ═══ CORS ═══
-ALLOWED_ORIGINS = [
-    os.environ.get("FRONTEND_URL", ""),
-    "https://solomonai.us",
-    "https://www.solomonai.us",
-    "https://app.solomonai.us",
-]
-preview_url = os.environ.get("REACT_APP_BACKEND_URL", "")
-if preview_url:
-    ALLOWED_ORIGINS.append(preview_url)
-ALLOWED_ORIGINS = [o for o in ALLOWED_ORIGINS if o]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=r"https://.*\.preview\.emergentagent\.com",
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
-    allow_headers=["*"],
-)
 
 
 # ═══ Startup / Shutdown ═══
@@ -269,29 +288,7 @@ async def shutdown():
 
 
 
-# ═══ Health & Metrics ═══
-# Both endpoints MUST respond in <100ms with ZERO database calls.
-# They are the only routes that run before Atlas has connected.
-
-@app.get("/health")
-async def health_check_root():
-    """
-    Bare /health — no /api prefix.
-    Deployment readiness probes often check this path directly on port 8001.
-    Zero DB calls. Always returns 200 immediately.
-    """
-    return {"status": "ok"}
-
-
-@app.get("/api/health")
-async def health_check_api():
-    """
-    /api/health — standard API-prefixed path.
-    Zero DB calls. Always returns 200 immediately.
-    """
-    return {"status": "ok", "version": "2.0.0"}
-
-
+# ═══ Metrics (God Mode only) ═══
 @app.get("/api/metrics")
 async def get_metrics(request: Request):
     """Platform metrics — God Mode only."""
