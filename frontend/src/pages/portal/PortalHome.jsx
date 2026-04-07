@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
 import { usePolling } from '@/hooks/usePolling';
-import { DollarSign, Users, Calendar, ChevronRight, Flame, GraduationCap, ExternalLink, Coffee, Heart } from 'lucide-react';
+import { DollarSign, Users, Calendar, ChevronRight, Flame, GraduationCap, ExternalLink, Coffee, Heart, Tv, Play } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { ServiceModeBanner, AttendanceStreakCard } from '@/components/ServiceMode';
 import { toast } from 'sonner';
@@ -143,6 +143,7 @@ export default function PortalHome() {
 
   const quickActions = [
     { icon: DollarSign, label: 'Give Now', path: '/portal/give', color: 'bg-green-500' },
+    { icon: Tv, label: 'Watch', path: '/portal/watch', color: 'bg-red-500' },
     { icon: Users, label: 'My Groups', path: '/portal/groups', color: 'bg-blue-500' },
     { icon: Calendar, label: 'Upcoming Events', path: '/portal/events', color: 'bg-purple-500' },
   ];
@@ -245,6 +246,29 @@ export default function PortalHome() {
           </Link>
         ))}
       </div>
+
+      {/* Watch — Latest Sermon Hero */}
+      <Link
+        to="/portal/watch"
+        className="block rounded-2xl overflow-hidden relative group"
+        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)', minHeight: 140 }}
+        data-testid="latest-sermon-hero"
+      >
+        <div className="flex items-center gap-5 p-5">
+          <div className="w-14 h-14 rounded-xl bg-red-600 flex items-center justify-center flex-shrink-0 shadow-lg group-hover:bg-red-500 transition-colors">
+            <Play className="w-7 h-7 text-white ml-0.5" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Latest Sermon</p>
+            <p className="font-bold text-white text-base leading-snug truncate">Watch This Week's Message</p>
+            <p className="text-slate-400 text-xs mt-1 truncate">New every weekend · Catch up anytime</p>
+          </div>
+          <div className="flex items-center gap-1 text-slate-400 group-hover:text-white transition-colors flex-shrink-0">
+            <Tv className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4" />
+          </div>
+        </div>
+      </Link>
 
       <div className="portal-home-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
         {/* Membership Journey — expanded */}

@@ -113,6 +113,7 @@ export default function PortalLayout() {
   const navItems = [
     { name: 'Home', path: '/portal', icon: Home, exact: true },
     { name: 'Kids Check-in', path: '/portal/kids', icon: Users },
+    { name: 'Watch', path: '/portal/watch', icon: Tv },   // front and center — findable in <5s
     { name: 'Give', path: '/portal/give', icon: DollarSign },
     { name: 'Groups', path: '/portal/groups', icon: Users },
     { name: 'Events', path: '/portal/events', icon: Calendar },
@@ -124,8 +125,7 @@ export default function PortalLayout() {
   ];
 
   const learnItems = [
-    { name: 'Watch', path: '/portal/watch', icon: Tv },
-    { name: 'Courses', path: '/portal/courses', icon: GraduationCap },
+    { name: 'Courses', path: '/portal/courses', icon: GraduationCap },  // Watch promoted to top nav
   ];
 
   const getInitials = (name) => {
@@ -181,11 +181,16 @@ export default function PortalLayout() {
                 to={item.path}
                 end={item.exact}
                 data-testid={`portal-nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
-                className={({ isActive }) => 
+                className={({ isActive }) =>
                   `portal-nav-item ${isActive ? 'active' : ''}`
                 }
               >
-                {item.name}
+                {item.name === 'Watch' ? (
+                  <span className="flex items-center gap-1">
+                    <Tv className="w-3.5 h-3.5" />
+                    Watch
+                  </span>
+                ) : item.name}
               </NavLink>
             ))}
             {/* Shop dropdown */}
@@ -201,19 +206,21 @@ export default function PortalLayout() {
                 ))}
               </div>
             </div>
-            {/* Learn dropdown */}
-            <div className="relative group">
-              <button className="portal-nav-item flex items-center gap-1" data-testid="portal-nav-learn">
-                Learn <ChevronDown className="w-3 h-3" />
-              </button>
-              <div className="absolute top-full left-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg py-1 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50 min-w-[140px]">
-                {learnItems.map(item => (
-                  <NavLink key={item.path} to={item.path} className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50" data-testid={`portal-nav-${item.name.toLowerCase()}`}>
-                    <item.icon className="w-4 h-4 text-slate-400" /> {item.name}
-                  </NavLink>
-                ))}
+            {/* More dropdown (Courses) */}
+            {learnItems.length > 0 && (
+              <div className="relative group">
+                <button className="portal-nav-item flex items-center gap-1" data-testid="portal-nav-more">
+                  More <ChevronDown className="w-3 h-3" />
+                </button>
+                <div className="absolute top-full left-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg py-1 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50 min-w-[140px]">
+                  {learnItems.map(item => (
+                    <NavLink key={item.path} to={item.path} className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50" data-testid={`portal-nav-${item.name.toLowerCase()}`}>
+                      <item.icon className="w-4 h-4 text-slate-400" /> {item.name}
+                    </NavLink>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </nav>
 
           {/* Right Actions */}
