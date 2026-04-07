@@ -4,9 +4,10 @@ import { usePolling } from '@/hooks/usePolling';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MapPin, Clock, Users, CheckCircle, Calendar as CalendarIcon,
-  X, Share2, Ticket, AlertCircle, ChevronRight
+  X, Share2, Ticket, AlertCircle, ChevronRight, CreditCard,
+  Check, Loader2, Star, Lock, ArrowLeft
 } from 'lucide-react';
-import { API_URL } from '@/lib/utils';
+import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 
 const EVENT_CATEGORIES = [
@@ -19,6 +20,308 @@ const EVENT_CATEGORIES = [
   { id: 'conferences', label: 'Conferences' },
 ];
 
+// ── Mobile-first Paid Event Checkout Sheet ───────────────────────────────────
+function PaidCheckoutSheet({ event, onClose, onSuccess, user }) {
+  const [step, setStep] = useState('select');   // select → review → confirm
+  const [selectedTier, setSelectedTier] = useState(null);
+  const [savedCards, setSavedCards] = useState([]);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [coverFee, setCoverFee] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [confirmation, setConfirmation] = useState(null);
+
+  const tiers = event?.ticket_tiers || [];
+  const isFree = !event?.price || event.price === 0;
+
+  useEffect(() => {
+    // Auto-select first tier
+    if (tiers.length > 0 && !selectedTier) setSelectedTier(tiers[0]);
+    // Load saved cards
+    const token = sessionStorage.getItem('session_token');
+    if (token) {
+      fetch(`${API_URL}/portal/payment-methods`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => {
+          const cards = d?.payment_methods || [];
+          setSavedCards(cards);
+          const def = cards.find(c => c.is_default) || cards[0];
+          if (def) setSelectedCard(def);
+        })
+        .catch(() => {});
+    }
+    // Free events: skip straight to review
+    if (isFree) setSelectedTier({ id: 'free', name: 'Free Entry', price: 0 });
+  }, [event]);
+
+  const price = selectedTier?.price || 0;
+  const processingFee = price > 0 ? Math.round((price * 0.019 + 0.30) * 100) / 100 : 0;
+  const totalCharged = coverFee ? price + processingFee : price;
+
+  const handleConfirm = async () => {
+    setLoading(true);
+    try {
+      const token = sessionStorage.getItem('session_token');
+      const res = await fetch(`${API_URL}/portal/events/${event.id}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          tier_id: selectedTier?.id || 'general',
+          payment_method_id: selectedCard?.id || null,
+          cover_fee: coverFee,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setConfirmation(data);
+        setStep('confirmed');
+        onSuccess?.();
+      } else {
+        toast.error(data.detail || 'Registration failed. Please try again.');
+      }
+    } catch {
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    /* Full-screen overlay — bottom sheet on mobile, centered modal on desktop */
+    <div
+      className="fixed inset-0 z-50 flex flex-col justify-end md:justify-center md:items-center"
+      style={{ background: 'rgba(0,0,0,0.6)' }}
+      onClick={e => { if (e.target === e.currentTarget && step !== 'confirmed') onClose(); }}
+    >
+      <motion.div
+        initial={{ y: '100%', opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: '100%', opacity: 0 }}
+        transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+        className="bg-white rounded-t-3xl md:rounded-2xl w-full md:max-w-md overflow-hidden shadow-2xl"
+        style={{ maxHeight: '92vh', overflowY: 'auto' }}
+        data-testid="event-checkout-sheet"
+      >
+        {/* ── CONFIRMED ── */}
+        {step === 'confirmed' && confirmation && (
+          <div className="p-6 text-center">
+            <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-10 h-10 text-emerald-600" />
+            </div>
+            <h2 className="text-2xl font-black text-slate-900 mb-1">You're in! 🎉</h2>
+            <p className="text-slate-500 text-sm mb-6">See you at {event.name}</p>
+            <div className="bg-slate-50 rounded-2xl p-4 text-left space-y-3 mb-6">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Event</span>
+                <span className="font-semibold text-slate-900">{event.name}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Date</span>
+                <span className="font-semibold text-slate-900">
+                  {event.event_date ? new Date(event.event_date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric'}) : ''}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Ticket</span>
+                <span className="font-semibold text-slate-900">{confirmation.tier?.name}</span>
+              </div>
+              {confirmation.is_paid && confirmation.payment && (
+                <>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500">Paid</span>
+                    <span className="font-bold text-emerald-700">${confirmation.payment.amount_charged?.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-xs text-slate-400">
+                    <span>Card</span>
+                    <span>{confirmation.payment.card_brand} ••••{confirmation.payment.card_last_four}</span>
+                  </div>
+                </>
+              )}
+            </div>
+            <p className="text-xs text-slate-400 mb-5">A confirmation has been sent to your email.</p>
+            <button onClick={onClose} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-base hover:bg-slate-800 transition-colors" data-testid="checkout-done-btn">
+              Done
+            </button>
+          </div>
+        )}
+
+        {/* ── TIER SELECTION ── */}
+        {step === 'select' && (
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-xl font-black text-slate-900">Save My Spot</h2>
+              <button onClick={onClose} className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200">
+                <X className="w-4 h-4 text-slate-600" />
+              </button>
+            </div>
+
+            {/* Event info strip */}
+            <div className="bg-slate-50 rounded-2xl p-3 flex items-center gap-3 mb-5">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 text-xl" style={{background:'linear-gradient(135deg,#1e3a5f,#3b82f6)'}}>
+                🎟️
+              </div>
+              <div className="min-w-0">
+                <p className="font-bold text-slate-900 truncate text-sm">{event.name}</p>
+                <p className="text-xs text-slate-500">
+                  {event.event_date ? new Date(event.event_date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) : ''} · {event.location?.split(',')[0]}
+                </p>
+              </div>
+            </div>
+
+            {/* Tier options */}
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Choose your ticket</p>
+            <div className="space-y-2.5 mb-6">
+              {tiers.map(tier => (
+                <button
+                  key={tier.id}
+                  onClick={() => setSelectedTier(tier)}
+                  className="w-full text-left p-4 rounded-2xl border-2 transition-all"
+                  style={{
+                    borderColor: selectedTier?.id === tier.id ? '#1e3a5f' : '#e2e8f0',
+                    background: selectedTier?.id === tier.id ? '#f0f4ff' : 'white',
+                  }}
+                  data-testid={`tier-${tier.id}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0"
+                        style={{ borderColor: selectedTier?.id === tier.id ? '#1e3a5f' : '#cbd5e1',
+                          background: selectedTier?.id === tier.id ? '#1e3a5f' : 'white' }}>
+                        {selectedTier?.id === tier.id && <Check className="w-3 h-3 text-white" />}
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-900 text-sm">{tier.name}</p>
+                        {tier.description && <p className="text-xs text-slate-500 mt-0.5 leading-snug">{tier.description}</p>}
+                      </div>
+                    </div>
+                    <span className="text-lg font-black flex-shrink-0 ml-3" style={{color: tier.price === 0 ? '#16a34a' : '#0f172a'}}>
+                      {tier.price === 0 ? 'Free' : `$${tier.price}`}
+                    </span>
+                  </div>
+                  {tier.spots_remaining !== undefined && tier.spots_remaining <= 30 && (
+                    <p className="text-[11px] text-amber-600 font-semibold mt-2 ml-8">
+                      Only {tier.spots_remaining} spots left!
+                    </p>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Sticky CTA */}
+            <button
+              onClick={() => setStep('review')}
+              disabled={!selectedTier}
+              className="w-full py-4 rounded-2xl font-bold text-base text-white transition-all disabled:opacity-40"
+              style={{ background: selectedTier ? '#1e3a5f' : '#94a3b8' }}
+              data-testid="checkout-next-btn"
+            >
+              {isFree || selectedTier?.price === 0 ? 'Continue — Free' : `Continue — $${selectedTier?.price}`}
+              <ChevronRight className="inline w-5 h-5 ml-1" />
+            </button>
+          </div>
+        )}
+
+        {/* ── PAYMENT REVIEW ── */}
+        {step === 'review' && (
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-5">
+              <button onClick={() => setStep('select')} className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center">
+                <ArrowLeft className="w-4 h-4 text-slate-600" />
+              </button>
+              <h2 className="text-xl font-black text-slate-900">
+                {price === 0 ? 'Confirm Registration' : 'Confirm & Pay'}
+              </h2>
+            </div>
+
+            {/* Order summary */}
+            <div className="bg-slate-50 rounded-2xl p-4 mb-4 space-y-2.5">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-600">{selectedTier?.name}</span>
+                <span className="font-semibold">{price === 0 ? 'Free' : `$${price.toFixed(2)}`}</span>
+              </div>
+              {price > 0 && (
+                <label className="flex items-center justify-between cursor-pointer py-1">
+                  <span className="text-sm text-slate-600 flex-1 mr-4">Cover processing fee so 100% goes to the church</span>
+                  <div className="relative flex-shrink-0">
+                    <input type="checkbox" checked={coverFee} onChange={e => setCoverFee(e.target.checked)} className="sr-only" data-testid="cover-fee-toggle"/>
+                    <div className={`w-11 h-6 rounded-full transition-colors ${coverFee ? 'bg-blue-600' : 'bg-slate-300'}`}/>
+                    <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${coverFee ? 'translate-x-5' : 'translate-x-0.5'}`}/>
+                  </div>
+                </label>
+              )}
+              {price > 0 && coverFee && (
+                <div className="flex justify-between text-xs text-slate-500">
+                  <span>Processing fee</span>
+                  <span>+${processingFee.toFixed(2)}</span>
+                </div>
+              )}
+              {price > 0 && (
+                <div className="flex justify-between font-bold text-base pt-2 border-t border-slate-200">
+                  <span>Total</span>
+                  <span>${totalCharged.toFixed(2)}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Payment method */}
+            {price > 0 && (
+              <div className="mb-5">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Payment</p>
+                {savedCards.length > 0 ? (
+                  <div className="space-y-2">
+                    {savedCards.map(card => (
+                      <button key={card.id} onClick={() => setSelectedCard(card)}
+                        className="w-full flex items-center gap-3 p-3.5 rounded-xl border-2 text-left transition-all"
+                        style={{ borderColor: selectedCard?.id === card.id ? '#1e3a5f' : '#e2e8f0',
+                          background: selectedCard?.id === card.id ? '#f0f4ff' : 'white' }}>
+                        <CreditCard className="w-5 h-5 text-slate-500 flex-shrink-0" />
+                        <div className="flex-1">
+                          <span className="text-sm font-semibold text-slate-800">{card.card_brand || 'Card'} ••••{card.card_last_four}</span>
+                          {card.is_default && <span className="ml-2 text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-semibold">Default</span>}
+                        </div>
+                        {selectedCard?.id === card.id && <Check className="w-4 h-4 text-blue-700 flex-shrink-0" />}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
+                    No saved card on file. Add a payment method in your profile first.
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Security note */}
+            {price > 0 && (
+              <div className="flex items-center gap-2 text-xs text-slate-400 mb-5">
+                <Lock className="w-3.5 h-3.5" />
+                <span>Secured by Solomon Pay · Never stored, always encrypted</span>
+              </div>
+            )}
+
+            {/* Final CTA */}
+            <button
+              onClick={handleConfirm}
+              disabled={loading || (price > 0 && !selectedCard)}
+              className="w-full py-4 rounded-2xl font-bold text-base text-white transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              style={{ background: loading ? '#64748b' : '#1e3a5f' }}
+              data-testid="checkout-confirm-btn"
+            >
+              {loading ? (
+                <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</>
+              ) : price === 0 ? (
+                <>Save My Spot — Free <Check className="w-5 h-5" /></>
+              ) : (
+                <>Confirm & Pay ${totalCharged.toFixed(2)} <Lock className="w-4 h-4" /></>
+              )}
+            </button>
+            <p className="text-center text-xs text-slate-400 mt-3">You won't be charged until you tap "Confirm & Pay"</p>
+          </div>
+        )}
+      </motion.div>
+    </div>
+  );
+}
+
 export default function PortalEvents() {
   const { user, memberData, tenant } = useOutletContext();
   const [events, setEvents] = useState([]);
@@ -27,10 +330,10 @@ export default function PortalEvents() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [checkoutEvent, setCheckoutEvent] = useState(null);   // triggers checkout sheet
 
   useEffect(() => { fetchEvents(); fetchMyEvents(); }, []);
 
-  // Real-time polling every 30 seconds
   const pollEvents = useCallback(() => { fetchEvents(); fetchMyEvents(); }, []);
   usePolling(pollEvents, 30000);
 
@@ -44,26 +347,39 @@ export default function PortalEvents() {
 
   const fetchMyEvents = async () => {
     try {
-      const res = await fetch(`${API_URL}/portal/my-events`);
+      const token = sessionStorage.getItem('session_token');
+      const res = await fetch(`${API_URL}/portal/my-events`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
       if (res.ok) { const data = await res.json(); setMyEvents(data.events || []); }
     } catch (e) { console.error(e); }
   };
 
   const registeredEventIds = myEvents.map(e => e.id);
 
-  const handleRegister = async (eventId) => {
+  // Open checkout sheet — handles both free and paid events
+  const handleRegister = (eventId) => {
+    const event = events.find ? events.find(e => e.id === eventId) : events[eventId];
+    const evt = Array.isArray(events) ? events.find(e => e.id === eventId) : null;
+    if (evt) {
+      setCheckoutEvent(evt);
+      setSelectedEvent(null);  // close detail modal if open
+    } else {
+      // fallback: direct free register if event not found in local state
+      doRegister(eventId);
+    }
+  };
+
+  const doRegister = async (eventId) => {
     try {
+      const token = sessionStorage.getItem('session_token');
       const res = await fetch(`${API_URL}/portal/events/${eventId}/register`, {
-        method: 'POST'
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({}),
       });
       const data = await res.json();
-      if (res.ok) {
-        toast.success(data.message || 'Successfully registered!');
-        fetchEvents(); fetchMyEvents();
-      } else {
-        toast.error(data.detail || 'Failed to register');
-      }
-    } catch { toast.error('Failed to register for event'); }
+      if (res.ok) { toast.success(data.message || "You're registered!"); fetchEvents(); fetchMyEvents(); }
+      else toast.error(data.detail || 'Failed to register');
+    } catch { toast.error('Failed to register'); }
   };
 
   const handleCancelRegistration = async (eventId) => {
@@ -203,7 +519,19 @@ export default function PortalEvents() {
                 </div>
 
                 <div className="portal-event-card-content">
-                  <h3 className="portal-event-card-title">{event.name}</h3>
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <h3 className="portal-event-card-title">{event.name}</h3>
+                    {/* Price badge — immediately visible */}
+                    {event.price > 0 ? (
+                      <span className="flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-600 text-white" data-testid={`event-price-${event.id}`}>
+                        <Ticket className="w-3 h-3" />${event.price}
+                      </span>
+                    ) : event.requires_registration ? (
+                      <span className="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+                        Free
+                      </span>
+                    ) : null}
+                  </div>
 
                   <div className="portal-event-card-meta">
                     {event.location && (
@@ -416,6 +744,18 @@ export default function PortalEvents() {
               </div>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Paid Event Checkout Sheet */}
+      <AnimatePresence>
+        {checkoutEvent && (
+          <PaidCheckoutSheet
+            event={checkoutEvent}
+            user={user}
+            onClose={() => setCheckoutEvent(null)}
+            onSuccess={() => { fetchEvents(); fetchMyEvents(); }}
+          />
         )}
       </AnimatePresence>
     </div>

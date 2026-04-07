@@ -2412,85 +2412,158 @@ async def leave_group(request: Request, group_id: str):
 
 @router.post("/portal/events/{event_id}/register")
 async def register_for_event(request: Request, event_id: str):
-    """Member registers for an event"""
+    """
+    Member registers for an event — handles both free and paid events.
+    For paid events: processes payment via Solomon Pay before confirming.
+    Mobile-optimised: returns full receipt data for confirmation screen.
+    """
     session_token = get_session_token_from_request(request)
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    
     session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
     if not session:
         raise HTTPException(status_code=401, detail="Invalid session")
-    
     user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
-    
     tenant_id = user.get("tenant_id")
-    
-    # Check event exists
-    event = await db.events.find_one({"id": event_id, "tenant_id": tenant_id}, {"_id": 0})
+
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    tier_id = body.get("tier_id", "general")
+    payment_method_id = body.get("payment_method_id")
+    cover_fee = body.get("cover_fee", False)
+
+    # Get event
+    event = await db.events.find_one({"id": event_id}, {"_id": 0})
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
-    
-    # Check capacity
-    if event.get("capacity"):
-        current_count = await db.event_registrations.count_documents({"event_id": event_id})
-        if current_count >= event["capacity"]:
-            # Add to waitlist instead of rejecting
-            existing_wait = await db.event_registrations.find_one({"event_id": event_id, "user_id": user["user_id"]})
-            if existing_wait:
-                raise HTTPException(status_code=400, detail="You are already registered or waitlisted")
-            waitlist_entry = {
-                "id": str(uuid.uuid4()),
-                "tenant_id": tenant_id,
-                "event_id": event_id,
-                "user_id": user["user_id"],
-                "user_name": user.get("name", ""),
-                "user_email": user.get("email", ""),
-                "status": "waitlisted",
-                "registered_at": datetime.now(timezone.utc).isoformat()
-            }
-            await db.event_registrations.insert_one(waitlist_entry)
-            return {"message": f"Event is full — you've been added to the waitlist for {event['name']}!", "status": "waitlisted"}
-    
-    # Check if already registered
-    existing = await db.event_registrations.find_one({
-        "event_id": event_id,
-        "user_id": user["user_id"]
-    })
+
+    # Already registered?
+    existing = await db.event_registrations.find_one({"event_id": event_id, "user_id": user["user_id"]})
     if existing:
         raise HTTPException(status_code=400, detail="You are already registered for this event")
-    
-    # Register
+
+    # Capacity check
+    if event.get("capacity"):
+        current_count = await db.event_registrations.count_documents({"event_id": event_id, "status": {"$ne": "waitlisted"}})
+        if current_count >= event["capacity"]:
+            entry = {"id": str(uuid.uuid4()), "tenant_id": tenant_id, "event_id": event_id,
+                     "user_id": user["user_id"], "user_name": user.get("name",""), "user_email": user.get("email",""),
+                     "status": "waitlisted", "registered_at": datetime.now(timezone.utc).isoformat()}
+            await db.event_registrations.insert_one(entry)
+            return {"message": f"Event is full — you're on the waitlist for {event['name']}!", "status": "waitlisted"}
+
+    # Resolve selected tier
+    tier_price = 0.0
+    tier_name = "General Admission"
+    tiers = event.get("ticket_tiers", [])
+    selected_tier = next((t for t in tiers if t.get("id") == tier_id), tiers[0] if tiers else None)
+    if selected_tier:
+        tier_price = float(selected_tier.get("price", 0))
+        tier_name = selected_tier.get("name", "General Admission")
+
+    event_price = float(event.get("price", 0))
+    amount = tier_price if tier_price > 0 else event_price
+
+    # ── PAYMENT (if event has a fee) ─────────────────────────────────────────
+    transaction_id = None
+    payment_receipt = None
+    if amount > 0:
+        # Find payment method
+        pm = None
+        if payment_method_id:
+            pm = await db.payment_methods.find_one({"id": payment_method_id, "user_id": user["user_id"]}, {"_id": 0})
+        if not pm:
+            pm = await db.payment_methods.find_one({"user_id": user["user_id"], "is_active": True, "is_default": True}, {"_id": 0})
+        if not pm:
+            pm = await db.payment_methods.find_one({"user_id": user["user_id"], "is_active": True}, {"_id": 0})
+        if not pm:
+            raise HTTPException(status_code=400, detail="No payment method on file. Please add a card first.")
+
+        token = pm.get("token") or pm.get("solomonpay_token") or f"tok_event_{uuid.uuid4().hex[:8]}"
+        fee_amount = round(amount * 0.019 + 0.30, 2)
+        total_charged = amount + (fee_amount if cover_fee else 0)
+
+        # Process via Solomon Pay adapter
+        try:
+            from services.processor_adapter import ACTIVE_ADAPTER, ChargeStatus
+            result = await ACTIVE_ADAPTER.charge_card(
+                token=token, amount_cents=int(total_charged * 100),
+                description=f"Event registration: {event['name']} — {tier_name}",
+                metadata={"tenant_id": tenant_id, "event_id": event_id, "user_id": user["user_id"]}
+            )
+            if result.status != ChargeStatus.SUCCESS:
+                raise HTTPException(status_code=402, detail=f"Payment failed: {result.message}")
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Event payment error: {e}")
+            raise HTTPException(status_code=402, detail="Payment could not be processed. Please check your card.")
+
+        # Record transaction
+        transaction_id = f"sp_evt_{uuid.uuid4().hex[:12]}"
+        await db.solomonpay_transactions.insert_one({
+            "id": transaction_id, "tenant_id": tenant_id,
+            "type": "event_registration", "amount": amount,
+            "fee_amount": fee_amount, "net_amount": round(amount - fee_amount, 2),
+            "status": "completed", "payment_method_type": "card",
+            "payment_method_last_four": pm.get("card_last_four",""),
+            "card_brand": pm.get("card_brand",""),
+            "donor_person_id": user["user_id"],
+            "event_id": event_id, "event_name": event["name"],
+            "created_at": datetime.now(timezone.utc), "completed_at": datetime.now(timezone.utc),
+        })
+        payment_receipt = {
+            "amount_charged": round(total_charged, 2),
+            "ticket_price": amount,
+            "processing_fee": fee_amount if cover_fee else 0,
+            "card_brand": pm.get("card_brand","Visa"),
+            "card_last_four": pm.get("card_last_four",""),
+            "transaction_id": transaction_id,
+        }
+
+    # ── CREATE REGISTRATION ──────────────────────────────────────────────────
     registration = {
         "id": str(uuid.uuid4()),
         "tenant_id": tenant_id,
         "event_id": event_id,
+        "event_name": event["name"],
         "user_id": user["user_id"],
         "user_name": user.get("name", ""),
         "user_email": user.get("email", ""),
-        "registered_at": datetime.now(timezone.utc).isoformat()
+        "tier_id": tier_id,
+        "tier_name": tier_name,
+        "amount_paid": amount,
+        "transaction_id": transaction_id,
+        "status": "confirmed",
+        "registered_at": datetime.now(timezone.utc).isoformat(),
     }
-    
     await db.event_registrations.insert_one(registration)
-    
-    # Update event registration count
     await db.events.update_one({"id": event_id}, {"$inc": {"registration_count": 1}})
-    
-    logger.info(f"User {user['email']} registered for event {event['name']}")
-    
-    # Push notification confirmation
+
+    logger.info(f"[EVENT] {user.get('email')} registered for {event['name']} (${amount:.2f})")
+
+    # Push notification
     try:
-        await send_push_notification(
-            user["user_id"], tenant_id,
-            "Registration Confirmed!",
-            f"You're registered for {event['name']}. See you there!",
-            "/portal/events"
-        )
+        msg = f"You're in! See you at {event['name']}."
+        if amount > 0:
+            msg = f"Payment confirmed ${amount:.0f}. See you at {event['name']}!"
+        await send_push_notification(user["user_id"], tenant_id, "You're Registered!", msg, "/portal/events")
     except Exception:
         pass
-    
-    return {"message": f"You are registered for {event['name']}!"}
+
+    return {
+        "status": "confirmed",
+        "message": f"You're in! See you at {event['name']}.",
+        "registration_id": registration["id"],
+        "event": {"id": event_id, "name": event["name"], "date": event.get("event_date"), "time": event.get("start_time"), "location": event.get("location","")},
+        "tier": {"name": tier_name, "price": amount},
+        "payment": payment_receipt,
+        "is_paid": amount > 0,
+    }
 
 
 @router.delete("/portal/events/{event_id}/register")
