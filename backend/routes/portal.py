@@ -3416,9 +3416,13 @@ async def get_available_campuses(request: Request):
 
     campuses = []
     if parent_name:
-        # Find all tenants that share the same parent
+        # Find all ACTIVE campuses sharing this parent — exclude parent_org entities
         all_tenants = await db.tenants.find(
-            {"name": {"$regex": f"^{parent_name}", "$options": "i"}},
+            {
+                "name": {"$regex": f"^{parent_name}", "$options": "i"},
+                "subscription_status": "active",   # filter out parent_org / inactive
+                "is_parent": {"$ne": True},         # filter out parent entity
+            },
             {"_id": 0, "id": 1, "name": 1, "address": 1, "city": 1}
         ).to_list(10)
         for t in all_tenants:
