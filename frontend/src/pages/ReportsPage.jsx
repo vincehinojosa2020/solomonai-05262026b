@@ -396,10 +396,10 @@ export default function ReportsPage() {
       {activeTab === 'groups' && !isLoading && d && (
         <div className="space-y-4" data-testid="groups-report-tab">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KpiCard title="Active Groups" value={fmtNum(d.summary?.active_groups || 0)} />
+            <KpiCard title="Active Groups" value={fmtNum(d.summary?.active_groups || d.summary?.total_groups || 0)} />
             <KpiCard title="Total Members in Groups" value={fmtNum(d.summary?.members_in_groups || 0)} />
-            <KpiCard title="Avg Group Size" value={(d.summary?.avg_size || 0).toFixed(1)} />
-            <KpiCard title="% Members Connected" value={`${d.summary?.connection_rate || 0}%`} />
+            <KpiCard title="Avg Group Size" value={(d.summary?.avg_group_size || d.summary?.avg_size || 0).toFixed(1)} />
+            <KpiCard title="% Members Connected" value={`${d.summary?.pct_connected || d.summary?.connection_rate || 0}%`} />
           </div>
           {(d.by_type || []).length > 0 && (
             <div className="bg-white border border-slate-200 rounded-xl p-5">
@@ -507,10 +507,10 @@ export default function ReportsPage() {
       {(activeTab === 'membership' || activeTab === 'volunteers') && !isLoading && d && (
         <div className="space-y-4" data-testid="membership-report-tab">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KpiCard title="Total Members" value={fmtNum(d.total_members || 0)} />
-            <KpiCard title="Active Members" value={fmtNum(d.active_members || 0)} />
-            <KpiCard title="Visitors" value={fmtNum(d.visitors || 0)} />
-            <KpiCard title="New This Month" value={fmtNum(d.new_this_month || 0)} />
+            <KpiCard title="Total Members" value={fmtNum(d.summary?.total_members || d.total_members || d.total || 0)} />
+            <KpiCard title="Active Members" value={fmtNum(d.summary?.active_members || d.active_members || 0)} />
+            <KpiCard title="Visitors" value={fmtNum(d.summary?.visitors || d.visitors || 0)} />
+            <KpiCard title="New This Month" value={fmtNum(d.summary?.new_this_month || d.new_this_month || 0)} />
           </div>
           {(d.by_status || []).length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -525,16 +525,17 @@ export default function ReportsPage() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              {(d.growth_trend || []).length > 0 && (
+              {((d.growth_trend || d.monthly_trend || []).length > 0) && (
                 <div className="bg-white border border-slate-200 rounded-xl p-5">
                   <h3 className="font-semibold text-slate-800 mb-4">Growth Trend</h3>
                   <ResponsiveContainer width="100%" height={220}>
-                    <LineChart data={d.growth_trend}>
+                    <LineChart data={d.growth_trend || d.monthly_trend || []}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                       <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                       <YAxis tick={{ fontSize: 11 }} />
                       <Tooltip />
                       <Line type="monotone" dataKey="new_members" stroke="#2563eb" strokeWidth={2} />
+                      <Line type="monotone" dataKey="new" stroke="#2563eb" strokeWidth={2} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>

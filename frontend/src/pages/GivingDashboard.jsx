@@ -71,23 +71,25 @@ export default function GivingDashboard() {
   const fetchGivingData = async () => {
     setLoading(true);
     try {
+      const token = sessionStorage.getItem('session_token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       const [statsRes, donationsRes, fundsRes, batchesRes] = await Promise.all([
-        fetch(`${API_URL}/giving/stats`),
-        fetch(`${API_URL}/donations?page=${page}&per_page=${perPage}`),
-        fetch(`${API_URL}/funds`),
-        fetch(`${API_URL}/batches`),
+        fetch(`${API_URL}/giving/stats`, { headers }),
+        fetch(`${API_URL}/donations?page=${page}&per_page=${perPage}`, { headers }),
+        fetch(`${API_URL}/funds`, { headers }),
+        fetch(`${API_URL}/batches`, { headers }),
       ]);
 
       const [statsData, donationsData, fundsData, batchesData] = await Promise.all([
-        statsRes.json(),
-        donationsRes.json(),
-        fundsRes.json(),
-        batchesRes.json(),
+        statsRes.ok ? statsRes.json() : {},
+        donationsRes.ok ? donationsRes.json() : { data: [], total: 0 },
+        fundsRes.ok ? fundsRes.json() : [],
+        batchesRes.ok ? batchesRes.json() : [],
       ]);
 
       setStats(statsData);
-      setDonations(donationsData.data);
-      setTotal(donationsData.total);
+      setDonations(donationsData.data || []);
+      setTotal(donationsData.total || 0);
       setFunds(fundsData);
       setBatches(batchesData);
     } catch (error) {

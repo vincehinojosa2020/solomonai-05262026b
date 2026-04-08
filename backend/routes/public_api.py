@@ -1357,60 +1357,70 @@ async def get_donations(
     payment_method: Optional[str] = None
 ):
     tenant_id = DEFAULT_TENANT_ID
-    query = {"tenant_id": tenant_id}
     
+    # Default to last 90 days to avoid timeout on large collections
+    if not start_date:
+        from datetime import datetime, timedelta
+        start_date = (datetime.utcnow() - timedelta(days=90)).strftime("%Y-%m-%d")
+    
+    query = {"tenant_id": tenant_id, "donation_date": {"$gte": start_date}}
+    if end_date:
+        query["donation_date"]["$lte"] = end_date
     if fund_id:
         query["fund_id"] = fund_id
-    if start_date:
-        query["donation_date"] = {"$gte": start_date}
-    if end_date:
-        query.setdefault("donation_date", {})["$lte"] = end_date
     if payment_method:
         query["payment_method"] = payment_method
     
-    total = await db.donations.count_documents(query)
     skip = (page - 1) * per_page
     
-    pipeline = [
-        {"$match": query},
-        {"$lookup": {
-            "from": "people",
-            "localField": "person_id",
-            "foreignField": "id",
-            "as": "donor"
-        }},
-        {"$unwind": {"path": "$donor", "preserveNullAndEmptyArrays": True}},
-        {"$lookup": {
-            "from": "funds",
-            "localField": "fund_id",
-            "foreignField": "id",
-            "as": "fund"
-        }},
-        {"$unwind": {"path": "$fund", "preserveNullAndEmptyArrays": True}},
-        {"$project": {
-            "_id": 0,
-            "id": 1,
-            "amount": 1,
-            "donation_date": 1,
-            "payment_method": 1,
-            "check_number": 1,
-            "crypto_currency": 1,
-            "crypto_amount": 1,
-            "notes": 1,
-            "donor_name": {"$concat": ["$donor.first_name", " ", "$donor.last_name"]},
-            "donor_photo": "$donor.photo_url",
-            "fund_name": "$fund.name",
-            "batch_id": 1
-        }},
-        {"$sort": {"donation_date": -1}},
-        {"$skip": skip},
-        {"$limit": per_page}
-    ]
+    # Use simple find with projection instead of expensive aggregate+lookup
+    donations_raw = await db.donations.find(
+        query, {"_id": 0}
+    ).sort("donation_date", -1).skip(skip).limit(per_page).to_list(per_page)
     
-    donations = await db.donations.aggregate(pipeline).to_list(per_page)
+    # Enrich with donor/fund names in a separate batch lookup
+    person_ids = list(set(d.get("person_id") for d in donations_raw if d.get("person_id")))
+    fund_ids = list(set(d.get("fund_id") for d in donations_raw if d.get("fund_id")))
+    
+    people_map = {}
+    if person_ids:
+        people = await db.people.find(
+            {"id": {"$in": person_ids}},
+            {"_id": 0, "id": 1, "first_name": 1, "last_name": 1, "photo_url": 1}
+        ).to_list(len(person_ids))
+        people_map = {p["id"]: p for p in people}
+    
+    funds_map = {}
+    if fund_ids:
+        funds = await db.funds.find(
+            {"id": {"$in": fund_ids}},
+            {"_id": 0, "id": 1, "name": 1}
+        ).to_list(len(fund_ids))
+        funds_map = {f["id"]: f for f in funds}
+    
+    results = []
+    for d in donations_raw:
+        person = people_map.get(d.get("person_id"), {})
+        fund = funds_map.get(d.get("fund_id"), {})
+        results.append({
+            "id": d.get("id"),
+            "amount": d.get("amount", 0),
+            "donation_date": d.get("donation_date"),
+            "payment_method": d.get("payment_method"),
+            "check_number": d.get("check_number"),
+            "notes": d.get("notes"),
+            "donor_name": f'{person.get("first_name", "")} {person.get("last_name", "")}'.strip() or "Anonymous",
+            "donor_photo": person.get("photo_url"),
+            "fund_name": fund.get("name", "General Fund"),
+            "batch_id": d.get("batch_id"),
+            "status": d.get("status", "completed"),
+        })
+    
+    # Estimate total (fast) instead of exact count on 500K+ docs
+    total = len(donations_raw) + skip + (per_page if len(donations_raw) == per_page else 0)
     
     return {
-        "data": donations,
+        "data": results,
         "total": total,
         "page": page,
         "per_page": per_page
