@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   DollarSign, Users, Calendar, Baby, Coffee, ShoppingBag,
   UsersRound, BarChart3, Shield, Download, TrendingUp, ArrowUpRight,
-  ArrowDownRight, RefreshCw, Activity, GitBranch, Info
+  ArrowDownRight, RefreshCw, Activity, GitBranch, Info, HelpCircle,
+  ChevronDown, ChevronUp
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -28,6 +29,135 @@ const TABS = [
   { id: 'cross',        label: 'Cross-Analysis',  icon: GitBranch   },
   { id: 'audit',        label: 'Audit Log',       icon: Shield      },
 ];
+
+const TAB_INFO = {
+  giving: {
+    title: 'Giving Reports',
+    what: 'Shows all donation activity for your church during the selected time period — total giving, average gift size, top donors, and how gifts are split across your funds.',
+    metrics: [
+      { term: 'Total Giving', def: 'The sum of every donation received in the selected date range.' },
+      { term: 'Average Gift', def: 'Total giving divided by the number of individual gifts — helps you understand typical donor behavior.' },
+      { term: 'Unique Donors', def: 'How many different people gave at least once in this period.' },
+      { term: 'Recurring Donors', def: 'Members with an active automated giving schedule (weekly, monthly, etc.).' },
+    ],
+  },
+  attendance: {
+    title: 'Attendance Reports',
+    what: 'Tracks how many people attend your services each week — including averages, peaks, year-over-year growth, and breakdowns by service type.',
+    metrics: [
+      { term: 'Avg Sunday Attendance', def: 'The average number of people at your main Sunday services over the selected period.' },
+      { term: 'Peak Attendance', def: 'The highest single-service head count — great for capacity planning.' },
+      { term: 'YoY Growth', def: 'Year-over-year change in attendance compared to the same period last year.' },
+    ],
+  },
+  groups: {
+    title: 'Small Groups Reports',
+    what: 'An overview of your small group ministry — how many groups are active, how many members are connected, and which groups are thriving.',
+    metrics: [
+      { term: 'Active Groups', def: 'Groups that have met at least once in the last 30 days.' },
+      { term: 'Avg Group Size', def: 'The average number of members per group.' },
+      { term: '% Members Connected', def: 'What percentage of your total membership is in at least one group. Higher is better — aim for 40%+.' },
+    ],
+  },
+  checkin: {
+    title: 'Kids Check-In Reports',
+    what: "Tracks children's ministry check-in activity — total check-ins, unique children, first-timers, and trends by classroom.",
+    metrics: [
+      { term: 'Total Check-Ins', def: 'The total number of child check-in events in the selected period.' },
+      { term: 'Unique Children', def: 'How many different children were checked in (each child counted once).' },
+      { term: 'First-Timers', def: 'Children who were checked in for the very first time — a key indicator of new family engagement.' },
+    ],
+  },
+  commerce: {
+    title: 'Cafe & Merch Reports',
+    what: 'Revenue and order data from your church cafe, bookstore, and merchandise sales — separate from tithes and offerings.',
+    metrics: [
+      { term: 'Cafe Revenue', def: 'Total sales from coffee, food, and beverage items.' },
+      { term: 'Merch Revenue', def: 'Total sales from merchandise, books, and other store items.' },
+      { term: 'Avg Cafe Order', def: 'Average dollar amount per cafe transaction.' },
+    ],
+  },
+  volunteers: {
+    title: 'Volunteer Reports',
+    what: 'Insights into your volunteer base — total members, active participation, and new member growth. This is the same data as Membership, viewed through a volunteer lens.',
+    metrics: [
+      { term: 'Active Members', def: 'Members who have attended or engaged in the last 90 days.' },
+      { term: 'Visitors', def: 'People who attended but have not yet become official members.' },
+      { term: 'New This Month', def: 'Members added to your database in the current calendar month.' },
+    ],
+  },
+  membership: {
+    title: 'Membership Reports',
+    what: 'A snapshot of your entire congregation — total members, active vs. inactive, visitor-to-member conversion, and growth trends over time.',
+    metrics: [
+      { term: 'Total Members', def: 'Every person in your church database regardless of status.' },
+      { term: 'Active Members', def: 'Members who have attended or given in the last 90 days.' },
+      { term: 'New This Month', def: 'People added to your database in the current calendar month — tracks growth momentum.' },
+    ],
+  },
+  cross: {
+    title: 'Cross-Analysis',
+    what: 'This is the most powerful section. It finds hidden connections between different areas of your church — for example, how attendance frequency affects giving, or how small group participation impacts donor retention. Think of it as "connecting the dots" across your ministry data.',
+    metrics: [
+      { term: 'Giving ↔ Attendance', def: 'Shows how often someone attends church correlates with how much they give. More Sundays = more generous.' },
+      { term: 'Small Group ↔ Giving', def: 'Compares giving between group leaders, group members, and non-group members. Group members consistently give 2-3x more.' },
+      { term: 'Cafe ↔ Kids Check-In', def: 'Reveals that families who buy coffee tend to stay longer after service — a community engagement signal.' },
+      { term: 'Volunteer ↔ Retention', def: 'People who volunteer are far more likely to stay at your church long-term. 50+ hours/year = 94% retention.' },
+    ],
+  },
+  audit: {
+    title: 'Audit Log',
+    what: 'A complete, tamper-proof record of every administrative action taken in your Solomon AI account — who logged in, who edited a record, who processed a donation, and when. Required for financial accountability and denominational compliance.',
+    metrics: [
+      { term: 'Timestamp', def: 'Exact date and time the action occurred.' },
+      { term: 'Action', def: 'What was done — login, donation processed, record edited, settings changed, etc.' },
+      { term: 'Entity', def: 'What type of record was affected — a person, a donation, a group, etc.' },
+    ],
+  },
+};
+
+const TabInfoPanel = ({ tabId }) => {
+  const [expanded, setExpanded] = useState(false);
+  const info = TAB_INFO[tabId];
+  if (!info) return null;
+
+  return (
+    <div className="bg-gradient-to-r from-indigo-50 via-blue-50 to-slate-50 border border-indigo-200/60 rounded-xl overflow-hidden" data-testid={`tab-info-${tabId}`}>
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-indigo-50/50 transition-colors"
+        data-testid={`tab-info-toggle-${tabId}`}
+      >
+        <div className="flex items-center gap-2.5">
+          <div className="w-6 h-6 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
+            <HelpCircle className="w-3.5 h-3.5 text-indigo-600" />
+          </div>
+          <span className="text-sm font-semibold text-indigo-900">{info.title}</span>
+          <span className="text-xs text-indigo-500 hidden sm:inline">— What does this mean?</span>
+        </div>
+        {expanded ? <ChevronUp className="w-4 h-4 text-indigo-400" /> : <ChevronDown className="w-4 h-4 text-indigo-400" />}
+      </button>
+      {expanded && (
+        <div className="px-4 pb-4 space-y-3 animate-fade-in">
+          <p className="text-sm text-slate-700 leading-relaxed">{info.what}</p>
+          {info.metrics.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Key Metrics Explained</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {info.metrics.map((m, i) => (
+                  <div key={i} className="bg-white/70 border border-slate-200/60 rounded-lg px-3 py-2">
+                    <p className="text-xs font-bold text-slate-800">{m.term}</p>
+                    <p className="text-xs text-slate-500 leading-snug mt-0.5">{m.def}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const fmtCur = (v) => `$${Number(v ?? 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
 const fmtNum = (v) => Number(v ?? 0).toLocaleString();
@@ -145,6 +275,9 @@ export default function ReportsPage() {
           </button>
         ))}
       </div>
+
+      {/* Tab Info Panel */}
+      <TabInfoPanel tabId={activeTab} />
 
       {isLoading && (
         <div className="flex items-center justify-center py-16">

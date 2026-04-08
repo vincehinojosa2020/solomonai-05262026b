@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://solomonpay-ledger.preview.emergentagent.com/api
+https://blueprint-audit-1.preview.emergentagent.com/api
 ```
 
 ### Authentication
