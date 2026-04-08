@@ -9,6 +9,8 @@ SOLOMON AI — Multi-tenant church management & payment processing SaaS platform
 - **Auth**: JWT sessions + Google OAuth
 - **Payments**: Solomon Pay (proprietary, Stripe removed)
 - **Cache**: platform_stats_cache + dashboard_stats_cache for God Mode
+- **AI Provider**: Anthropic Claude (claude-sonnet-4.5)
+- **Infrastructure**: Google Cloud Platform
 
 ## Key Roles
 - `platform_admin`: God Mode (full platform visibility)
@@ -17,6 +19,11 @@ SOLOMON AI — Multi-tenant church management & payment processing SaaS platform
 
 ## 8 Seeded Churches
 Abundant Downtown, Abundant West, Abundant East, The Potter's House, City Reach, EdenX Ministries, Hill Country Bible, Cristo Viene
+
+## Revenue Model (3 Streams)
+1. **Processing Fees** — 1.9% + $0.30 (card), 0.8% + $0.30 (ACH). Per-transaction revenue.
+2. **Subscription Fees** — Standard ($499/mo), Growth ($999/mo), Enterprise ($2,000+/mo)
+3. **Professional Services** — Starter Migration ($5K), 10-Hour Bundle ($10K), Full Migration ($15K), On-Site Workshop ($25K), Office Hours ($2,500/mo)
 
 ## Completed Work (All Sessions)
 - Stripe fully removed, Solomon Pay processor built
@@ -28,25 +35,29 @@ Abundant Downtown, Abundant West, Abundant East, The Potter's House, City Reach,
 - Google OAuth integrated
 - Commerce Multi-Payment Selector
 - Visual Workflow Builder & Custom Report Builder scaffolded
-- Technical Hardening (Rate limiting to MongoDB, JWT sessions, slow query optimization)
-- God Mode UI overhaul (PlatformDashboard.jsx) with 6 sections
-- Cache-first architecture (<150ms load times) for God Mode
+- Technical Hardening (Rate limiting, JWT sessions, slow query optimization)
+- God Mode UI overhaul with 6 sections + cache-first architecture (<150ms)
 - Code quality fixes (secrets, hooks, refactoring)
-- Architecture doc generated
-- 9,017 audit logs seeded (3 years across all tenants)
-- Reports Page: Per-tab info panels on all 9 report tabs (Giving, Attendance, Groups, Check-In, Cafe & Merch, Volunteers, Membership, Cross-Analysis, Audit Log)
-- **God Mode KPI Vocabulary Tooltips**: Added GlossaryPanel + KpiInfo components to Dashboard, Church Portfolio, Churches, Solomon Pay, and Donors sections with full definitions for all metrics (Platform GMV, MRR, ARR, Active Donors, Fees Earned, etc.)
-- **Abundant-First Sorting**: Churches always sorted with Abundant campuses at top
-- **Abundant Downtown Rename**: "Abundant Northeast" renamed to "Abundant Downtown" in DB + cache
-- **Production 500 Fix**: Platform stats endpoint now always serves stale cache (never blocks on expensive aggregation), added 25s timeout protection for cache-miss scenarios
+- Architecture doc + 9,017 audit logs seeded (3 years)
+- Reports: Per-tab info panels on all 9 tabs
+- God Mode KPI Vocabulary Tooltips on all sections
+- Abundant-First Sorting + "Abundant Downtown" rename
+- Production 500 Fix (stale cache + 25s timeout protection)
+- **Revenue Model Clarity**: "How Solomon AI Makes Money" card with 3 revenue streams + "Why Churches Switch" competitive section
+- **Solomon AI God Mode Sidebar**: McKinsey/Bain/CPA persona chat with voice recording (Whisper), 6 sample prompts, report generation (CSV/Markdown), inline export buttons
+- **Enhanced Cross-Analysis**: 6 powerful cross-domain correlations (Giving↔Attendance, Group↔LTV, Volunteer↔Retention, Kids↔Family, Visitor↔Conversion, Recurring↔Engagement) with Solomon's Insight boxes and specific dollar impact figures
+- **9 Pre-Built Analysis Templates** (incl. Donor Churn Risk, Campus Migration, Event ROI)
+- **Professional Services Pricing** in Settings (Snyk/Veracode-modeled engagement packages)
+- **Settings: AI Provider** → "Anthropic Claude (claude-sonnet-4.5)", **Infrastructure** → "Google Cloud Platform"
+- **Settings Key Terms glossary** explaining processing fees, subscription MRR, blended take rate, etc.
+- **3-Year Historical Data**: 288 monthly report records seeded across all 8 campuses (membership, attendance, groups, check-in, volunteers)
 
 ## Remaining Work
 - P0: Redeploy to solomonai.us (production 500 fix + all UI improvements)
-- P1: Implement "Founder Role" — role above church_admin for unified multi-campus dashboard
-- P1: Schedule Automated Platform Summary Email (weekly metrics to founders@solomonai.us)
-- P2: Custom Report Builder full implementation (preview + export edge cases)
-- P2: Reports tabs 2-8 with live data
-- P2: PDF export for platform reports
-- P2: Payment method breakdown on Revenue page
+- P1: Implement "Founder Role" for unified multi-campus dashboard
+- P1: Schedule Automated Platform Summary Email (weekly metrics)
+- P2: Custom Report Builder full implementation (preview + export)
+- P2: Reports tabs 2-8 with live data from monthly_reports collection
+- P2: PDF export for reports (currently markdown/CSV)
 - P2: Apple/Google Pay live integration (currently mocked)
-- P3: Split oversized components (KidsCheckinAdmin.jsx 794 lines, CheckInSetupPage.jsx 704 lines)
+- P3: Split oversized components (KidsCheckinAdmin, CheckInSetupPage)
