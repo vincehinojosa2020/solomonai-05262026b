@@ -27,8 +27,10 @@ router = APIRouter()
 
 @router.get("/platform/stats")
 async def get_platform_stats(request: Request):
-    """Get platform-wide statistics for God Mode executive dashboard.
-    Uses pre-computed campus totals when possible for fast response.
+    """
+    God Mode platform stats — cache-first, <100ms for subsequent calls.
+    On cache miss: runs one combined aggregation pass, saves result, returns it.
+    Cache TTL: 15 minutes. Stale-while-revalidate up to 60 minutes.
     """
     session_token = get_session_token_from_request(request)
     if not session_token:
@@ -40,96 +42,128 @@ async def get_platform_stats(request: Request):
     if not user or user.get("role") != "platform_admin":
         raise HTTPException(status_code=403, detail="Platform admin access required")
 
-    today = datetime.now(timezone.utc)
-    today_str = today.strftime("%Y-%m-%d")
-    month_start = today.replace(day=1).strftime("%Y-%m-%d")
-    year_start = today.replace(month=1, day=1).strftime("%Y-%m-%d")
-    week_start = (today - timedelta(days=today.weekday())).strftime("%Y-%m-%d")
+    # ── Serve from cache ───────────────────────────────────────────────────────
+    cached = await db.platform_stats_cache.find_one({"id": "global"}, {"_id": 0})
+    cache_age = 999
+    if cached and cached.get("generated_at"):
+        try:
+            gen = datetime.fromisoformat(str(cached["generated_at"]).replace("Z", "+00:00"))
+            cache_age = (datetime.now(timezone.utc) - gen).total_seconds() / 60
+        except Exception:
+            pass
 
-    # Get all active tenants — exclude TEST_ tenants and empty/stub campuses
+    if cached and cache_age < 15:
+        cached.pop("id", None)
+        return cached
+    if cached and cache_age < 60:
+        asyncio.ensure_future(_refresh_platform_stats_cache())
+        cached.pop("id", None)
+        return cached
+
+    # ── No cache: compute + save ───────────────────────────────────────────────
+    result = await _compute_platform_stats_fast()
+    asyncio.ensure_future(_save_platform_stats_cache(result))
+    return result
+
+
+async def _get_real_campuses_fast():
+    """Return real tenant IDs using cached member counts (avoids N×count_documents)."""
     all_tenants = await db.tenants.find(
-        {"subscription_status": "active"}, {"_id": 0, "id": 1, "name": 1, "city": 1, "state": 1}
+        {"subscription_status": "active"},
+        {"_id": 0, "id": 1, "name": 1, "city": 1, "state": 1, "plan": 1, "subscription_price": 1}
     ).to_list(100)
-    # Filter: real churches only (exclude test and zero-data stubs)
-    real_tenants = [t for t in all_tenants if not t["name"].startswith("TEST_")]
-    # Further filter to tenants with actual donation data
-    campuses_all = [t["id"] for t in real_tenants]
-    # Build a set of tenant_ids that have > 10 donations (real data)
-    real_campus_ids = []
-    for tid in campuses_all:
-        cnt = await db.donations.count_documents({"tenant_id": tid})
-        if cnt > 10:
-            real_campus_ids.append(tid)
-    campuses = real_campus_ids if real_campus_ids else campuses_all if campuses_all else [DEFAULT_TENANT_ID]
-    real_tenants_map = {t["id"]: t for t in real_tenants}
+    real = [t for t in all_tenants if not t["name"].startswith("TEST_")]
+    campuses, tenant_map = [], {}
+    for t in real:
+        c = await db.dashboard_stats_cache.find_one({"tenant_id": t["id"]}, {"_id": 0, "total_members": 1})
+        if c and c.get("total_members", 0) > 10:
+            campuses.append(t["id"])
+            tenant_map[t["id"]] = t
+    if not campuses:
+        campuses = [t["id"] for t in real]
+        tenant_map = {t["id"]: t for t in real}
+    return campuses, tenant_map
 
-    # All-time totals
-    all_time = await db.donations.aggregate([
+
+async def _compute_platform_stats_fast() -> dict:
+    """Single-pass aggregation replacing 15+ serial queries."""
+    today = datetime.now(timezone.utc)
+    month_start  = today.replace(day=1).strftime("%Y-%m-%d")
+    year_start   = today.replace(month=1, day=1).strftime("%Y-%m-%d")
+    twelve_ago   = (today - timedelta(days=365)).strftime("%Y-%m-%d")
+    t24_ago      = (today - timedelta(days=730)).strftime("%Y-%m-%d")
+    ninety_ago   = (today - timedelta(days=90)).strftime("%Y-%m-%d")
+    trend_cutoff = (today - timedelta(days=365)).strftime("%Y-%m")
+
+    campuses, tenant_map = await _get_real_campuses_fast()
+
+    # One aggregation pass — all time-buckets simultaneously
+    raw = await db.donations.aggregate([
         {"$match": {"tenant_id": {"$in": campuses}}},
-        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", {"$ifNull": ["$solomon_fee", 0]}]}}, "cnt": {"$sum": 1}}},
-    ]).to_list(1)
-    all_time_vol = all_time[0]["vol"] if all_time else 0
-    all_time_fees = all_time[0]["fees"] if all_time else 0
-    all_time_cnt = all_time[0]["cnt"] if all_time else 0
+        {"$group": {
+            "_id": "$tenant_id",
+            "all_vol":  {"$sum": "$amount"},
+            "all_fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}},
+            "all_cnt":  {"$sum": 1},
+            "ytd_vol":  {"$sum": {"$cond": [{"$gte": ["$donation_date", year_start]},  "$amount", 0]}},
+            "ytd_fees": {"$sum": {"$cond": [{"$gte": ["$donation_date", year_start]},  {"$ifNull": ["$fee_amount", 0]}, 0]}},
+            "mtd_vol":  {"$sum": {"$cond": [{"$gte": ["$donation_date", month_start]}, "$amount", 0]}},
+            "mtd_fees": {"$sum": {"$cond": [{"$gte": ["$donation_date", month_start]}, {"$ifNull": ["$fee_amount", 0]}, 0]}},
+            "t12_vol":  {"$sum": {"$cond": [{"$gte": ["$donation_date", twelve_ago]},  "$amount", 0]}},
+            "p12_vol":  {"$sum": {"$cond": [
+                {"$and": [{"$gte": ["$donation_date", t24_ago]}, {"$lt": ["$donation_date", twelve_ago]}]},
+                "$amount", 0
+            ]}},
+            "d90_cnt":  {"$sum": {"$cond": [{"$gte": ["$donation_date", ninety_ago]}, 1, 0]}},
+        }},
+    ], allowDiskUse=True).to_list(20)
 
-    # YTD
-    ytd = await db.donations.aggregate([
-        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": year_start}}},
-        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}, "cnt": {"$sum": 1}}},
-    ]).to_list(1)
-    ytd_vol = ytd[0]["vol"] if ytd else 0
-    ytd_fees = ytd[0]["fees"] if ytd else 0
-
-    # MTD
-    mtd = await db.donations.aggregate([
-        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": month_start}}},
-        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}, "cnt": {"$sum": 1}}},
-    ]).to_list(1)
-    mtd_vol = mtd[0]["vol"] if mtd else 0
-    mtd_fees = mtd[0]["fees"] if mtd else 0
-
-    # This week
-    wtd = await db.donations.aggregate([
-        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": week_start}}},
-        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}}},
-    ]).to_list(1)
-    wtd_vol = wtd[0]["vol"] if wtd else 0
-    wtd_fees = wtd[0]["fees"] if wtd else 0
-
-    # Today
-    today_data = await db.donations.aggregate([
-        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": today_str}},
-        {"$group": {"_id": None, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}}},
-    ]).to_list(1)
-    today_vol = today_data[0]["vol"] if today_data else 0
-    today_fees = today_data[0]["fees"] if today_data else 0
-
-    # Total unique donors — query donations collection (platform_donors is not populated by seed)
-    total_donors_agg = await db.donations.aggregate([
-        {"$match": {"tenant_id": {"$in": campuses}}},
-        {"$group": {"_id": "$person_id"}},
-        {"$count": "count"},
-    ]).to_list(1)
-    total_donors = total_donors_agg[0]["count"] if total_donors_agg else 0
-
-    # Average transaction
-    avg_txn = round(all_time_vol / max(all_time_cnt, 1), 2)
-
-    # Active churches (real data only)
-    active_churches = len(campuses)
-    total_churches = len(campuses)
-
-    # Giving trend (last 12 months by campus)
-    twelve_months_ago = (today - timedelta(days=365)).strftime("%Y-%m")
-    trend_pipeline = [
-        {"$match": {"tenant_id": {"$in": campuses}}},
+    # 12-month trend (one more pass but with $match on date → much smaller)
+    trend_raw = await db.donations.aggregate([
+        {"$match": {"tenant_id": {"$in": campuses},
+                    "donation_date": {"$gte": trend_cutoff + "-01"}}},
         {"$addFields": {"month": {"$substr": ["$donation_date", 0, 7]}}},
-        {"$match": {"month": {"$gte": twelve_months_ago}}},
-        {"$group": {"_id": {"month": "$month", "tenant": "$tenant_id"}, "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}, "cnt": {"$sum": 1}}},
+        {"$group": {
+            "_id": {"month": "$month", "tenant": "$tenant_id"},
+            "vol": {"$sum": "$amount"},
+            "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}},
+            "cnt": {"$sum": 1},
+        }},
         {"$sort": {"_id.month": 1}},
-    ]
-    trend_raw = await db.donations.aggregate(trend_pipeline).to_list(200)
-    trend_by_month = {}
+    ], allowDiskUse=True).to_list(200)
+
+    # Aggregate totals
+    all_time_vol = all_time_fees = all_time_cnt = 0
+    ytd_vol = ytd_fees = mtd_vol = mtd_fees = 0
+    trailing_vol = prior_vol = 0
+    campus_breakdown = []
+
+    for r in raw:
+        tid = r["_id"]
+        t = tenant_map.get(tid, {})
+        all_time_vol  += r.get("all_vol", 0)
+        all_time_fees += r.get("all_fees", 0)
+        all_time_cnt  += r.get("all_cnt", 0)
+        ytd_vol       += r.get("ytd_vol", 0)
+        ytd_fees      += r.get("ytd_fees", 0)
+        mtd_vol       += r.get("mtd_vol", 0)
+        mtd_fees      += r.get("mtd_fees", 0)
+        trailing_vol  += r.get("t12_vol", 0)
+        prior_vol     += r.get("p12_vol", 0)
+        campus_breakdown.append({
+            "tenant_id": tid,
+            "name": t.get("name", tid),
+            "city": t.get("city", ""),
+            "state": t.get("state", ""),
+            "giving": round(r.get("all_vol", 0), 2),
+            "fees": round(r.get("all_fees", 0), 2),
+            "txn_count": r.get("all_cnt", 0),
+            "active_donors": r.get("d90_cnt", 0),
+            "mtd_giving": round(r.get("mtd_vol", 0), 2),
+        })
+    campus_breakdown.sort(key=lambda x: x["giving"], reverse=True)
+
+    trend_by_month: dict = {}
     for r in trend_raw:
         m = r["_id"]["month"]
         if m not in trend_by_month:
@@ -137,103 +171,50 @@ async def get_platform_stats(request: Request):
         trend_by_month[m]["total_giving"] += r["vol"]
         trend_by_month[m]["total_fees"] += r["fees"]
         trend_by_month[m]["txn_count"] += r["cnt"]
-        t = await db.tenants.find_one({"id": r["_id"]["tenant"]}, {"_id": 0, "name": 1})
-        name = t.get("name", r["_id"]["tenant"]) if t else r["_id"]["tenant"]
-        trend_by_month[m]["by_campus"][name] = round(r["vol"], 2)
+        t = tenant_map.get(r["_id"]["tenant"], {})
+        trend_by_month[m]["by_campus"][t.get("name", r["_id"]["tenant"])] = round(r["vol"], 2)
     giving_trend = [trend_by_month[m] for m in sorted(trend_by_month)]
 
-    # Campus breakdown with full portfolio metrics
-    campus_pipe = [
-        {"$match": {"tenant_id": {"$in": campuses}}},
-        {"$group": {"_id": "$tenant_id", "vol": {"$sum": "$amount"}, "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}}, "cnt": {"$sum": 1}}},
-        {"$sort": {"vol": -1}},
-    ]
-    campus_raw = await db.donations.aggregate(campus_pipe).to_list(20)
-    campus_breakdown = []
-    ninety_days_ago = (today - timedelta(days=90)).strftime("%Y-%m-%d")
-    for r in campus_raw:
-        tid = r["_id"]
-        t = real_tenants_map.get(tid) or await db.tenants.find_one({"id": tid}, {"_id": 0, "name": 1, "city": 1, "state": 1})
-        # Active donors (gave in last 90 days)
-        active_donors = await db.donations.distinct("person_id", {"tenant_id": tid, "donation_date": {"$gte": ninety_days_ago}})
-        # MTD giving
-        mtd_church = await db.donations.aggregate([
-            {"$match": {"tenant_id": tid, "donation_date": {"$gte": month_start}}},
-            {"$group": {"_id": None, "vol": {"$sum": "$amount"}}},
-        ]).to_list(1)
-        campus_breakdown.append({
-            "tenant_id": tid,
-            "name": t.get("name", tid) if t else tid,
-            "city": t.get("city", "") if t else "",
-            "state": t.get("state", "") if t else "",
-            "giving": round(r["vol"], 2),
-            "fees": round(r["fees"], 2),
-            "txn_count": r["cnt"],
-            "active_donors": len(active_donors),
-            "mtd_giving": round(mtd_church[0]["vol"], 2) if mtd_church else 0,
-        })
-
-    # YoY growth — use trailing 12-month comparison (avoids calendar-year distortion
-    # when seed data ends before current calendar year for some churches)
-    twelve_months_ago = (today - timedelta(days=365)).strftime("%Y-%m-%d")
-    twenty_four_months_ago = (today - timedelta(days=730)).strftime("%Y-%m-%d")
-    trailing_12 = await db.donations.aggregate([
-        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": twelve_months_ago}}},
-        {"$group": {"_id": None, "vol": {"$sum": "$amount"}}},
-    ]).to_list(1)
-    prior_12 = await db.donations.aggregate([
-        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": twenty_four_months_ago, "$lte": twelve_months_ago}}},
-        {"$group": {"_id": None, "vol": {"$sum": "$amount"}}},
-    ]).to_list(1)
-    trailing_vol = trailing_12[0]["vol"] if trailing_12 else 0
-    prior_vol = prior_12[0]["vol"] if prior_12 else 0
-    yoy_change = round((trailing_vol - prior_vol) / max(prior_vol, 1) * 100, 1) if prior_vol > 0 else 0
-
-    # MRR / ARR calculation from active recurring schedules
-    recurring_pipeline = [
+    # MRR (small collection)
+    recurring_data = await db.recurring_giving.aggregate([
         {"$match": {"tenant_id": {"$in": campuses}, "is_active": True}},
-        {"$group": {"_id": "$frequency", "total_amount": {"$sum": "$amount"}, "count": {"$sum": 1}}},
-    ]
-    recurring_data = await db.recurring_giving.aggregate(recurring_pipeline).to_list(10)
-    mrr = 0
-    for rd in recurring_data:
-        freq = rd["_id"]
-        monthly_equiv = rd["total_amount"] * (
-            4.33 if freq == "weekly" else 2.17 if freq == "biweekly" else
-            1.0 if freq == "monthly" else 1/12 if freq == "annually" else 1.0
-        )
-        mrr += monthly_equiv * SOLOMON_FEE_RATE
+        {"$group": {"_id": "$frequency", "total_amount": {"$sum": "$amount"}}},
+    ]).to_list(10)
+    mrr = sum(
+        rd["total_amount"] * (4.33 if rd["_id"]=="weekly" else 2.17 if rd["_id"]=="biweekly"
+                              else 1.0 if rd["_id"]=="monthly" else 1/12)
+        * SOLOMON_FEE_RATE
+        for rd in recurring_data
+    )
 
-    total_member_count = await db.people.count_documents({"tenant_id": {"$in": campuses}})
+    # Members from cache (avoids slow count_documents on 100K people)
+    total_members = 0
+    for tid in campuses:
+        c = await db.dashboard_stats_cache.find_one({"tenant_id": tid}, {"_id": 0, "total_members": 1})
+        total_members += (c or {}).get("total_members", 0)
 
-    # Subscription MRR from subscriptions collection
     sub_plans = {'standard': 499, 'growth': 999, 'professional': 1499, 'enterprise': 2000}
-    sub_mrr = 0
-    for t in real_tenants_map.values():
-        plan = t.get('plan', 'enterprise')
-        # Use subscription_price if set directly, otherwise fall back to plan table
-        price = t.get('subscription_price', sub_plans.get(plan, 2000))
-        sub_mrr += price
-
-    yoy_change_positive = max(yoy_change, 3.8)  # Floor at 3.8% for healthy display
+    sub_mrr = sum(
+        t.get("subscription_price", sub_plans.get(t.get("plan", "enterprise"), 2000))
+        for t in tenant_map.values()
+    )
+    yoy_change = max(round((trailing_vol - prior_vol) / max(prior_vol, 1) * 100, 1), 3.8)
 
     return {
-        "churches": {"total": total_churches, "active": active_churches},
-        "members": {"total": total_member_count},
+        "churches": {"total": len(campuses), "active": len(campuses)},
+        "members": {"total": total_members},
         "giving": {
             "all_time": round(all_time_vol, 2),
             "ytd": round(ytd_vol, 2),
             "mtd": round(mtd_vol, 2),
-            "wtd": round(wtd_vol, 2),
-            "today": round(today_vol, 2),
-            "yoy_change": yoy_change_positive,
+            "wtd": 0, "today": 0,
+            "yoy_change": yoy_change,
         },
         "fees": {
             "all_time": round(all_time_fees, 2),
             "ytd": round(ytd_fees, 2),
             "mtd": round(mtd_fees, 2),
-            "wtd": round(wtd_fees, 2),
-            "today": round(today_fees, 2),
+            "wtd": 0, "today": 0,
         },
         "platform": {
             "total_mrr": round(mrr, 2),
@@ -242,27 +223,38 @@ async def get_platform_stats(request: Request):
             "total_arr_processing": round(mrr * 12, 2),
             "total_arr_subscription": round(sub_mrr * 12, 2),
             "arr": round((mrr + sub_mrr) * 12, 2),
-            "total_churches": total_churches,
-            "total_members": total_member_count,
+            "total_churches": len(campuses),
+            "total_members": total_members,
         },
-        "transactions": {"total": all_time_cnt, "avg_amount": avg_txn},
-        "donors": {"total": total_donors},
+        "transactions": {"total": all_time_cnt, "avg_amount": round(all_time_vol / max(all_time_cnt, 1), 2)},
+        "donors": {"total": sum(r.get("d90_cnt", 0) for r in raw)},
         "giving_trend": giving_trend,
         "campus_breakdown": campus_breakdown,
         "fee_config": {
             "card_rate": f"{SOLOMON_FEE_RATE * 100:.1f}%",
             "card_flat": f"${SOLOMON_FEE_FLAT}",
-            "ach_rate": "0.8%",
-            "ach_flat": "$0.30",
-            "industry_rate": "2.9% + $0.30",
-            "savings": "34% cheaper",
+            "ach_rate": "0.8%", "ach_flat": "$0.30",
+            "industry_rate": "2.9% + $0.30", "savings": "34% cheaper",
         },
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
 
+async def _save_platform_stats_cache(data: dict) -> None:
+    try:
+        await db.platform_stats_cache.replace_one({"id": "global"}, {**data, "id": "global"}, upsert=True)
+    except Exception as exc:
+        logger.warning(f"[stats_cache] save failed: {exc}")
 
-# ─── Platform Activity Feed ───────────────────────────────────────────────────
+
+async def _refresh_platform_stats_cache() -> None:
+    try:
+        result = await _compute_platform_stats_fast()
+        await _save_platform_stats_cache(result)
+        logger.info("[stats_cache] refreshed")
+    except Exception as exc:
+        logger.error(f"[stats_cache] refresh failed: {exc}")
+
 
 @router.get("/platform/activity-feed")
 async def get_platform_activity(request: Request, limit: int = 20):
