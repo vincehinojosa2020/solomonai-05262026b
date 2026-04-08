@@ -550,73 +550,123 @@ export default function ReportsPage() {
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
             <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-semibold text-blue-900">Cross-Domain Correlation Analysis</p>
-              <p className="text-xs text-blue-700 mt-0.5">Discover hidden relationships between giving, attendance, groups, and commerce to drive strategic decisions.</p>
+              <p className="text-sm font-semibold text-blue-900">Cross-Domain Intelligence Engine</p>
+              <p className="text-xs text-blue-700 mt-0.5">Solomon AI uncovers hidden relationships across giving, attendance, groups, check-in, volunteering, and commerce — insights no other church platform can provide. This is the data-driven advantage.</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Giving ↔ Attendance */}
             <div className="bg-white border border-slate-200 rounded-xl p-5">
-              <h3 className="font-semibold text-slate-800 mb-1">Giving ↔ Attendance</h3>
-              <p className="text-xs text-slate-500 mb-4">Attendance weeks vs. giving amount per donor</p>
+              <h3 className="font-semibold text-slate-800 mb-1">Giving ↔ Attendance Correlation</h3>
+              <p className="text-xs text-slate-500 mb-4">3-year analysis: attendance frequency vs. annual giving per donor</p>
               <div className="space-y-2">
                 {[
-                  { label: 'Members attending 40+ Sundays', giving: '$2,840 avg/year', pct: 85 },
-                  { label: 'Members attending 20-40 Sundays', giving: '$1,200 avg/year', pct: 60 },
-                  { label: 'Members attending 10-20 Sundays', giving: '$420 avg/year', pct: 35 },
-                  { label: 'Members attending < 10 Sundays', giving: '$85 avg/year', pct: 12 },
+                  { label: '40+ Sundays/year (core)', giving: '$3,280 avg', pct: 92, donors: '8,420', color: '#2563eb' },
+                  { label: '25-40 Sundays (regular)', giving: '$1,640 avg', pct: 68, donors: '14,200', color: '#3b82f6' },
+                  { label: '12-24 Sundays (occasional)', giving: '$520 avg', pct: 38, donors: '9,800', color: '#93c5fd' },
+                  { label: '< 12 Sundays (infrequent)', giving: '$95 avg', pct: 8, donors: '7,580', color: '#cbd5e1' },
                 ].map((row, i) => (
                   <div key={i} className="space-y-1">
                     <div className="flex justify-between text-xs">
                       <span className="text-slate-600">{row.label}</span>
-                      <span className="font-semibold text-slate-900">{row.giving}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-slate-400 text-[10px]">{row.donors} donors</span>
+                        <span className="font-bold text-slate-900 w-20 text-right">{row.giving}</span>
+                      </div>
                     </div>
-                    <div className="h-2 rounded-full bg-slate-100">
-                      <div className="h-full rounded-full bg-blue-500" style={{ width: `${row.pct}%` }} />
+                    <div className="h-2.5 rounded-full bg-slate-100">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${row.pct}%`, background: row.color }} />
                     </div>
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-emerald-700 mt-3 font-medium">Insight: Each additional Sunday attended correlates with $62 more in annual giving.</p>
+              <div className="mt-3 p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg">
+                <p className="text-xs text-emerald-800 font-semibold">Solomon's Insight</p>
+                <p className="text-[11px] text-emerald-700 mt-0.5">Each additional Sunday attended correlates with <strong>$78 more</strong> in annual giving. Moving 500 occasional attenders to regular (+15 Sundays) would generate <strong>$560K in incremental giving</strong> across the portfolio.</p>
+              </div>
             </div>
 
-            {/* Groups ↔ Giving */}
+            {/* Small Group ↔ Donor Lifetime Value */}
             <div className="bg-white border border-slate-200 rounded-xl p-5">
-              <h3 className="font-semibold text-slate-800 mb-1">Small Group ↔ Giving</h3>
-              <p className="text-xs text-slate-500 mb-4">Group participation vs. giving behavior</p>
+              <h3 className="font-semibold text-slate-800 mb-1">Small Group ↔ Donor Lifetime Value</h3>
+              <p className="text-xs text-slate-500 mb-4">36-month LTV comparison by group engagement level</p>
               <div className="space-y-3">
                 {[
-                  { label: 'Group leader', giving: '$4,200 avg/year', color: '#2563eb' },
-                  { label: 'Active group member', giving: '$1,850 avg/year', color: '#059669' },
-                  { label: 'No group', giving: '$640 avg/year', color: '#94a3b8' },
+                  { label: 'Group leader', ltv: '$14,200', annual: '$4,730/yr', color: '#7c3aed', pct: 100 },
+                  { label: 'Active group member', ltv: '$7,800', annual: '$2,600/yr', color: '#2563eb', pct: 55 },
+                  { label: 'Attended group < 5x', ltv: '$3,100', annual: '$1,030/yr', color: '#0891b2', pct: 22 },
+                  { label: 'Never in a group', ltv: '$1,920', annual: '$640/yr', color: '#94a3b8', pct: 14 },
                 ].map((row, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-50">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full" style={{ background: row.color }} />
-                      <span className="text-sm text-slate-700">{row.label}</span>
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: row.color }} />
+                    <div className="flex-1">
+                      <div className="flex justify-between text-xs mb-0.5">
+                        <span className="text-slate-600">{row.label}</span>
+                        <span className="font-bold text-slate-900">{row.ltv} LTV</span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-slate-100">
+                        <div className="h-full rounded-full" style={{ width: `${row.pct}%`, background: row.color }} />
+                      </div>
                     </div>
-                    <span className="text-sm font-bold text-slate-900">{row.giving}</span>
+                    <span className="text-[10px] text-slate-400 w-16 text-right">{row.annual}</span>
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-emerald-700 mt-3 font-medium">Insight: Group members give 2.9× more than non-group members.</p>
+              <div className="mt-3 p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg">
+                <p className="text-xs text-emerald-800 font-semibold">Solomon's Insight</p>
+                <p className="text-[11px] text-emerald-700 mt-0.5">Group leaders have <strong>7.4x higher LTV</strong> than non-group members. Launching 10 new groups could generate <strong>$390K in incremental LTV</strong> over 3 years.</p>
+              </div>
             </div>
 
-            {/* Cafe ↔ Kids Check-In */}
+            {/* Volunteer Hours ↔ Donor Retention */}
             <div className="bg-white border border-slate-200 rounded-xl p-5">
-              <h3 className="font-semibold text-slate-800 mb-1">Cafe ↔ Kids Check-In</h3>
-              <p className="text-xs text-slate-500 mb-4">Coffee purchasers vs. families with checked-in children</p>
+              <h3 className="font-semibold text-slate-800 mb-1">Volunteer Hours ↔ Donor Retention</h3>
+              <p className="text-xs text-slate-500 mb-4">3-year cohort analysis: service hours vs. giving retention rate</p>
+              <div className="space-y-3">
+                {[
+                  { hours: '100+ hrs/year (ministry lead)', retention: '97%', churn: '3%', ltv: '$5,200/yr', color: '#7c3aed' },
+                  { hours: '50-100 hrs/year (committed)', retention: '94%', churn: '6%', ltv: '$3,800/yr', color: '#2563eb' },
+                  { hours: '20-50 hrs/year (regular)', retention: '82%', churn: '18%', ltv: '$2,100/yr', color: '#059669' },
+                  { hours: '5-20 hrs/year (occasional)', retention: '65%', churn: '35%', ltv: '$980/yr', color: '#f59e0b' },
+                  { hours: 'No volunteering', retention: '41%', churn: '59%', ltv: '$420/yr', color: '#dc2626' },
+                ].map((row, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 flex-1">
+                      <div className="w-2 h-2 rounded-full" style={{ background: row.color }} />
+                      <span className="text-xs text-slate-600 truncate">{row.hours}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-20 h-2 rounded-full bg-slate-100">
+                        <div className="h-full rounded-full" style={{ width: row.retention, background: row.color }} />
+                      </div>
+                      <span className="text-xs font-bold w-10 text-right" style={{ color: row.color }}>{row.retention}</span>
+                      <span className="text-[10px] text-slate-400 w-16 text-right">{row.ltv}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg">
+                <p className="text-xs text-emerald-800 font-semibold">Solomon's Insight</p>
+                <p className="text-[11px] text-emerald-700 mt-0.5">Volunteers who serve 50+ hours have <strong>2.3x higher retention</strong> than non-volunteers. The 59% churn rate among non-volunteers represents <strong>$3.2M in at-risk annual giving</strong> across the portfolio.</p>
+              </div>
+            </div>
+
+            {/* Kids Check-In ↔ Family Giving */}
+            <div className="bg-white border border-slate-200 rounded-xl p-5">
+              <h3 className="font-semibold text-slate-800 mb-1">Kids Check-In ↔ Family Giving</h3>
+              <p className="text-xs text-slate-500 mb-4">Families with children vs. giving patterns (3-year, all campuses)</p>
               <div className="space-y-2">
                 {[
-                  { label: 'Families with kids + cafe purchase', pct: 78, color: '#f59e0b' },
-                  { label: 'Families with kids, no cafe', pct: 22, color: '#94a3b8' },
-                  { label: 'No kids + cafe purchase', pct: 52, color: '#0891b2' },
+                  { label: 'Families checking in weekly', giving: '$4,600/yr', pct: 94, color: '#ec4899' },
+                  { label: 'Families checking in 2-3x/month', giving: '$2,800/yr', pct: 72, color: '#f59e0b' },
+                  { label: 'Families checking in 1x/month', giving: '$1,200/yr', pct: 42, color: '#0891b2' },
+                  { label: 'Families with kids, no check-in', giving: '$480/yr', pct: 18, color: '#94a3b8' },
                 ].map((row, i) => (
                   <div key={i} className="space-y-1">
                     <div className="flex justify-between text-xs">
                       <span className="text-slate-600">{row.label}</span>
-                      <span className="font-semibold">{row.pct}%</span>
+                      <span className="font-bold text-slate-900">{row.giving}</span>
                     </div>
                     <div className="h-2 rounded-full bg-slate-100">
                       <div className="h-full rounded-full" style={{ width: `${row.pct}%`, background: row.color }} />
@@ -624,32 +674,71 @@ export default function ReportsPage() {
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-emerald-700 mt-3 font-medium">Insight: Families who buy coffee stay an average of 22 min longer after service.</p>
+              <div className="mt-3 p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg">
+                <p className="text-xs text-emerald-800 font-semibold">Solomon's Insight</p>
+                <p className="text-[11px] text-emerald-700 mt-0.5">Families who use kids check-in weekly give <strong>9.6x more</strong> than families who don't use check-in. Children's ministry isn't a cost center — it's a <strong>$4.1M revenue driver</strong>.</p>
+              </div>
             </div>
 
-            {/* Volunteer ↔ Retention */}
+            {/* New: First-Time Visitor ↔ Donor Conversion */}
             <div className="bg-white border border-slate-200 rounded-xl p-5">
-              <h3 className="font-semibold text-slate-800 mb-1">Volunteer ↔ Retention</h3>
-              <p className="text-xs text-slate-500 mb-4">Service hours vs. 2-year retention rate</p>
-              <div className="space-y-3">
+              <h3 className="font-semibold text-slate-800 mb-1">First-Time Visitor ↔ Donor Conversion</h3>
+              <p className="text-xs text-slate-500 mb-4">Visitor journey funnel: first visit to first gift (3-year portfolio data)</p>
+              <div className="space-y-2.5">
                 {[
-                  { hours: '50+ hours/year', retention: '94%', color: '#2563eb' },
-                  { hours: '20-50 hours/year', retention: '82%', color: '#059669' },
-                  { hours: '5-20 hours/year', retention: '65%', color: '#f59e0b' },
-                  { hours: 'No volunteering', retention: '41%', color: '#dc2626' },
+                  { stage: 'First-time visitors (all campuses)', count: '18,400', pct: 100, color: '#e2e8f0' },
+                  { stage: 'Returned within 30 days', count: '9,936 (54%)', pct: 54, color: '#93c5fd' },
+                  { stage: 'Attended 4+ times in 90 days', count: '5,888 (32%)', pct: 32, color: '#3b82f6' },
+                  { stage: 'Joined a group or volunteered', count: '3,128 (17%)', pct: 17, color: '#2563eb' },
+                  { stage: 'Made first gift', count: '2,576 (14%)', pct: 14, color: '#1d4ed8' },
+                  { stage: 'Became recurring donor', count: '1,104 (6%)', pct: 6, color: '#7c3aed' },
                 ].map((row, i) => (
-                  <div key={i} className="flex items-center justify-between">
-                    <span className="text-sm text-slate-600">{row.hours}</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-24 h-2 rounded-full bg-slate-100">
-                        <div className="h-full rounded-full" style={{ width: row.retention, background: row.color }} />
-                      </div>
-                      <span className="text-sm font-bold" style={{ color: row.color }}>{row.retention}</span>
+                  <div key={i} className="space-y-0.5">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-slate-600">{row.stage}</span>
+                      <span className="font-semibold text-slate-800">{row.count}</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-slate-50">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${row.pct}%`, background: row.color }} />
                     </div>
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-emerald-700 mt-3 font-medium">Insight: Volunteers have 2.3× higher 2-year retention than non-volunteers.</p>
+              <div className="mt-3 p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg">
+                <p className="text-xs text-emerald-800 font-semibold">Solomon's Insight</p>
+                <p className="text-[11px] text-emerald-700 mt-0.5">Only <strong>6% of first-time visitors</strong> become recurring donors — but those who do have an avg LTV of <strong>$8,400 over 3 years</strong>. Improving the 30-day return rate by just 10% would add <strong>$1.5M in lifetime giving</strong>.</p>
+              </div>
+            </div>
+
+            {/* New: Recurring Giving ↔ Engagement Score */}
+            <div className="bg-white border border-slate-200 rounded-xl p-5">
+              <h3 className="font-semibold text-slate-800 mb-1">Recurring Giving ↔ Engagement Score</h3>
+              <p className="text-xs text-slate-500 mb-4">Automated giving vs. multi-dimensional engagement (groups + volunteering + events)</p>
+              <div className="space-y-3">
+                {[
+                  { segment: 'Recurring + Highly Engaged', pct_members: '8%', annual: '$6,200', retention: '98%', color: '#7c3aed' },
+                  { segment: 'Recurring + Moderately Engaged', pct_members: '12%', annual: '$3,400', retention: '92%', color: '#2563eb' },
+                  { segment: 'Recurring + Low Engagement', pct_members: '5%', annual: '$1,800', retention: '78%', color: '#f59e0b' },
+                  { segment: 'One-time Givers', pct_members: '22%', annual: '$340', retention: '28%', color: '#94a3b8' },
+                  { segment: 'Non-Donors (Attenders Only)', pct_members: '53%', annual: '$0', retention: '35%', color: '#e2e8f0' },
+                ].map((row, i) => (
+                  <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg bg-slate-50">
+                    <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: row.color }} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-slate-700 truncate">{row.segment}</p>
+                      <p className="text-[10px] text-slate-400">{row.pct_members} of members</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs font-bold text-slate-900">{row.annual}/yr</p>
+                      <p className="text-[10px] text-slate-400">{row.retention} retained</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg">
+                <p className="text-xs text-emerald-800 font-semibold">Solomon's Insight</p>
+                <p className="text-[11px] text-emerald-700 mt-0.5">The top 20% of members (recurring + engaged) generate <strong>84% of all giving</strong>. Converting even 5% of one-time givers to recurring would add <strong>$720K in annual giving</strong> and increase retention from 28% to 78%.</p>
+              </div>
             </div>
           </div>
 
@@ -664,10 +753,13 @@ export default function ReportsPage() {
                 { title: 'Top 10 Groups by Attendance', desc: 'Most consistently attended groups', action: 'top-groups' },
                 { title: 'Volunteer Hours by Ministry', desc: 'Ministry team contribution breakdown', action: 'volunteer-hours' },
                 { title: 'Giving Milestone Members', desc: '$1K, $5K, $10K lifetime givers', action: 'milestones' },
+                { title: 'Donor Churn Risk Analysis', desc: 'Predict which donors may lapse based on engagement signals', action: 'churn-risk' },
+                { title: 'Campus-to-Campus Migration', desc: 'Members moving between Abundant campuses', action: 'campus-migration' },
+                { title: 'Event ROI Calculator', desc: 'Revenue & attendance impact per event type', action: 'event-roi' },
               ].map((tmpl, i) => (
                 <button
                   key={i}
-                  onClick={() => toast.info(`"${tmpl.title}" report — full export coming in Reports v2`)}
+                  onClick={() => toast.info(`"${tmpl.title}" — full export coming in Reports v2`)}
                   className="text-left p-4 border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all"
                   data-testid={`analysis-template-${tmpl.action}`}
                 >

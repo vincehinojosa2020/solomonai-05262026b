@@ -12,7 +12,7 @@ import {
   BarChart3, Shield, Settings, LogOut, Calendar, Heart, Baby,
   Clock, CreditCard, CheckCircle2, RotateCcw, Eye, ChevronDown, ChevronUp,
   Bell, Layers, PieChart as PieChartIcon, LineChart as LineChartIcon,
-  HelpCircle, BookOpen, Info
+  HelpCircle, BookOpen, Info, Brain
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line,
@@ -22,6 +22,7 @@ import {
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 import ChurchOnboardingWizard from '@/components/ChurchOnboardingWizard';
+import SolomonGodMode from '@/components/SolomonGodMode';
 
 // ─── Color palette ─────────────────────────────────────────────────────────
 const C = ['#3b82f6','#8b5cf6','#10b981','#f59e0b','#ef4444','#0891b2','#ec4899','#6366f1'];
@@ -307,6 +308,7 @@ export default function PlatformDashboard() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showWizard, setShowWizard] = useState(false);
+  const [showSolomon, setShowSolomon] = useState(false);
 
   // Solomon Pay vs competitor pricing advantage (verified)
   const PRICING_COMPARISON = [
@@ -455,6 +457,7 @@ export default function PlatformDashboard() {
           ))}
         </nav>
         <div className="px-5 py-4 border-t border-slate-800 space-y-2">
+          <button onClick={()=>setShowSolomon(true)} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-blue-400 hover:text-white bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 rounded-lg transition-all" data-testid="solomon-ai-btn"><Brain className="w-4 h-4"/>Ask Solomon</button>
           <button onClick={()=>setShowWizard(true)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all" data-testid="add-church-btn"><Plus className="w-3.5 h-3.5"/>Add New Church</button>
           <button onClick={()=>{sessionStorage.clear();navigate('/login');}} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-500 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-all"><LogOut className="w-3.5 h-3.5"/>Sign Out</button>
         </div>
@@ -517,6 +520,85 @@ export default function PlatformDashboard() {
               </div>
               {/* KPI Glossary */}
               <GlossaryPanel sectionKey="dashboard" />
+
+              {/* Revenue Model Breakdown */}
+              <div className="bg-white border border-slate-200 rounded-xl p-5" data-testid="revenue-model-card">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm font-bold text-slate-900">How Solomon AI Makes Money</p>
+                    <p className="text-xs text-slate-400">Three revenue streams powering platform economics</p>
+                  </div>
+                  <KpiInfo term="Total Revenue" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Processing Fees */}
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200/50 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center"><CreditCard className="w-4 h-4 text-white"/></div>
+                      <div>
+                        <p className="text-xs font-bold text-blue-900">Processing Fees</p>
+                        <p className="text-[10px] text-blue-600">Per-transaction revenue</p>
+                      </div>
+                    </div>
+                    <p className="text-2xl font-black text-blue-900 mb-1">{fmtM(f.all_time||0)}</p>
+                    <p className="text-[10px] text-blue-700 mb-2">All-time fees earned from Solomon Pay</p>
+                    <div className="space-y-1.5 border-t border-blue-200/50 pt-2">
+                      <div className="flex justify-between text-[10px]"><span className="text-blue-600">Card rate</span><span className="font-bold text-blue-900">1.9% + $0.30</span></div>
+                      <div className="flex justify-between text-[10px]"><span className="text-blue-600">ACH rate</span><span className="font-bold text-blue-900">0.8% + $0.30</span></div>
+                      <div className="flex justify-between text-[10px]"><span className="text-blue-600">Blended take rate</span><span className="font-bold text-blue-900">{((f.all_time||0)/Math.max(g.all_time||1,1)*100).toFixed(2)}%</span></div>
+                    </div>
+                    <p className="text-[10px] text-blue-700 mt-2 leading-snug">Every donation processed through Solomon Pay generates fee revenue. We earn on every swipe, every ACH transfer, every recurring gift — 34% cheaper than Pushpay.</p>
+                  </div>
+                  {/* Subscription Fees */}
+                  <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200/50 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center"><Layers className="w-4 h-4 text-white"/></div>
+                      <div>
+                        <p className="text-xs font-bold text-emerald-900">Subscription Fees</p>
+                        <p className="text-[10px] text-emerald-600">Monthly SaaS revenue</p>
+                      </div>
+                    </div>
+                    <p className="text-2xl font-black text-emerald-900 mb-1">{fmtM((p.subscription_mrr||0)*12)}</p>
+                    <p className="text-[10px] text-emerald-700 mb-2">Annualized subscription revenue</p>
+                    <div className="space-y-1.5 border-t border-emerald-200/50 pt-2">
+                      <div className="flex justify-between text-[10px]"><span className="text-emerald-600">Standard</span><span className="font-bold text-emerald-900">$499/mo</span></div>
+                      <div className="flex justify-between text-[10px]"><span className="text-emerald-600">Growth</span><span className="font-bold text-emerald-900">$999/mo</span></div>
+                      <div className="flex justify-between text-[10px]"><span className="text-emerald-600">Enterprise</span><span className="font-bold text-emerald-900">$2,000+/mo</span></div>
+                    </div>
+                    <p className="text-[10px] text-emerald-700 mt-2 leading-snug">Predictable monthly revenue from church platform subscriptions. Each tier unlocks more features, higher member limits, and priority support.</p>
+                  </div>
+                  {/* Professional Services */}
+                  <div className="bg-gradient-to-br from-violet-50 to-violet-100/50 border border-violet-200/50 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center"><Zap className="w-4 h-4 text-white"/></div>
+                      <div>
+                        <p className="text-xs font-bold text-violet-900">Professional Services</p>
+                        <p className="text-[10px] text-violet-600">Onboarding & consulting</p>
+                      </div>
+                    </div>
+                    <p className="text-2xl font-black text-violet-900 mb-1">$80K+</p>
+                    <p className="text-[10px] text-violet-700 mb-2">Annual services revenue potential</p>
+                    <div className="space-y-1.5 border-t border-violet-200/50 pt-2">
+                      <div className="flex justify-between text-[10px]"><span className="text-violet-600">10-Hour Bundle</span><span className="font-bold text-violet-900">$10,000</span></div>
+                      <div className="flex justify-between text-[10px]"><span className="text-violet-600">On-Site Workshop (1 week)</span><span className="font-bold text-violet-900">$25,000</span></div>
+                      <div className="flex justify-between text-[10px]"><span className="text-violet-600">Full Migration + Training</span><span className="font-bold text-violet-900">$15,000</span></div>
+                      <div className="flex justify-between text-[10px]"><span className="text-violet-600">Ongoing Office Hours (mo)</span><span className="font-bold text-violet-900">$2,500/mo</span></div>
+                    </div>
+                    <p className="text-[10px] text-violet-700 mt-2 leading-snug">High-touch onboarding, data migration from Pushpay/SecureGive, on-site workshops, CI/CD integration, and ongoing strategic office hours. Modeled after Snyk/Veracode enterprise engagement pricing.</p>
+                  </div>
+                </div>
+                {/* Why churches switch */}
+                <div className="mt-4 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                  <p className="text-xs font-bold text-slate-800 mb-2">Why Churches Switch from SecureGive & Pushpay to Solomon AI</p>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-[11px]">
+                    <div className="space-y-1"><p className="font-bold text-blue-700">34% Lower Fees</p><p className="text-slate-500">1.9% + $0.30 vs. 2.9% + $0.30. On $1M in annual giving, that's $10,000 saved per year per church.</p></div>
+                    <div className="space-y-1"><p className="font-bold text-emerald-700">AI-Native Platform</p><p className="text-slate-500">Solomon AI provides McKinsey-grade strategic analysis, donor intelligence, and predictive insights — no other church platform has this.</p></div>
+                    <div className="space-y-1"><p className="font-bold text-violet-700">All-in-One</p><p className="text-slate-500">Giving, check-in, groups, events, cafe, merch, communications, and AI — one platform, one price. No bolt-on fees.</p></div>
+                    <div className="space-y-1"><p className="font-bold text-amber-700">No Contracts</p><p className="text-slate-500">Month-to-month. Pushpay locks you into 3-year contracts with $15K+ annual minimums. We earn your business every month.</p></div>
+                  </div>
+                </div>
+              </div>
+
               {/* Charts */}
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
                 <div className="lg:col-span-3 bg-white border border-slate-100 rounded-xl p-5" data-testid="giving-chart">
@@ -1190,17 +1272,48 @@ export default function PlatformDashboard() {
                       ))}
                     </tbody>
                   </table>
-                  <p className="text-[10px] text-slate-400 mt-2">Subscription: $499/mo (Starter) → $2,000+/mo (Enterprise, 10K+ members)</p>
+                  <p className="text-[10px] text-slate-400 mt-2">On $1M annual giving: Solomon Pay saves the church ~$10,000/year in processing fees vs. Pushpay/SecureGive.</p>
                 </div>
                 <div className="bg-white border border-slate-100 rounded-xl p-5">
                   <p className="text-sm font-semibold text-slate-900 mb-3">Platform Info</p>
                   <div className="space-y-2 text-sm">
-                    {[{l:'Version',v:'2.0.0'},{l:'API Endpoints',v:'561+'},{l:'Active Churches',v:churches.length},{l:'Total Members',v:fmtNum(p.total_members||0)},{l:'Total Transactions',v:fmtNum(stats?.transactions?.total||0)},{l:'Database',v:'MongoDB (solomonai)'},{l:'AI Provider',v:'Anthropic Claude via Emergent'},{l:'Infrastructure',v:'GCP / Kubernetes'}].map(r=>(
+                    {[{l:'Version',v:'2.0.0'},{l:'API Endpoints',v:'561+'},{l:'Active Churches',v:churches.length},{l:'Total Members',v:fmtNum(p.total_members||0)},{l:'Total Transactions',v:fmtNum(stats?.transactions?.total||0)},{l:'Database',v:'MongoDB (solomonai)'},{l:'AI Provider',v:'Anthropic Claude (claude-sonnet-4.5)'},{l:'Infrastructure',v:'Google Cloud Platform'}].map(r=>(
                       <div key={r.l} className="flex justify-between py-2 border-b border-slate-50"><span className="text-slate-600">{r.l}</span><span className="font-semibold text-slate-900">{r.v}</span></div>
                     ))}
                   </div>
                 </div>
               </div>
+
+              {/* Professional Services Pricing */}
+              <div className="bg-white border border-slate-100 rounded-xl p-5">
+                <p className="text-sm font-semibold text-slate-900 mb-1">Professional Services & Onboarding Pricing</p>
+                <p className="text-xs text-slate-400 mb-3">Enterprise engagement packages modeled after Snyk/Veracode industry standards</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {[
+                    {name:'Starter Migration',price:'$5,000',desc:'Data migration from SecureGive/Pushpay, member import, fund mapping, basic admin training (5 hrs).',tag:'One-time'},
+                    {name:'10-Hour Consulting Bundle',price:'$10,000',desc:'Strategic consulting, custom report building, workflow design, integration architecture, and hands-on setup.',tag:'Per bundle'},
+                    {name:'Full Migration + Training',price:'$15,000',desc:'Complete data migration, 3-day on-site training, staff onboarding, Sunday go-live support, and 30-day hyper-care.',tag:'One-time'},
+                    {name:'On-Site Workshop (1 week)',price:'$25,000',desc:'5-day executive workshop: platform deep-dive, AI strategy sessions, donor analytics training, reporting mastery, and staff certification.',tag:'Per engagement'},
+                  ].map((pkg,i)=>(
+                    <div key={i} className="border border-slate-200 rounded-xl p-4 hover:border-blue-300 transition-colors">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">{pkg.tag}</span>
+                      </div>
+                      <p className="text-sm font-bold text-slate-900">{pkg.name}</p>
+                      <p className="text-xl font-black text-blue-700 my-1">{pkg.price}</p>
+                      <p className="text-[10px] text-slate-500 leading-snug">{pkg.desc}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 flex items-center gap-2 text-[10px] text-slate-400">
+                  <span>Ongoing Office Hours: $2,500/mo</span>
+                  <span>•</span>
+                  <span>Custom Enterprise SOW: Starting at $50,000</span>
+                  <span>•</span>
+                  <span>All pricing is pre-tax, travel expenses billed separately for on-site work</span>
+                </div>
+              </div>
+
               <div className="bg-white border border-slate-100 rounded-xl p-5">
                 <p className="text-sm font-semibold text-slate-900 mb-3">Notifications</p>
                 <div className="space-y-3">
@@ -1212,12 +1325,33 @@ export default function PlatformDashboard() {
                   ))}
                 </div>
               </div>
+
+              {/* Settings Vocabulary */}
+              <div className="bg-gradient-to-r from-slate-50 to-blue-50/30 border border-slate-200 rounded-xl p-5">
+                <p className="text-sm font-bold text-slate-800 mb-3">Platform Settings — Key Terms</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {[
+                    {term:'Processing Fees',def:'The percentage + flat fee Solomon AI earns on every donation transaction. Card: 1.9% + $0.30. ACH: 0.8% + $0.30. This is automatically deducted before the church receives their payout.'},
+                    {term:'Subscription MRR',def:'Monthly Recurring Revenue from church subscription plans. Each church pays a flat monthly fee ($499-$2,000+) for platform access, regardless of transaction volume.'},
+                    {term:'Professional Services',def:'One-time or packaged consulting revenue. Includes data migration, on-site workshops, staff training, and ongoing office hours. High-margin revenue stream with $1,000/hr effective rate.'},
+                    {term:'Blended Take Rate',def:'Total Fees ÷ Total GMV. Measures how much Solomon AI earns per dollar processed. A 1.7% blended rate means we earn $1.70 for every $100 donated through the platform.'},
+                    {term:'Anthropic Claude',def:'The AI model powering Solomon — Claude Sonnet 4.5 by Anthropic. Handles natural language conversations, strategic analysis, donor intelligence, and report generation.'},
+                    {term:'Google Cloud Platform',def:'Solomon AI runs on GCP infrastructure — Kubernetes for container orchestration, MongoDB Atlas for database, Cloud CDN for global delivery.'},
+                  ].map((t,i)=>(
+                    <div key={i} className="bg-white border border-slate-100 rounded-lg px-3 py-2.5">
+                      <p className="text-xs font-bold text-slate-800">{t.term}</p>
+                      <p className="text-[10px] text-slate-500 leading-snug mt-0.5">{t.def}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
         </div>
       </main>
 
       {showWizard&&<ChurchOnboardingWizard isOpen={showWizard} onClose={()=>setShowWizard(false)} onSuccess={()=>{setShowWizard(false);fetchStats();toast.success('Church added!');}}/>}
+      <SolomonGodMode isOpen={showSolomon} onClose={()=>setShowSolomon(false)} />
     </div>
   );
 }

@@ -696,3 +696,26 @@ async def export_custom_report(request: Request):
         headers={"Content-Disposition": "attachment; filename=custom_report.csv"}
     )
 
+
+
+@router.get("/reports/historical-monthly")
+async def historical_monthly_reports(months: int = 36):
+    """Get historical monthly reports across all campuses (3-year default)"""
+    records = await db.monthly_reports.find(
+        {},
+        {"_id": 0}
+    ).sort("month", -1).to_list(1000)
+    
+    if not records:
+        return {"months": [], "campuses": []}
+    
+    # Group by month and campus
+    campus_names = sorted(set(r.get("tenant_name", "") for r in records))
+    months_set = sorted(set(r.get("month", "") for r in records))[-months:]
+    
+    return {
+        "months": months_set,
+        "campuses": campus_names,
+        "records": records[:months * len(campus_names)],
+        "total_records": len(records),
+    }
