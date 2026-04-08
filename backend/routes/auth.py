@@ -328,13 +328,13 @@ async def email_password_login(request: Request, payload: EmailLoginRequest, res
     # Normalize email
     login_email = payload.email.strip().lower()
     
-    # Rate limiting: 5 attempts per IP per 60 seconds
+    # Rate limiting: 30 attempts per IP per 60 seconds (generous for multi-account demos)
     client_ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or request.headers.get("x-real-ip", "") or request.client.host or "unknown"
-    if not check_rate_limit_v2(f"login_ip:{client_ip}", 5, 60):
+    if not check_rate_limit_v2(f"login_ip:{client_ip}", 30, 60):
         raise HTTPException(status_code=429, detail="Too many login attempts from this IP. Try again in 1 minute.")
     
-    # Rate limiting: 10 attempts per email per hour
-    if not check_rate_limit_v2(f"login_email:{login_email}", 10, 3600):
+    # Rate limiting: 15 attempts per email per hour
+    if not check_rate_limit_v2(f"login_email:{login_email}", 15, 3600):
         raise HTTPException(status_code=429, detail="Too many login attempts for this account. Try again in 1 hour.")
     
     user_doc = await db.users.find_one({"email": login_email}, {"_id": 0})
