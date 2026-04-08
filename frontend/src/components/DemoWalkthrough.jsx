@@ -85,7 +85,7 @@ const ADMIN_STEPS = [
   },
 ];
 
-export default function DemoWalkthrough({ userRole, userName, onNavigate }) {
+export default function DemoWalkthrough({ userRole, userName, onNavigate, walkthroughSeen }) {
   const [active, setActive] = useState(false);
   const [step, setStep] = useState(0);
   const [dismissed, setDismissed] = useState(false);
@@ -96,13 +96,15 @@ export default function DemoWalkthrough({ userRole, userName, onNavigate }) {
   const steps = userRole === 'church_admin' ? ADMIN_STEPS : MEMBER_STEPS;
 
   useEffect(() => {
+    // Skip if already seen (stored in DB)
+    if (walkthroughSeen) return;
     const count = parseInt(sessionStorage.getItem(loginCountKey) || '0', 10);
     const seen = sessionStorage.getItem(storageKey);
     if (!seen && count < 2) {
       const timer = setTimeout(() => setShowWelcome(true), 1500);
       return () => clearTimeout(timer);
     }
-  }, [storageKey, loginCountKey]);
+  }, [storageKey, loginCountKey, walkthroughSeen]);
 
   const startWalkthrough = () => {
     setShowWelcome(false);

@@ -33,7 +33,12 @@ async def get_aggregate_dashboard(request: Request):
     campus_ids = [c.get("id") for c in accessible if c.get("id")]
 
     if not campus_ids:
-        campus_ids = [user.get("tenant_id") or DEFAULT_TENANT_ID]
+        # Also check accessible_tenant_ids directly from user doc
+        user_doc = await db.users.find_one({"user_id": user.get("user_id")}, {"_id": 0})
+        if user_doc and user_doc.get("accessible_tenant_ids"):
+            campus_ids = user_doc["accessible_tenant_ids"]
+        else:
+            campus_ids = [user.get("tenant_id") or DEFAULT_TENANT_ID]
 
     total_members = 0
     total_groups = 0
@@ -42,12 +47,18 @@ async def get_aggregate_dashboard(request: Request):
     campus_breakdown = []
 
     for cid in campus_ids:
-        members = await db.users.count_documents({"tenant_id": cid, "role": "member"})
-        groups = await db.groups.count_documents({"tenant_id": cid, "is_active": True})
-        kids = await db.checkins.count_documents({"tenant_id": cid, "status": "checked_in"})
-
+        # Use dashboard_stats_cache for reliable numbers
         cached = await db.dashboard_stats_cache.find_one({"tenant_id": cid}, {"_id": 0})
-        mtd_giving = cached.get("mtd_giving", 0) if cached else 0
+        if cached:
+            members = cached.get("total_members", 0)
+            groups = cached.get("active_groups", 0)
+            kids = cached.get("kids_checked_in_today", 0)
+            mtd_giving = cached.get("mtd_giving", 0)
+        else:
+            members = await db.users.count_documents({"tenant_id": cid, "role": "member"})
+            groups = await db.groups.count_documents({"tenant_id": cid, "is_active": True})
+            kids = await db.checkins.count_documents({"tenant_id": cid, "status": "checked_in"})
+            mtd_giving = 0
 
         tenant_doc = await db.tenants.find_one({"id": cid}, {"_id": 0, "name": 1})
         campus_name = tenant_doc.get("name", cid) if tenant_doc else cid

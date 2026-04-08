@@ -21,7 +21,7 @@ async def ensure_mobile_demo_accounts():
 
     tenant_defaults = [
         {"id": "abundant-east-001", "name": "Abundant East", "subdomain": "abundant-east", "subscription_status": "active", "created_at": now_iso, "organization_id": "abundant-org-001", "organization_name": "Abundant Church", "city": "El Paso", "state": "TX", "plan": "enterprise", "monthly_rate": 2999, "senior_pastor": "Pastor David Martinez"},
-        {"id": "abundant-downtown-001", "name": "Abundant Northeast", "subdomain": "abundant-northeast", "subscription_status": "active", "created_at": now_iso, "organization_id": "abundant-org-001", "organization_name": "Abundant Church", "city": "El Paso", "state": "TX", "plan": "enterprise", "monthly_rate": 2999, "senior_pastor": "Pastor David Martinez"},
+        {"id": "abundant-downtown-001", "name": "Abundant Downtown", "subdomain": "abundant-downtown", "subscription_status": "active", "created_at": now_iso, "organization_id": "abundant-org-001", "organization_name": "Abundant Church", "city": "El Paso", "state": "TX", "plan": "enterprise", "monthly_rate": 2999, "senior_pastor": "Pastor David Martinez"},
         {"id": "abundant-west-001", "name": "Abundant West", "subdomain": "abundant-west", "subscription_status": "active", "created_at": now_iso, "organization_id": "abundant-org-001", "organization_name": "Abundant Church", "city": "El Paso", "state": "TX", "plan": "enterprise", "monthly_rate": 2999, "senior_pastor": "Pastor David Martinez"},
     ]
 

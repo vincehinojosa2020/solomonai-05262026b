@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Home, DollarSign, Users, Calendar, User, Bell, BellRing, LogOut, Menu, X, Tv, GraduationCap, BookOpen, ShoppingBag, Coffee, MessageSquare, Heart, BookUser, ChevronDown } from 'lucide-react';
+import { Home, DollarSign, Users, Calendar, User, Bell, BellRing, LogOut, Menu, X, Tv, GraduationCap, BookOpen, ShoppingBag, Coffee, MessageSquare, Heart, BookUser } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { API_URL } from '@/lib/utils';
 import SolomonChat from '@/components/SolomonChat';
@@ -193,34 +193,32 @@ export default function PortalLayout() {
                 ) : item.name}
               </NavLink>
             ))}
-            {/* Shop dropdown */}
-            <div className="relative group">
-              <button className="portal-nav-item flex items-center gap-1" data-testid="portal-nav-shop">
-                Shop <ChevronDown className="w-3 h-3" />
-              </button>
-              <div className="absolute top-full left-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg py-1 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50 min-w-[140px]">
-                {shopItems.map(item => (
-                  <NavLink key={item.path} to={item.path} className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50" data-testid={`portal-nav-${item.name.toLowerCase()}`}>
-                    <item.icon className="w-4 h-4 text-slate-400" /> {item.name}
-                  </NavLink>
-                ))}
-              </div>
-            </div>
-            {/* More dropdown (Courses) */}
-            {learnItems.length > 0 && (
-              <div className="relative group">
-                <button className="portal-nav-item flex items-center gap-1" data-testid="portal-nav-more">
-                  More <ChevronDown className="w-3 h-3" />
-                </button>
-                <div className="absolute top-full left-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg py-1 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50 min-w-[140px]">
-                  {learnItems.map(item => (
-                    <NavLink key={item.path} to={item.path} className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50" data-testid={`portal-nav-${item.name.toLowerCase()}`}>
-                      <item.icon className="w-4 h-4 text-slate-400" /> {item.name}
-                    </NavLink>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Shop items - flat nav (no dropdown) */}
+            {shopItems.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                data-testid={`portal-nav-${item.name.toLowerCase()}`}
+                className={({ isActive }) =>
+                  `portal-nav-item ${isActive ? 'active' : ''}`
+                }
+              >
+                {item.name}
+              </NavLink>
+            ))}
+            {/* Learn items - flat nav */}
+            {learnItems.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                data-testid={`portal-nav-${item.name.toLowerCase()}`}
+                className={({ isActive }) =>
+                  `portal-nav-item ${isActive ? 'active' : ''}`
+                }
+              >
+                {item.name}
+              </NavLink>
+            ))}
           </nav>
 
           {/* Right Actions */}
@@ -317,6 +315,7 @@ export default function PortalLayout() {
         userRole={user?.role || 'member'} 
         userName={user?.name?.split(' ')[0] || 'there'}
         onNavigate={navigate}
+        walkthroughSeen={user?.demo_walkthrough_seen}
       />
       {/* First Sign-In Onboarding */}
       <OnboardingFlow user={user} onComplete={fetchMemberData} />

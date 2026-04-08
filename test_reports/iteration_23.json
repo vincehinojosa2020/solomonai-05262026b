@@ -35,7 +35,7 @@
     },
     "sw_registration": {
       "status": "PASSED",
-      "details": "Console logs confirm: 'SW registered: https://blueprint-audit-1.preview.emergentagent.com/'"
+      "details": "Console logs confirm: 'SW registered: https://members-showcase.preview.emergentagent.com/'"
     },
     "pwa_install_prompt_component": {
       "status": "PASSED (component exists)",

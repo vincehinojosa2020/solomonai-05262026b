@@ -30,7 +30,7 @@ CAMPUSES = [
      "city": "El Paso", "state": "TX", "address": "4100 E. Paisano Dr", "zip": "79905"},
     {"id": "abundant-west-001", "name": "Abundant West", "subdomain": "abundant-west", "members_target": 8000,
      "city": "El Paso", "state": "TX", "address": "7800 N. Mesa St", "zip": "79932"},
-    {"id": "abundant-downtown-001", "name": "Abundant Northeast", "subdomain": "abundant-northeast", "members_target": 5000,
+    {"id": "abundant-downtown-001", "name": "Abundant Downtown", "subdomain": "abundant-downtown", "members_target": 5000,
      "city": "El Paso", "state": "TX", "address": "11500 Pebble Hills Blvd", "zip": "79936"},
 ]
 TOTAL_MEMBERS = 25000

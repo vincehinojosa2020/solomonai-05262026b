@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://blueprint-audit-1.preview.emergentagent.com/api
+https://members-showcase.preview.emergentagent.com/api
 ```
 
 ### Authentication

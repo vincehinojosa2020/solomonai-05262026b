@@ -12,10 +12,12 @@ export default function OnboardingFlow({ user, onComplete }) {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    // Skip onboarding if already completed (stored in DB)
+    if (user?.onboarding_completed || user?.profile_completed) return;
     const loginCount = parseInt(sessionStorage.getItem('solomon_login_count') || '0');
     const dismissed = sessionStorage.getItem('solomon_onboarding_done');
     if (loginCount <= 2 && !dismissed) setShow(true);
-  }, []);
+  }, [user]);
 
   if (!show) return null;
 
