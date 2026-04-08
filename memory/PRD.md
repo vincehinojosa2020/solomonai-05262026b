@@ -48,10 +48,18 @@
 ## Test Credentials
 See /app/memory/test_credentials.md
 
+## Completed (April 8, 2026)
+- P0: Added per-tab Information/Education panels to all 9 Reports tabs (Giving, Attendance, Groups, Check-In, Cafe & Merch, Volunteers, Membership, Cross-Analysis, Audit Log) with plain-English explanations and Key Metrics definitions for non-technical users
+
 ## Remaining Work
 - P0: Redeploy to solomonai.us
+- P1: Implement "Founder Role" — role above church_admin but below platform_admin for unified multi-campus dashboard view
+- P1: Schedule Automated Platform Summary Email (weekly metrics to founders@solomonai.us)
 - P1: Abundant Northeast rename to "Abundant Downtown" in DB
 - P1: Active donors = 0 for East/West/Downtown (seed ends Dec 2025, active window = Jan-Apr 2026)
+- P2: Custom Report Builder full implementation (preview + export edge cases)
 - P2: Reports tabs 2-8 with live data
 - P2: PDF export for platform reports
 - P2: Payment method breakdown on Revenue page
+- P2: Apple/Google Pay live integration (currently mocked)
+- P3: Split oversized components (KidsCheckinAdmin.jsx 794 lines, CheckInSetupPage.jsx 704 lines)
