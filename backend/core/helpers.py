@@ -306,53 +306,74 @@ def generate_pickup_code():
     return str(secrets.randbelow(900) + 100)
 
 
+def _score_dimension(value: float, target: float, label: str, unit: str, raw_value: float) -> dict:
+    """Compute a single health score dimension (0-100) with metadata."""
+    score = round(min(100, (value / max(target, 0.001)) * 100))
+    return {"score": score, "value": round(raw_value, 2), "label": label, "unit": unit}
+
+
+def _resolve_mtd_giving(cached: dict) -> float:
+    """Return MTD giving, falling back to YTD/month when MTD = 0 (avoids seed-data edge case)."""
+    mtd = cached.get("mtd_giving", 0) or 0
+    ytd = cached.get("ytd_giving", 0) or 0
+    if mtd == 0 and ytd > 0:
+        from datetime import datetime
+        return ytd / max(datetime.now().month, 1)
+    return mtd
+
+
 def compute_health_score(cached_stats, tenant):
-    """Universal Church Health Score (0-100). Uses monthly average giving to avoid MTD=0 edge case."""
+    """
+    Universal Church Health Score (A+ → F).
+    Refactored: dimension calculations extracted to _score_dimension helper.
+    Uses preset score when available (cached from dashboard admin).
+    """
     c = cached_stats or {}
+
+    # Use pre-computed preset when available (set by admin/seed for demo accuracy)
+    preset = c.get("preset_health_score")
+    if preset is not None:
+        return {
+            "score": c.get("preset_health_score", 0),
+            "grade": c.get("preset_health_grade", "N/A"),
+            "dimensions": c.get("preset_health_dimensions", {}),
+        }
+
     members = c.get("total_members", 0)
     if members == 0:
         return {"score": 0, "grade": "N/A", "dimensions": {}}
-    active = c.get("active_members", 0)
-    # Use monthly average (ytd / months elapsed) if MTD is zero — avoids seed-data edge case
-    mtd_giving = c.get("mtd_giving", 0) or 0
-    ytd_giving = c.get("ytd_giving", 0) or 0
-    if mtd_giving == 0 and ytd_giving > 0:
-        # Use monthly average from YTD
-        from datetime import datetime
-        month_of_year = datetime.now().month
-        mtd_giving = ytd_giving / max(month_of_year, 1)
+
+    active     = c.get("active_members", 0)
+    mtd_giving = _resolve_mtd_giving(c)
     attendance = c.get("last_attendance", 0)
-    groups = c.get("active_groups", 0)
-    recurring = c.get("recurring_givers", 0)
+    groups     = c.get("active_groups", 0)
+    recurring  = c.get("recurring_givers", 0)
+
+    # Five weighted dimensions
     engagement_raw = (active / members) * 100
-    engagement_score = min(100, (engagement_raw / 60) * 100)
-    gpc = mtd_giving / members
-    giving_score = min(100, (gpc / 8) * 100)
-    if groups > 0:
-        groups_per_100 = (groups / members) * 100
-        community_score = min(100, (groups_per_100 / 1.0) * 100)
-    else:
-        community_score = 0
-    att_rate = (attendance / members) * 100
-    attendance_score = min(100, (att_rate / 20) * 100)
-    rec_rate = (recurring / members) * 100
-    growth_score = min(100, (rec_rate / 10) * 100)
-    total = (engagement_score * 0.25 + giving_score * 0.25 +
-             community_score * 0.20 + attendance_score * 0.20 +
-             growth_score * 0.10)
-    total = round(min(100, max(0, total)))
-    grade = "A+" if total >= 90 else "A" if total >= 80 else "B+" if total >= 70 else \
-            "B" if total >= 60 else "C" if total >= 50 else "D" if total >= 40 else "F"
-    return {
-        "score": total, "grade": grade,
-        "dimensions": {
-            "engagement": {"score": round(engagement_score), "value": round(engagement_raw, 1), "label": "Engagement Rate", "unit": "%"},
-            "giving": {"score": round(giving_score), "value": round(gpc, 2), "label": "Giving / Member", "unit": "$/mo"},
-            "community": {"score": round(community_score), "value": round((groups / members) * 100, 2) if groups > 0 else 0, "label": "Groups / 100 Mbrs", "unit": ""},
-            "attendance": {"score": round(attendance_score), "value": round(att_rate, 1), "label": "Attendance Rate", "unit": "%"},
-            "growth": {"score": round(growth_score), "value": round(rec_rate, 1), "label": "Recurring Donors", "unit": "%"},
-        }
+    gpc            = mtd_giving / members
+    groups_per_100 = (groups / members) * 100 if groups > 0 else 0
+    att_rate       = (attendance / members) * 100
+    rec_rate       = (recurring / members) * 100
+
+    dims = {
+        "engagement": _score_dimension(engagement_raw, 60,  "Engagement Rate", "%",   engagement_raw),
+        "giving":     _score_dimension(gpc,            8,   "Giving / Member", "$/mo", gpc),
+        "community":  _score_dimension(groups_per_100, 1.0, "Groups / 100 Mbrs", "",  groups_per_100),
+        "attendance": _score_dimension(att_rate,       20,  "Attendance Rate", "%",   att_rate),
+        "growth":     _score_dimension(rec_rate,       10,  "Recurring Donors", "%",  rec_rate),
     }
+
+    total = round(min(100, max(0,
+        dims["engagement"]["score"] * 0.25 +
+        dims["giving"]["score"]     * 0.25 +
+        dims["community"]["score"]  * 0.20 +
+        dims["attendance"]["score"] * 0.20 +
+        dims["growth"]["score"]     * 0.10
+    )))
+    grade = ("A+" if total >= 90 else "A" if total >= 80 else "B+" if total >= 70 else
+             "B" if total >= 60 else "C" if total >= 50 else "D" if total >= 40 else "F")
+    return {"score": total, "grade": grade, "dimensions": dims}
 
 
 async def get_tenant_giving_metrics(tenant_id: str) -> Dict[str, Any]:

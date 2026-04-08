@@ -262,7 +262,7 @@ class TestPhase5GapClosure:
         
         login_resp = member_session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "member@abundant.church",
-            "password": "Demo2026!"
+            "password": os.environ.get("TEST_PASSWORD", "Demo2026!")
         })
         
         if login_resp.status_code != 200:

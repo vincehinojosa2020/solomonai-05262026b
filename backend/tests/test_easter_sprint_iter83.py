@@ -11,7 +11,7 @@ BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 @pytest.fixture(scope="session")
 def admin_token():
     r = requests.post(f"{BASE_URL}/api/auth/login",
-                      json={"email": "admin@solomonai.us", "password": "Demo2026!"},
+                      json={"email": "admin@solomonai.us", "password": os.environ.get("TEST_PASSWORD", "Demo2026!")},
                       timeout=10)
     assert r.status_code == 200
     data = r.json()
@@ -236,7 +236,7 @@ class TestAuthProtection:
 
     def test_church_admin_blocked(self):
         r = requests.post(f"{BASE_URL}/api/auth/login",
-                          json={"email": "shannonnieman1030@gmail.com", "password": "Demo2026!"})
+                          json={"email": "shannonnieman1030@gmail.com", "password": os.environ.get("TEST_PASSWORD", "Demo2026!")})
         if r.status_code != 200:
             print(f"INFO: skipping, church admin login={r.status_code}")
             return

@@ -7,7 +7,7 @@ import requests
 import os
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
-PLATFORM_ADMIN_TOKEN = "sess_333250cd8c4641d0802f4676edd8e3d3"
+PLATFORM_ADMIN_TOKEN = os.environ.get("TEST_PLATFORM_TOKEN", "")
 
 
 @pytest.fixture
@@ -258,7 +258,7 @@ class TestChurchAdminBlocked:
     def test_church_admin_blocked_from_stats(self):
         # Login as church admin
         r = requests.post(f"{BASE_URL}/api/auth/login",
-                         json={"email": "shannonnieman1030@gmail.com", "password": "Demo2026!"})
+                         json={"email": "shannonnieman1030@gmail.com", "password": os.environ.get("TEST_PASSWORD", "Demo2026!")})
         if r.status_code == 200:
             token = r.json().get("session_token") or r.json().get("token")
             if token:

@@ -17,7 +17,7 @@ def platform_admin_session():
     s = requests.Session()
     resp = s.post(f"{BASE_URL}/api/auth/login", json={
         "email": "admin@solomonai.us",
-        "password": "Demo2026!"
+        "password": os.environ.get("TEST_PASSWORD", "Demo2026!")
     })
     if resp.status_code != 200:
         pytest.skip(f"Platform admin login failed: {resp.status_code} {resp.text}")
@@ -31,7 +31,7 @@ def church_admin_session():
     s = requests.Session()
     resp = s.post(f"{BASE_URL}/api/auth/login", json={
         "email": "shannonnieman1030@gmail.com",
-        "password": "Demo2026!"
+        "password": os.environ.get("TEST_PASSWORD", "Demo2026!")
     })
     if resp.status_code != 200:
         pytest.skip(f"Church admin login failed: {resp.status_code} {resp.text}")
@@ -45,7 +45,7 @@ def member_session():
     s = requests.Session()
     resp = s.post(f"{BASE_URL}/api/auth/login", json={
         "email": "member@abundant.church",
-        "password": "Demo2026!"
+        "password": os.environ.get("TEST_PASSWORD", "Demo2026!")
     })
     if resp.status_code != 200:
         pytest.skip(f"Member login failed: {resp.status_code} {resp.text}")

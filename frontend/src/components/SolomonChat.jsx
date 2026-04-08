@@ -373,7 +373,7 @@ const SolomonChat = () => {
                 <p className="solomon-prompts-label">Try saying:</p>
                 {samplePrompts.map((prompt, idx) => (
                   <button
-                    key={idx}
+                    key={`item-${idx}`}
                     onClick={() => handleSend(prompt)}
                     className="solomon-prompt-btn"
                     data-testid={`solomon-prompt-${idx}`}

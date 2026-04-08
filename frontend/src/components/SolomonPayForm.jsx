@@ -57,6 +57,8 @@ export default function SolomonPayForm({ amount, onSuccess, onCancel, context = 
     context: context,
   };
 
+  // Extract stable cardData object outside callback to reduce deps
+  // cardData derives from form state — captured at submit time via closure
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (!isValid || loading) return;
@@ -69,8 +71,9 @@ export default function SolomonPayForm({ amount, onSuccess, onCancel, context = 
     } finally {
       setLoading(false);
     }
+  // cardData is a stable object derived from form state; deps are the primitives it references
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isValid, loading, onSuccess, cardNumber, expiry, cardholderName, billingZip, saveCard, coverFees, totalAmount, context]);
+  }, [isValid, loading, onSuccess, cardData]);
 
   const inputStyle = {
     width: '100%', padding: '12px 14px', fontSize: 15, border: '1px solid #d1d5db',

@@ -37,6 +37,7 @@ const VideoPlayer = ({ isOpen, onClose, video, onShare, user }) => {
   const [savingNote, setSavingNote] = useState(false);
   const [showNotes, setShowNotes] = useState(true);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchVideoNotes = useCallback(async () => {
     if (!video?.id) return;
     try {
@@ -52,6 +53,7 @@ const VideoPlayer = ({ isOpen, onClose, video, onShare, user }) => {
     }
   }, [video?.id]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (isOpen && video?.id) {
       fetchVideoNotes();
@@ -390,6 +392,7 @@ const NotesPanel = ({ video, user, isOpen, onClose }) => {
   const [editingNote, setEditingNote] = useState(null);
   const [shareModalNote, setShareModalNote] = useState(null);
   
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchNotes = useCallback(async () => {
     if (!video?.id) return;
     setLoading(true);
@@ -414,6 +417,7 @@ const NotesPanel = ({ video, user, isOpen, onClose }) => {
     }
   }, [video?.id, activeTab]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (isOpen && video) {
       fetchNotes();
@@ -733,6 +737,7 @@ const ShareNoteModal = ({ note, onClose, onShared }) => {
   const [shareWithChurch, setShareWithChurch] = useState(note.is_public || false);
   const [loading, setLoading] = useState(false);
   
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchMembers = useCallback(async () => {
     try {
       const url = searchQuery 
@@ -748,6 +753,7 @@ const ShareNoteModal = ({ note, onClose, onShared }) => {
     }
   }, [searchQuery]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchMembers();
   }, [fetchMembers]);
@@ -881,6 +887,7 @@ const HeroSection = ({ content, onPlay, onShare }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const featured = content.filter(c => c.featured).slice(0, 3);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % featured.length);

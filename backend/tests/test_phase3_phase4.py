@@ -12,9 +12,9 @@ from datetime import datetime
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://solomonpay-ledger.preview.emergentagent.com')
 
 # Test credentials
-CHURCH_ADMIN = {"email": "shannonnieman1030@gmail.com", "password": "Demo2026!"}
-PORTAL_MEMBER = {"email": "member@abundant.church", "password": "Demo2026!"}
-PLATFORM_ADMIN = {"email": "admin@solomonai.us", "password": "Demo2026!"}
+CHURCH_ADMIN = {"email": "shannonnieman1030@gmail.com", "password": os.environ.get("TEST_PASSWORD", "Demo2026!")}
+PORTAL_MEMBER = {"email": "member@abundant.church", "password": os.environ.get("TEST_PASSWORD", "Demo2026!")}
+PLATFORM_ADMIN = {"email": "admin@solomonai.us", "password": os.environ.get("TEST_PASSWORD", "Demo2026!")}
 
 
 class TestAuth:

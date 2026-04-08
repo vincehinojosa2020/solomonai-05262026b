@@ -22,8 +22,8 @@ import time
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
 # Fresh session token for platform admin
-PLATFORM_ADMIN_CREDS = {"email": "admin@solomonai.us", "password": "Demo2026!"}
-CHURCH_ADMIN_CREDS = {"email": "shannonnieman1030@gmail.com", "password": "Demo2026!"}
+PLATFORM_ADMIN_CREDS = {"email": "admin@solomonai.us", "password": os.environ.get("TEST_PASSWORD", "Demo2026!")}
+CHURCH_ADMIN_CREDS = {"email": "shannonnieman1030@gmail.com", "password": os.environ.get("TEST_PASSWORD", "Demo2026!")}
 
 
 @pytest.fixture(scope="session")

@@ -37,6 +37,7 @@ export default function SignUpPage() {
       });
       if (res.ok) {
         const data = await res.json();
+      // sessionStorage (not localStorage) — clears on tab close. Backend sets httpOnly cookie as primary auth.
         sessionStorage.setItem('session_token', data.token);
         sessionStorage.setItem('user_data', JSON.stringify(data));
         toast.success('Welcome to Solomon AI!');
