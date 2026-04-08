@@ -246,3 +246,213 @@ async def clear_solomon_session(session_id: str):
         del solomon_sessions[session_id]
     await db.solomon_conversations.delete_one({"session_id": session_id})
     return {"message": "Session cleared", "session_id": session_id}
+
+
+@router.post("/solomon/voice-transcribe")
+async def voice_transcribe(request: Request):
+    """Transcribe voice audio using OpenAI Whisper for long-form recordings (5-15 min)"""
+    from fastapi import UploadFile
+    import tempfile
+    from pathlib import Path
+
+    api_key = os.environ.get('EMERGENT_LLM_KEY')
+    if not api_key:
+        raise HTTPException(status_code=500, detail="Voice transcription not configured")
+
+    form = await request.form()
+    audio_file = form.get("audio")
+    if not audio_file:
+        raise HTTPException(status_code=400, detail="No audio file provided")
+
+    # Save to temp file
+    suffix = ".webm"
+    content_type = getattr(audio_file, 'content_type', '')
+    if 'wav' in content_type:
+        suffix = ".wav"
+    elif 'mp3' in content_type or 'mpeg' in content_type:
+        suffix = ".mp3"
+    elif 'mp4' in content_type or 'm4a' in content_type:
+        suffix = ".m4a"
+
+    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+        content = await audio_file.read()
+        tmp.write(content)
+        tmp_path = tmp.name
+
+    try:
+        from emergentintegrations.llm.openai import OpenAISpeechToText
+        stt = OpenAISpeechToText(api_key=api_key)
+        with open(tmp_path, 'rb') as f:
+            response = await stt.transcribe(
+                file=f,
+                model="whisper-1",
+                response_format="json",
+                language="en",
+                prompt="This is a business discussion about church management, SaaS metrics, fundraising, and platform strategy."
+            )
+        transcript = response.text if hasattr(response, 'text') else str(response)
+        return {"transcript": transcript, "duration_seconds": len(content) / 16000}
+    except Exception as e:
+        logger.error(f"Whisper transcription error: {e}")
+        raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
+    finally:
+        import os as _os
+        _os.unlink(tmp_path)
+
+
+@router.post("/solomon/generate-report")
+async def generate_report(request: Request):
+    """Generate a downloadable report (PDF/Excel) from Solomon AI"""
+    user = await _get_user_safe(request)
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    body = await request.json()
+    report_type = body.get("report_type", "investor_summary")
+    fmt = body.get("format", "pdf")
+    title = body.get("title", "Solomon AI Report")
+
+    # Build report data from cache/DB
+    cached = await db.platform_stats_cache.find_one({"id": "global"}, {"_id": 0})
+    if not cached:
+        cached = await db.platform_stats_cache.find_one({}, {"_id": 0})
+
+    campuses = cached.get("campus_breakdown", []) if cached else []
+    giving = cached.get("giving", {}) if cached else {}
+    fees = cached.get("fees", {}) if cached else {}
+    platform = cached.get("platform", {}) if cached else {}
+    txns = cached.get("transactions", {}) if cached else {}
+    donors_data = cached.get("donors", {}) if cached else {}
+
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+
+    if fmt == "csv":
+        # Generate CSV
+        import csv
+        import io
+        output = io.StringIO()
+        writer = csv.writer(output)
+
+        if report_type == "church_performance":
+            writer.writerow(["Church", "All-Time Giving", "Fees Earned", "Members", "Active Donors", "Active %", "Health"])
+            for c in campuses:
+                active_pct = (c.get("active_donors", 0) / max(c.get("members", 1), 1)) * 100
+                writer.writerow([c.get("name"), f"${c.get('giving', 0):,.2f}", f"${c.get('fees', 0):,.2f}",
+                                c.get("members", 0), c.get("active_donors", 0), f"{active_pct:.1f}%", c.get("health", "N/A")])
+        elif report_type == "donor_analysis":
+            writer.writerow(["Metric", "Value"])
+            writer.writerow(["Total Donors", donors_data.get("total", 0)])
+            writer.writerow(["Active (90d)", donors_data.get("active_90d", 0)])
+            writer.writerow(["Recurring", donors_data.get("recurring", 0)])
+            writer.writerow(["Avg Gift", f"${donors_data.get('avg_gift', 0):,.2f}"])
+            writer.writerow(["Platform GMV", f"${giving.get('all_time', 0):,.2f}"])
+        else:
+            writer.writerow(["Metric", "Value"])
+            writer.writerow(["Platform GMV (All-Time)", f"${giving.get('all_time', 0):,.2f}"])
+            writer.writerow(["Total Revenue (Fees)", f"${fees.get('all_time', 0):,.2f}"])
+            writer.writerow(["Processing MRR", f"${platform.get('processing_mrr', 0):,.2f}"])
+            writer.writerow(["Total ARR", f"${platform.get('arr', 0):,.2f}"])
+            writer.writerow(["Churches", len(campuses)])
+            writer.writerow(["Total Members", platform.get("total_members", 0)])
+            writer.writerow(["Total Transactions", txns.get("total", 0)])
+            writer.writerow(["Avg Transaction", f"${txns.get('avg_amount', 0):,.2f}"])
+            writer.writerow([])
+            writer.writerow(["Church Portfolio Breakdown"])
+            writer.writerow(["Church", "All-Time Giving", "Fees", "Members", "Active Donors"])
+            for c in campuses:
+                writer.writerow([c.get("name"), f"${c.get('giving', 0):,.2f}", f"${c.get('fees', 0):,.2f}",
+                                c.get("members", 0), c.get("active_donors", 0)])
+
+        csv_content = output.getvalue()
+        report_id = str(uuid.uuid4())[:8]
+        filename = f"solomon_{report_type}_{now.strftime('%Y%m%d')}_{report_id}.csv"
+
+        # Store in DB for download
+        await db.generated_reports.insert_one({
+            "id": report_id,
+            "filename": filename,
+            "content": csv_content,
+            "content_type": "text/csv",
+            "report_type": report_type,
+            "generated_at": now.isoformat(),
+            "generated_by": user.get("user_id"),
+        })
+
+        return {
+            "success": True,
+            "download_url": f"/solomon/download-report/{report_id}",
+            "filename": filename,
+            "report_type": report_type,
+            "format": "csv"
+        }
+
+    # Default: generate markdown report (can be rendered as PDF client-side)
+    report_md = f"# {title}\n\n"
+    report_md += f"**Generated:** {now.strftime('%B %d, %Y at %I:%M %p UTC')}\n"
+    report_md += f"**Prepared by:** Solomon AI Platform Analytics\n\n"
+
+    if report_type == "investor_summary":
+        report_md += "## Executive Summary\n\n"
+        report_md += f"Solomon AI is a next-generation church management and payment processing platform "
+        report_md += f"serving **{len(campuses)} churches** with **{platform.get('total_members', 0):,} members** "
+        report_md += f"and **${giving.get('all_time', 0):,.0f} in all-time GMV**.\n\n"
+        report_md += "## Key Metrics\n\n"
+        report_md += f"| Metric | Value |\n|---|---|\n"
+        report_md += f"| Platform GMV | ${giving.get('all_time', 0):,.0f} |\n"
+        report_md += f"| Total Revenue | ${fees.get('all_time', 0):,.0f} |\n"
+        report_md += f"| Processing MRR | ${platform.get('processing_mrr', 0):,.0f} |\n"
+        report_md += f"| ARR | ${platform.get('arr', 0):,.0f} |\n"
+        report_md += f"| Churches | {len(campuses)} |\n"
+        report_md += f"| Total Members | {platform.get('total_members', 0):,} |\n"
+        report_md += f"| Total Transactions | {txns.get('total', 0):,} |\n"
+        report_md += f"| Avg Transaction | ${txns.get('avg_amount', 0):,.2f} |\n\n"
+        report_md += "## Church Portfolio\n\n"
+        report_md += "| Church | All-Time Giving | Fees | Members | Active Donors |\n"
+        report_md += "|---|---|---|---|---|\n"
+        for c in campuses:
+            report_md += f"| {c.get('name', '')} | ${c.get('giving', 0):,.0f} | ${c.get('fees', 0):,.0f} | {c.get('members', 0):,} | {c.get('active_donors', 0):,} |\n"
+    else:
+        report_md += f"## {report_type.replace('_', ' ').title()}\n\n"
+        report_md += f"Platform GMV: ${giving.get('all_time', 0):,.0f}\n"
+        report_md += f"Revenue: ${fees.get('all_time', 0):,.0f}\n"
+
+    report_id = str(uuid.uuid4())[:8]
+    filename = f"solomon_{report_type}_{now.strftime('%Y%m%d')}_{report_id}.md"
+    await db.generated_reports.insert_one({
+        "id": report_id,
+        "filename": filename,
+        "content": report_md,
+        "content_type": "text/markdown",
+        "report_type": report_type,
+        "generated_at": now.isoformat(),
+        "generated_by": user.get("user_id"),
+    })
+
+    return {
+        "success": True,
+        "download_url": f"/solomon/download-report/{report_id}",
+        "filename": filename,
+        "report_type": report_type,
+        "format": "markdown",
+        "content_preview": report_md[:500]
+    }
+
+
+@router.get("/solomon/download-report/{report_id}")
+async def download_report(report_id: str):
+    """Download a generated report"""
+    from fastapi.responses import Response
+    report = await db.generated_reports.find_one({"id": report_id}, {"_id": 0})
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+
+    content_type = report.get("content_type", "text/plain")
+    filename = report.get("filename", f"report_{report_id}")
+    content = report.get("content", "")
+
+    return Response(
+        content=content.encode("utf-8"),
+        media_type=content_type,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+    )
