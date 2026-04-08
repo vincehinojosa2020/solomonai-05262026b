@@ -56,15 +56,33 @@ async def get_platform_stats(request: Request):
     if cached and cache_age < 15:
         cached.pop("id", None)
         return cached
-    if cached and cache_age < 60:
+    if cached:
+        # Always serve stale cache — never block on expensive aggregation
         asyncio.ensure_future(_refresh_platform_stats_cache())
         cached.pop("id", None)
         return cached
 
-    # ── No cache: compute + save ───────────────────────────────────────────────
-    result = await _compute_platform_stats_fast()
-    asyncio.ensure_future(_save_platform_stats_cache(result))
-    return result
+    # ── No cache at all: compute + save (with timeout protection) ─────────────
+    try:
+        result = await asyncio.wait_for(_compute_platform_stats_fast(), timeout=25)
+        asyncio.ensure_future(_save_platform_stats_cache(result))
+        return result
+    except asyncio.TimeoutError:
+        logger.error("Platform stats aggregation timed out (25s)")
+        return {
+            "giving": {"all_time": 0, "ytd": 0, "mtd": 0},
+            "fees": {"all_time": 0, "ytd": 0, "mtd": 0},
+            "platform": {"total_members": 0, "processing_mrr": 0, "arr": 0, "subscription_mrr": 0},
+            "campus_breakdown": [],
+            "transactions": {"total": 0, "avg_amount": 0},
+            "donors": {"total": 0, "active_90d": 0, "recurring": 0},
+            "giving_trend": [],
+            "_cache_status": "computing",
+            "_message": "Platform stats are being computed. Please refresh in 30 seconds."
+        }
+    except Exception as e:
+        logger.error(f"Platform stats error: {e}")
+        raise HTTPException(status_code=500, detail=f"Stats computation error: {str(e)[:200]}")
 
 
 async def _get_real_campuses_fast():

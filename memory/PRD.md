@@ -1,62 +1,49 @@
-# Solomon AI — PRD (Final State April 4, 2026 — Post God Mode Fix)
+# Solomon AI — PRD
 
-## Platform Scale
-- **7 church tenants** with full 3-year data
-- **90,326 total members**
-- **2,496,016 total donations** 
-- **$96.8M all-time GMV**
-- **$1.82M platform fees earned**
-- **$20.3K MRR / $243.6K ARR**
-- **538+ API endpoints, 90+ DB collections, 75+ frontend pages**
+## Original Problem Statement
+SOLOMON AI — Multi-tenant church management & payment processing SaaS platform. Productized for nationwide distribution. Includes God Mode (Platform Admin), Solomon Pay processor, Bloomberg-grade reporting, Ask Solomon AI intelligence, and 8 seeded church tenants simulating ~$100M+ GMV.
 
-## Church Portfolio (Real Data)
-| Church | Members | All-Time Giving | Fees | Health |
-|--------|---------|-----------------|------|--------|
-| Abundant Church | 25,000 | $42.96M | $760K | B+ (79) |
-| Abundant East | 10,000 | $7.77M | $147K | A+ (100) |
-| Abundant West | 10,100 | $9.23M | $175K | A+ (100) |
-| Abundant Downtown | 10,000 | $10.86M | $206K | A+ (100) |
-| The Potter's House | 14,500 | $11.67M | $199K | B+ (72) |
-| City Reach Church | 10,400 | $7.54M | $129K | B+ (72) |
-| EdenX Ministries | 10,300 | $6.82M | $117K | B+ (72) |
+## Architecture
+- **Backend**: FastAPI + Motor (async MongoDB) + Anthropic Claude (Solomon AI)
+- **Frontend**: React 18 + Tailwind + Shadcn/UI + Recharts
+- **Auth**: JWT sessions + Google OAuth
+- **Payments**: Solomon Pay (proprietary, Stripe removed)
+- **Cache**: platform_stats_cache + dashboard_stats_cache for God Mode
 
-## God Mode Dashboard — FULLY FUNCTIONAL ✅
+## Key Roles
+- `platform_admin`: God Mode (full platform visibility)
+- `admin` / `church_admin`: Church-level admin
+- `member`: Church member portal
 
-### Fixed in This Session (P0/P1):
-1. **Solomon Platform Context** — Detects platform_admin role, injects live stats ($96.8M GMV, all 7 churches, MRR/ARR) into system prompt. Now answers "What's our MRR?" with $20.3K.
-2. **Donors Page** — Fixed to query `donations` collection (not empty `platform_donors`). Shows 35,837 total donors, 6,305 active, DonorIQ breakdown, top 20 donors with real names.
-3. **Revenue Summary** — Fixed `source: solomonpay` filter removed. Now returns `all_time_fees: $1.82M`, by_church breakdown, by_year (4 years), monthly trend.
-4. **Churches Endpoint** — Filters TEST_ churches and stubs with < 100 donations. Returns exactly 7 real churches.
-5. **Health Score** — Abundant Church cache fixed with active_members=6303. Score now B+(79).
-6. **Activity Feed** — Uses `$lookup` aggregation to join people collection. Shows "Amanda M." not "Anonymous".
-7. **Abundant Campus Seed** — East (10K members, 514K donations, $7.77M), West (10.1K, 522K, $9.23M), Downtown (10K, 516K, $10.86M) all seeded.
+## 8 Seeded Churches
+Abundant Downtown, Abundant West, Abundant East, The Potter's House, City Reach, EdenX Ministries, Hill Country Bible, Cristo Viene
 
-### All Dashboard Sections Working:
-- Hero KPIs: GMV $96.8M | Revenue $1.82M | MRR $20.3K | ARR $243.6K
-- Stacked bar chart: 12 months, all 7 churches
-- Revenue trend: monthly fees
-- Church Portfolio Table: 7 churches, health badges, impersonate
-- Activity Feed: real donor names, polls every 15s
-- Attention Required: flags C/D grade churches
-- Churches Section: cards with health dimension breakdown
-- Transactions: 2.5M records, search/filter/export
-- Revenue: by_church, by_year, monthly trend
-- Donors: 35K+ total donors, DonorIQ, top 20 by lifetime giving
-- Payouts: 468 payouts, by church
-- Reports: 9 tabs, Cross-Analysis with correlations
-
-## Test Credentials
-See /app/memory/test_credentials.md
-
-## Completed (April 8, 2026)
-- P0: Added per-tab Information/Education panels to all 9 Reports tabs (Giving, Attendance, Groups, Check-In, Cafe & Merch, Volunteers, Membership, Cross-Analysis, Audit Log) with plain-English explanations and Key Metrics definitions for non-technical users
+## Completed Work (All Sessions)
+- Stripe fully removed, Solomon Pay processor built
+- Recurring Giving Background Scheduler
+- Kids Check-In (Printer & Kiosk mode)
+- Feature Education Headers / Contextual Help system
+- Calendar & Events + Mobile-first Paid Event Registration
+- Communications (Email template builder)
+- Google OAuth integrated
+- Commerce Multi-Payment Selector
+- Visual Workflow Builder & Custom Report Builder scaffolded
+- Technical Hardening (Rate limiting to MongoDB, JWT sessions, slow query optimization)
+- God Mode UI overhaul (PlatformDashboard.jsx) with 6 sections
+- Cache-first architecture (<150ms load times) for God Mode
+- Code quality fixes (secrets, hooks, refactoring)
+- Architecture doc generated
+- 9,017 audit logs seeded (3 years across all tenants)
+- Reports Page: Per-tab info panels on all 9 report tabs (Giving, Attendance, Groups, Check-In, Cafe & Merch, Volunteers, Membership, Cross-Analysis, Audit Log)
+- **God Mode KPI Vocabulary Tooltips**: Added GlossaryPanel + KpiInfo components to Dashboard, Church Portfolio, Churches, Solomon Pay, and Donors sections with full definitions for all metrics (Platform GMV, MRR, ARR, Active Donors, Fees Earned, etc.)
+- **Abundant-First Sorting**: Churches always sorted with Abundant campuses at top
+- **Abundant Downtown Rename**: "Abundant Northeast" renamed to "Abundant Downtown" in DB + cache
+- **Production 500 Fix**: Platform stats endpoint now always serves stale cache (never blocks on expensive aggregation), added 25s timeout protection for cache-miss scenarios
 
 ## Remaining Work
-- P0: Redeploy to solomonai.us
-- P1: Implement "Founder Role" — role above church_admin but below platform_admin for unified multi-campus dashboard view
+- P0: Redeploy to solomonai.us (production 500 fix + all UI improvements)
+- P1: Implement "Founder Role" — role above church_admin for unified multi-campus dashboard
 - P1: Schedule Automated Platform Summary Email (weekly metrics to founders@solomonai.us)
-- P1: Abundant Northeast rename to "Abundant Downtown" in DB
-- P1: Active donors = 0 for East/West/Downtown (seed ends Dec 2025, active window = Jan-Apr 2026)
 - P2: Custom Report Builder full implementation (preview + export edge cases)
 - P2: Reports tabs 2-8 with live data
 - P2: PDF export for platform reports

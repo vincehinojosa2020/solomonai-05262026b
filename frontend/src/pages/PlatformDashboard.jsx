@@ -560,14 +560,16 @@ export default function PlatformDashboard() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead><tr className="bg-slate-50">
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">Church</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">City</th>
                       {[
-                        {h:'Church'},{h:'City'},{h:'Members',tip:'Members'},
+                        {h:'Members',tip:'Members'},
                         {h:'Active Donors',tip:'Active Donors'},{h:'Active %',tip:'Active %'},
                         {h:'All-Time Giving',tip:'All-Time Giving'},{h:'Fees Earned',tip:'Fees Earned'},
                         {h:'Plan',tip:'Plan'},{h:'Health',tip:'Health Score'},
                       ].map(col=>(
                         <th key={col.h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
-                          <span className="flex items-center gap-1">{col.h}{col.tip && <KpiInfo term={col.tip} />}</span>
+                          <div className="flex items-center gap-1">{col.h}<KpiInfo term={col.tip} /></div>
                         </th>
                       ))}
                     </tr></thead>
