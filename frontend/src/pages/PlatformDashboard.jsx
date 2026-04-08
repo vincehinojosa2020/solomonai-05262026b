@@ -10,8 +10,9 @@ import {
   DollarSign, Activity, AlertTriangle, ChevronRight, ArrowUpRight,
   Download, RefreshCw, Search, Filter, Plus, X, Zap, Globe,
   BarChart3, Shield, Settings, LogOut, Calendar, Heart, Baby,
-  Clock, CreditCard, CheckCircle2, RotateCcw, Eye, ChevronDown,
-  Bell, Layers, PieChart as PieChartIcon, LineChart as LineChartIcon
+  Clock, CreditCard, CheckCircle2, RotateCcw, Eye, ChevronDown, ChevronUp,
+  Bell, Layers, PieChart as PieChartIcon, LineChart as LineChartIcon,
+  HelpCircle, BookOpen, Info
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line,
@@ -37,6 +38,140 @@ const fmtPct = (n) => `${Number(n??0).toFixed(1)}%`;
 const fmtCur = (n) => `$${Number(n??0).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0})}`;
 const getAuth = () => { const t=sessionStorage.getItem('session_token'); return t?{Authorization:`Bearer ${t}`}:{}; };
 
+// ─── KPI Glossary Definitions ──────────────────────────────────────────────
+const KPI_GLOSSARY = {
+  dashboard: {
+    title: 'Dashboard KPI Definitions',
+    terms: [
+      { term: 'Platform GMV', def: 'Gross Merchandise Volume — the total dollar amount of all donations processed through Solomon Pay across all churches on the platform, since inception.' },
+      { term: 'Total Revenue', def: 'The sum of all processing fees earned by Solomon AI from payment transactions, plus subscription revenue from church plans. This is Solomon AI\'s actual revenue, not the churches\' giving.' },
+      { term: 'Processing MRR', def: 'Monthly Recurring Revenue from processing — the monthly fee income Solomon AI earns from recurring giving schedules that auto-process through Solomon Pay.' },
+      { term: 'Total ARR', def: 'Annual Recurring Revenue — Processing MRR × 12 plus Subscription MRR × 12. This is the annualized run-rate of all predictable revenue streams.' },
+      { term: 'Churches', def: 'The total number of active church partners currently using Solomon AI with valid subscriptions.' },
+      { term: 'Total Members', def: 'The combined count of all people (members, visitors, contacts) across every church on the platform.' },
+      { term: 'Transactions', def: 'The total number of individual donation transactions processed through Solomon Pay across all churches, all time.' },
+      { term: 'Subscription MRR', def: 'Monthly revenue from church subscription plans (Standard, Growth, Enterprise). Each church pays a flat monthly fee for platform access.' },
+      { term: 'Avg Transaction', def: 'The average dollar amount per donation transaction across all churches. Calculated as Total GMV ÷ Total Transactions.' },
+    ],
+  },
+  portfolio: {
+    title: 'Church Portfolio Definitions',
+    terms: [
+      { term: 'Members', def: 'The total number of people in that church\'s database — includes active members, regular attenders, visitors, and inactive contacts.' },
+      { term: 'Active Donors', def: 'People who have made at least one donation through Solomon Pay in the last 90 days. This measures recent financial engagement.' },
+      { term: 'Active %', def: 'Active Donors ÷ Total Members × 100. A healthy church typically has 40-80% active donor rate. Below 30% signals engagement issues.' },
+      { term: 'All-Time Giving', def: 'The cumulative total of all donations processed through Solomon Pay for that church since they joined the platform.' },
+      { term: 'Fees Earned', def: 'The total processing fees Solomon AI has earned from that church\'s transactions. This is our revenue from their giving volume.' },
+      { term: 'Plan', def: 'The subscription tier — Standard ($499/mo), Growth ($999/mo), or Enterprise ($2,000/mo). Higher tiers unlock more features and support.' },
+      { term: 'Health Score', def: 'A composite grade (A+ to F) based on 5 dimensions: giving consistency, attendance trends, group engagement, volunteer participation, and donor retention. Click the badge to see the full breakdown.' },
+    ],
+  },
+  churches: {
+    title: 'Church Detail Definitions',
+    terms: [
+      { term: 'All-Time', def: 'Total giving processed through Solomon Pay for this church since they onboarded.' },
+      { term: 'Fees', def: 'Total processing fees Solomon AI has earned from this church\'s transaction volume.' },
+      { term: 'Active Donors', def: 'Number of unique people who donated in the last 90 days.' },
+      { term: 'Health Dimensions', def: 'Each bar shows a 0-100 score: Giving Consistency (regularity of donations), Attendance Trend (week-over-week growth), Group Engagement (% of members in small groups), Volunteer Rate (% of members serving), and Donor Retention (% of donors who give again within 90 days).' },
+    ],
+  },
+  solomonPay: {
+    title: 'Solomon Pay Definitions',
+    terms: [
+      { term: 'GMV All-Time', def: 'Total dollar volume processed through Solomon Pay since launch. This is the churches\' giving, not our revenue.' },
+      { term: 'Processing Revenue', def: 'Total fees earned from processing transactions (1.9% + $0.30 per card, 0.8% + $0.30 per ACH).' },
+      { term: 'Subscription MRR', def: 'Monthly recurring revenue from church subscription plans.' },
+      { term: 'Fee Rate (Blended)', def: 'Average effective fee rate across all payment methods. Calculated as Total Fees ÷ Total GMV.' },
+      { term: 'Net Payout', def: 'The amount sent to the church\'s bank account after Solomon Pay processing fees are deducted. Gross Amount − Fees = Net Payout.' },
+    ],
+  },
+  donors: {
+    title: 'Donor Metric Definitions',
+    terms: [
+      { term: 'Total Donors', def: 'Every unique person who has ever made a donation through Solomon Pay across all churches.' },
+      { term: 'Active (90d)', def: 'Donors who gave at least once in the last 90 days. This is the primary "health" metric for donor engagement.' },
+      { term: 'Recurring', def: 'Donors with an active automated giving schedule (weekly, bi-weekly, or monthly). These are the most valuable donors.' },
+      { term: 'Avg Gift', def: 'The average individual transaction amount across all donors and all churches.' },
+      { term: 'Avg LTV (36mo)', def: 'Average Lifetime Value — projected total giving per donor over a 36-month period based on their current giving rate.' },
+      { term: 'DonorIQ Breakdown', def: 'Segmentation of all donors by engagement level: Recurring (automated giving), Regular (3+ gifts/quarter), Occasional (1-2 gifts/quarter), First-Time (gave once, within 90 days), At Risk (gap in giving pattern), Lapsed (no gift in 90+ days).' },
+      { term: 'Donor Retention Cohort', def: 'Tracks what percentage of first-time donors from each quarter continue giving in subsequent quarters. The #1 metric church CFOs care about.' },
+    ],
+  },
+};
+
+// ─── Glossary Panel Component ──────────────────────────────────────────────
+function GlossaryPanel({ sectionKey }) {
+  const [open, setOpen] = useState(false);
+  const glossary = KPI_GLOSSARY[sectionKey];
+  if (!glossary) return null;
+
+  return (
+    <div className="bg-gradient-to-r from-slate-50 to-blue-50/30 border border-slate-200 rounded-xl overflow-hidden" data-testid={`glossary-${sectionKey}`}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50/60 transition-colors"
+        data-testid={`glossary-toggle-${sectionKey}`}
+      >
+        <div className="flex items-center gap-2.5">
+          <div className="w-6 h-6 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+            <BookOpen className="w-3.5 h-3.5 text-blue-600" />
+          </div>
+          <span className="text-sm font-semibold text-slate-800">{glossary.title}</span>
+          <span className="text-xs text-slate-400 hidden sm:inline">— What do these numbers mean?</span>
+        </div>
+        {open ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+      </button>
+      {open && (
+        <div className="px-4 pb-4 space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {glossary.terms.map((t, i) => (
+              <div key={i} className="bg-white border border-slate-100 rounded-lg px-3 py-2.5">
+                <p className="text-xs font-bold text-slate-800">{t.term}</p>
+                <p className="text-xs text-slate-500 leading-snug mt-0.5">{t.def}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Inline KPI Info Tooltip ───────────────────────────────────────────────
+function KpiInfo({ term }) {
+  const [show, setShow] = useState(false);
+  const all = Object.values(KPI_GLOSSARY).flatMap(s => s.terms);
+  const match = all.find(t => t.term === term);
+  if (!match) return null;
+  return (
+    <div className="relative inline-flex">
+      <button onClick={() => setShow(!show)} className="w-4 h-4 rounded-full bg-slate-100 hover:bg-blue-100 flex items-center justify-center transition-colors" title={`What is ${term}?`} data-testid={`kpi-info-${term.replace(/\s+/g,'-').toLowerCase()}`}>
+        <Info className="w-2.5 h-2.5 text-slate-400" />
+      </button>
+      {show && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setShow(false)} />
+          <div className="absolute left-0 top-6 z-50 w-64 bg-white border border-slate-200 rounded-lg shadow-xl p-3" data-testid={`kpi-info-panel-${term.replace(/\s+/g,'-').toLowerCase()}`}>
+            <p className="text-xs font-bold text-slate-800 mb-1">{match.term}</p>
+            <p className="text-xs text-slate-500 leading-snug">{match.def}</p>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── Sort Abundant campuses first ──────────────────────────────────────────
+function sortAbundantFirst(arr) {
+  return [...arr].sort((a, b) => {
+    const aIsAbundant = (a.name || '').toLowerCase().includes('abundant');
+    const bIsAbundant = (b.name || '').toLowerCase().includes('abundant');
+    if (aIsAbundant && !bIsAbundant) return -1;
+    if (!aIsAbundant && bIsAbundant) return 1;
+    return (b.giving || 0) - (a.giving || 0);
+  });
+}
+
 // ─── Recharts custom tooltip ─────────────────────────────────────────────────
 const ChartTooltip = ({active,payload,label}) => {
   if(!active||!payload?.length) return null;
@@ -59,7 +194,10 @@ function KpiCard({label,value,subtext,change,changeLabel,icon:Icon}) {
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md transition-shadow" data-testid={`kpi-${label.replace(/\s+/g,'-').toLowerCase()}`}>
       <div className="flex items-start justify-between mb-3">
-        <p className="text-sm font-medium text-slate-500">{label}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="text-sm font-medium text-slate-500">{label}</p>
+          <KpiInfo term={label} />
+        </div>
         <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
           <Icon className="w-4 h-4 text-blue-600"/>
         </div>
@@ -275,7 +413,7 @@ export default function PlatformDashboard() {
   };
 
   const g=stats?.giving||{}; const f=stats?.fees||{}; const p=stats?.platform||{};
-  const churches=stats?.campus_breakdown||[];
+  const churches=sortAbundantFirst(stats?.campus_breakdown||[]);
   const trend=stats?.giving_trend||[];
   const monthlyData=trend.map(m=>({month:m.month?.slice(5)||m.month,giving:Math.round(m.total_giving||0),fees:Math.round(m.total_fees||0),...Object.fromEntries(Object.entries(m.by_campus||{}).map(([n,v])=>[n.split(' ')[0],Math.round(v)]))}));
   const attention=churches.filter(c=>{ const h=healthScores[c.tenant_id]; return h&&['C','D','F'].includes(h.grade?.charAt(0)); });
@@ -373,10 +511,12 @@ export default function PlatformDashboard() {
                 ].map(s=>(
                   <div key={s.label} className="bg-white border border-slate-100 rounded-xl p-4 flex items-center gap-3">
                     <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0"><s.icon className="w-4 h-4 text-blue-600"/></div>
-                    <div><p className="text-[10px] text-slate-500">{s.label}</p><p className="text-base font-bold text-slate-900">{s.value}</p></div>
+                    <div><div className="flex items-center gap-1"><p className="text-[10px] text-slate-500">{s.label}</p><KpiInfo term={s.label} /></div><p className="text-base font-bold text-slate-900">{s.value}</p></div>
                   </div>
                 ))}
               </div>
+              {/* KPI Glossary */}
+              <GlossaryPanel sectionKey="dashboard" />
               {/* Charts */}
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
                 <div className="lg:col-span-3 bg-white border border-slate-100 rounded-xl p-5" data-testid="giving-chart">
@@ -420,8 +560,15 @@ export default function PlatformDashboard() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead><tr className="bg-slate-50">
-                      {['Church','City','Members','Active Donors','Active %','All-Time Giving','Fees Earned','Plan','Health'].map(h=>(
-                        <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
+                      {[
+                        {h:'Church'},{h:'City'},{h:'Members',tip:'Members'},
+                        {h:'Active Donors',tip:'Active Donors'},{h:'Active %',tip:'Active %'},
+                        {h:'All-Time Giving',tip:'All-Time Giving'},{h:'Fees Earned',tip:'Fees Earned'},
+                        {h:'Plan',tip:'Plan'},{h:'Health',tip:'Health Score'},
+                      ].map(col=>(
+                        <th key={col.h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
+                          <span className="flex items-center gap-1">{col.h}{col.tip && <KpiInfo term={col.tip} />}</span>
+                        </th>
                       ))}
                     </tr></thead>
                     <tbody className="divide-y divide-slate-50">
@@ -458,6 +605,8 @@ export default function PlatformDashboard() {
                   </table>
                 </div>
               </div>
+              {/* Portfolio Glossary */}
+              <GlossaryPanel sectionKey="portfolio" />
               {/* Row 4: Activity + Attention */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="bg-white border border-slate-100 rounded-xl p-5" data-testid="activity-feed">
@@ -532,6 +681,7 @@ export default function PlatformDashboard() {
                   );
                 })}
               </div>
+              <GlossaryPanel sectionKey="churches" />
             </div>
           )}
 
@@ -686,6 +836,7 @@ export default function PlatformDashboard() {
                   </div>
                 </div>
               )}
+              <GlossaryPanel sectionKey="solomonPay" />
             </div>
           )}
 
@@ -782,6 +933,7 @@ export default function PlatformDashboard() {
                   </div>
                 </>
               )}
+              <GlossaryPanel sectionKey="donors" />
             </div>
           )}
 
