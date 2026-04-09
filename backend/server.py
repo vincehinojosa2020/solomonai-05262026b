@@ -64,16 +64,20 @@ async def structured_500_handler(request: Request, exc):
 
 
 # ═══ CORS (registered early so OPTIONS preflight works) ═══
-ALLOWED_ORIGINS = [
-    os.environ.get("FRONTEND_URL", ""),
-    "https://solomonai.us",
-    "https://www.solomonai.us",
-    "https://app.solomonai.us",
-]
-preview_url = os.environ.get("REACT_APP_BACKEND_URL", "")
-if preview_url:
-    ALLOWED_ORIGINS.append(preview_url)
-ALLOWED_ORIGINS = [o for o in ALLOWED_ORIGINS if o]
+cors_origins_env = os.environ.get("CORS_ORIGINS", "")
+if cors_origins_env == "*":
+    ALLOWED_ORIGINS = ["*"]
+else:
+    ALLOWED_ORIGINS = [
+        os.environ.get("FRONTEND_URL", ""),
+        "https://solomonai.us",
+        "https://www.solomonai.us",
+        "https://app.solomonai.us",
+    ]
+    preview_url = os.environ.get("REACT_APP_BACKEND_URL", "")
+    if preview_url:
+        ALLOWED_ORIGINS.append(preview_url)
+    ALLOWED_ORIGINS = [o for o in ALLOWED_ORIGINS if o]
 
 app.add_middleware(
     CORSMiddleware,
