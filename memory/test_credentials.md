@@ -1,8 +1,18 @@
-# Solomon AI — Test Credentials
+# Test Credentials
 
-| Name | Email | Password | Role | Campuses |
-|------|-------|----------|------|----------|
-| Solomon Platform Admin | admin@solomonai.us | Demo2026! | Platform Admin (God Mode) | All churches |
-| Shannon Nieman | shannonnieman1030@gmail.com | Demo2026! | Lead Pastor (Church Admin + God Mode) | East, Downtown, West |
-| Jacob Pacheco | jacobpacheco@abundanteast.com | Demo2026! | Pastoral Staff (Church Admin + God Mode) | East, Downtown, West |
-| Test Member | member@abundant.church | Demo2026! | Member | Abundant East |
+## Platform Admin (God Mode)
+- Email: admin@solomonai.us
+- Password: Demo2026!
+
+## Church Admin / Founder (God Mode - 3 campuses)
+- Email: shannonnieman1030@gmail.com
+- Password: Demo2026!
+
+## Church Admin
+- Email: jacobpacheco@abundanteast.com
+- Password: Demo2026!
+
+## Member (Demo Account)
+- Email: member@abundant.church
+- Password: Demo2026!
+- Saved Card: Visa ****4242 (default, token: tok_visa_4242)

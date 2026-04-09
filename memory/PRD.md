@@ -1,40 +1,75 @@
-# Solomon AI — PRD
+# Solomon AI — Product Requirements Document
 
 ## Original Problem Statement
-SOLOMON AI — Multi-tenant church management & payment processing SaaS platform. Productized for nationwide distribution.
+SOLOMON AI — MASTER BUILD DIRECTIVE. A nationwide SaaS church management platform featuring Solomon Pay (proprietary payment processor), God Mode multi-campus oversight, Bloomberg-grade reporting, "Ask Solomon" AI intelligence, and demo-ready data seeding for 8 church tenants simulating ~$100M+ in GMV.
 
-## Architecture
-- **Backend**: FastAPI + Motor (async MongoDB) + Anthropic Claude (Solomon AI)
-- **Frontend**: React 18 + Tailwind + Shadcn/UI + Recharts
-- **Auth**: JWT sessions + Google OAuth
-- **Payments**: Solomon Pay (proprietary)
-- **AI Provider**: Anthropic Claude (claude-sonnet-4.5)
-- **Infrastructure**: Google Cloud Platform
+## Core Architecture
+- **Frontend**: React 18 on port 3000 (Supervisor)
+- **Backend**: FastAPI on port 8001 (Supervisor)
+- **Database**: MongoDB via Motor (async)
+- **AI**: Claude Sonnet 4.5 (McKinsey persona) + OpenAI Whisper (voice)
+- **Payments**: Solomon Pay (proprietary, mock adapter for demo)
 
-## 8 Seeded Churches
-Abundant Downtown, Abundant West, Abundant East, The Potter's House, City Reach, EdenX Ministries, Hill Country Bible, Cristo Viene
+## User Personas
+1. **Platform Admin** (`admin@solomonai.us`) — God Mode across all tenants
+2. **Church Admin / Founder** (`shannonnieman1030@gmail.com`, `jacobpacheco@abundanteast.com`) — God Mode across 3 Abundant campuses
+3. **Church Member** (`member@abundant.church`) — Portal access, giving, cafe, merch, events, kids check-in
 
-## Revenue Model (3 Streams)
-1. **Processing Fees** — 1.9% + $0.30 (card), 0.8% + $0.30 (ACH)
-2. **Subscription Fees** — Standard ($499/mo), Growth ($999/mo), Enterprise ($2,000+/mo)
-3. **Professional Services** — $5K-$25K packages (Snyk/Veracode model)
+## Campuses (Abundant Church)
+- **Abundant East** (`abundant-east-001`) — 12,847 members
+- **Abundant West** (`abundant-west-001`) — 11,563 members
+- **Abundant Downtown** (`abundant-downtown-001`) — 10,921 members
+- **Total**: 35,331 members across 3 campuses
 
-## Completed Work
-- Full platform built: Giving, Members, Groups, Events, Check-In, Communications, Solomon Pay
-- God Mode with cache-first architecture (<150ms)
-- Solomon AI (McKinsey/CPA persona) with voice input (Whisper) + report generation
-- Revenue Model card (3 streams) + competitive positioning (vs Pushpay/SecureGive)
-- Cross-Analysis: 6 cross-domain intelligence correlations
-- KPI vocabulary tooltips on all God Mode sections
-- 3-year historical data: 288 monthly reports + 20K+ 2026 donations seeded
-- Professional services pricing in Settings
-- All report tabs with live data: Giving ($1.1M), Attendance, Groups, Membership, Check-In, Audit Log
-- Fixed donations endpoint timeout (3M+ records), GivingDashboard auth headers, Reports endpoint data structures
-- Production 500 fix (stale cache + 25s timeout)
+## What's Been Implemented
 
-## Remaining Work
-- P0: Redeploy to solomonai.us
-- P1: "Founder Role" for unified multi-campus dashboard
-- P1: Automated Platform Summary Email
-- P2: Custom Report Builder, PDF export, Apple/Google Pay
-- P3: Split oversized components
+### Phase 1-14 Core Platform (DONE)
+- Full multi-tenant church management system
+- Solomon Pay payment processing (card, ACH, tokenization, refunds)
+- God Mode with aggregated platform stats and caching
+- Solomon AI sidebar (McKinsey persona, Whisper voice, PDF/CSV reports)
+- Bloomberg-grade reports (Giving, Attendance, Membership, Groups)
+- 3-year historical data seeded for all campuses
+- 2026 donations (20,864+ records) seeded
+- Rate limiting completely disabled for demo
+- Authentication for all 4 demo accounts
+
+### Recent Updates (April 2026)
+- **Watch Page**: Dark Masterclass theme (black background), 3 videos by Pastor Charles Nieman
+- **Portal Nav**: Flat Cafe/Merch links (no dropdown)
+- **Saved Card Checkout**: Cafe, Merch, and Events use saved Visa ****4242
+- **Tithe/Offering Prompts**: Frank Luntz-style persuasive copy on Cafe and Merch checkout
+  - Cafe: "While you're here..." warm amber card
+  - Merch: "You're already investing in something you believe in."
+- **All Campuses Aggregate**: Shannon/Jacob see 35,331 total members across 3 campuses
+- **Abundant Downtown**: Renamed from "Abundant Northeast"
+- **Demo Modals**: Suppressed for all demo accounts (onboarding, walkthrough)
+- **Kids Check-In**: Reset for demo account
+
+## Pending / Upcoming Tasks
+
+### P1 — Upcoming
+- Implement "Founder Role" unified multi-campus dashboard for Shannon/Jacob
+- Schedule automated weekly platform summary email (GMV/MRR to founders)
+
+### P2 — Future
+- Custom Report Builder + PDF export
+- Apple/Google Pay live integration (currently mocked)
+
+### P3 — Backlog
+- Split oversized components (`KidsCheckinAdmin.jsx` 794 lines, `CheckInSetupPage.jsx` 704 lines)
+
+## Key API Endpoints
+- `GET /api/admin/dashboard/aggregate` — Multi-campus aggregate stats
+- `POST /api/solomonpay/process` — Process payment via Solomon Pay
+- `GET /api/portal/payment-methods` — Saved payment methods
+- `GET /api/portal/media/videos` — Watch page videos
+- `POST /api/solomon/transcribe` — Whisper voice transcription
+- `POST /api/solomon/generate-report` — AI report generation
+- `GET /api/reports/*` — Bloomberg-grade reports
+
+## Technical Notes
+- **Rate limiting**: Completely disabled (DO NOT re-enable)
+- **Solomon Pay**: Uses mock processor adapter for demo
+- **God Mode caching**: `platform_stats_cache` prevents MongoDB timeouts on 3M+ records
+- **Dashboard stats**: Uses `dashboard_stats_cache` collection for member counts

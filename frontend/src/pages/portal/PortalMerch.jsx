@@ -268,15 +268,17 @@ export default function PortalMerch() {
             </div>
           )}
 
-          {/* Giving Moment - Add a Gift with Your Purchase */}
+          {/* Giving Moment — Frank Luntz Style */}
           <div className="portal-merch-offering" data-testid="merch-offering-section">
             <div className="offering-header">
               <Heart className="w-4 h-4" />
-              <span className="offering-label">Add a Gift with Your Purchase?</span>
+              <span className="offering-label">You're already investing in something you believe in.</span>
             </div>
-            <p className="offering-subtitle">Would you like to support {tenant?.name || 'your church'} today?</p>
+            <p className="offering-subtitle">
+              Why not make it count twice? Add a tithe or offering and turn this purchase into a kingdom investment.
+            </p>
             <div className="offering-amounts">
-              {[10, 20, 50, 100].map((amount) => (
+              {[10, 25, 50, 100].map((amount) => (
                 <button
                   key={amount}
                   className={`offering-btn ${offeringAmount === amount ? 'active' : ''}`}
@@ -287,28 +289,28 @@ export default function PortalMerch() {
                 </button>
               ))}
               <button
-                className={`offering-btn custom ${offeringAmount > 0 && ![10, 20, 50, 100].includes(offeringAmount) ? 'active' : ''}`}
+                className={`offering-btn custom ${offeringAmount > 0 && ![10, 25, 50, 100].includes(offeringAmount) ? 'active' : ''}`}
                 onClick={() => {
-                  const custom = prompt('Enter custom gift amount:');
-                  if (custom && !isNaN(parseFloat(custom))) {
+                  const custom = prompt('Enter your gift amount:');
+                  if (custom && !isNaN(parseFloat(custom)) && parseFloat(custom) > 0) {
                     setOfferingAmount(parseFloat(custom));
                   }
                 }}
                 data-testid="merch-offering-custom"
               >
-                Custom
+                Other
               </button>
               <button
                 className={`offering-btn skip ${offeringAmount === 0 ? 'active' : ''}`}
                 onClick={() => setOfferingAmount(0)}
                 data-testid="merch-offering-skip"
               >
-                Skip
+                Not today
               </button>
             </div>
             {offeringAmount > 0 && (
-              <div className="offering-selected">
-                <span>Gift to Church: {formatCurrency(offeringAmount)}</span>
+              <div className="offering-selected" style={{ fontStyle: 'italic' }}>
+                <span>{formatCurrency(offeringAmount)} added — generosity looks good on you.</span>
                 <button onClick={() => setOfferingAmount(0)} className="offering-remove">Remove</button>
               </div>
             )}
@@ -320,8 +322,8 @@ export default function PortalMerch() {
               <span>{formatCurrency(cartTotal)}</span>
             </div>
             {offeringAmount > 0 && (
-              <div className="cart-line offering">
-                <span>Gift to Church</span>
+              <div className="cart-line offering" style={{ color: '#d97706', fontWeight: 600 }}>
+                <span>Your Tithe &amp; Offering</span>
                 <span>{formatCurrency(offeringAmount)}</span>
               </div>
             )}

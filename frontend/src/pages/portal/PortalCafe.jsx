@@ -434,19 +434,24 @@ export default function PortalCafe() {
                 />
               </div>
 
-              {/* Giving Section */}
-              <div style={{ padding: '14px 16px', background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 8, marginBottom: 16 }} data-testid="cafe-giving-nudge">
-                <p style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Add a gift</p>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  {[5, 10, 20, 50].map((amount) => (
+              {/* Giving Moment — Frank Luntz Style */}
+              <div style={{ padding: '16px 18px', background: 'linear-gradient(135deg, #fefce8 0%, #fff7ed 100%)', border: '1px solid #fde68a', borderRadius: 10, marginBottom: 16 }} data-testid="cafe-giving-nudge">
+                <p style={{ fontSize: 15, fontWeight: 700, color: '#92400e', marginBottom: 4, letterSpacing: '-0.01em' }}>
+                  While you're here...
+                </p>
+                <p style={{ fontSize: 13, color: '#78716c', marginBottom: 12, lineHeight: 1.5 }}>
+                  Every dollar you add goes directly to the ministries that change lives in this community. Your coffee order just became something bigger.
+                </p>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
+                  {[5, 10, 25, 50].map((amount) => (
                     <button
                       key={amount}
                       onClick={() => setOfferingAmount(offeringAmount === amount ? 0 : amount)}
                       style={{
-                        padding: '6px 14px', borderRadius: 6, fontSize: 13, fontWeight: 600,
-                        border: '1px solid', cursor: 'pointer',
-                        borderColor: offeringAmount === amount ? '#111827' : '#e5e7eb',
-                        background: offeringAmount === amount ? '#111827' : '#fff',
+                        padding: '8px 16px', borderRadius: 8, fontSize: 14, fontWeight: 700,
+                        border: '2px solid', cursor: 'pointer', transition: 'all 0.2s',
+                        borderColor: offeringAmount === amount ? '#d97706' : '#e5e7eb',
+                        background: offeringAmount === amount ? '#d97706' : '#fff',
                         color: offeringAmount === amount ? '#fff' : '#374151'
                       }}
                       data-testid={`cafe-offering-${amount}`}
@@ -455,18 +460,41 @@ export default function PortalCafe() {
                     </button>
                   ))}
                   <button
+                    onClick={() => {
+                      const custom = prompt('Enter your gift amount:');
+                      if (custom && !isNaN(parseFloat(custom)) && parseFloat(custom) > 0) {
+                        setOfferingAmount(parseFloat(custom));
+                      }
+                    }}
+                    style={{
+                      padding: '8px 16px', borderRadius: 8, fontSize: 14, fontWeight: 600,
+                      border: '2px solid', cursor: 'pointer',
+                      borderColor: offeringAmount > 0 && ![5, 10, 25, 50].includes(offeringAmount) ? '#d97706' : '#e5e7eb',
+                      background: offeringAmount > 0 && ![5, 10, 25, 50].includes(offeringAmount) ? '#d97706' : '#fff',
+                      color: offeringAmount > 0 && ![5, 10, 25, 50].includes(offeringAmount) ? '#fff' : '#374151'
+                    }}
+                    data-testid="cafe-offering-custom"
+                  >
+                    Other
+                  </button>
+                  <button
                     onClick={() => setOfferingAmount(0)}
                     style={{
-                      padding: '6px 14px', borderRadius: 6, fontSize: 13, fontWeight: 500,
+                      padding: '8px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500,
                       border: '1px solid #e5e7eb', cursor: 'pointer',
                       background: offeringAmount === 0 ? '#f3f4f6' : '#fff',
-                      color: '#6b7280'
+                      color: '#9ca3af'
                     }}
                     data-testid="cafe-offering-skip"
                   >
-                    Skip
+                    Not today
                   </button>
                 </div>
+                {offeringAmount > 0 && (
+                  <p style={{ fontSize: 12, color: '#b45309', fontWeight: 600, margin: 0, fontStyle: 'italic' }}>
+                    {formatCurrency(offeringAmount)} gift added — thank you for making a difference.
+                  </p>
+                )}
               </div>
 
               {/* Totals */}
@@ -476,8 +504,8 @@ export default function PortalCafe() {
                   <span>{formatCurrency(cartTotal)}</span>
                 </div>
                 {offeringAmount > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: '#6b7280', marginBottom: 4 }}>
-                    <span>Gift to Church</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: '#d97706', marginBottom: 4, fontWeight: 600 }}>
+                    <span>Your Tithe &amp; Offering</span>
                     <span>{formatCurrency(offeringAmount)}</span>
                   </div>
                 )}
