@@ -41,6 +41,8 @@ export default function PortalCafe() {
   const [orderNotes, setOrderNotes] = useState('');
   const [offeringAmount, setOfferingAmount] = useState(0);
   const [showPaymentStep, setShowPaymentStep] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     const fetchCafe = async () => {
@@ -120,6 +122,42 @@ export default function PortalCafe() {
   const placeOrder = async () => {
     if (!pickupTime) { toast.error('Select a pickup time'); return; }
     if (cartItems.length === 0) { toast.error('Your cart is empty'); return; }
+    // If saved card selected, process directly
+    if (selectedPayment?.type === 'card_on_file' && selectedPayment?.token) {
+      setProcessing(true);
+      try {
+        const token = sessionStorage.getItem('session_token');
+        const payRes = await fetch(`${API_URL}/solomonpay/process`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({
+            amount: orderTotal,
+            payment_method_type: 'card',
+            token: selectedPayment.token,
+            description: `Cafe order - ${cartItems.map(i => i.name).join(', ')}`,
+            fund_name: 'Cafe Revenue',
+          }),
+        });
+        if (!payRes.ok) throw new Error('Payment failed');
+        // Create order
+        const res = await fetch(`${API_URL}/portal/cafe/orders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({
+            pickup_time: pickupTime, notes: orderNotes,
+            items: cartItems.map((item) => ({ item_id: item.id, name: item.name, price: item.price, quantity: item.quantity, image_url: item.image_url })),
+          }),
+        });
+        if (res.ok) {
+          toast.success(`Order placed! Charged ${selectedPayment.card_brand} ••••${selectedPayment.card_last_four}`);
+          setCartItems([]); setCartOpen(false); setPickupTime(''); setOrderNotes('');
+          setShowPaymentStep(false); setOfferingAmount(0);
+        } else throw new Error('Order failed');
+      } catch { toast.error('Unable to place order'); }
+      setProcessing(false);
+      return;
+    }
+    // Otherwise show card entry form
     setShowPaymentStep(true);
   };
 
@@ -463,22 +501,21 @@ export default function PortalCafe() {
                   <MultiPaymentSelector
                     amount={cartTotal}
                     onSelect={(pm) => {
-                      if (pm.type === 'card_on_file' || pm.type === 'guest_card') {
-                        setShowPaymentStep(true);
-                      }
+                      setSelectedPayment(pm);
                     }}
                     showCash={false}
                   />
                   <button
                     onClick={placeOrder}
+                    disabled={processing}
                     style={{
-                      width: '100%', padding: '14px 0', background: '#111827', color: '#ffffff',
+                      width: '100%', padding: '14px 0', background: processing ? '#6b7280' : '#111827', color: '#ffffff',
                       border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 700,
-                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
+                      cursor: processing ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
                     }}
                     data-testid="cafe-checkout-btn"
                   >
-                    Complete Order <ChevronRight style={{ width: 16, height: 16 }} />
+                    {processing ? 'Processing...' : <>Complete Order <ChevronRight style={{ width: 16, height: 16 }} /></>}
                   </button>
                 </div>
               )}

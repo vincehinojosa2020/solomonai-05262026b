@@ -5,6 +5,7 @@ import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import MerchRecommender from '@/components/MerchRecommender';
 import SolomonPayForm from '@/components/SolomonPayForm';
+import MultiPaymentSelector from '@/components/MultiPaymentSelector';
 
 export default function PortalMerch() {
   const { tenant } = useOutletContext();
@@ -16,6 +17,8 @@ export default function PortalMerch() {
   const [cartItems, setCartItems] = useState([]);
   const [offeringAmount, setOfferingAmount] = useState(0);
   const [showPaymentStep, setShowPaymentStep] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     const fetchMerch = async () => {
@@ -80,6 +83,40 @@ export default function PortalMerch() {
       toast.error('Your cart is empty');
       return;
     }
+    // If saved card selected, process directly
+    if (selectedPayment?.type === 'card_on_file' && selectedPayment?.token) {
+      setProcessing(true);
+      try {
+        const token = sessionStorage.getItem('session_token');
+        const payRes = await fetch(`${API_URL}/solomonpay/process`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({
+            amount: orderTotal,
+            payment_method_type: 'card',
+            token: selectedPayment.token,
+            description: `Merch order - ${cartItems.map(i => i.name).join(', ')}`,
+            fund_name: 'Merch Revenue',
+          }),
+        });
+        if (!payRes.ok) throw new Error('Payment failed');
+        const res = await fetch(`${API_URL}/portal/merch/orders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({
+            items: cartItems.map((item) => ({ product_id: item.id, name: item.name, price: item.price, quantity: item.quantity, image_url: item.image_url })),
+            offering_amount: offeringAmount,
+          }),
+        });
+        if (res.ok) {
+          toast.success(`Order placed! Charged ${selectedPayment.card_brand} ••••${selectedPayment.card_last_four}`);
+          setCartItems([]); setOfferingAmount(0); setCartOpen(false); setShowPaymentStep(false);
+        } else throw new Error('Order failed');
+      } catch { toast.error('Unable to place order'); }
+      setProcessing(false);
+      return;
+    }
+    // Otherwise show card entry form
     setShowPaymentStep(true);
   };
 
@@ -302,13 +339,22 @@ export default function PortalMerch() {
                 />
               </div>
             ) : (
-              <button
-                className="portal-merch-checkout"
-                onClick={checkout}
-                data-testid="merch-checkout-btn"
-              >
-                {offeringAmount > 0 ? 'Pay with SolomonPay & Give' : 'Pay with SolomonPay'}
-              </button>
+              <div className="space-y-3" style={{ padding: '0 4px' }}>
+                <MultiPaymentSelector
+                  amount={cartTotal}
+                  onSelect={(pm) => setSelectedPayment(pm)}
+                  showCash={false}
+                />
+                <button
+                  className="portal-merch-checkout"
+                  onClick={checkout}
+                  disabled={processing}
+                  data-testid="merch-checkout-btn"
+                  style={processing ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
+                >
+                  {processing ? 'Processing...' : (offeringAmount > 0 ? 'Pay with SolomonPay & Give' : 'Pay with SolomonPay')}
+                </button>
+              </div>
             )}
           </div>
         </div>
