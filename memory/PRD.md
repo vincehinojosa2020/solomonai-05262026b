@@ -35,16 +35,17 @@ SOLOMON AI — MASTER BUILD DIRECTIVE. A nationwide SaaS church management platf
 - Authentication for all 4 demo accounts
 
 ### Recent Updates (April 2026)
-- **Watch Page**: Dark Masterclass theme (black background), 3 videos by Pastor Charles Nieman
+- **Watch Page**: Dark Masterclass theme (black bg), 3 videos by Pastor Charles Nieman
 - **Portal Nav**: Flat Cafe/Merch links (no dropdown)
-- **Saved Card Checkout**: Cafe, Merch, and Events use saved Visa ****4242
-- **Tithe/Offering Prompts**: Frank Luntz-style persuasive copy on Cafe and Merch checkout
-  - Cafe: "While you're here..." warm amber card
-  - Merch: "You're already investing in something you believe in."
+- **Saved Card Checkout**: Cafe, Merch, Events use saved Visa ****4242 via Solomon Pay
+- **Frank Luntz Giving Copy** (Cafe & Merch):
+  - Tithe/Offering prompt: "While you're here..." / "You're already investing in something you believe in."
+  - **Round Up**: "Small change, big kingdom impact." (appears when total has cents)
+  - **Cover Processing Fees**: "When you cover the fee, 100% of your generosity reaches the church. Not one penny lost."
+  - "Not today" instead of "Skip" — softer opt-out language
 - **All Campuses Aggregate**: Shannon/Jacob see 35,331 total members across 3 campuses
 - **Abundant Downtown**: Renamed from "Abundant Northeast"
-- **Demo Modals**: Suppressed for all demo accounts (onboarding, walkthrough)
-- **Kids Check-In**: Reset for demo account
+- **Demo Modals**: Suppressed for all demo accounts
 
 ## Pending / Upcoming Tasks
 
@@ -61,7 +62,7 @@ SOLOMON AI — MASTER BUILD DIRECTIVE. A nationwide SaaS church management platf
 
 ## Key API Endpoints
 - `GET /api/admin/dashboard/aggregate` — Multi-campus aggregate stats
-- `POST /api/solomonpay/process` — Process payment via Solomon Pay
+- `POST /api/solomonpay/process` — Process payment (supports `cover_fees` flag)
 - `GET /api/portal/payment-methods` — Saved payment methods
 - `GET /api/portal/media/videos` — Watch page videos
 - `POST /api/solomon/transcribe` — Whisper voice transcription
@@ -73,3 +74,4 @@ SOLOMON AI — MASTER BUILD DIRECTIVE. A nationwide SaaS church management platf
 - **Solomon Pay**: Uses mock processor adapter for demo
 - **God Mode caching**: `platform_stats_cache` prevents MongoDB timeouts on 3M+ records
 - **Dashboard stats**: Uses `dashboard_stats_cache` collection for member counts
+- **Frank Luntz Copy**: All checkout giving prompts written in persuasive, emotionally resonant style

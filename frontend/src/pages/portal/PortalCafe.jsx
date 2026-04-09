@@ -43,6 +43,8 @@ export default function PortalCafe() {
   const [showPaymentStep, setShowPaymentStep] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [processing, setProcessing] = useState(false);
+  const [roundUp, setRoundUp] = useState(false);
+  const [coverFees, setCoverFees] = useState(false);
 
   useEffect(() => {
     const fetchCafe = async () => {
@@ -98,7 +100,11 @@ export default function PortalCafe() {
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const orderTotal = cartTotal + offeringAmount;
+  const subtotalWithOffering = cartTotal + offeringAmount;
+  const roundUpAmount = roundUp ? Math.ceil(subtotalWithOffering) - subtotalWithOffering : 0;
+  const preFeesTotal = subtotalWithOffering + roundUpAmount;
+  const processingFee = coverFees ? Math.round((preFeesTotal * 0.019 + 0.30) * 100) / 100 : 0;
+  const orderTotal = Math.round((preFeesTotal + processingFee) * 100) / 100;
 
   const addToCart = (item) => {
     setCartItems((prev) => {
@@ -134,6 +140,7 @@ export default function PortalCafe() {
             amount: orderTotal,
             payment_method_type: 'card',
             token: selectedPayment.token,
+            cover_fees: coverFees,
             description: `Cafe order - ${cartItems.map(i => i.name).join(', ')}`,
             fund_name: 'Cafe Revenue',
           }),
@@ -151,7 +158,7 @@ export default function PortalCafe() {
         if (res.ok) {
           toast.success(`Order placed! Charged ${selectedPayment.card_brand} ••••${selectedPayment.card_last_four}`);
           setCartItems([]); setCartOpen(false); setPickupTime(''); setOrderNotes('');
-          setShowPaymentStep(false); setOfferingAmount(0);
+          setShowPaymentStep(false); setOfferingAmount(0); setRoundUp(false); setCoverFees(false);
         } else throw new Error('Order failed');
       } catch { toast.error('Unable to place order'); }
       setProcessing(false);
@@ -497,6 +504,52 @@ export default function PortalCafe() {
                 )}
               </div>
 
+              {/* Round Up — Luntz Style */}
+              {cartTotal > 0 && Math.ceil(subtotalWithOffering) !== subtotalWithOffering && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, marginBottom: 10, cursor: 'pointer' }}
+                  onClick={() => setRoundUp(!roundUp)} data-testid="cafe-roundup-toggle"
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: 4, border: `2px solid ${roundUp ? '#16a34a' : '#d1d5db'}`,
+                    background: roundUp ? '#16a34a' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.2s', flexShrink: 0
+                  }}>
+                    {roundUp && <span style={{ color: '#fff', fontSize: 12, fontWeight: 700 }}>&#10003;</span>}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: '#166534', margin: 0 }}>
+                      Round up to {formatCurrency(Math.ceil(subtotalWithOffering))}
+                    </p>
+                    <p style={{ fontSize: 11, color: '#4ade80', margin: 0, lineHeight: 1.4 }}>
+                      Small change, big kingdom impact. Your {formatCurrency(Math.ceil(subtotalWithOffering) - subtotalWithOffering)} goes straight to ministry.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Cover Processing Fees — Luntz Style */}
+              {preFeesTotal > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', background: coverFees ? '#eff6ff' : '#f8fafc', border: `1px solid ${coverFees ? '#93c5fd' : '#e2e8f0'}`, borderRadius: 8, marginBottom: 12, cursor: 'pointer', transition: 'all 0.2s' }}
+                  onClick={() => setCoverFees(!coverFees)} data-testid="cafe-cover-fees-toggle"
+                >
+                  <div style={{
+                    width: 20, height: 20, borderRadius: 4, border: `2px solid ${coverFees ? '#2563eb' : '#d1d5db'}`,
+                    background: coverFees ? '#2563eb' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.2s', flexShrink: 0
+                  }}>
+                    {coverFees && <span style={{ color: '#fff', fontSize: 12, fontWeight: 700 }}>&#10003;</span>}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: coverFees ? '#1e40af' : '#374151', margin: 0 }}>
+                      Cover the processing fee ({formatCurrency(Math.round((preFeesTotal * 0.019 + 0.30) * 100) / 100)})
+                    </p>
+                    <p style={{ fontSize: 11, color: coverFees ? '#60a5fa' : '#9ca3af', margin: 0, lineHeight: 1.4 }}>
+                      When you cover the fee, 100% of your generosity reaches the church. Not one penny lost.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Totals */}
               <div style={{ marginBottom: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: '#6b7280', marginBottom: 4 }}>
@@ -507,6 +560,18 @@ export default function PortalCafe() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: '#d97706', marginBottom: 4, fontWeight: 600 }}>
                     <span>Your Tithe &amp; Offering</span>
                     <span>{formatCurrency(offeringAmount)}</span>
+                  </div>
+                )}
+                {roundUp && roundUpAmount > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: '#16a34a', marginBottom: 4, fontWeight: 600 }}>
+                    <span>Round Up Gift</span>
+                    <span>{formatCurrency(roundUpAmount)}</span>
+                  </div>
+                )}
+                {coverFees && processingFee > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: '#2563eb', marginBottom: 4, fontWeight: 600 }}>
+                    <span>Processing Fee Covered</span>
+                    <span>{formatCurrency(processingFee)}</span>
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 16, fontWeight: 700, color: '#111827', paddingTop: 8, borderTop: '1px solid #e5e7eb' }}>

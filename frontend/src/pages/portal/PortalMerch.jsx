@@ -19,6 +19,8 @@ export default function PortalMerch() {
   const [showPaymentStep, setShowPaymentStep] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [processing, setProcessing] = useState(false);
+  const [roundUp, setRoundUp] = useState(false);
+  const [coverFees, setCoverFees] = useState(false);
 
   useEffect(() => {
     const fetchMerch = async () => {
@@ -76,7 +78,11 @@ export default function PortalMerch() {
   };
 
   const cartTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const orderTotal = cartTotal + offeringAmount;
+  const subtotalWithOffering = cartTotal + offeringAmount;
+  const roundUpAmount = roundUp ? Math.ceil(subtotalWithOffering) - subtotalWithOffering : 0;
+  const preFeesTotal = subtotalWithOffering + roundUpAmount;
+  const processingFee = coverFees ? Math.round((preFeesTotal * 0.019 + 0.30) * 100) / 100 : 0;
+  const orderTotal = Math.round((preFeesTotal + processingFee) * 100) / 100;
 
   const checkout = async () => {
     if (cartItems.length === 0) {
@@ -95,6 +101,7 @@ export default function PortalMerch() {
             amount: orderTotal,
             payment_method_type: 'card',
             token: selectedPayment.token,
+            cover_fees: coverFees,
             description: `Merch order - ${cartItems.map(i => i.name).join(', ')}`,
             fund_name: 'Merch Revenue',
           }),
@@ -110,7 +117,7 @@ export default function PortalMerch() {
         });
         if (res.ok) {
           toast.success(`Order placed! Charged ${selectedPayment.card_brand} ••••${selectedPayment.card_last_four}`);
-          setCartItems([]); setOfferingAmount(0); setCartOpen(false); setShowPaymentStep(false);
+          setCartItems([]); setOfferingAmount(0); setCartOpen(false); setShowPaymentStep(false); setRoundUp(false); setCoverFees(false);
         } else throw new Error('Order failed');
       } catch { toast.error('Unable to place order'); }
       setProcessing(false);
@@ -317,6 +324,52 @@ export default function PortalMerch() {
           </div>
 
           <div className="portal-merch-cart-footer">
+            {/* Round Up — Luntz Style */}
+            {cartTotal > 0 && Math.ceil(subtotalWithOffering) !== subtotalWithOffering && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, marginBottom: 8, cursor: 'pointer' }}
+                onClick={() => setRoundUp(!roundUp)} data-testid="merch-roundup-toggle"
+              >
+                <div style={{
+                  width: 18, height: 18, borderRadius: 4, border: `2px solid ${roundUp ? '#16a34a' : '#d1d5db'}`,
+                  background: roundUp ? '#16a34a' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.2s', flexShrink: 0
+                }}>
+                  {roundUp && <span style={{ color: '#fff', fontSize: 11, fontWeight: 700 }}>&#10003;</span>}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: '#166534', margin: 0 }}>
+                    Round up to {formatCurrency(Math.ceil(subtotalWithOffering))}
+                  </p>
+                  <p style={{ fontSize: 10, color: '#4ade80', margin: 0 }}>
+                    Small change, big kingdom impact.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Cover Fees — Luntz Style */}
+            {preFeesTotal > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: coverFees ? '#eff6ff' : '#f8fafc', border: `1px solid ${coverFees ? '#93c5fd' : '#e2e8f0'}`, borderRadius: 8, marginBottom: 10, cursor: 'pointer', transition: 'all 0.2s' }}
+                onClick={() => setCoverFees(!coverFees)} data-testid="merch-cover-fees-toggle"
+              >
+                <div style={{
+                  width: 18, height: 18, borderRadius: 4, border: `2px solid ${coverFees ? '#2563eb' : '#d1d5db'}`,
+                  background: coverFees ? '#2563eb' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.2s', flexShrink: 0
+                }}>
+                  {coverFees && <span style={{ color: '#fff', fontSize: 11, fontWeight: 700 }}>&#10003;</span>}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: coverFees ? '#1e40af' : '#374151', margin: 0 }}>
+                    Cover the fee ({formatCurrency(Math.round((preFeesTotal * 0.019 + 0.30) * 100) / 100)})
+                  </p>
+                  <p style={{ fontSize: 10, color: coverFees ? '#60a5fa' : '#9ca3af', margin: 0 }}>
+                    100% of your generosity reaches the church. Not one penny lost.
+                  </p>
+                </div>
+              </div>
+            )}
+
             <div className="cart-line">
               <span>Subtotal</span>
               <span>{formatCurrency(cartTotal)}</span>
@@ -325,6 +378,18 @@ export default function PortalMerch() {
               <div className="cart-line offering" style={{ color: '#d97706', fontWeight: 600 }}>
                 <span>Your Tithe &amp; Offering</span>
                 <span>{formatCurrency(offeringAmount)}</span>
+              </div>
+            )}
+            {roundUp && roundUpAmount > 0 && (
+              <div className="cart-line" style={{ color: '#16a34a', fontWeight: 600 }}>
+                <span>Round Up Gift</span>
+                <span>{formatCurrency(roundUpAmount)}</span>
+              </div>
+            )}
+            {coverFees && processingFee > 0 && (
+              <div className="cart-line" style={{ color: '#2563eb', fontWeight: 600 }}>
+                <span>Processing Fee Covered</span>
+                <span>{formatCurrency(processingFee)}</span>
               </div>
             )}
             <div className="cart-line total">
