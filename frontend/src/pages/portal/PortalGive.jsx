@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { usePolling } from '@/hooks/usePolling';
-import { CreditCard, DollarSign, Download, CheckCircle, ChevronDown, MapPin } from 'lucide-react';
+import { CreditCard, DollarSign, Download, CheckCircle, ChevronDown, MapPin, Flame, Heart } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import SolomonPayForm from '@/components/SolomonPayForm';
@@ -24,8 +24,12 @@ export default function PortalGive() {
   const [campuses, setCampuses] = useState([]);
   const [selectedCampus, setSelectedCampus] = useState(user?.home_campus_id || tenant?.id || '');
   const [isMultiCampus, setIsMultiCampus] = useState(false);
+  const [coverFees, setCoverFees] = useState(false);
 
   const quickAmounts = [25, 50, 100, 250];
+  const giveAmount = parseFloat(amount) || 0;
+  const processingFee = coverFees ? Math.round((giveAmount * 0.019 + 0.30) * 100) / 100 : 0;
+  const totalCharge = Math.round((giveAmount + processingFee) * 100) / 100;
 
   useEffect(() => {
     fetchFunds();
@@ -36,43 +40,45 @@ export default function PortalGive() {
 
   const fetchSavedPaymentMethods = async () => {
     try {
-      const res = await fetch(`${API_URL}/portal/payment-methods`);
+      const token = sessionStorage.getItem('session_token');
+      const res = await fetch(`${API_URL}/portal/payment-methods`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       if (res.ok) {
         const data = await res.json();
-        setSavedCards(data.payment_methods || []);
+        const cards = data.payment_methods || [];
+        setSavedCards(cards);
+        const defaultCard = cards.find(c => c.is_default);
+        if (defaultCard) setSelectedSavedCard(defaultCard.id);
       }
     } catch (error) {
       console.error('Failed to fetch saved cards:', error);
     }
   };
 
-  useEffect(() => {
-    fetchFunds();
-    fetchGivingHistory();
-    fetchSavedPaymentMethods();
-    fetchCampuses();
-  }, []);
-
   const fetchCampuses = async () => {
     try {
       const token = sessionStorage.getItem('session_token');
       const res = await fetch(`${API_URL}/portal/campuses`, { headers: { 'Authorization': `Bearer ${token}` } });
       if (res.ok) {
-        const d = await res.json();
-        setCampuses(d.campuses || []);
-        setIsMultiCampus(d.is_multi_campus || false);
-        if (!selectedCampus && d.home_campus_id) setSelectedCampus(d.home_campus_id);
+        const data = await res.json();
+        setCampuses(data.campuses || []);
+        setIsMultiCampus(data.is_multi_campus || false);
       }
-    } catch (e) { console.error(e); }
+    } catch (error) {
+      console.error('Failed to fetch campuses:', error);
+    }
   };
 
   const fetchFunds = async () => {
     try {
-      const res = await fetch(`${API_URL}/funds`);
+      const token = sessionStorage.getItem('session_token');
+      const res = await fetch(`${API_URL}/portal/giving/funds`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       if (res.ok) {
         const data = await res.json();
-        setFunds(data);
-        if (data.length > 0) setFund(data[0].id);
+        setFunds(data.funds || []);
       }
     } catch (error) {
       console.error('Failed to fetch funds:', error);
@@ -81,7 +87,10 @@ export default function PortalGive() {
 
   const fetchGivingHistory = async () => {
     try {
-      const res = await fetch(`${API_URL}/portal/giving/history`);
+      const token = sessionStorage.getItem('session_token');
+      const res = await fetch(`${API_URL}/portal/giving/history?limit=50`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       if (res.ok) {
         const data = await res.json();
         setGivingHistory(data.donations || []);
@@ -91,9 +100,59 @@ export default function PortalGive() {
     }
   };
 
+  // Process giving with saved card
+  const handleGiveWithSavedCard = async () => {
+    if (!amount || parseFloat(amount) <= 0) {
+      toast.error('Please enter a valid amount');
+      return;
+    }
+    const card = savedCards.find(c => c.id === selectedSavedCard);
+    if (!card) {
+      toast.error('Please select a payment method');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const token = sessionStorage.getItem('session_token');
+      const fundObj = funds.find(f => f.id === fund);
+      const res = await fetch(`${API_URL}/solomonpay/process`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({
+          amount: totalCharge,
+          payment_method_type: 'card',
+          token: card.token,
+          cover_fees: coverFees,
+          context: 'donation',
+          fund_id: fund,
+          fund_name: fundObj?.name || 'General Fund',
+          frequency,
+          description: `${frequency === 'one-time' ? 'One-time' : frequency} gift to ${fundObj?.name || 'General Fund'}`,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Payment failed');
+      }
+      setShowSuccessMessage(true);
+      toast.success(`Thank you! ${card.card_brand} ••••${card.card_last_four} charged ${formatCurrency(totalCharge)}`);
+      setAmount('');
+      setCoverFees(false);
+      setTimeout(() => fetchGivingHistory(), 500);
+    } catch (err) {
+      toast.error(err.message || 'Payment failed. Please try again.');
+    }
+    setIsLoading(false);
+  };
+
   const handleGive = () => {
     if (!amount || parseFloat(amount) <= 0) {
       toast.error('Please enter a valid amount');
+      return;
+    }
+    // If saved card selected, go directly
+    if (selectedSavedCard) {
+      handleGiveWithSavedCard();
       return;
     }
     setShowPayment(true);
@@ -101,12 +160,14 @@ export default function PortalGive() {
 
   const handleSolomonPaySuccess = async (cardData) => {
     const fundObj = funds.find(f => f.id === fund);
+    const token = sessionStorage.getItem('session_token');
     const response = await fetch(`${API_URL}/solomonpay/process`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({
         ...cardData,
-        amount: parseFloat(amount),
+        amount: totalCharge,
+        cover_fees: coverFees,
         context: 'donation',
         fund_id: fund,
         fund_name: fundObj?.name || 'General Fund',
@@ -120,11 +181,45 @@ export default function PortalGive() {
     }
     setShowPayment(false);
     setShowSuccessMessage(true);
-    toast.success(`Thank you for your generous gift of $${amount}!`);
+    toast.success(`Thank you for your generous gift of ${formatCurrency(totalCharge)}!`);
     setAmount('');
+    setCoverFees(false);
     setTimeout(() => fetchGivingHistory(), 500);
     setTimeout(() => fetchSavedPaymentMethods(), 500);
   };
+
+  // Calculate giving streak (consecutive weeks with donations)
+  const givingStreak = (() => {
+    if (!givingHistory || givingHistory.length === 0) return 0;
+    const now = new Date();
+    const weekMs = 7 * 24 * 60 * 60 * 1000;
+    // Group donations by week number
+    const weeks = new Set();
+    givingHistory.forEach(d => {
+      const date = new Date(d.donation_date);
+      const weekStart = new Date(date);
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      weeks.add(`${weekStart.getFullYear()}-${weekStart.getMonth()}-${weekStart.getDate()}`);
+    });
+    // Count consecutive weeks from current week backwards
+    let streak = 0;
+    let checkDate = new Date(now);
+    for (let i = 0; i < 52; i++) {
+      const weekStart = new Date(checkDate);
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      const key = `${weekStart.getFullYear()}-${weekStart.getMonth()}-${weekStart.getDate()}`;
+      if (weeks.has(key)) {
+        streak++;
+        checkDate = new Date(checkDate.getTime() - weekMs);
+      } else if (i === 0) {
+        // Allow current week to not count yet (grace period)
+        checkDate = new Date(checkDate.getTime() - weekMs);
+      } else {
+        break;
+      }
+    }
+    return streak;
+  })();
 
   const ytdGiving = memberData?.giving?.ytd_total || 0;
   const lastGift = memberData?.giving?.last_gift;
@@ -190,7 +285,7 @@ export default function PortalGive() {
             <h3>Thank you for your generous gift!</h3>
             <p>Your donation has been received and will be reflected in your giving history.</p>
           </div>
-          <button onClick={() => setShowSuccessMessage(false)} className="portal-close-btn">×</button>
+          <button onClick={() => setShowSuccessMessage(false)} className="portal-close-btn">&times;</button>
         </div>
       )}
 
@@ -280,18 +375,17 @@ export default function PortalGive() {
             </select>
           </div>
 
-          {/* How You Give */}
+          {/* Payment Method */}
           <div className="portal-form-section">
             <label className="portal-form-label">PAYMENT</label>
             
             {/* Saved Cards */}
             {savedCards.length > 0 && !showPayment && (
               <div className="portal-saved-cards" style={{ marginBottom: '12px' }}>
-                <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '8px' }}>Saved Cards</p>
                 {savedCards.map((card) => (
                   <button
                     key={card.id}
-                    onClick={() => setSelectedSavedCard(card.id === selectedSavedCard ? null : card.id)}
+                    onClick={() => { setSelectedSavedCard(card.id === selectedSavedCard ? null : card.id); setShowPayment(false); }}
                     className={`portal-saved-card ${selectedSavedCard === card.id ? 'active' : ''}`}
                     style={{
                       display: 'flex', alignItems: 'center', gap: '10px',
@@ -305,35 +399,89 @@ export default function PortalGive() {
                     data-testid={`saved-card-${card.id}`}
                   >
                     <CreditCard className="w-4 h-4" style={{ color: '#0f172a' }} />
-                    <span style={{ fontWeight: '500' }}>{card.card_brand} •••• {card.card_last_four}</span>
+                    <span style={{ fontWeight: '500' }}>{card.card_brand} &bull;&bull;&bull;&bull; {card.card_last_four}</span>
                     <span style={{ fontSize: '12px', color: '#94a3b8', marginLeft: 'auto' }}>
-                      Exp {card.card_exp_month}/{card.card_exp_year}
+                      {card.is_default && 'Default'}
                     </span>
-                    {card.is_default && (
-                      <span style={{ fontSize: '10px', background: '#dcfce7', color: '#16a34a', padding: '2px 6px', borderRadius: '10px' }}>
-                        Default
-                      </span>
+                    {selectedSavedCard === card.id && (
+                      <CheckCircle className="w-4 h-4 text-green-500" />
                     )}
                   </button>
                 ))}
+                <button
+                  onClick={() => { setSelectedSavedCard(null); setShowPayment(true); }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    padding: '8px 14px', border: '1px dashed #d1d5db', borderRadius: '8px',
+                    background: 'transparent', width: '100%', cursor: 'pointer',
+                    fontSize: '13px', color: '#6b7280'
+                  }}
+                  data-testid="use-new-card-btn"
+                >
+                  <CreditCard className="w-4 h-4" /> Enter a new card
+                </button>
               </div>
             )}
             
-            {showPayment ? (
+            {showPayment && (
               <div style={{ marginTop: 8 }}>
                 <SolomonPayForm
-                  amount={parseFloat(amount)}
+                  amount={totalCharge}
                   onSuccess={handleSolomonPaySuccess}
                   onCancel={() => setShowPayment(false)}
                   context="donation"
                 />
               </div>
-            ) : (
-              <p style={{ fontSize: '13px', color: '#64748b' }}>
-                Secure payment powered by SolomonPay
-              </p>
             )}
           </div>
+
+          {/* Cover Processing Fees — Luntz Style */}
+          {giveAmount > 0 && !showPayment && (
+            <div
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px',
+                background: coverFees ? '#eff6ff' : '#f8fafc',
+                border: `1px solid ${coverFees ? '#93c5fd' : '#e2e8f0'}`,
+                borderRadius: 8, cursor: 'pointer', transition: 'all 0.2s', marginBottom: 12
+              }}
+              onClick={() => setCoverFees(!coverFees)}
+              data-testid="give-cover-fees-toggle"
+            >
+              <div style={{
+                width: 20, height: 20, borderRadius: 4, border: `2px solid ${coverFees ? '#2563eb' : '#d1d5db'}`,
+                background: coverFees ? '#2563eb' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.2s', flexShrink: 0
+              }}>
+                {coverFees && <span style={{ color: '#fff', fontSize: 12, fontWeight: 700 }}>&#10003;</span>}
+              </div>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: coverFees ? '#1e40af' : '#374151', margin: 0 }}>
+                  I'd like to cover the processing fee ({formatCurrency(Math.round((giveAmount * 0.019 + 0.30) * 100) / 100)})
+                </p>
+                <p style={{ fontSize: 11, color: coverFees ? '#60a5fa' : '#9ca3af', margin: 0, lineHeight: 1.4 }}>
+                  When you cover the fee, 100% of your gift reaches the church. Not one penny lost.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Total with fee breakdown */}
+          {giveAmount > 0 && coverFees && !showPayment && (
+            <div style={{ padding: '10px 16px', background: '#f0f9ff', borderRadius: 8, marginBottom: 12, fontSize: 13 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#374151', marginBottom: 2 }}>
+                <span>Your gift</span>
+                <span>{formatCurrency(giveAmount)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#2563eb', marginBottom: 2, fontWeight: 600 }}>
+                <span>Processing fee covered</span>
+                <span>{formatCurrency(processingFee)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, color: '#0f172a', paddingTop: 6, borderTop: '1px solid #bfdbfe' }}>
+                <span>Total charge</span>
+                <span>{formatCurrency(totalCharge)}</span>
+              </div>
+            </div>
+          )}
 
           {/* Submit Button */}
           {!showPayment && (
@@ -342,14 +490,42 @@ export default function PortalGive() {
               disabled={isLoading || !amount}
               className="portal-give-btn"
               data-testid="give-submit-btn"
+              style={isLoading ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
             >
-              {isLoading ? 'Processing...' : `Give ${amount ? `$${amount}` : ''} with SolomonPay`}
+              {isLoading ? 'Processing...' : `Give ${amount ? formatCurrency(totalCharge) : ''} with SolomonPay`}
             </button>
           )}
         </div>
 
         {/* Giving Summary */}
         <div className="portal-give-summary">
+
+          {/* Giving Streak — Frank Luntz Style */}
+          {givingStreak > 0 && (
+            <div style={{
+              padding: '16px 18px', borderRadius: 12, marginBottom: 20,
+              background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fbbf24 100%)',
+              border: '1px solid #f59e0b', position: 'relative', overflow: 'hidden'
+            }} data-testid="giving-streak">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                <Flame style={{ width: 22, height: 22, color: '#dc2626' }} />
+                <span style={{ fontSize: 28, fontWeight: 800, color: '#92400e', letterSpacing: '-0.02em' }}>
+                  {givingStreak} Week{givingStreak !== 1 ? 's' : ''}
+                </span>
+              </div>
+              <p style={{ fontSize: 14, fontWeight: 700, color: '#78350f', margin: 0, marginBottom: 4 }}>
+                {givingStreak >= 12 ? "That's not a habit — that's a lifestyle." :
+                 givingStreak >= 4 ? "You're building something beautiful." :
+                 "Every streak starts with the first step."}
+              </p>
+              <p style={{ fontSize: 12, color: '#92400e', margin: 0, lineHeight: 1.4 }}>
+                {givingStreak >= 12 ? `${givingStreak} consecutive weeks of faithfulness. Your consistency is transforming this community.` :
+                 givingStreak >= 4 ? `${givingStreak} weeks of faithful giving and counting. Keep this streak alive.` :
+                 `You've given ${givingStreak} week${givingStreak !== 1 ? 's' : ''} in a row. Consistency is the seed of transformation.`}
+              </p>
+            </div>
+          )}
+
           <h3 className="portal-summary-title">Your giving this year</h3>
           
           <div className="portal-summary-stat">

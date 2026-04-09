@@ -30,20 +30,18 @@ SOLOMON AI — MASTER BUILD DIRECTIVE. A nationwide SaaS church management platf
 - Solomon AI sidebar (McKinsey persona, Whisper voice, PDF/CSV reports)
 - Bloomberg-grade reports (Giving, Attendance, Membership, Groups)
 - 3-year historical data seeded for all campuses
-- 2026 donations (20,864+ records) seeded
 - Rate limiting completely disabled for demo
 - Authentication for all 4 demo accounts
 
 ### Recent Updates (April 2026)
-- **Watch Page**: Dark Masterclass theme (black bg), 3 videos by Pastor Charles Nieman
+- **Give Page**: Full Solomon Pay flow — select amount, saved card (Visa ****4242), cover fees, one-tap give. Payment processes and shows success toast.
+- **Giving Streak**: 14-week streak badge with Luntz copy: "That's not a habit — that's a lifestyle. 14 consecutive weeks of faithfulness."
+- **Cover Processing Fees**: All checkout flows (Give, Cafe, Merch) show "I'd like to cover the processing fee — 100% of your gift reaches the church. Not one penny lost."
+- **Round Up Feature**: Cafe & Merch — "Small change, big kingdom impact." Appears when total has cents.
+- **Tithe/Offering Prompts**: Frank Luntz copy on Cafe ("While you're here...") and Merch ("You're already investing in something you believe in.")
+- **Watch Page**: Dark Masterclass theme, 3 videos by Pastor Charles Nieman
 - **Portal Nav**: Flat Cafe/Merch links (no dropdown)
-- **Saved Card Checkout**: Cafe, Merch, Events use saved Visa ****4242 via Solomon Pay
-- **Frank Luntz Giving Copy** (Cafe & Merch):
-  - Tithe/Offering prompt: "While you're here..." / "You're already investing in something you believe in."
-  - **Round Up**: "Small change, big kingdom impact." (appears when total has cents)
-  - **Cover Processing Fees**: "When you cover the fee, 100% of your generosity reaches the church. Not one penny lost."
-  - "Not today" instead of "Skip" — softer opt-out language
-- **All Campuses Aggregate**: Shannon/Jacob see 35,331 total members across 3 campuses
+- **All Campuses Aggregate**: 35,331 total members across 3 campuses
 - **Abundant Downtown**: Renamed from "Abundant Northeast"
 - **Demo Modals**: Suppressed for all demo accounts
 
@@ -58,20 +56,11 @@ SOLOMON AI — MASTER BUILD DIRECTIVE. A nationwide SaaS church management platf
 - Apple/Google Pay live integration (currently mocked)
 
 ### P3 — Backlog
-- Split oversized components (`KidsCheckinAdmin.jsx` 794 lines, `CheckInSetupPage.jsx` 704 lines)
-
-## Key API Endpoints
-- `GET /api/admin/dashboard/aggregate` — Multi-campus aggregate stats
-- `POST /api/solomonpay/process` — Process payment (supports `cover_fees` flag)
-- `GET /api/portal/payment-methods` — Saved payment methods
-- `GET /api/portal/media/videos` — Watch page videos
-- `POST /api/solomon/transcribe` — Whisper voice transcription
-- `POST /api/solomon/generate-report` — AI report generation
-- `GET /api/reports/*` — Bloomberg-grade reports
+- Split oversized components (`KidsCheckinAdmin.jsx`, `CheckInSetupPage.jsx`)
 
 ## Technical Notes
 - **Rate limiting**: Completely disabled (DO NOT re-enable)
-- **Solomon Pay**: Uses mock processor adapter for demo
+- **Solomon Pay**: Mock processor adapter for demo — always returns success
 - **God Mode caching**: `platform_stats_cache` prevents MongoDB timeouts on 3M+ records
-- **Dashboard stats**: Uses `dashboard_stats_cache` collection for member counts
-- **Frank Luntz Copy**: All checkout giving prompts written in persuasive, emotionally resonant style
+- **Dashboard stats**: Uses `dashboard_stats_cache` for member counts
+- **Giving History**: Uses `people.id` (not `user_id`) as `person_id` in donations collection
