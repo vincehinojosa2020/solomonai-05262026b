@@ -333,6 +333,7 @@ export default function PlatformDashboard() {
   const [revenue, setRevenue] = useState(null);
   const [payouts, setPayouts] = useState([]);
   const [selectedChurchId, setSelectedChurchId] = useState(null);
+  const [demoMode, setDemoMode] = useState(() => sessionStorage.getItem('solomon_demo_mode') || 'live');
   const actRef = useRef();
 
   const fetchStats = useCallback(async () => {
@@ -451,7 +452,7 @@ export default function PlatformDashboard() {
         </div>
         <nav className="flex-1 py-4 overflow-y-auto">
           {NAV.map(item=>(
-            <button key={item.id} onClick={()=>setSection(item.id)} className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium transition-all ${section===item.id?'bg-blue-600 text-white':'text-slate-400 hover:text-white hover:bg-slate-800'}`} data-testid={`nav-${item.id}`}>
+            <button key={item.id} onClick={()=>{setSection(item.id);if(item.id!=='dashboard')setDemoMode('live');}} className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium transition-all ${section===item.id?'bg-blue-600 text-white':'text-slate-400 hover:text-white hover:bg-slate-800'}`} data-testid={`nav-${item.id}`}>
               <item.icon className="w-4 h-4 flex-shrink-0"/>
               {item.label}
               {item.badge&&<span className="ml-auto text-[9px] bg-blue-500 text-white px-1.5 py-0.5 rounded-full font-bold">PAY</span>}
@@ -474,6 +475,19 @@ export default function PlatformDashboard() {
             <p className="text-[10px] text-slate-400">{new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</p>
           </div>
           <div className="flex items-center gap-2">
+            {/* Demo Mode Toggle */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200" data-testid="demo-mode-toggle">
+              <button
+                onClick={() => { const m = 'live'; setDemoMode(m); sessionStorage.setItem('solomon_demo_mode', m); }}
+                className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${demoMode === 'live' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                data-testid="demo-mode-live"
+              >Live Data</button>
+              <button
+                onClick={() => { const m = 'onboard'; setDemoMode(m); sessionStorage.setItem('solomon_demo_mode', m); }}
+                className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${demoMode === 'onboard' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                data-testid="demo-mode-onboard"
+              >New Church</button>
+            </div>
             <button onClick={()=>{fetchStats();fetchHealthScores();toast.success('Refreshed');}} className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100"><RefreshCw className="w-4 h-4"/></button>
             <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">SA</div>
           </div>
@@ -495,8 +509,97 @@ export default function PlatformDashboard() {
             </div>
           )}
 
+          {/* ══════ FRESH ONBOARD MODE ══════ */}
+          {demoMode === 'onboard' && (
+            <div className="space-y-6" data-testid="onboard-mode">
+              {/* Welcome Banner */}
+              <div className="bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-200 rounded-2xl p-8">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                    <Zap className="w-6 h-6 text-emerald-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900 mb-1">Welcome to Solomon AI</h2>
+                    <p className="text-sm text-slate-600 mb-4">Your church management platform is ready. Complete these steps to go live.</p>
+                    <div className="flex items-center gap-2 text-xs text-emerald-700 font-semibold">
+                      <div className="w-full max-w-xs bg-emerald-100 rounded-full h-2">
+                        <div className="bg-emerald-500 h-full rounded-full" style={{ width: '0%' }} />
+                      </div>
+                      0 of 6 steps complete
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Empty KPIs */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  { label: 'Platform GMV', value: '$0', sub: 'No giving processed yet', icon: Globe },
+                  { label: 'Total Revenue', value: '$0', sub: 'Revenue starts when giving flows', icon: DollarSign },
+                  { label: 'Churches', value: '0', sub: 'Onboard your first church below', icon: Building2 },
+                  { label: 'Members', value: '0', sub: 'Import members to get started', icon: Users },
+                ].map(k => (
+                  <div key={k.label} className="bg-white border border-slate-200 rounded-xl p-5">
+                    <div className="flex items-center gap-2 mb-2 text-slate-400">
+                      <k.icon className="w-4 h-4" /><span className="text-[11px] font-medium">{k.label}</span>
+                    </div>
+                    <p className="text-2xl font-bold text-slate-300">{k.value}</p>
+                    <p className="text-[11px] text-slate-400 mt-1">{k.sub}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Setup Checklist */}
+              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100">
+                  <h3 className="text-sm font-bold text-slate-900">Setup Checklist</h3>
+                  <p className="text-xs text-slate-500">Complete these steps to start processing real giving</p>
+                </div>
+                <div className="divide-y divide-slate-100">
+                  {[
+                    { step: 1, title: 'Connect Bank Account', desc: 'Link your church\'s bank via Stripe Connect to receive payouts', status: 'pending', cta: 'Connect Bank' },
+                    { step: 2, title: 'Import Members', desc: 'Upload a CSV from Planning Center, Breeze, or any spreadsheet', status: 'pending', cta: 'Import CSV' },
+                    { step: 3, title: 'Set Up Giving Page', desc: 'Configure your online giving page with funds and suggested amounts', status: 'pending', cta: 'Configure' },
+                    { step: 4, title: 'Configure Kids Check-In', desc: 'Set up classrooms, label printing, and security codes', status: 'pending', cta: 'Set Up' },
+                    { step: 5, title: 'Invite Staff & Volunteers', desc: 'Add team members with role-based access (Admin, Staff, Volunteer)', status: 'pending', cta: 'Invite' },
+                    { step: 6, title: 'Launch Sunday', desc: 'Process your first real offering through Solomon Pay', status: 'pending', cta: 'Go Live' },
+                  ].map(item => (
+                    <div key={item.step} className="flex items-center gap-4 px-6 py-4 hover:bg-slate-50/50 transition-colors">
+                      <div className="w-8 h-8 rounded-full border-2 border-dashed border-slate-300 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0">
+                        {item.step}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-semibold text-slate-800">{item.title}</h4>
+                        <p className="text-xs text-slate-500 truncate">{item.desc}</p>
+                      </div>
+                      <button className="px-3 py-1.5 text-xs font-semibold text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors flex-shrink-0" data-testid={`onboard-step-${item.step}`}>
+                        {item.cta}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Empty Activity */}
+              <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                  <Activity className="w-8 h-8 text-slate-300" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-400 mb-1">No Activity Yet</h3>
+                <p className="text-sm text-slate-400">When churches start giving and members engage, activity will appear here.</p>
+              </div>
+
+              {/* Switch back prompt */}
+              <div className="text-center py-4">
+                <button onClick={() => { setDemoMode('live'); sessionStorage.setItem('solomon_demo_mode', 'live'); }} className="text-sm text-blue-600 hover:text-blue-800 font-medium" data-testid="switch-to-live">
+                  Switch to Live Data view to see the full platform in action →
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* ══════ DASHBOARD ══════ */}
-          {section==='dashboard'&&(
+          {section==='dashboard'&&demoMode==='live'&&(
             <>
               {/* Hero KPIs — all same blue accent, consistent */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4" data-testid="hero-kpis">
