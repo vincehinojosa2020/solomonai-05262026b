@@ -96,6 +96,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="solomon-input"
                 placeholder="Email"
+                autoComplete="off"
                 data-testid="email-input"
               />
             </div>
@@ -108,6 +109,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   className="solomon-input"
                   placeholder="Password"
+                  autoComplete="off"
                   data-testid="password-input"
                 />
                 <button
@@ -139,6 +141,11 @@ export default function LoginPage() {
             <span>or</span>
           </div>
 
+          {/* Forgot password */}
+          <div style={{ textAlign: 'center', marginTop: -8, marginBottom: 8 }}>
+            <Link to="/forgot-password" style={{ fontSize: 13, color: '#3b82f6', textDecoration: 'none' }} data-testid="forgot-password-link">Forgot password?</Link>
+          </div>
+
           {/* Google Sign In */}
           {/* REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH */}
           <button
@@ -163,11 +170,11 @@ export default function LoginPage() {
         {/* Footer */}
         <div className="solomon-footer">
           <div style={{ fontSize: 12, color: '#334155', marginTop: 24 }}>
-            <span>&copy; 2026 Solomon AI</span>
+            <span>&copy; {new Date().getFullYear()} Solomon AI</span>
             <span style={{ margin: '0 8px', color: '#475569' }}>&middot;</span>
-            <span style={{ color: '#475569' }}>Privacy</span>
+            <Link to="/privacy" style={{ color: '#475569', textDecoration: 'none' }}>Privacy</Link>
             <span style={{ margin: '0 8px', color: '#475569' }}>&middot;</span>
-            <span style={{ color: '#475569' }}>Terms</span>
+            <Link to="/terms" style={{ color: '#475569', textDecoration: 'none' }}>Terms</Link>
           </div>
         </div>
 

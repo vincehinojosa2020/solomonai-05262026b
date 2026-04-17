@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { API_URL } from '@/lib/utils';
 import { ChevronLeft, ChevronRight, Landmark, AlertCircle } from 'lucide-react';
 
@@ -13,6 +13,9 @@ export default function PlatformPayouts({ token }) {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [church, setChurch] = useState('');
+  const [selectedPayout, setSelectedPayout] = useState(null);
+  const [payoutTxns, setPayoutTxns] = useState([]);
+  const [txnLoading, setTxnLoading] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -25,6 +28,17 @@ export default function PlatformPayouts({ token }) {
   }, [token, page, church]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  const handlePayoutClick = async (payout) => {
+    if (selectedPayout?.id === payout.id) { setSelectedPayout(null); return; }
+    setSelectedPayout(payout);
+    setTxnLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/platform/payouts/${payout.id}/transactions`, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.ok) { const d = await res.json(); setPayoutTxns(d.transactions || []); }
+    } catch { setPayoutTxns([]); }
+    finally { setTxnLoading(false); }
+  };
 
   if (!data) return <div className="p-8 text-slate-400">Loading payouts...</div>;
 
@@ -77,7 +91,8 @@ export default function PlatformPayouts({ token }) {
               {loading ? (
                 <tr><td colSpan={8} className="px-4 py-12 text-center text-slate-400">Loading...</td></tr>
               ) : (data.payouts || []).map(p => (
-                <tr key={p.id} className="hover:bg-slate-50/50">
+                <React.Fragment key={p.id}>
+                <tr className="hover:bg-slate-50/50 cursor-pointer" onClick={() => handlePayoutClick(p)} data-testid={`payout-row-${p.id}`}>
                   <td className="px-4 py-3 text-slate-600">{p.payout_date}</td>
                   <td className="px-4 py-3 font-medium text-slate-800">{p.church_name}</td>
                   <td className="px-4 py-3 text-right text-slate-700">{fmt(p.gross_amount)}</td>
@@ -87,6 +102,24 @@ export default function PlatformPayouts({ token }) {
                   <td className="px-4 py-3"><span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">{p.status}</span></td>
                   <td className="px-4 py-3 text-xs text-slate-500">{p.bank_account}</td>
                 </tr>
+                {selectedPayout?.id === p.id && (
+                  <tr><td colSpan={8} className="bg-slate-50 px-4 py-3">
+                    <div className="text-xs font-semibold text-slate-600 mb-2">Payout Transactions ({payoutTxns.length})</div>
+                    {txnLoading ? <div className="text-xs text-slate-400">Loading transactions...</div> : payoutTxns.length === 0 ? <div className="text-xs text-slate-400">No individual transactions recorded for this payout</div> : (
+                      <div className="max-h-48 overflow-y-auto space-y-1">
+                        {payoutTxns.map((t, i) => (
+                          <div key={i} className="flex items-center justify-between text-xs py-1 border-b border-slate-100 last:border-0">
+                            <span className="text-slate-500">{t.donation_date}</span>
+                            <span className="text-slate-700">{t.person_name || 'Member'}</span>
+                            <span className="font-semibold text-slate-900">${Number(t.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                            <span className="text-slate-400">{t.fund_name || 'General Fund'}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </td></tr>
+                )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>

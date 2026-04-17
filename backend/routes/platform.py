@@ -3459,6 +3459,219 @@ async def get_platform_payouts(request: Request, page: int = 1, limit: int = 50,
     }
 
 
+@router.get("/platform/payouts/{payout_id}/transactions")
+async def get_payout_transactions(request: Request, payout_id: str):
+    """Drill-down: get all constituent transactions for a specific payout."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    payout = await db.payouts.find_one({"id": payout_id}, {"_id": 0})
+    if not payout:
+        return {"transactions": [], "payout_id": payout_id}
+
+    tid = payout.get("tenant_id", "")
+    payout_date = payout.get("payout_date") or payout.get("period_end", "")
+    period_start = payout.get("period_start", "")
+
+    # Find donations in the payout period for this tenant
+    query = {"tenant_id": tid, "status": {"$in": ["completed", None]}}
+    if period_start and payout_date:
+        query["donation_date"] = {"$gte": period_start, "$lte": payout_date}
+    elif payout_date:
+        query["donation_date"] = {"$lte": payout_date}
+
+    txns = await db.donations.find(query, {"_id": 0, "person_id": 1, "amount": 1, "donation_date": 1, "fund_name": 1, "payment_method": 1}).sort("donation_date", -1).limit(100).to_list(100)
+
+    # Enrich with person names
+    person_ids = list(set(t.get("person_id") for t in txns if t.get("person_id")))
+    pcache = {}
+    if person_ids:
+        pdocs = await db.people.find({"id": {"$in": person_ids}}, {"_id": 0, "id": 1, "first_name": 1, "last_name": 1}).to_list(len(person_ids))
+        pcache = {p["id"]: p for p in pdocs}
+    for t in txns:
+        p = pcache.get(t.get("person_id"), {})
+        t["person_name"] = f"{p.get('first_name', '')} {p.get('last_name', '')}".strip() or "Member"
+        t["fund_name"] = t.get("fund_name") or "General Fund"
+
+    return {"transactions": txns, "payout_id": payout_id, "total": len(txns)}
+
+
+
+# ═══════════════════ FUND RECONCILIATION ═══════════════════
+
+@router.get("/platform/funds/reconciliation")
+async def get_fund_reconciliation(request: Request, tenant_id: str = ""):
+    """Fund reconciliation view — giving by fund with reconciliation status."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    campuses, _ = await _get_real_campuses_fast()
+    target_tenants = [tenant_id] if tenant_id and tenant_id.strip() else campuses
+
+    # Aggregate giving by fund across target tenants
+    fund_data = await db.donations.aggregate([
+        {"$match": {"tenant_id": {"$in": target_tenants}}},
+        {"$group": {
+            "_id": {"fund": {"$ifNull": ["$fund_name", "General Fund"]}, "tenant": "$tenant_id"},
+            "total": {"$sum": "$amount"},
+            "count": {"$sum": 1},
+            "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}},
+        }},
+        {"$sort": {"total": -1}},
+    ], allowDiskUse=True).to_list(100)
+
+    # Get actual fund records for goals
+    fund_goals = {}
+    funds_raw = await db.funds.find({"tenant_id": {"$in": target_tenants}}, {"_id": 0, "name": 1, "goal_amount": 1, "current_amount": 1}).to_list(100)
+    for f in funds_raw:
+        fund_goals[f.get("name", "")] = f
+
+    # Tenant name cache
+    t_map = {}
+    for t in await db.tenants.find({"id": {"$in": target_tenants}}, {"_id": 0, "id": 1, "name": 1}).to_list(20):
+        t_map[t["id"]] = t["name"]
+
+    # Aggregate by fund name
+    by_fund = {}
+    for row in fund_data:
+        fname = row["_id"]["fund"] or "General Fund"
+        if fname not in by_fund:
+            goal = fund_goals.get(fname, {})
+            by_fund[fname] = {
+                "fund_name": fname,
+                "total_giving": 0, "total_fees": 0, "transaction_count": 0,
+                "goal_amount": goal.get("goal_amount", 0),
+                "by_church": {},
+            }
+        by_fund[fname]["total_giving"] += round(row["total"], 2)
+        by_fund[fname]["total_fees"] += round(row.get("fees", 0), 2)
+        by_fund[fname]["transaction_count"] += row["count"]
+        church_name = t_map.get(row["_id"]["tenant"], row["_id"]["tenant"])
+        by_fund[fname]["by_church"][church_name] = round(row["total"], 2)
+
+    funds_list = sorted(by_fund.values(), key=lambda x: x["total_giving"], reverse=True)
+    for f in funds_list:
+        f["net_giving"] = round(f["total_giving"] - f["total_fees"], 2)
+        f["pct_of_goal"] = round(f["total_giving"] / max(f["goal_amount"], 1) * 100, 1) if f["goal_amount"] else 0
+
+    return {
+        "funds": funds_list,
+        "total_giving": round(sum(f["total_giving"] for f in funds_list), 2),
+        "total_fees": round(sum(f["total_fees"] for f in funds_list), 2),
+        "total_net": round(sum(f["net_giving"] for f in funds_list), 2),
+    }
+
+
+# ═══════════════════ MONDAY MORNING SUMMARY EMAIL ═══════════════════
+
+@router.post("/platform/send-summary-email")
+async def send_monday_morning_summary(request: Request):
+    """Send weekly platform summary email to founders — SecureGive parity feature."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    body = await request.json()
+    recipients = body.get("recipients", ["admin@solomonai.us"])
+
+    # Build summary from cached stats
+    cached = await db.platform_stats_cache.find_one({"id": "global"}, {"_id": 0})
+    if not cached:
+        raise HTTPException(status_code=500, detail="Platform stats not available. Please refresh the dashboard first.")
+
+    giving = cached.get("giving", {})
+    fees = cached.get("fees", {})
+    platform = cached.get("platform", {})
+    campuses = cached.get("campus_breakdown", [])
+    now = datetime.now(timezone.utc)
+
+    # Build HTML email
+    church_rows = ""
+    for c in sorted(campuses, key=lambda x: x.get("mtd_giving", 0), reverse=True):
+        church_rows += f"""<tr>
+            <td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#334155">{c.get('name','')}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#334155;text-align:right">${c.get('mtd_giving',0):,.0f}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#059669;text-align:right">${c.get('fees',0):,.0f}</td>
+        </tr>"""
+
+    email_html = f"""<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:600px;margin:0 auto;background:#fff">
+        <div style="background:#0f172a;padding:24px 32px;border-radius:12px 12px 0 0">
+            <span style="font-size:16px;font-weight:200;letter-spacing:6px;color:#fff">SOLOMON</span>
+            <span style="font-size:16px;font-weight:700;color:#3b82f6"> AI</span>
+            <p style="color:#94a3b8;font-size:13px;margin:8px 0 0">Monday Morning Platform Summary</p>
+        </div>
+        <div style="padding:32px">
+            <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0 0 4px">Week of {now.strftime('%B %d, %Y')}</h2>
+            <p style="color:#64748b;font-size:14px;margin:0 0 24px">Here's how your platform performed this week.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px">
+                <div style="background:#f8fafc;border-radius:8px;padding:16px"><p style="font-size:12px;color:#64748b;margin:0 0 4px">Platform GMV</p><p style="font-size:24px;font-weight:800;color:#0f172a;margin:0">${giving.get('all_time',0):,.0f}</p></div>
+                <div style="background:#f8fafc;border-radius:8px;padding:16px"><p style="font-size:12px;color:#64748b;margin:0 0 4px">Total Revenue</p><p style="font-size:24px;font-weight:800;color:#059669;margin:0">${fees.get('all_time',0):,.0f}</p></div>
+                <div style="background:#f8fafc;border-radius:8px;padding:16px"><p style="font-size:12px;color:#64748b;margin:0 0 4px">MTD Giving</p><p style="font-size:24px;font-weight:800;color:#0f172a;margin:0">${giving.get('mtd',0):,.0f}</p></div>
+                <div style="background:#f8fafc;border-radius:8px;padding:16px"><p style="font-size:12px;color:#64748b;margin:0 0 4px">Churches</p><p style="font-size:24px;font-weight:800;color:#2563eb;margin:0">{len(campuses)}</p></div>
+            </div>
+            <h3 style="font-size:16px;font-weight:700;color:#0f172a;margin:0 0 12px">Church Performance</h3>
+            <table style="width:100%;border-collapse:collapse">
+                <thead><tr style="background:#f8fafc">
+                    <th style="padding:8px 12px;text-align:left;font-size:12px;color:#64748b;font-weight:600">Church</th>
+                    <th style="padding:8px 12px;text-align:right;font-size:12px;color:#64748b;font-weight:600">MTD Giving</th>
+                    <th style="padding:8px 12px;text-align:right;font-size:12px;color:#64748b;font-weight:600">Fees</th>
+                </tr></thead>
+                <tbody>{church_rows}</tbody>
+            </table>
+            <p style="font-size:12px;color:#94a3b8;margin:24px 0 0;text-align:center">&copy; {now.year} Solomon AI &middot; Platform Summary</p>
+        </div>
+    </div>"""
+
+    # Send via Resend
+    resend_key = os.environ.get("RESEND_API_KEY")
+    sender = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
+    if not resend_key:
+        return {"success": False, "message": "Email not configured. Set RESEND_API_KEY."}
+
+    try:
+        import httpx
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                "https://api.resend.com/emails",
+                headers={"Authorization": f"Bearer {resend_key}", "Content-Type": "application/json"},
+                json={
+                    "from": f"Solomon AI <{sender}>",
+                    "to": recipients,
+                    "subject": f"Solomon AI — Monday Morning Summary ({now.strftime('%B %d')})",
+                    "html": email_html,
+                },
+                timeout=15
+            )
+        if resp.status_code in (200, 201):
+            logger.info(f"Monday summary sent to {recipients}")
+            return {"success": True, "message": f"Summary email sent to {', '.join(recipients)}"}
+        else:
+            return {"success": False, "message": f"Email API returned {resp.status_code}: {resp.text[:200]}"}
+    except Exception as e:
+        logger.error(f"Failed to send summary email: {e}")
+        return {"success": False, "message": f"Email send failed: {str(e)}"}
+
+
 # ═══════════════════ PLATFORM DONOR ANALYTICS ═══════════════════
 
 @router.get("/platform/donors")

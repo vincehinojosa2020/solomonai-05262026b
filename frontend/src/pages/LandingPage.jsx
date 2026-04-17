@@ -99,6 +99,33 @@ export default function LandingPage() {
               <Play style={{ width: 16, height: 16 }} /> Watch Demo
             </Link>
           </div>
+          {/* God Mode Platform Screenshot */}
+          <div style={{ marginTop: 56, borderRadius: 16, overflow: 'hidden', boxShadow: '0 25px 60px rgba(0,0,0,0.15)', border: '1px solid #e2e8f0', maxWidth: 900 }}>
+            <div style={{ background: '#0f172a', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ef4444' }} />
+                <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#f59e0b' }} />
+                <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#22c55e' }} />
+              </div>
+              <span style={{ fontSize: 12, color: '#64748b', marginLeft: 8 }}>solomonai.us/platform</span>
+            </div>
+            <div style={{ background: '#f1f5f9', padding: '24px 32px', textAlign: 'left' }}>
+              <div className="lp-grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
+                {[
+                  { label: 'Platform GMV', value: '$108.3M', color: '#0f172a' },
+                  { label: 'Total Revenue', value: '$2.4M', color: '#059669' },
+                  { label: 'Churches', value: '8', color: '#2563eb' },
+                  { label: 'Members', value: '109,900', color: '#7c3aed' },
+                ].map(kpi => (
+                  <div key={kpi.label} style={{ background: '#fff', borderRadius: 10, padding: '14px 16px', border: '1px solid #e2e8f0' }}>
+                    <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 4px 0' }}>{kpi.label}</p>
+                    <p style={{ fontSize: 22, fontWeight: 800, color: kpi.color, margin: 0 }}>{kpi.value}</p>
+                  </div>
+                ))}
+              </div>
+              <p style={{ fontSize: 12, color: '#94a3b8', margin: 0, textAlign: 'center' }}>God Mode — Real-time platform oversight across all churches</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -242,27 +269,28 @@ export default function LandingPage() {
               <h4 style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 16px 0' }}>Product</h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <Link to="/" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }}>Features</Link>
+                <Link to="/pricing" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }}>Pricing</Link>
                 <Link to="/demo" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }}>Demo</Link>
               </div>
             </div>
             <div>
               <h4 style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 16px 0' }}>Company</h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <span style={{ fontSize: 13, color: '#64748b' }}>About</span>
-                <span style={{ fontSize: 13, color: '#64748b' }}>Contact</span>
+                <a href="https://calendly.com/solomonai" target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }} data-testid="footer-calendly">Schedule a Call</a>
+                <a href="mailto:hello@solomonai.us" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }}>Contact</a>
               </div>
             </div>
             <div>
               <h4 style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 16px 0' }}>Legal</h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <span style={{ fontSize: 13, color: '#64748b' }}>Privacy</span>
-                <span style={{ fontSize: 13, color: '#64748b' }}>Terms</span>
-                <span style={{ fontSize: 13, color: '#64748b' }}>Security</span>
+                <Link to="/privacy" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }}>Privacy</Link>
+                <Link to="/terms" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }}>Terms</Link>
+                <Link to="/security" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }}>Security</Link>
               </div>
             </div>
           </div>
           <div className="lp-footer-bottom" style={{ borderTop: '1px solid rgba(51,65,85,0.4)', paddingTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p style={{ fontSize: 12, color: '#475569', margin: 0 }} data-testid="footer-credit">&copy; 2026 Solomon AI &middot; Built on Google Cloud Platform &middot; Powered by Anthropic</p>
+            <p style={{ fontSize: 12, color: '#475569', margin: 0 }} data-testid="footer-credit">&copy; {new Date().getFullYear()} Solomon AI &middot; Built on Google Cloud Platform &middot; Powered by Anthropic</p>
             <p style={{ fontSize: 11, color: '#475569', margin: 0 }}>SOC 2 Type II In Progress &middot; PCI DSS Ready</p>
           </div>
         </div>

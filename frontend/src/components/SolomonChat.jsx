@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, Send, Sparkles, ChevronRight, Loader2, Trash2, Mic, Check, XCircle, ShoppingBag, Heart, Users, Calendar, Baby } from 'lucide-react';
+import { MessageSquare, X, Send, Sparkles, ChevronRight, Loader2, Trash2, Mic, Check, XCircle, ShoppingBag, Heart, Users, Calendar, Baby, Volume2, VolumeX } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -93,6 +93,7 @@ const SolomonChat = () => {
   const [sessionId, setSessionId] = useState(null);
   const [pendingAction, setPendingAction] = useState(null);
   const [isExecutingAction, setIsExecutingAction] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const recognitionRef = useRef(null);
@@ -177,6 +178,32 @@ const SolomonChat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isOpen, pendingAction]);
 
+  const handleSpeak = (text) => {
+    if (isSpeaking) {
+      window.speechSynthesis?.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+    if (!window.speechSynthesis) return;
+    const cleanText = text.replace(/[*#_`]/g, '').replace(/<[^>]*>/g, '');
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    // Prefer UK English voice
+    const voices = window.speechSynthesis.getVoices();
+    const ukVoice = voices.find(v => v.lang === 'en-GB' && v.name.includes('Male')) ||
+                    voices.find(v => v.lang === 'en-GB') ||
+                    voices.find(v => v.lang.startsWith('en'));
+    if (ukVoice) utterance.voice = ukVoice;
+    utterance.lang = 'en-GB';
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
+
+
+
   const handleSend = async (message = inputValue) => {
     if (!message.trim() || isLoading) return;
 
@@ -187,7 +214,8 @@ const SolomonChat = () => {
     setPendingAction(null);
 
     try {
-      const response = await fetch(`${API_URL}/solomon/chat`, {
+      // Use streaming endpoint for real-time typing effect
+      const response = await fetch(`${API_URL}/solomon/chat/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message, session_id: sessionId })
@@ -195,27 +223,67 @@ const SolomonChat = () => {
 
       if (!response.ok) throw new Error('Failed to get response');
 
-      const data = await response.json();
-      setSessionId(data.session_id);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = '';
+      let finalSessionId = sessionId;
 
-      const assistantMessage = {
-        role: 'assistant',
-        content: data.response,
-        actions: data.actions,
-        data: data.data
-      };
-      setMessages(prev => [...prev, assistantMessage]);
+      // Add placeholder assistant message
+      setMessages(prev => [...prev, { role: 'assistant', content: '', isStreaming: true }]);
 
-      if (data.pending_action) {
-        setPendingAction(data.pending_action);
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const text = decoder.decode(value, { stream: true });
+        const lines = text.split('\n');
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          try {
+            const data = JSON.parse(line.slice(6));
+            if (data.type === 'chunk') {
+              accumulated += data.content;
+              if (data.session_id) finalSessionId = data.session_id;
+              setMessages(prev => {
+                const updated = [...prev];
+                const last = updated[updated.length - 1];
+                if (last?.isStreaming) {
+                  updated[updated.length - 1] = { ...last, content: accumulated };
+                }
+                return updated;
+              });
+            } else if (data.type === 'done') {
+              if (data.session_id) finalSessionId = data.session_id;
+              setMessages(prev => {
+                const updated = [...prev];
+                const last = updated[updated.length - 1];
+                if (last?.isStreaming) {
+                  updated[updated.length - 1] = { role: 'assistant', content: data.full_response || accumulated };
+                }
+                return updated;
+              });
+            } else if (data.type === 'error') {
+              throw new Error(data.message);
+            }
+          } catch (parseErr) {
+            // Skip malformed SSE lines
+          }
+        }
       }
+
+      setSessionId(finalSessionId);
     } catch (error) {
       console.error('Solomon chat error:', error);
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: "I apologize, but I'm having trouble connecting right now. Please try again in a moment.",
-        isError: true
-      }]);
+      setMessages(prev => {
+        // Remove streaming placeholder if present
+        const filtered = prev.filter(m => !m.isStreaming);
+        return [...filtered, {
+          role: 'assistant',
+          content: "I apologize, but I'm having trouble connecting right now. Please try again in a moment.",
+          isError: true
+        }];
+      });
     } finally {
       setIsLoading(false);
     }
@@ -398,6 +466,21 @@ const SolomonChat = () => {
                 )}
                 <div className={`solomon-message-content ${msg.isError ? 'error' : ''} ${msg.isActionResult ? 'action-success' : ''}`}>
                   <div dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
+                  
+                  {/* TTS Button for assistant messages */}
+                  {msg.role === 'assistant' && msg.content && !msg.isStreaming && (
+                    <button
+                      onClick={() => handleSpeak(msg.content)}
+                      className="solomon-tts-btn"
+                      title={isSpeaking ? 'Stop speaking' : 'Read aloud (UK English)'}
+                      data-testid={`solomon-tts-${idx}`}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', marginTop: 4, opacity: 0.5, transition: 'opacity 0.15s' }}
+                      onMouseEnter={e => e.target.style.opacity = 1}
+                      onMouseLeave={e => e.target.style.opacity = 0.5}
+                    >
+                      {isSpeaking ? <VolumeX className="w-3.5 h-3.5 text-slate-500" /> : <Volume2 className="w-3.5 h-3.5 text-slate-500" />}
+                    </button>
+                  )}
                   
                   {/* Navigation Action Buttons */}
                   {msg.actions && msg.actions.length > 0 && (

@@ -613,3 +613,60 @@ async def register_church(payload: dict):
 
 # ============== GIVING INTEGRATIONS (Scaffolding for Pushpay / SecureGive / Solomon Pay) ==============
 
+
+
+@router.post("/auth/forgot-password")
+async def forgot_password(request: Request):
+    """Send password reset email. Always returns 200 to prevent email enumeration."""
+    body = await request.json()
+    email = (body.get("email") or "").strip().lower()
+    if not email:
+        return {"message": "If an account exists, reset instructions have been sent."}
+
+    user = await db.users.find_one({"email": email}, {"_id": 0, "user_id": 1, "name": 1, "email": 1})
+    if user:
+        # Generate reset token
+        reset_token = str(uuid.uuid4())
+        await db.password_resets.update_one(
+            {"email": email},
+            {"$set": {
+                "email": email,
+                "token": reset_token,
+                "user_id": user["user_id"],
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "expires_at": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat(),
+                "used": False,
+            }},
+            upsert=True
+        )
+        # Send email via Resend if configured
+        try:
+            resend_key = os.environ.get("RESEND_API_KEY")
+            sender = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
+            if resend_key:
+                import httpx as _httpx
+                await _httpx.AsyncClient().post(
+                    "https://api.resend.com/emails",
+                    headers={"Authorization": f"Bearer {resend_key}", "Content-Type": "application/json"},
+                    json={
+                        "from": f"Solomon AI <{sender}>",
+                        "to": [email],
+                        "subject": "Reset Your Solomon AI Password",
+                        "html": f"""<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px">
+                            <h2 style="color:#0f172a">Password Reset</h2>
+                            <p>Hi {user.get('name', 'there')},</p>
+                            <p>We received a request to reset your Solomon AI password. Your reset code is:</p>
+                            <div style="background:#f1f5f9;border-radius:8px;padding:16px;text-align:center;margin:16px 0">
+                                <code style="font-size:24px;font-weight:bold;color:#3b82f6;letter-spacing:2px">{reset_token[:8].upper()}</code>
+                            </div>
+                            <p style="color:#64748b;font-size:14px">This code expires in 1 hour. If you didn't request this, ignore this email.</p>
+                            <p style="color:#94a3b8;font-size:12px;margin-top:24px">&copy; {datetime.now().year} Solomon AI</p>
+                        </div>"""
+                    },
+                    timeout=10
+                )
+                logger.info(f"Password reset email sent to {email}")
+        except Exception as e:
+            logger.error(f"Failed to send password reset email: {e}")
+
+    return {"message": "If an account exists, reset instructions have been sent."}

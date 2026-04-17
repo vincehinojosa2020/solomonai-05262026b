@@ -77,6 +77,10 @@ import CheckInSetupPage from "@/pages/CheckInSetupPage";
 import PortalCourses from "@/pages/portal/PortalCourses";
 import PortalCourseDetail from "@/pages/portal/PortalCourseDetail";
 import PortalLessonViewer from "@/pages/portal/PortalLessonViewer";
+import PrivacyPage from "@/pages/PrivacyPage";
+import TermsPage from "@/pages/TermsPage";
+import SecurityPage from "@/pages/SecurityPage";
+import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 
 // Router wrapper to detect session_id in URL
 function AppRouter() {
@@ -97,6 +101,10 @@ function AppRouter() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/demo" element={<DemoPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/security" element={<SecurityPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/register/:eventId" element={<PublicRegistrationPage />} />
       
       {/* Platform Admin (God Mode) — standalone, no AppShell sidebar */}

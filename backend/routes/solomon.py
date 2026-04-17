@@ -1,5 +1,6 @@
 """Solomon AI — Solomon Chat Routes with Agentic Action Execution"""
 from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import StreamingResponse
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 from pydantic import BaseModel
@@ -8,6 +9,7 @@ import re
 import json
 import logging
 import os
+import asyncio
 
 from core import (
     db, get_current_portal_user, get_session_token_from_request,
@@ -194,6 +196,108 @@ async def solomon_chat(request: Request, payload: SolomonChatRequest):
     except Exception as e:
         logger.error(f"Solomon AI error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Solomon AI error: {str(e)}")
+
+
+@router.post("/solomon/chat/stream")
+async def solomon_chat_stream(request: Request):
+    """Streaming chat with Solomon AI — returns Server-Sent Events for real-time typing effect."""
+    body = await request.json()
+    message = (body.get("message") or "").strip()
+    session_id = body.get("session_id") or str(uuid.uuid4())
+
+    if not message:
+        raise HTTPException(status_code=400, detail="Message cannot be empty")
+
+    user = await _get_user_safe(request)
+    user_role = user.get("role") if user else None
+
+    api_key = os.environ.get('EMERGENT_LLM_KEY')
+    if not api_key:
+        raise HTTPException(status_code=500, detail="Solomon AI is not configured")
+
+    if user_role == "platform_admin":
+        from core.helpers_ai import build_platform_admin_context
+        full_system_prompt = await build_platform_admin_context()
+    else:
+        church_context = await get_church_context(user)
+        competitor_context = f"\n\n{COMPETITOR_KNOWLEDGE}" if COMPETITOR_KNOWLEDGE else ""
+        full_system_prompt = f"{SOLOMON_SYSTEM_PROMPT}{competitor_context}\n\n{church_context}"
+
+    if session_id not in solomon_sessions:
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=session_id,
+            system_message=full_system_prompt
+        )
+        chat.with_model("anthropic", "claude-sonnet-4-5-20250929")
+        solomon_sessions[session_id] = chat
+    else:
+        chat = solomon_sessions[session_id]
+
+    async def generate_sse():
+        try:
+            user_message = UserMessage(text=message)
+            response_text = await chat.send_message(user_message)
+
+            # Stream word-by-word for typing effect
+            words = response_text.split(' ')
+            accumulated = ""
+            for i, word in enumerate(words):
+                accumulated += (" " if i > 0 else "") + word
+                chunk = json.dumps({"type": "chunk", "content": word + (" " if i < len(words) - 1 else ""), "session_id": session_id})
+                yield f"data: {chunk}\n\n"
+                await asyncio.sleep(0.02)  # ~50 words/sec typing speed
+
+            # Parse actions from full response
+            clean_response, action_data = _parse_action_from_response(response_text)
+
+            # Store conversation
+            await db.solomon_conversations.update_one(
+                {"session_id": session_id},
+                {
+                    "$push": {"messages": {"$each": [
+                        {"role": "user", "content": message, "timestamp": datetime.now(timezone.utc).isoformat()},
+                        {"role": "assistant", "content": clean_response, "timestamp": datetime.now(timezone.utc).isoformat()}
+                    ]}},
+                    "$set": {"updated_at": datetime.now(timezone.utc).isoformat()},
+                    "$setOnInsert": {"created_at": datetime.now(timezone.utc).isoformat()}
+                },
+                upsert=True
+            )
+
+            done = json.dumps({"type": "done", "session_id": session_id, "full_response": clean_response})
+            yield f"data: {done}\n\n"
+        except Exception as e:
+            error = json.dumps({"type": "error", "message": str(e)})
+            yield f"data: {error}\n\n"
+
+    return StreamingResponse(generate_sse(), media_type="text/event-stream", headers={
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "X-Accel-Buffering": "no",
+    })
+
+
+@router.post("/solomon/tts")
+async def solomon_text_to_speech(request: Request):
+    """Text-to-Speech scaffold — returns audio URL or signals client to use Web Speech API."""
+    body = await request.json()
+    text = (body.get("text") or "").strip()
+    voice = body.get("voice", "en-GB")  # Default: UK English
+
+    if not text:
+        raise HTTPException(status_code=400, detail="Text cannot be empty")
+
+    # Scaffold: Signal client to use Web Speech API with UK English
+    # When ElevenLabs or OpenAI TTS is integrated, this will return an audio URL
+    return {
+        "method": "web_speech_api",
+        "voice": voice,
+        "text": text,
+        "message": "TTS via browser Web Speech API. Server-side TTS (ElevenLabs) coming soon."
+    }
+
+
 
 
 @router.post("/solomon/execute-action")
@@ -456,3 +560,67 @@ async def download_report(report_id: str):
         media_type=content_type,
         headers={"Content-Disposition": f'attachment; filename="{filename}"'}
     )
+
+
+@router.post("/solomon/generate-deliverable")
+async def generate_deliverable(request: Request):
+    """Generate PPTX/DOCX/PDF deliverables — scaffold with honest status.
+    Per the Honesty Pact: if we can generate it, we do. If not, we say so."""
+    user = await _get_user_safe(request)
+    if not user:
+        raise HTTPException(status_code=403, detail="Authentication required")
+
+    body = await request.json()
+    deliverable_type = body.get("type", "pdf")  # pdf, pptx, docx, xlsx
+    title = body.get("title", "Solomon AI Report")
+    content = body.get("content", "")
+
+    if deliverable_type == "pdf":
+        # PDF generation is supported via reportlab (already in requirements)
+        try:
+            from reportlab.lib.pagesizes import letter
+            from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+            from reportlab.lib.styles import getSampleStyleSheet
+            import io as _io
+
+            buf = _io.BytesIO()
+            doc = SimpleDocTemplate(buf, pagesize=letter)
+            styles = getSampleStyleSheet()
+            elements = [
+                Paragraph(title, styles["Title"]),
+                Spacer(1, 12),
+                Paragraph(content.replace("\n", "<br/>"), styles["Normal"]),
+            ]
+            doc.build(elements)
+
+            report_id = str(uuid.uuid4())[:8]
+            filename = f"solomon_{report_id}.pdf"
+            pdf_bytes = buf.getvalue()
+
+            await db.generated_reports.insert_one({
+                "id": report_id,
+                "filename": filename,
+                "content_bytes": pdf_bytes,
+                "content_type": "application/pdf",
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "generated_by": user.get("user_id"),
+            })
+
+            from fastapi.responses import Response
+            return Response(content=pdf_bytes, media_type="application/pdf",
+                           headers={"Content-Disposition": f'attachment; filename="{filename}"'})
+        except ImportError:
+            return {"status": "coming_soon", "type": "pdf",
+                    "message": "PDF generation requires reportlab. Install with: pip install reportlab"}
+
+    elif deliverable_type in ("pptx", "docx", "xlsx"):
+        # Honest scaffold — these require python-pptx, python-docx, openpyxl
+        lib_map = {"pptx": "python-pptx", "docx": "python-docx", "xlsx": "openpyxl"}
+        return {
+            "status": "coming_soon",
+            "type": deliverable_type,
+            "message": f"{deliverable_type.upper()} generation is scaffolded. Requires {lib_map[deliverable_type]} microservice.",
+            "workaround": "Use CSV export (available now) and convert to the desired format, or request PDF format which is fully supported."
+        }
+
+    return {"status": "unsupported", "message": f"Format '{deliverable_type}' is not supported. Use: pdf, csv, pptx, docx, xlsx"}
