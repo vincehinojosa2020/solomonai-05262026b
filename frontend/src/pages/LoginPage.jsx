@@ -98,6 +98,7 @@ export default function LoginPage() {
                 placeholder="Email"
                 autoComplete="off"
                 data-testid="email-input"
+                aria-label="Email address"
               />
             </div>
             
@@ -111,6 +112,7 @@ export default function LoginPage() {
                   placeholder="Password"
                   autoComplete="off"
                   data-testid="password-input"
+                  aria-label="Password"
                 />
                 <button
                   type="button"

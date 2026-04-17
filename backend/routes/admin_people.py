@@ -155,10 +155,31 @@ async def parse_csv_for_import(request: Request, file: UploadFile = File(...)):
     text_reader = _csv.DictReader(_io.StringIO(text))
     total_rows = sum(1 for _ in text_reader)
 
+    # Planning Center auto-mapping hints
+    pc_map = {
+        "First Name": "first_name", "first name": "first_name", "first_name": "first_name",
+        "Last Name": "last_name", "last name": "last_name", "last_name": "last_name",
+        "Email": "email", "email": "email", "Email Address": "email",
+        "Phone": "mobile_phone", "phone": "mobile_phone", "Mobile Phone": "mobile_phone", "Cell Phone": "mobile_phone",
+        "Gender": "gender", "gender": "gender", "Sex": "gender",
+        "Birthdate": "date_of_birth", "Birthday": "date_of_birth", "Date of Birth": "date_of_birth",
+        "Status": "membership_status", "Membership": "membership_status", "Member Status": "membership_status",
+        "Campus": "campus", "campus": "campus", "Location": "campus",
+        "Address": "address_line1", "Street Address": "address_line1", "address": "address_line1",
+        "City": "city", "city": "city",
+        "State": "state", "state": "state", "Province": "state",
+        "Zip": "zip_code", "Zip Code": "zip_code", "Postal Code": "zip_code",
+    }
+    auto_mapping = {}
+    for h in headers:
+        if h in pc_map:
+            auto_mapping[pc_map[h]] = h
+
     return {
         "headers": headers,
         "preview": preview_rows,
         "total_rows": total_rows,
+        "auto_mapping": auto_mapping,
         "system_fields": [
             {"key": "first_name", "label": "First Name", "required": True},
             {"key": "last_name", "label": "Last Name", "required": True},
@@ -168,6 +189,10 @@ async def parse_csv_for_import(request: Request, file: UploadFile = File(...)):
             {"key": "date_of_birth", "label": "Date of Birth", "required": False},
             {"key": "membership_status", "label": "Membership Status", "required": False},
             {"key": "campus", "label": "Campus", "required": False},
+            {"key": "address_line1", "label": "Street Address", "required": False},
+            {"key": "city", "label": "City", "required": False},
+            {"key": "state", "label": "State", "required": False},
+            {"key": "zip_code", "label": "Zip Code", "required": False},
             {"key": "notes", "label": "Notes", "required": False},
         ]
     }
@@ -227,6 +252,10 @@ async def execute_csv_import(request: Request, file: UploadFile = File(...), map
                 "date_of_birth": row.get(col_map.get("date_of_birth", ""), "").strip() or None,
                 "membership_status": row.get(col_map.get("membership_status", ""), "").strip() or "visitor",
                 "campus": row.get(col_map.get("campus", ""), "").strip() or None,
+                "address_line1": row.get(col_map.get("address_line1", ""), "").strip() or None,
+                "city": row.get(col_map.get("city", ""), "").strip() or None,
+                "state": row.get(col_map.get("state", ""), "").strip() or None,
+                "zip_code": row.get(col_map.get("zip_code", ""), "").strip() or None,
                 "notes": row.get(col_map.get("notes", ""), "").strip() or None,
                 "engagement_score": 0,
                 "ytd_giving": 0.0,

@@ -11,6 +11,7 @@ import logging
 from core import (
     db, DEFAULT_TENANT_ID,
     require_permission, audit_log,
+    get_session_token_from_request,
     logger,
 )
 from core.helpers import serialize_doc
@@ -18,9 +19,25 @@ from models.schemas import Attendance, Child, Fund, Group, Person, Service, User
 
 router = APIRouter()
 
+
+async def _resolve_report_tenant(request: Request) -> str:
+    """Resolve tenant from authenticated user session for report endpoints."""
+    try:
+        token = get_session_token_from_request(request)
+        if token:
+            session = await db.user_sessions.find_one({"session_token": token}, {"_id": 0, "user_id": 1})
+            if session:
+                user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0, "tenant_id": 1, "church_id": 1})
+                if user:
+                    return user.get("tenant_id") or user.get("church_id") or DEFAULT_TENANT_ID
+    except Exception:
+        pass
+    return DEFAULT_TENANT_ID
+
+
 @router.get("/reports/giving-by-fund")
-async def report_giving_by_fund(start_date: str, end_date: str):
-    tenant_id = DEFAULT_TENANT_ID
+async def report_giving_by_fund(request: Request, start_date: str = "", end_date: str = ""):
+    tenant_id = await _resolve_report_tenant(request)
     
     # Get giving by fund
     fund_pipeline = [
@@ -153,8 +170,8 @@ async def report_giving_by_fund(start_date: str, end_date: str):
 
 
 @router.get("/reports/giving-by-method")
-async def report_giving_by_method(start_date: str, end_date: str):
-    tenant_id = DEFAULT_TENANT_ID
+async def report_giving_by_method(request: Request, start_date: str = '', end_date: str = ''):
+    tenant_id = await _resolve_report_tenant(request)
     
     pipeline = [
         {"$match": {
@@ -179,8 +196,8 @@ async def report_giving_by_method(start_date: str, end_date: str):
 
 
 @router.get("/reports/top-donors")
-async def report_top_donors(start_date: str, end_date: str, limit: int = 20):
-    tenant_id = DEFAULT_TENANT_ID
+async def report_top_donors(request: Request, start_date: str = '', end_date: str = '', limit: int = 20):
+    tenant_id = await _resolve_report_tenant(request)
     
     pipeline = [
         {"$match": {
@@ -216,8 +233,8 @@ async def report_top_donors(start_date: str, end_date: str, limit: int = 20):
 
 
 @router.get("/reports/membership")
-async def report_membership():
-    tenant_id = DEFAULT_TENANT_ID
+async def report_membership(request: Request):
+    tenant_id = await _resolve_report_tenant(request)
     
     pipeline = [
         {"$match": {"tenant_id": tenant_id}},
@@ -275,9 +292,9 @@ async def report_membership():
 
 
 @router.get("/reports/kids-history")
-async def report_kids_history(start_date: str = None, end_date: str = None):
+async def report_kids_history(request: Request, start_date: str = None, end_date: str = None):
     """Kids check-in/check-out history report — enriched with monthly data."""
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_report_tenant(request)
     query = {"tenant_id": tenant_id}
     if start_date:
         query["checked_in_at"] = {"$gte": start_date}
@@ -318,9 +335,9 @@ async def report_kids_history(start_date: str = None, end_date: str = None):
 
 
 @router.get("/reports/attendance")
-async def report_attendance(start_date: str = None, end_date: str = None):
+async def report_attendance(request: Request, start_date: str = None, end_date: str = None):
     """Attendance report with weekly breakdown — enriched with historical monthly data."""
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_report_tenant(request)
     query = {"tenant_id": tenant_id}
     if start_date:
         query["service_date"] = {"$gte": start_date}
@@ -395,9 +412,9 @@ async def report_attendance(start_date: str = None, end_date: str = None):
 
 
 @router.get("/reports/cafe")
-async def report_cafe(start_date: str = None, end_date: str = None):
+async def report_cafe(request: Request, start_date: str = None, end_date: str = None):
     """Cafe orders report."""
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_report_tenant(request)
     query = {"tenant_id": tenant_id}
     if start_date:
         query["created_at"] = {"$gte": start_date}
@@ -420,9 +437,9 @@ async def report_cafe(start_date: str = None, end_date: str = None):
 
 
 @router.get("/reports/merch")
-async def report_merch(start_date: str = None, end_date: str = None):
+async def report_merch(request: Request, start_date: str = None, end_date: str = None):
     """Merch orders report."""
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_report_tenant(request)
     query = {"tenant_id": tenant_id}
     if start_date:
         query["created_at"] = {"$gte": start_date}
@@ -438,9 +455,9 @@ async def report_merch(start_date: str = None, end_date: str = None):
 
 
 @router.get("/reports/groups")
-async def report_groups():
+async def report_groups(request: Request):
     """Groups and small group report — enriched with monthly_reports."""
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_report_tenant(request)
     groups = await db.groups.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(200)
     total_members = 0
     group_data = []
@@ -471,9 +488,9 @@ async def report_groups():
 
 
 @router.get("/reports/next-steps")
-async def report_next_steps():
+async def report_next_steps(request: Request):
     """Next Steps / Membership Pathway completion report."""
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_report_tenant(request)
     journeys = await db.next_steps_journeys.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(500)
     memberships = await db.next_steps_memberships.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(500)
     completed = sum(1 for m in memberships if m.get("completed"))
@@ -486,9 +503,9 @@ async def report_next_steps():
 
 
 @router.get("/reports/executive-summary")
-async def report_executive_summary():
+async def report_executive_summary(request: Request):
     """Executive summary combining all key metrics."""
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_report_tenant(request)
     now = datetime.now(timezone.utc)
     month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0).isoformat()
 
@@ -526,7 +543,7 @@ async def export_report_csv(report_type: str, format: str = "csv", start_date: s
     if format != "csv":
         raise HTTPException(status_code=400, detail="Only CSV export is currently supported")
 
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_report_tenant(request)
     output = io.StringIO()
     writer = csv.writer(output)
 

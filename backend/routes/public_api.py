@@ -21,6 +21,21 @@ from core import (
 )
 from core.helpers import serialize_doc, DEFAULT_MERCH_EMBED_URL, calculate_attendance_streak, extract_youtube_id
 from routes.admin_settings import PAYMENT_PROCESSORS
+
+
+async def _resolve_tenant(request: Request) -> str:
+    """Derive tenant_id from authenticated user session, fallback to DEFAULT_TENANT_ID for public."""
+    try:
+        token = get_session_token_from_request(request)
+        if token:
+            session = await db.user_sessions.find_one({"session_token": token}, {"_id": 0, "user_id": 1})
+            if session:
+                user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0, "tenant_id": 1, "church_id": 1})
+                if user:
+                    return user.get("tenant_id") or user.get("church_id") or DEFAULT_TENANT_ID
+    except Exception:
+        pass
+    return DEFAULT_TENANT_ID
 from models.schemas import (
     Attendance, Communication, Donation, DonationBase, DonationBatch,
     Event, Fund, Group, Household, Person, PersonCreate,
@@ -630,7 +645,7 @@ async def get_tenant(request: Request):
 async def get_dashboard_stats(request: Request):
     """Return tenant-scoped dashboard stats from cache (5-min TTL), falling back to defaults."""
     from core import cache_get, cache_set
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_tenant(request)
     try:
         session_token = get_session_token_from_request(request)
         if session_token:
@@ -713,7 +728,7 @@ async def get_attendance_trend():
 
 @router.get("/dashboard/activity")
 async def get_recent_activity(request: Request, limit: int = 15):
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_tenant(request)
     try:
         session_token = get_session_token_from_request(request)
         if session_token:
@@ -735,7 +750,7 @@ async def get_recent_activity(request: Request, limit: int = 15):
 
 @router.get("/dashboard/upcoming-events")
 async def get_upcoming_events(request: Request, limit: int = 5):
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_tenant(request)
     try:
         session_token = get_session_token_from_request(request)
         if session_token:
@@ -758,6 +773,7 @@ async def get_upcoming_events(request: Request, limit: int = 5):
 
 @router.get("/people")
 async def get_people(
+    request: Request,
     page: int = 1,
     per_page: int = 25,
     search: Optional[str] = None,
@@ -765,7 +781,7 @@ async def get_people(
     sort_by: str = "last_name",
     sort_order: str = "asc"
 ):
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_tenant(request)
     
     # Build query
     query = {"tenant_id": tenant_id}
@@ -812,8 +828,8 @@ async def get_person(person_id: str):
 
 
 @router.post("/people")
-async def create_person(person_data: PersonCreate):
-    tenant_id = DEFAULT_TENANT_ID
+async def create_person(request: Request, person_data: PersonCreate):
+    tenant_id = await _resolve_tenant(request)
     
     person = Person(
         **person_data.model_dump(),
@@ -840,8 +856,8 @@ async def create_person(person_data: PersonCreate):
 
 
 @router.put("/people/{person_id}")
-async def update_person(person_id: str, person_data: PersonCreate):
-    tenant_id = DEFAULT_TENANT_ID
+async def update_person(request: Request, person_id: str, person_data: PersonCreate):
+    tenant_id = await _resolve_tenant(request)
     
     update_data = person_data.model_dump(exclude_unset=True)
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
@@ -868,8 +884,8 @@ async def delete_person(person_id: str):
 
 
 @router.get("/people/{person_id}/giving")
-async def get_person_giving(person_id: str):
-    tenant_id = DEFAULT_TENANT_ID
+async def get_person_giving(request: Request, person_id: str):
+    tenant_id = await _resolve_tenant(request)
     
     # Get donations for this person
     donations = await db.donations.find(
@@ -911,8 +927,8 @@ async def get_person_giving(person_id: str):
 
 
 @router.get("/people/{person_id}/attendance")
-async def get_person_attendance(person_id: str):
-    tenant_id = DEFAULT_TENANT_ID
+async def get_person_attendance(request: Request, person_id: str):
+    tenant_id = await _resolve_tenant(request)
     
     # Get attendance records with service info
     pipeline = [
@@ -962,8 +978,8 @@ async def get_person_attendance(person_id: str):
 
 
 @router.get("/people/{person_id}/groups")
-async def get_person_groups(person_id: str):
-    tenant_id = DEFAULT_TENANT_ID
+async def get_person_groups(request: Request, person_id: str):
+    tenant_id = await _resolve_tenant(request)
     
     pipeline = [
         {"$match": {"person_id": person_id, "tenant_id": tenant_id}},
@@ -999,8 +1015,8 @@ async def get_person_groups(person_id: str):
 
 # --- HOUSEHOLDS ROUTES ---
 @router.get("/households")
-async def get_households(page: int = 1, per_page: int = 25, search: Optional[str] = None):
-    tenant_id = DEFAULT_TENANT_ID
+async def get_households(request: Request, page: int = 1, per_page: int = 25, search: Optional[str] = None):
+    tenant_id = await _resolve_tenant(request)
     query = {"tenant_id": tenant_id}
     
     if search:
@@ -1050,12 +1066,13 @@ async def get_household(household_id: str):
 # --- GROUPS ROUTES ---
 @router.get("/groups")
 async def get_groups(
+    request: Request,
     page: int = 1,
     per_page: int = 25,
     search: Optional[str] = None,
     group_type: Optional[str] = None
 ):
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_tenant(request)
     query = {"tenant_id": tenant_id, "is_active": True}
     
     if search:
@@ -1114,8 +1131,8 @@ async def get_groups(
 
 
 @router.get("/groups/{group_id}")
-async def get_group(group_id: str):
-    tenant_id = DEFAULT_TENANT_ID
+async def get_group(request: Request, group_id: str):
+    tenant_id = await _resolve_tenant(request)
     
     group = await db.groups.find_one(
         {"id": group_id, "tenant_id": tenant_id},
@@ -1144,9 +1161,9 @@ async def get_group(group_id: str):
 
 
 @router.get("/groups/{group_id}/members/list")
-async def get_group_members_public(group_id: str):
+async def get_group_members_public(request: Request, group_id: str):
     """Public endpoint for getting group members (no auth required)"""
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_tenant(request)
     
     pipeline = [
         {"$match": {"group_id": group_id, "tenant_id": tenant_id, "is_active": True}},
@@ -1183,8 +1200,8 @@ async def get_group_types():
 
 # --- ATTENDANCE ROUTES ---
 @router.get("/services")
-async def get_services(date: Optional[str] = None, limit: int = 10):
-    tenant_id = DEFAULT_TENANT_ID
+async def get_services(request: Request, date: Optional[str] = None, limit: int = 10):
+    tenant_id = await _resolve_tenant(request)
     query = {"tenant_id": tenant_id}
     
     if date:
@@ -1226,8 +1243,8 @@ async def get_service_types():
 
 
 @router.post("/attendance")
-async def record_attendance(service_id: str, person_ids: List[str]):
-    tenant_id = DEFAULT_TENANT_ID
+async def record_attendance(request: Request, service_id: str, person_ids: List[str]):
+    tenant_id = await _resolve_tenant(request)
     
     records = []
     for person_id in person_ids:
@@ -1259,8 +1276,8 @@ async def record_attendance(service_id: str, person_ids: List[str]):
 
 
 @router.get("/attendance/service/{service_id}")
-async def get_service_attendance(service_id: str):
-    tenant_id = DEFAULT_TENANT_ID
+async def get_service_attendance(request: Request, service_id: str):
+    tenant_id = await _resolve_tenant(request)
     
     pipeline = [
         {"$match": {"service_id": service_id, "tenant_id": tenant_id}},
@@ -1296,8 +1313,8 @@ async def get_funds():
 
 
 @router.get("/giving/stats")
-async def get_giving_stats():
-    tenant_id = DEFAULT_TENANT_ID
+async def get_giving_stats(request: Request):
+    tenant_id = await _resolve_tenant(request)
     today = datetime.now(timezone.utc)
     
     mtd_start = today.replace(day=1).strftime("%Y-%m-%d")
@@ -1349,6 +1366,7 @@ async def get_giving_stats():
 
 @router.get("/donations")
 async def get_donations(
+    request: Request,
     page: int = 1,
     per_page: int = 25,
     fund_id: Optional[str] = None,
@@ -1356,7 +1374,7 @@ async def get_donations(
     end_date: Optional[str] = None,
     payment_method: Optional[str] = None
 ):
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_tenant(request)
     
     # Default to last 90 days to avoid timeout on large collections
     if not start_date:
@@ -1430,8 +1448,8 @@ async def get_donations(
 
 
 @router.post("/donations")
-async def create_donation(donation_data: DonationBase):
-    tenant_id = DEFAULT_TENANT_ID
+async def create_donation(request: Request, donation_data: DonationBase):
+    tenant_id = await _resolve_tenant(request)
     
     donation = Donation(
         **donation_data.model_dump(),
@@ -1478,8 +1496,8 @@ async def create_donation(donation_data: DonationBase):
 
 
 @router.get("/batches")
-async def get_batches(status: Optional[str] = None):
-    tenant_id = DEFAULT_TENANT_ID
+async def get_batches(request: Request, status: Optional[str] = None):
+    tenant_id = await _resolve_tenant(request)
     query = {"tenant_id": tenant_id}
     
     if status:
@@ -1493,8 +1511,8 @@ async def get_batches(status: Optional[str] = None):
 
 
 @router.post("/batches")
-async def create_batch(name: str, date: str):
-    tenant_id = DEFAULT_TENANT_ID
+async def create_batch(request: Request, name: str, date: str):
+    tenant_id = await _resolve_tenant(request)
     
     batch = DonationBatch(
         tenant_id=tenant_id,
@@ -1521,8 +1539,8 @@ async def close_batch(batch_id: str):
 
 # --- EVENTS ROUTES ---
 @router.get("/events")
-async def get_events(upcoming: bool = True, limit: int = 20):
-    tenant_id = DEFAULT_TENANT_ID
+async def get_events(request: Request, upcoming: bool = True, limit: int = 20):
+    tenant_id = await _resolve_tenant(request)
     query = {"tenant_id": tenant_id}
     
     if upcoming:
@@ -1551,8 +1569,8 @@ async def get_event(event_id: str):
 
 # --- COMMUNICATIONS ROUTES ---
 @router.get("/communications")
-async def get_communications(status: Optional[str] = None, limit: int = 20):
-    tenant_id = DEFAULT_TENANT_ID
+async def get_communications(request: Request, status: Optional[str] = None, limit: int = 20):
+    tenant_id = await _resolve_tenant(request)
     query = {"tenant_id": tenant_id}
     
     if status:
@@ -1566,10 +1584,10 @@ async def get_communications(status: Optional[str] = None, limit: int = 20):
 
 
 @router.post("/communications")
-async def create_communication(subject: str, body_html: str, recipient_ids: Optional[List[str]] = None):
+async def create_communication(request: Request, subject: str, body_html: str, recipient_ids: Optional[List[str]] = None):
     if recipient_ids is None:
         recipient_ids = []
-    tenant_id = DEFAULT_TENANT_ID
+    tenant_id = await _resolve_tenant(request)
     
     comm = Communication(
         tenant_id=tenant_id,
@@ -1698,8 +1716,8 @@ async def get_music_stand(plan_id: str):
 
 
 @router.get("/search")
-async def global_search(q: str, limit: int = 10):
-    tenant_id = DEFAULT_TENANT_ID
+async def global_search(request: Request, q: str, limit: int = 10):
+    tenant_id = await _resolve_tenant(request)
     results = []
     
     # Search people

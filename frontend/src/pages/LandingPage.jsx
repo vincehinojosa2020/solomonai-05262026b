@@ -83,7 +83,7 @@ export default function LandingPage() {
       </nav>
 
       {/* HERO */}
-      <section style={{ background: S.white, minHeight: '100vh', paddingTop: 120, paddingBottom: 80, display: 'flex', alignItems: 'center' }} data-testid="hero-section">
+      <section style={{ background: S.white, minHeight: '100vh', paddingTop: 120, paddingBottom: 80, display: 'flex', alignItems: 'center' }} data-testid="hero-section" role="banner" aria-label="Solomon AI Church Management Platform">
         <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 32px', textAlign: 'center' }}>
           <h1 style={{ fontSize: 'clamp(44px, 6vw, 72px)', fontWeight: 800, color: S.textDark, lineHeight: 1.05, letterSpacing: '-0.04em', margin: '0 0 28px 0' }} data-testid="hero-headline">
             Your Church.<br />One App.<br />Zero Compromise.

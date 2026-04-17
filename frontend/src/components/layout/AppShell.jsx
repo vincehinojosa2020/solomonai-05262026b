@@ -148,7 +148,7 @@ export default function AppShell() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-2 scrollbar-thin">
+        <nav className="flex-1 overflow-y-auto py-2 scrollbar-thin" role="navigation" aria-label="Main navigation">
           {/* Platform section for platform admins */}
           {user?.role === 'platform_admin' && platformNavItems.map((section, idx) => (
             <div key={`platform-${idx}`} className="nav-section">

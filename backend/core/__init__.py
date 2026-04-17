@@ -208,6 +208,20 @@ async def get_current_admin_user(request: Request):
     session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
     if not session:
         raise HTTPException(status_code=401, detail="Invalid session")
+    # Session TTL: 24 hours
+    created = session.get("created_at", "")
+    if created:
+        try:
+            from datetime import datetime, timezone, timedelta
+            if isinstance(created, str):
+                created_dt = datetime.fromisoformat(created.replace("Z", "+00:00"))
+            else:
+                created_dt = created.replace(tzinfo=timezone.utc) if created.tzinfo is None else created
+            if datetime.now(timezone.utc) - created_dt > timedelta(hours=24):
+                await db.user_sessions.delete_one({"session_token": session_token})
+                raise HTTPException(status_code=401, detail="Session expired. Please log in again.")
+        except (ValueError, TypeError):
+            pass
     user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
@@ -225,6 +239,20 @@ async def get_current_portal_user(request: Request):
     session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
     if not session:
         raise HTTPException(status_code=401, detail="Invalid session")
+    # Session TTL: 24 hours
+    created = session.get("created_at", "")
+    if created:
+        try:
+            from datetime import datetime, timezone, timedelta
+            if isinstance(created, str):
+                created_dt = datetime.fromisoformat(created.replace("Z", "+00:00"))
+            else:
+                created_dt = created.replace(tzinfo=timezone.utc) if created.tzinfo is None else created
+            if datetime.now(timezone.utc) - created_dt > timedelta(hours=24):
+                await db.user_sessions.delete_one({"session_token": session_token})
+                raise HTTPException(status_code=401, detail="Session expired. Please log in again.")
+        except (ValueError, TypeError):
+            pass
     user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
     if not user:
         raise HTTPException(status_code=401, detail="User not found")

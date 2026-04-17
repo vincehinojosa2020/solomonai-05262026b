@@ -41,9 +41,10 @@ export default function CSVMemberImport() {
       if (res.ok) {
         const data = await res.json();
         setParseResult(data);
-        // Auto-map by matching headers to system field labels/keys
-        const autoMap = {};
+        // Use server-side auto-mapping from Planning Center patterns, then fallback to local matching
+        const autoMap = data.auto_mapping || {};
         for (const sf of data.system_fields) {
+          if (autoMap[sf.key]) continue; // Already mapped by server
           const match = data.headers.find(h =>
             h.toLowerCase().replace(/[_\s]/g, '') === sf.key.replace(/[_\s]/g, '') ||
             h.toLowerCase().includes(sf.label.toLowerCase().split(' ')[0].toLowerCase())
