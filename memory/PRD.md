@@ -16,10 +16,10 @@ SOLOMON AI — MASTER BUILD DIRECTIVE. A nationwide SaaS church management platf
 3. **Church Member** (`member@abundant.church`) — Portal access, giving, cafe, merch, events, kids check-in
 
 ## Campuses (Abundant Church)
-- **Abundant East** (`abundant-east-001`) — 12,847 members
-- **Abundant West** (`abundant-west-001`) — 11,563 members
-- **Abundant Downtown** (`abundant-downtown-001`) — 10,921 members
-- **Total**: 35,331 members across 3 campuses
+- **Abundant East** (`abundant-east-001`) — 22,000 members
+- **Abundant West** (`abundant-west-001`) — 14,000 members
+- **Abundant Downtown** (`abundant-downtown-001`) — 18,500 members
+- **Total**: 54,500 members across 3 campuses + 5 other churches
 
 ## What's Been Implemented
 
@@ -31,28 +31,51 @@ SOLOMON AI — MASTER BUILD DIRECTIVE. A nationwide SaaS church management platf
 - Bloomberg-grade reports (Giving, Attendance, Membership, Groups)
 - 3-year historical data seeded for all campuses
 - Rate limiting completely disabled for demo
-- Authentication for all 4 demo accounts
+- Authentication for all demo accounts
 
 ### Recent Updates (April 2026)
-- **Give Page**: Full Solomon Pay flow — select amount, saved card (Visa ****4242), cover fees, one-tap give. Payment processes and shows success toast.
-- **Giving Streak**: 14-week streak badge with Luntz copy: "That's not a habit — that's a lifestyle. 14 consecutive weeks of faithfulness."
-- **Cover Processing Fees**: All checkout flows (Give, Cafe, Merch) show "I'd like to cover the processing fee — 100% of your gift reaches the church. Not one penny lost."
-- **Round Up Feature**: Cafe & Merch — "Small change, big kingdom impact." Appears when total has cents.
-- **Tithe/Offering Prompts**: Frank Luntz copy on Cafe ("While you're here...") and Merch ("You're already investing in something you believe in.")
+- **Give Page**: Full Solomon Pay flow — select amount, saved card (Visa ****4242), cover fees, one-tap give
+- **Giving Streak**: 14-week streak badge with Luntz copy
+- **Cover Processing Fees**: All checkout flows (Give, Cafe, Merch)
+- **Round Up Feature**: Cafe & Merch
 - **Watch Page**: Dark Masterclass theme, 3 videos by Pastor Charles Nieman
 - **Portal Nav**: Flat Cafe/Merch links (no dropdown)
-- **All Campuses Aggregate**: 35,331 total members across 3 campuses
-- **Abundant Downtown**: Renamed from "Abundant Northeast"
+- **All Campuses Aggregate**: 54,500+ total members
 - **Demo Modals**: Suppressed for all demo accounts
+
+### P0 Plumbing Fixes (April 17, 2026) — ALL DONE
+- **FIX 1**: Transactions Tab — enriched 3M+ donations with person names/emails from people collection. Shows full table with donor, church, amount, fund, fee, status columns.
+- **FIX 2**: Donors Module — fixed recurring_donors count (from recurring_giving collection), computed by_campus breakdown from per-donor aggregation. Shows 41K+ total donors.
+- **FIX 3**: Attendance Page — seeded services & service_types for active tenant IDs (abundant-east/west/downtown). Page now loads 156+ services with headcounts.
+- **FIX 4**: Church Detail Drill-Through — NEW endpoint `/api/platform/churches/{tenant_id}/detail` + `ChurchDetail.jsx` component. Shows 12-month giving chart, top donors, member roster, health score, recent transactions.
+- **FIX 5**: YTD Revenue calculation bug (fixed earlier)
+- **FIX 10**: Removed Team section from public site (fixed earlier)
 
 ## Pending / Upcoming Tasks
 
-### P1 — Upcoming
-- Implement "Founder Role" unified multi-campus dashboard for Shannon/Jacob
-- Schedule automated weekly platform summary email (GMV/MRR to founders)
+### P1 — Public Site & Security Polish (FIX 6-9, 11-12)
+- Clear pre-filled login email (`autocomplete="off"`)
+- Build `/privacy`, `/terms`, `/security` pages
+- Update copyright to dynamic year
+- Add God Mode screenshot to hero
+- Build `/pricing` page
+- Wire Calendly CTA and forgot password flow
+
+### P1 — Ask Solomon AI Upgrade
+- Streaming responses (Anthropic stream:true)
+- Text-to-Speech (English UK voice)
+- PPTX/DOCX/PDF generation scaffold
+- MCP tool architecture scaffold
+
+### P1 — Stripe/SecureGive Parity
+- Monday Morning Platform Summary Email
+- Payout Drill-Down (click payout → see every transaction)
+- Fund reconciliation view & Fund-specific direct links
+- CSV Import wizard for Planning Center migrations
+- Stripe parity scaffold (Fraud risk scoring, Disputes/Chargebacks UI)
 
 ### P2 — Future
-- Custom Report Builder + PDF export
+- Custom Report Builder full implementation & PDF export
 - Apple/Google Pay live integration (currently mocked)
 
 ### P3 — Backlog
@@ -64,3 +87,4 @@ SOLOMON AI — MASTER BUILD DIRECTIVE. A nationwide SaaS church management platf
 - **God Mode caching**: `platform_stats_cache` prevents MongoDB timeouts on 3M+ records
 - **Dashboard stats**: Uses `dashboard_stats_cache` for member counts
 - **Giving History**: Uses `people.id` (not `user_id`) as `person_id` in donations collection
+- **Donor stats caching**: `platform_donors_cache` caches donor analytics for 30 minutes
