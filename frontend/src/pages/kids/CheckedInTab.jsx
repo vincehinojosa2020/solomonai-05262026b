@@ -1,55 +1,78 @@
-import { Search, CheckCircle2, Shield, Clock, AlertCircle, Phone, User } from 'lucide-react';
-import { getAvatarStyle, formatAge } from './constants';
+import { motion } from 'framer-motion';
+import { CheckCircle2, AlertCircle, Clock, User, UserX } from 'lucide-react';
+import { getAvatarStyle, formatAge } from '../KidsCheckinUtils';
 
-export function CheckedInTab({ checkins, searchTerm, setSearchTerm, onCheckout }) {
-  const filtered = checkins.filter(c =>
-    !searchTerm || c.child_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.parent_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.security_code?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+export function CheckedInTab({ enrichedCheckins, onCheckout }) {
   return (
-    <div className="kca-tab-content" data-testid="checked-in-tab">
-      <div className="kca-search-bar">
-        <Search className="kca-search-icon" />
-        <input type="text" placeholder="Search by child name, parent, or code..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="kca-search-input" data-testid="checkin-search" />
-        <span className="kca-count-badge">{filtered.length} checked in</span>
-      </div>
-
-      {filtered.length === 0 ? (
+    <motion.div
+      key="checkedin"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="kca-checkedin-grid"
+    >
+      {enrichedCheckins.length === 0 ? (
         <div className="kca-empty">
-          <CheckCircle2 className="kca-empty-icon" />
-          <p>No children currently checked in</p>
+          <span className="kca-empty-emoji" aria-hidden="true">&#x1F3E0;</span>
+          <h3>No Children Checked In</h3>
+          <p>Check in children using the "Check In" tab</p>
         </div>
       ) : (
-        <div className="kca-grid">
-          {filtered.map(c => {
-            const avatar = getAvatarStyle(c.child_name);
-            return (
-              <div key={c.id} className="kca-card" data-testid={`checkin-card-${c.id}`}>
-                <div className="kca-card-header">
-                  <div className="kca-avatar" style={{ background: avatar.bg }}><span className="kca-avatar-emoji">{avatar.emoji}</span></div>
-                  <div className="kca-card-info">
-                    <h3 className="kca-child-name">{c.child_name}</h3>
-                    <p className="kca-age">{formatAge(c.child_birthdate)}</p>
-                  </div>
-                  <div className="kca-security-code" data-testid={`security-code-${c.id}`}>
-                    <Shield className="w-3 h-3" />{c.security_code}
-                  </div>
-                </div>
-                <div className="kca-card-details">
-                  <div className="kca-detail"><Clock className="w-3.5 h-3.5" />{new Date(c.checked_in_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</div>
-                  <div className="kca-detail"><User className="w-3.5 h-3.5" />{c.parent_name}</div>
-                  {c.parent_phone && <div className="kca-detail"><Phone className="w-3.5 h-3.5" />{c.parent_phone}</div>}
-                  <div className="kca-detail kca-classroom">{c.classroom || 'Sunday School'}</div>
-                  {c.allergies && <div className="kca-detail kca-allergy"><AlertCircle className="w-3.5 h-3.5" />{c.allergies}</div>}
-                </div>
-                <button onClick={() => onCheckout(c)} className="kca-checkout-btn" data-testid={`checkout-btn-${c.id}`}>Check Out</button>
+        enrichedCheckins.map((checkin) => {
+          const avatarStyle = getAvatarStyle(checkin.child?.name || 'A');
+          return (
+            <motion.div
+              key={checkin.id}
+              className="kca-child-card"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              data-testid={`checked-in-card-${checkin.id}`}
+            >
+              <div className="kca-card-status">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Checked In</span>
               </div>
-            );
-          })}
-        </div>
+              <div className="kca-card-avatar" style={{ background: avatarStyle.bg }}>
+                <span className="kca-avatar-letter">{checkin.child?.name?.charAt(0) || '?'}</span>
+                <span className="kca-avatar-emoji" aria-hidden="true">{avatarStyle.emoji}</span>
+              </div>
+              <h3>{checkin.child?.name || 'Unknown'}</h3>
+              <p className="kca-card-age">
+                <span aria-hidden="true">&#x1F382;</span> {formatAge(checkin.child?.birthdate)}
+              </p>
+              {checkin.child?.allergies && (
+                <div className="kca-allergy-badge" role="alert">
+                  <AlertCircle className="w-3 h-3" />
+                  {checkin.child.allergies}
+                </div>
+              )}
+              <div className="kca-pickup-code">
+                <span className="kca-code-label">Pickup Code</span>
+                <span className="kca-code-value">{checkin.pickup_code}</span>
+              </div>
+              <div className="kca-card-meta">
+                <div className="kca-meta-item">
+                  <Clock className="w-3 h-3" />
+                  {new Date(checkin.checked_in_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
+                <div className="kca-meta-item">
+                  <User className="w-3 h-3" />
+                  {checkin.child?.parent_name || 'Unknown'}
+                </div>
+              </div>
+              <button
+                className="kca-checkout-btn"
+                onClick={() => onCheckout(checkin)}
+                data-testid={`checkout-btn-${checkin.id}`}
+                aria-label={`Check out ${checkin.child?.name || 'child'}`}
+              >
+                <UserX className="w-4 h-4" />
+                Check Out
+              </button>
+            </motion.div>
+          );
+        })
       )}
-    </div>
+    </motion.div>
   );
 }

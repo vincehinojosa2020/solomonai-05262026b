@@ -11,6 +11,9 @@ import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 import { getAvatarStyle, formatAge } from './KidsCheckinUtils';
 import { CheckoutConfirmModal, ManualCheckinModal, RegisterFamilyModal } from './KidsCheckinModals';
+import { CheckedInTab } from './kids/CheckedInTab';
+import { CheckInTab } from './kids/CheckInTab';
+import { CheckOutTab } from './kids/CheckOutTab';
 
 export default function KidsCheckinAdmin() {
   const [activeTab, setActiveTab] = useState('checkedin');
@@ -422,156 +425,17 @@ export default function KidsCheckinAdmin() {
         <AnimatePresence mode="wait">
           {/* Currently Checked In Tab */}
           {activeTab === 'checkedin' && (
-            <motion.div
-              key="checkedin"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="kca-checkedin-grid"
-            >
-              {enrichedCheckins.length === 0 ? (
-                <div className="kca-empty">
-                  <span className="kca-empty-emoji">🏠</span>
-                  <h3>No Children Checked In</h3>
-                  <p>Check in children using the "Check In" tab</p>
-                </div>
-              ) : (
-                enrichedCheckins.map((checkin) => {
-                  const avatarStyle = getAvatarStyle(checkin.child?.name || 'A');
-                  return (
-                    <motion.div
-                      key={checkin.id}
-                      className="kca-child-card"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      data-testid={`checked-in-card-${checkin.id}`}
-                    >
-                      <div className="kca-card-status">
-                        <CheckCircle2 className="w-4 h-4" />
-                        <span>Checked In</span>
-                      </div>
-                      
-                      <div 
-                        className="kca-card-avatar"
-                        style={{ background: avatarStyle.bg }}
-                      >
-                        <span className="kca-avatar-letter">
-                          {checkin.child?.name?.charAt(0) || '?'}
-                        </span>
-                        <span className="kca-avatar-emoji">{avatarStyle.emoji}</span>
-                      </div>
-                      
-                      <h3>{checkin.child?.name || 'Unknown'}</h3>
-                      <p className="kca-card-age">
-                        <span>🎂</span> {formatAge(checkin.child?.birthdate)}
-                      </p>
-                      
-                      {checkin.child?.allergies && (
-                        <div className="kca-allergy-badge">
-                          <AlertCircle className="w-3 h-3" />
-                          {checkin.child.allergies}
-                        </div>
-                      )}
-                      
-                      <div className="kca-pickup-code">
-                        <span className="kca-code-label">Pickup Code</span>
-                        <span className="kca-code-value">{checkin.pickup_code}</span>
-                      </div>
-                      
-                      <div className="kca-card-meta">
-                        <div className="kca-meta-item">
-                          <Clock className="w-3 h-3" />
-                          {new Date(checkin.checked_in_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </div>
-                        <div className="kca-meta-item">
-                          <User className="w-3 h-3" />
-                          {checkin.child?.parent_name || 'Unknown'}
-                        </div>
-                      </div>
-                      
-                      <button
-                        className="kca-checkout-btn"
-                        onClick={() => setShowCheckoutModal(checkin)}
-                        data-testid={`checkout-btn-${checkin.id}`}
-                      >
-                        <UserX className="w-4 h-4" />
-                        Check Out
-                      </button>
-                    </motion.div>
-                  );
-                })
-              )}
-            </motion.div>
+            <CheckedInTab enrichedCheckins={enrichedCheckins} onCheckout={setShowCheckoutModal} />
           )}
 
           {/* Check In Tab */}
           {activeTab === 'checkin' && (
-            <motion.div
-              key="checkin"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <div className="kca-search-box">
-                <Search className="w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search by child or parent name..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  data-testid="search-kids-input"
-                />
-              </div>
-              
-              <div className="kca-kids-list">
-                {availableForCheckin.length === 0 ? (
-                  <div className="kca-empty">
-                    <span className="kca-empty-emoji">✅</span>
-                    <h3>All Registered Kids Are Checked In!</h3>
-                    <p>Or no kids match your search criteria</p>
-                  </div>
-                ) : (
-                  availableForCheckin.map((kid) => {
-                    const avatarStyle = getAvatarStyle(kid.name);
-                    return (
-                      <div 
-                        key={kid.id} 
-                        className="kca-kid-row"
-                        data-testid={`kid-row-${kid.id}`}
-                      >
-                        <div 
-                          className="kca-kid-avatar"
-                          style={{ background: avatarStyle.bg }}
-                        >
-                          {kid.name.charAt(0)}
-                        </div>
-                        <div className="kca-kid-info">
-                          <h4>{kid.name}</h4>
-                          <div className="kca-kid-details">
-                            <span>🎂 {formatAge(kid.birthdate)}</span>
-                            <span>👤 {kid.parent_name}</span>
-                            {kid.allergies && (
-                              <span className="kca-allergy-small">
-                                <AlertCircle className="w-3 h-3" />
-                                {kid.allergies}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <button
-                          className="kca-checkin-btn"
-                          onClick={() => handleDirectCheckin(kid)}
-                          data-testid={`direct-checkin-btn-${kid.id}`}
-                        >
-                          <UserCheck className="w-4 h-4" />
-                          Check In
-                        </button>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </motion.div>
+            <CheckInTab
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              availableForCheckin={availableForCheckin}
+              onDirectCheckin={handleDirectCheckin}
+            />
           )}
 
           {/* Check Out Tab */}

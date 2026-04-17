@@ -129,8 +129,12 @@ export default function AppShell() {
 
   return (
     <div className="app-shell">
+      {/* Skip to main content - WCAG AA */}
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:bg-blue-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-medium" data-testid="skip-to-main">
+        Skip to main content
+      </a>
       {/* Sidebar */}
-      <aside className={`app-sidebar ${collapsed ? 'collapsed' : ''}`} data-testid="app-sidebar">
+      <aside className={`app-sidebar ${collapsed ? 'collapsed' : ''}`} data-testid="app-sidebar" role="complementary" aria-label="Sidebar navigation">
         {/* Logo */}
         <div className="flex items-center justify-between h-12 px-3 border-b border-slate-700">
           {!collapsed && (
@@ -142,6 +146,8 @@ export default function AppShell() {
             onClick={() => setCollapsed(!collapsed)}
             className="p-1.5 text-slate-500 hover:text-slate-300 transition-colors"
             data-testid="sidebar-toggle"
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-expanded={!collapsed}
           >
             {collapsed ? <Menu className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
@@ -254,7 +260,7 @@ export default function AppShell() {
       </aside>
 
       {/* Main Content */}
-      <div className="app-main">
+      <main className="app-main" id="main-content" role="main">
         {/* Impersonation Banner - Shows when platform admin is viewing a specific church */}
         {impersonatedTenant && user?.role === 'platform_admin' && (
           <div className="impersonation-banner" data-testid="impersonation-banner">
@@ -435,10 +441,10 @@ export default function AppShell() {
         </header>
 
         {/* Page Content */}
-        <main className="app-content">
+        <div className="app-content">
           <Outlet context={{ tenant, user, greeting: getGreeting() }} />
-        </main>
-      </div>
+        </div>
+      </main>
 
       {/* Command Palette */}
       {commandOpen && (
