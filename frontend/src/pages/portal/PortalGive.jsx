@@ -25,6 +25,8 @@ export default function PortalGive() {
   const [selectedCampus, setSelectedCampus] = useState(user?.home_campus_id || tenant?.id || '');
   const [isMultiCampus, setIsMultiCampus] = useState(false);
   const [coverFees, setCoverFees] = useState(false);
+  const [stripeConfig, setStripeConfig] = useState(null);
+  const [stripeLoading, setStripeLoading] = useState(false);
 
   const quickAmounts = [25, 50, 100, 250];
   const giveAmount = parseFloat(amount) || 0;
@@ -36,6 +38,8 @@ export default function PortalGive() {
     fetchGivingHistory();
     fetchSavedPaymentMethods();
     fetchCampuses();
+    // Check Stripe configuration
+    fetch(`${API_URL}/stripe/config`).then(r => r.ok ? r.json() : null).then(d => { if (d) setStripeConfig(d); }).catch(() => {});
   }, []);
 
   const fetchSavedPaymentMethods = async () => {
@@ -150,13 +154,83 @@ export default function PortalGive() {
       toast.error('Please enter a valid amount');
       return;
     }
-    // If saved card selected, go directly
+    // If saved card selected, go directly via Solomon Pay
     if (selectedSavedCard) {
       handleGiveWithSavedCard();
       return;
     }
     setShowPayment(true);
   };
+
+  // Stripe Checkout flow
+  const handleStripeCheckout = async () => {
+    if (!amount || parseFloat(amount) <= 0) {
+      toast.error('Please enter a valid amount');
+      return;
+    }
+    setStripeLoading(true);
+    try {
+      const token = sessionStorage.getItem('session_token');
+      const fundObj = funds.find(f => f.id === fund);
+      const res = await fetch(`${API_URL}/stripe/checkout/giving`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({
+          amount: parseFloat(amount),
+          fund_name: fundObj?.name || 'General Fund',
+          cover_fees: coverFees,
+          origin_url: window.location.origin,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Failed to create checkout');
+      }
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else if (data.mode === 'simulated') {
+        toast.info('Stripe is in demo mode. Using Solomon Pay.');
+        setShowPayment(true);
+      }
+    } catch (err) {
+      toast.error(err.message || 'Checkout failed');
+    } finally {
+      setStripeLoading(false);
+    }
+  };
+
+  // Handle return from Stripe success
+  useEffect(() => {
+    const sessionId = searchParams.get('session_id');
+    if (sessionId) {
+      // Poll for payment status
+      let attempts = 0;
+      const poll = async () => {
+        try {
+          const res = await fetch(`${API_URL}/stripe/checkout/status/${sessionId}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.payment_status === 'paid') {
+              setShowSuccessMessage(true);
+              toast.success('Thank you! Your donation has been received.');
+              setSearchParams({});
+              setTimeout(() => fetchGivingHistory(), 500);
+              return;
+            }
+            if (data.status === 'expired') {
+              toast.error('Payment session expired. Please try again.');
+              setSearchParams({});
+              return;
+            }
+          }
+        } catch {}
+        attempts++;
+        if (attempts < 5) setTimeout(poll, 2000);
+      };
+      poll();
+    }
+  }, [searchParams]);
 
   const handleSolomonPaySuccess = async (cardData) => {
     const fundObj = funds.find(f => f.id === fund);
@@ -485,15 +559,33 @@ export default function PortalGive() {
 
           {/* Submit Button */}
           {!showPayment && (
-            <button
-              onClick={handleGive}
-              disabled={isLoading || !amount}
-              className="portal-give-btn"
-              data-testid="give-submit-btn"
-              style={isLoading ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
-            >
-              {isLoading ? 'Processing...' : `Give ${amount ? formatCurrency(totalCharge) : ''} with SolomonPay`}
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <button
+                onClick={handleGive}
+                disabled={isLoading || !amount}
+                className="portal-give-btn"
+                data-testid="give-submit-btn"
+                style={isLoading ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
+              >
+                {isLoading ? 'Processing...' : `Give ${amount ? formatCurrency(totalCharge) : ''} with Solomon Pay`}
+              </button>
+              {stripeConfig?.stripe_live && (
+                <button
+                  onClick={handleStripeCheckout}
+                  disabled={stripeLoading || !amount}
+                  data-testid="stripe-checkout-btn"
+                  style={{
+                    width: '100%', padding: '14px 24px', borderRadius: 12,
+                    background: '#635bff', color: '#fff', border: 'none',
+                    fontSize: 16, fontWeight: 700, cursor: stripeLoading ? 'not-allowed' : 'pointer',
+                    opacity: stripeLoading || !amount ? 0.6 : 1,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  }}
+                >
+                  {stripeLoading ? 'Redirecting...' : `Pay ${amount ? formatCurrency(totalCharge) : ''} with Stripe`}
+                </button>
+              )}
+            </div>
           )}
         </div>
 

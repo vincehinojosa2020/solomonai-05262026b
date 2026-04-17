@@ -130,6 +130,7 @@ from routes.solomonpay_admin import router as solomonpay_admin_router
 from routes.sms_routes import router as sms_router
 from routes.printer_routes import router as printer_router
 from routes.disputes import router as disputes_router
+from routes.stripe_connect import router as stripe_connect_router
 
 _domain_routers = [
     auth_router, portal_router, solomon_router,
@@ -143,7 +144,7 @@ _domain_routers = [
     push_router, messaging_router, volunteer_router,
     geofence_router, announcements_router, media_uploads_router,
     giving_nudge_router, courses_router, solomonpay_admin_router,
-    sms_router, printer_router, disputes_router,
+    sms_router, printer_router, disputes_router, stripe_connect_router,
 ]
 
 for router in _domain_routers:
