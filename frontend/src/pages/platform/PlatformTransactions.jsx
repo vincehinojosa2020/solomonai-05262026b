@@ -97,8 +97,8 @@ export default function PlatformTransactions({ token }) {
                   <td className="px-4 py-3"><div className="font-medium text-slate-800">{t.person_name}</div><div className="text-xs text-slate-400">{t.person_email}</div></td>
                   <td className="px-4 py-3 text-right font-semibold text-slate-900">{fmt(t.amount)}</td>
                   <td className="px-4 py-3 text-slate-600">{t.fund_name}</td>
-                  <td className="px-4 py-3 text-right text-slate-500">{fmt(t.solomon_fee || t.processing_fee || 0)}</td>
-                  <td className="px-4 py-3 text-right text-emerald-700 font-medium">{fmt(t.net_amount || (t.amount - (t.solomon_fee || 0)))}</td>
+                  <td className="px-4 py-3 text-right text-slate-500">{fmt(t.fee_amount || t.solomon_fee || t.processing_fee || 0)}</td>
+                  <td className="px-4 py-3 text-right text-emerald-700 font-medium">{fmt(t.net_amount || (t.amount - (t.fee_amount || t.solomon_fee || 0)))}</td>
                   <td className="px-4 py-3"><span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${t.status === 'completed' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>{t.status}</span></td>
                   <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">{t.card_label || t.payment_method}</td>
                 </tr>

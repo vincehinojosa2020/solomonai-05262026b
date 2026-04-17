@@ -2582,6 +2582,112 @@ class ChurchOnboardingRequest(BaseModel):
     plan: str = "starter"
 
 
+@router.get("/platform/churches/{tenant_id}/detail")
+async def get_church_detail(request: Request, tenant_id: str):
+    """Church drill-through detail page — giving chart, top donors, recent transactions, member roster."""
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+    if not tenant:
+        raise HTTPException(status_code=404, detail="Church not found")
+
+    today = datetime.now(timezone.utc)
+    twelve_ago = (today - timedelta(days=365)).strftime("%Y-%m")
+    ninety_ago = (today - timedelta(days=90)).strftime("%Y-%m-%d")
+
+    # 12-month giving chart
+    monthly_giving = await db.donations.aggregate([
+        {"$match": {"tenant_id": tenant_id, "donation_date": {"$gte": twelve_ago + "-01"}}},
+        {"$addFields": {"month": {"$substr": ["$donation_date", 0, 7]}}},
+        {"$group": {"_id": "$month", "total": {"$sum": "$amount"}, "count": {"$sum": 1}}},
+        {"$sort": {"_id": 1}},
+    ], allowDiskUse=True).to_list(24)
+
+    # Top 10 donors
+    top_donors = await db.donations.aggregate([
+        {"$match": {"tenant_id": tenant_id}},
+        {"$group": {"_id": "$person_id", "total": {"$sum": "$amount"}, "count": {"$sum": 1}}},
+        {"$sort": {"total": -1}},
+        {"$limit": 10},
+        {"$lookup": {"from": "people", "localField": "_id", "foreignField": "id", "as": "person"}},
+        {"$unwind": {"path": "$person", "preserveNullAndEmptyArrays": True}},
+        {"$project": {"_id": 0, "person_id": "$_id", "total": 1, "count": 1,
+                       "name": {"$concat": [{"$ifNull": ["$person.first_name", ""]}, " ", {"$ifNull": ["$person.last_name", ""]}]},
+                       "email": {"$ifNull": ["$person.email", ""]}}},
+    ], allowDiskUse=True).to_list(10)
+
+    # Recent 20 transactions
+    recent_txns = await db.donations.find(
+        {"tenant_id": tenant_id}, {"_id": 0, "person_id": 1, "amount": 1, "donation_date": 1, "fund_name": 1, "payment_method": 1, "status": 1}
+    ).sort("donation_date", -1).limit(20).to_list(20)
+    pid_set = list(set(t.get("person_id") for t in recent_txns if t.get("person_id")))
+    pcache = {}
+    if pid_set:
+        pdocs = await db.people.find({"id": {"$in": pid_set}}, {"_id": 0, "id": 1, "first_name": 1, "last_name": 1}).to_list(len(pid_set))
+        pcache = {p["id"]: p for p in pdocs}
+    for t in recent_txns:
+        p = pcache.get(t.get("person_id"), {})
+        t["person_name"] = f"{p.get('first_name', '')} {p.get('last_name', '')}".strip() or "Member"
+        t["fund_name"] = t.get("fund_name") or "General Fund"
+        t["status"] = t.get("status") or "completed"
+        t["payment_method"] = t.get("payment_method") or "card"
+
+    # Member roster (top 20 by engagement/giving)
+    members = await db.people.find(
+        {"tenant_id": tenant_id}, {"_id": 0, "id": 1, "first_name": 1, "last_name": 1, "email": 1, "membership_status": 1, "campus": 1, "engagement_score": 1, "ytd_giving": 1, "lifetime_giving": 1}
+    ).sort("lifetime_giving", -1).limit(20).to_list(20)
+
+    # Health score
+    cached = await db.dashboard_stats_cache.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    total_members = (cached or {}).get("total_members", 0)
+    health = compute_health_score(cached or {}, tenant)
+
+    # Summary stats
+    total_donations = await db.donations.count_documents({"tenant_id": tenant_id})
+    total_giving_raw = await db.donations.aggregate([
+        {"$match": {"tenant_id": tenant_id}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}},
+    ]).to_list(1)
+    total_giving = total_giving_raw[0]["total"] if total_giving_raw else 0
+
+    active_donors = await db.donations.aggregate([
+        {"$match": {"tenant_id": tenant_id, "donation_date": {"$gte": ninety_ago}}},
+        {"$group": {"_id": "$person_id"}},
+        {"$count": "count"},
+    ]).to_list(1)
+
+    return {
+        "church": {
+            "tenant_id": tenant_id,
+            "name": tenant.get("name", ""),
+            "city": tenant.get("city", ""),
+            "state": tenant.get("state", ""),
+            "plan": tenant.get("plan", ""),
+            "address": tenant.get("address", ""),
+            "phone": tenant.get("phone", ""),
+        },
+        "health": health,
+        "summary": {
+            "total_members": total_members,
+            "total_giving": round(total_giving, 2),
+            "total_transactions": total_donations,
+            "active_donors_90d": active_donors[0]["count"] if active_donors else 0,
+        },
+        "monthly_giving": [{"month": m["_id"], "total": round(m["total"], 2), "count": m["count"]} for m in monthly_giving],
+        "top_donors": top_donors,
+        "recent_transactions": recent_txns,
+        "members": members,
+    }
+
+
 @router.post("/platform/churches/create")
 async def create_church_onboarding(request: Request, payload: ChurchOnboardingRequest):
     """5-step church onboarding wizard — creates a new tenant with admin account."""
@@ -3176,14 +3282,31 @@ async def get_platform_transactions(request: Request, page: int = 1, limit: int 
     skip = (page - 1) * limit
     txns = await db.donations.find(query, {"_id": 0}).sort("donation_date", -1).skip(skip).limit(limit).to_list(limit)
 
-    # Enrich with church names
+    # Batch-enrich with church names AND person names/emails
     tenant_cache = {}
+    person_ids = list(set(t.get("person_id") for t in txns if t.get("person_id")))
+    person_cache = {}
+    if person_ids:
+        people_docs = await db.people.find(
+            {"id": {"$in": person_ids}},
+            {"_id": 0, "id": 1, "first_name": 1, "last_name": 1, "email": 1}
+        ).to_list(len(person_ids))
+        person_cache = {p["id"]: p for p in people_docs}
+
     for txn in txns:
         tid = txn.get("tenant_id")
         if tid and tid not in tenant_cache:
             t = await db.tenants.find_one({"id": tid}, {"_id": 0, "name": 1})
             tenant_cache[tid] = t.get("name", tid) if t else tid
         txn["church_name"] = tenant_cache.get(tid, tid)
+        # Enrich person data
+        person = person_cache.get(txn.get("person_id"), {})
+        pname = f"{person.get('first_name', '')} {person.get('last_name', '')}".strip()
+        txn["person_name"] = txn.get("person_name") or txn.get("donor_name") or pname or "Member"
+        txn["person_email"] = txn.get("person_email") or person.get("email", "")
+        txn["fund_name"] = txn.get("fund_name") or "General Fund"
+        txn["status"] = txn.get("status") or "completed"
+        txn["payment_method"] = txn.get("payment_method") or "card"
 
     return {
         "transactions": txns,
@@ -3460,6 +3583,26 @@ async def _compute_donor_stats_fast() -> dict:
         for d in per_donor[:20]
     ]
 
+    # Compute by_campus from per_donor results
+    campus_counts = {}
+    for d in per_donor:
+        tid = d.get("tenant_id", "")
+        if tid:
+            campus_counts[tid] = campus_counts.get(tid, 0) + 1
+    by_campus = campus_counts
+
+    # Get recurring donor count from recurring_giving collection (more accurate)
+    recurring_from_collection = await db.recurring_giving.count_documents(
+        {"tenant_id": {"$in": campuses}, "is_active": True}
+    )
+    if recurring_from_collection > recurring_d:
+        recurring_d = recurring_from_collection
+        # Update stages with corrected recurring count
+        one_time = max(0, total_donors - recurring_d)
+        stages["recurring"] = recurring_d
+        stages["occasional"] = round(one_time * 0.35)
+        stages["regular"] = round(one_time * 0.30)
+
     return {
         "total_donors": total_donors,
         "active_donors": active_donors,
@@ -3471,7 +3614,7 @@ async def _compute_donor_stats_fast() -> dict:
         "retention_rate_yoy": retention_rate,
         "donor_stages": stages,
         "top_donors": top_donors,
-        "by_campus": {},
+        "by_campus": by_campus,
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -3490,158 +3633,6 @@ async def _refresh_donor_stats_cache() -> None:
         logger.info("[donors_cache] refreshed")
     except Exception as exc:
         logger.error(f"[donors_cache] refresh failed: {exc}")
-    d90 = (today - timedelta(days=90)).strftime("%Y-%m-%d")
-    d30 = (today - timedelta(days=30)).strftime("%Y-%m-%d")
-    # Get real campus IDs (exclude TEST_ and empty stubs)
-    all_tenants_d = await db.tenants.find(
-        {"subscription_status": "active"}, {"_id": 0, "id": 1, "name": 1}
-    ).to_list(100)
-    real_tenants_d = [t for t in all_tenants_d if not t["name"].startswith("TEST_")]
-    campuses = []
-    for t in real_tenants_d:
-        cnt = await db.donations.count_documents({"tenant_id": t["id"]})
-        if cnt > 10:
-            campuses.append(t["id"])
-    if not campuses:
-        campuses = [DEFAULT_TENANT_ID]
-
-    # Total unique donors from donations collection (not platform_donors which is empty)
-    total_pipe = [
-        {"$match": {"tenant_id": {"$in": campuses}}},
-        {"$group": {"_id": "$person_id"}},
-        {"$count": "count"},
-    ]
-    total_res = await db.donations.aggregate(total_pipe).to_list(1)
-    total_donors = total_res[0]["count"] if total_res else 0
-
-    # Active donors (gift in last 90 days)
-    active_pipe = [
-        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": d90}}},
-        {"$group": {"_id": "$person_id"}},
-        {"$count": "count"},
-    ]
-    active_res = await db.donations.aggregate(active_pipe).to_list(1)
-    active_donors = active_res[0]["count"] if active_res else 0
-
-    # Recurring donors
-    recurring_pipe = [
-        {"$match": {"tenant_id": {"$in": campuses}, "is_recurring": True}},
-        {"$group": {"_id": "$person_id"}},
-        {"$count": "count"},
-    ]
-    recurring_res = await db.donations.aggregate(recurring_pipe).to_list(1)
-    recurring_donors = recurring_res[0]["count"] if recurring_res else 0
-
-    # First-time donors (last 30 days)
-    first_time_pipe = [
-        {"$match": {"tenant_id": {"$in": campuses}}},
-        {"$group": {"_id": "$person_id", "first": {"$min": "$donation_date"}}},
-        {"$match": {"first": {"$gte": d30}}},
-        {"$count": "count"},
-    ]
-    first_time_res = await db.donations.aggregate(first_time_pipe).to_list(1)
-    first_time = first_time_res[0]["count"] if first_time_res else 0
-
-    lapsed = max(0, total_donors - active_donors)
-
-    # Average lifetime value
-    ltv_pipe = [
-        {"$match": {"tenant_id": {"$in": campuses}}},
-        {"$group": {"_id": "$person_id", "total": {"$sum": "$amount"}}},
-        {"$group": {"_id": None, "avg": {"$avg": "$total"}}},
-    ]
-    ltv_res = await db.donations.aggregate(ltv_pipe).to_list(1)
-    avg_ltv = round(ltv_res[0]["avg"], 2) if ltv_res else 0
-
-    # Average gift
-    avg_pipe = [
-        {"$match": {"tenant_id": {"$in": campuses}}},
-        {"$group": {"_id": None, "avg": {"$avg": "$amount"}}},
-    ]
-    avg_res = await db.donations.aggregate(avg_pipe).to_list(1)
-    avg_gift = round(avg_res[0]["avg"], 2) if avg_res else 0
-
-    # DonorIQ stages (simplified)
-    one_time_only = max(0, total_donors - recurring_donors)
-    stages = {
-        "first_time": first_time,
-        "occasional": round(one_time_only * 0.35),
-        "regular": round(one_time_only * 0.30),
-        "recurring": recurring_donors,
-        "at_risk": round(lapsed * 0.05),
-        "lapsed": round(lapsed * 0.03),
-    }
-
-    # Retention rate (donors active in both current and previous year)
-    this_year_start = today.replace(month=1, day=1).strftime("%Y-%m-%d")
-    last_year_start = today.replace(year=today.year - 1, month=1, day=1).strftime("%Y-%m-%d")
-    last_year_end = today.replace(year=today.year - 1, month=12, day=31).strftime("%Y-%m-%d")
-
-    retention_pipe = [
-        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": last_year_start, "$lte": last_year_end}}},
-        {"$group": {"_id": "$person_id"}},
-    ]
-    last_year_donors = set()
-    async for d in db.donations.aggregate(retention_pipe):
-        last_year_donors.add(d["_id"])
-
-    this_year_pipe = [
-        {"$match": {"tenant_id": {"$in": campuses}, "donation_date": {"$gte": this_year_start}}},
-        {"$group": {"_id": "$person_id"}},
-    ]
-    this_year_donors = set()
-    async for d in db.donations.aggregate(this_year_pipe):
-        this_year_donors.add(d["_id"])
-
-    retained = len(last_year_donors & this_year_donors)
-    retention_rate = round(retained / max(len(last_year_donors), 1) * 100, 1)
-
-    # Donors by campus
-    campus_pipe = [
-        {"$match": {"tenant_id": {"$in": campuses}}},
-        {"$group": {"_id": "$tenant_id", "donors": {"$addToSet": "$person_id"}}},
-        {"$project": {"_id": 1, "count": {"$size": "$donors"}}},
-    ]
-    campus_donors = {}
-    async for d in db.donations.aggregate(campus_pipe):
-        campus_donors[d["_id"]] = d["count"]
-
-    # Top donors (by total lifetime giving)
-    top_donors_pipe = [
-        {"$match": {"tenant_id": {"$in": campuses}}},
-        {"$group": {"_id": "$person_id", "total": {"$sum": "$amount"}, "count": {"$sum": 1},
-                    "tenant_id": {"$first": "$tenant_id"}, "name": {"$first": "$donor_name"}}},
-        {"$sort": {"total": -1}},
-        {"$limit": 20},
-    ]
-    top_donors_raw = await db.donations.aggregate(top_donors_pipe).to_list(20)
-    # Look up church name for each
-    tenant_map = {}
-    for t in real_tenants_d:
-        tenant_map[t["id"]] = t["name"]
-    top_donors = []
-    for d in top_donors_raw:
-        top_donors.append({
-            "person_id": d["_id"],
-            "name": d.get("name") or "Member",
-            "total": round(d["total"], 2),
-            "donation_count": d["count"],
-            "church": tenant_map.get(d.get("tenant_id", ""), ""),
-        })
-
-    return {
-        "total_donors": total_donors,
-        "active_donors": active_donors,
-        "recurring_donors": recurring_donors,
-        "first_time_donors_30d": first_time,
-        "lapsed_donors": lapsed,
-        "avg_lifetime_value": avg_ltv,
-        "avg_gift": avg_gift,
-        "retention_rate_yoy": retention_rate,
-        "donor_stages": stages,
-        "top_donors": top_donors,
-        "by_campus": campus_donors,
-    }
 
 
 # ═══════════════════ PLATFORM IMPERSONATE ═══════════════════

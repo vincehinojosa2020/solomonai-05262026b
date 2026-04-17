@@ -14,6 +14,7 @@ import {
   Bell, Layers, PieChart as PieChartIcon, LineChart as LineChartIcon,
   HelpCircle, BookOpen, Info, Brain
 } from 'lucide-react';
+import ChurchDetail from './platform/ChurchDetail';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line,
   PieChart as RechartsPie, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -331,6 +332,7 @@ export default function PlatformDashboard() {
   const [reportData, setReportData] = useState({});
   const [revenue, setRevenue] = useState(null);
   const [payouts, setPayouts] = useState([]);
+  const [selectedChurchId, setSelectedChurchId] = useState(null);
   const actRef = useRef();
 
   const fetchStats = useCallback(async () => {
@@ -731,13 +733,16 @@ export default function PlatformDashboard() {
 
           {/* ══════ CHURCHES ══════ */}
           {section==='churches'&&(
+            selectedChurchId ? (
+              <ChurchDetail token={sessionStorage.getItem('session_token')} tenantId={selectedChurchId} onBack={() => setSelectedChurchId(null)} />
+            ) : (
             <div className="space-y-4" data-testid="churches-section">
               <div className="flex items-center justify-between"><h2 className="text-lg font-bold text-slate-900">{churches.length} Church Partners</h2><button onClick={()=>setShowWizard(true)} className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"><Plus className="w-4 h-4"/>Add Church</button></div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {churches.map(c=>{
                   const hs=healthScores[c.tenant_id];
                   return (
-                    <div key={c.tenant_id} className="bg-white border border-slate-100 rounded-xl p-5 hover:shadow-md transition-shadow" data-testid={`church-card-${c.tenant_id}`}>
+                    <div key={c.tenant_id} className="bg-white border border-slate-100 rounded-xl p-5 hover:shadow-md transition-shadow cursor-pointer" data-testid={`church-card-${c.tenant_id}`} onClick={() => setSelectedChurchId(c.tenant_id)}>
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold" style={{background:getColor(c.name)}}>{c.name.charAt(0)}</div>
@@ -767,6 +772,7 @@ export default function PlatformDashboard() {
               </div>
               <GlossaryPanel sectionKey="churches" />
             </div>
+            )
           )}
 
           {/* ══════ SOLOMON PAY ══════ */}

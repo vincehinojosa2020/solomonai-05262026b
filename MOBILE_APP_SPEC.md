@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://members-showcase.preview.emergentagent.com/api
+https://demo-ready-saas.preview.emergentagent.com/api
 ```
 
 ### Authentication

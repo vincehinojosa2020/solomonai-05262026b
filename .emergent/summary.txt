@@ -1,143 +1,181 @@
-<analysis>**original_problem_statement**: 
-SOLOMON AI — MASTER BUILD DIRECTIVE (14 Phases). The platform is being productized for nationwide SaaS distribution. The user requested a complete platform audit, followed by a massive 14-phase build execution. Phase 1 (CRITICAL): Database refactoring, indexing, multi-tenancy hardening, and regenerating a massive realistic demo seed data for Abundant Church (~25,000 members, ~3M/year giving). Phase 2: Build Solomon Pay proprietary payment processor (removing Stripe entirely). Phases 3-14: God Mode UI, Kids check-in printing, Contextual help UX, Calendar, Communications, OAuth, Services, Commerce, Workflows, and Technical Hardening.
-PRODUCT REQUIREMENTS: Follow the 14-Phase Master Build Directive to transition the platform from prototype to production-grade SaaS.
+<analysis><handoff summary>
+**original_problem_statement**: 
+SOLOMON AI — THE COMPLETE BUILD PROMPT. The user has provided a massive multi-phase sprint directive to push Solomon AI into a demo-ready, production-grade SaaS. The goal is to close the plumbing gap (data disconnected from frontend views), upgrade Ask Solomon into a true executive assistant (streaming, UK voice TTS, generating real PPTX/PDF deliverables, MCP scaffolding), and achieve functional parity with Stripe (for Platform Admins) and SecureGive (for Church Admins). Do NOT change the visual design language.
+
+PRODUCT REQUIREMENTS: 
+1. Fix 12 specific P0 plumbing and UI gaps (Transactions showing 0, Donors showing 0, Attendance loading infinitely, Church drill-through page missing, etc.).
+2. Upgrade Solomon AI (Streaming responses, Text-to-Speech, actual file generation like PPTX/DOCX/PDF).
+3. Build Stripe/SecureGive parity features (Payout drill-downs, Fund reconciliation, Monday Morning summary emails).
 
 **User's preferred language**: English (INSTRUCT next agent to respond in the user's preferred language only)
 
 **what currently exists?** 
-Phase 1 is COMPLETELY FINISHED. The database has been renamed to . Over 50 MongoDB compound indexes were added, reducing API load times drastically (e.g., revenue API dropped from 6.3s to 1.05s). Massive new seed data was successfully generated and validated (25k members, 3M all-time giving across 3 years, 171k donations). Phase 2 has JUST STARTED: the agent removed Stripe dependencies and is currently writing the  architecture for the proprietary Solomon Pay engine.
+A functional monorepo (React + FastAPI + MongoDB). The user successfully demoed the portal after previous fixes: Watch page is in dark mode with Pastor Charles Nieman videos, Cafe/Merch checkout flows are flattened and use saved cards via Solomon Pay. Frank Luntz-style persuasive giving copy, Round Up, Cover Fees, and Giving Streak features are fully implemented and tested. Multi-campus dashboards aggregate accurately across Abundant East, West, and Downtown. FIX 5 (YTD Revenue calculation bug) and FIX 10 (Removing public team section) are complete.
 
 **Last working item**: 
-    - Last item agent was working: Building the Phase 2 Solomon Pay Core Architecture. The agent created  and was in the middle of completely rewriting  to remove all Stripe dependencies and replace them with the Solomon Pay ledger and processing logic.
+    - Last item agent was working: Investigating the root causes for FIX 1 (Transactions tab shows 0 records), FIX 2 (Donors module shows 0), and FIX 3 (Attendance report infinite loading). The backend has millions of records, but the data is not mapping correctly to the frontend components (, , ).
     - Status: IN PROGRESS
     - Agent Testing Done: N
-    - Which testing method agent to use? both (Use curl/python for backend payment endpoints, then  for the frontend donation flows once wired up).
+    - Which testing method agent to use? both (Frontend screenshot testing and curl for backend API validation).
     - User Testing Done: N
 
 **All Pending/In progress Issue list**:  
-  Issue 1: Frontend Stripe Removal Cleanup (P0)
-     - Attempted fixes: The backend is currently stripping Stripe, but frontend files (, , etc.) still contain Stripe component logic.
-     - Next debug checklist: Search and replace Stripe Elements and  from frontend, replacing them with the tokenized Solomon Pay Virtual Terminal and payment method management UI.
-     - Why fix this issue and what will be achieved with the fix? Stripe is being completely eradicated per the user's strict instructions (We ARE the payment processor).
-     - Status: NOT STARTED
-     - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? frontend
-     - Blocked on other issue: None
-
-**In progress Task List**:
-  Task 1: Complete Phase 2 - Solomon Pay Architecture (P0)
-     - Where to resume: Finish writing the new  and ensure it connects to the new . 
-     - What will be achieved with this? A complete proprietary payment gateway simulation. Needs the  double-entry ledger, fee structures (1.9%+/bin/bash.30 card, 0.8%+/bin/bash.30 ACH), payout system, refund processing, and payment method tokenization.
+  Issue 1: FIX 1 - Transactions Tab Shows 0 Records (P0)
+     - Attempted fixes: Agent verified backend  exists and has 3M records.
+     - Next debug checklist: Check  to ensure it is consuming the paginated response properly and rendering the table.
+     - Why fix this issue and what will be achieved with the fix? Solves a massive data plumbing gap where the ledger is broken despite dashboard showing millions in GMV.
      - Status: IN PROGRESS
+     - Is recurring issue? N
      - Should Test frontend/backend/both after fix? both
-     - Blocked on something: None
 
-  Task 2: Recurring Giving Background Scheduler (P1)
-     - Where to resume: Build a worker to query active  records where  and process charges via Solomon Pay.
-     - What will be achieved with this? Actually charging recurring donations automatically with retry logic and idempotency.
+  Issue 2: FIX 2 - Donors Module Shows 0 (P0)
+     - Attempted fixes: Investigated . Noticed  is 0 and  is empty.
+     - Next debug checklist: Fix backend aggregation in  to correctly map  and returning recurring donors. Verify  mapping.
+     - Why fix this issue and what will be achieved with the fix? Bridges the UI gap to show the 35,000+ total donors seeded in the database.
+     - Status: IN PROGRESS
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? both
+
+  Issue 3: FIX 3 - Attendance Report Infinite Loading (P0)
+     - Attempted fixes: Checked . Found no  data points are returned despite frontend expecting it.
+     - Next debug checklist: Update backend attendance aggregation to return realistic  seeded data. Fix .
+     - Status: IN PROGRESS
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? both
+
+  Issue 4: FIX 4 - Church Detail Drill-Through Page Missing (P0)
+     - Attempted fixes: None.
+     - Next debug checklist: Build  with Church name, Health Score, 12-month giving chart, Member Roster, Top Donors, Recent Transactions.
      - Status: NOT STARTED
-     - Should Test frontend/backend/both after fix? backend
-     - Blocked on something: Task 1
+     - Should Test frontend/backend/both after fix? both
+
+  Issue 5: FIX 6, 7, 8, 9, 11, 12 - Public Site & Security Polish (P1)
+     - Attempted fixes: None.
+     - Next debug checklist: Clear pre-filled login email (), build , ,  pages, update copyright to dynamic year, add God Mode screenshot to hero, build , wire Calendly CTA and forgot password flow.
+     - Status: NOT STARTED
+
+**In progress Task List**: 
+  Task 1: Ask Solomon AI Upgrade (The Executive Assistant)
+     - Where to resume: Implement  for Anthropic API. Scaffold/integrate Text-to-Speech (English UK voice). Build/Scaffold PPTX, DOCX, XLSX, PDF generation using Python libraries (or provide honest fallback/documentation if environment restricts it). Scaffold MCP tool architecture.
+     - What will be achieved with this? Upgrades Solomon from a chatbot to an executive assistant.
+     - Status: NOT STARTED
+     - Should Test frontend/backend/both after fix? both
 
 **Upcoming and Future Tasks**
-    *Upcoming Tasks (In Execution Order per Master Directive):*
-    - P0: Phase 2 - Solomon Pay Admin Dashboard Enhancements (Transactions, Donors, Funds, Statements, Payouts, Virtual Terminal).
-    - P1: Phase 3 - God Mode Platform Founder Dashboard enhancements (Top-level KPIs, Revenue charts, Church portfolio table).
-    - P1: Phase 4 - Kids Check-In Printer Integration (DYMO/Brother Web Print API, parent receipt labels).
-    - P1: Phase 5 - Self-Service UX (Add ℹ️ Contextual Help buttons to EVERY section header across the app).
-    - P2: Phase 6 - Calendar & Events Expansion (Full calendar view, recurring events, paid registration).
+    Upcoming Tasks:
+    - P0: Automated Monday Morning Platform Summary Email (SecureGive parity).
+    - P1: Payout Drill-Down (click payout -> see every transaction).
+    - P1: Fund reconciliation view & Fund-specific direct links.
+    - P1: CSV Import wizard for Planning Center migrations.
+    - P1: Stripe parity scaffold (Fraud risk scoring, Disputes/Chargebacks UI).
     
-    *Future Tasks:*
-    - Phase 7: Communications Upgrade (Email template builder, Twilio SMS).
-    - Phase 8: OAuth / SSO (Google Sign-in).
-    - Phase 9: Services Module Expansion (Team scheduling, Service order management).
-    - Phase 10: Commerce Payments (Cafe & Merch multiple payment options).
-    - Phase 11: Custom Report Builder & Visual Workflow Builder.
-    - Phase 12: Scaffolded Integrations (Background checks, CCLI reporting, Planning Center data import).
-    - Phase 13: People Module Enhancements (Household roles, bulk update tool).
-    - Phase 14: Technical Hardening (Session/Auth improvements, Object storage, Caching layer).
+    Future Tasks:
+    - P2: Custom Report Builder full implementation & PDF export.
+    - P2: Apple/Google Pay live integration (currently mocked).
+    - P3: Split oversized components (, ).
 
 **Completed work in this session**
-- Full Platform Audit generating  (DONE)
-- Phase 1: Renamed database from  to  (DONE)
-- Phase 1: Created 50+ MongoDB compound indexes for massive performance gains (DONE)
-- Phase 1: Rebuilt Master Seed script () and generated massive demo data: 3M all-time giving, 171k donations, 25k people, etc. (DONE)
-- Phase 1: Cleaned up duplicate tenants from startup seed and fixed dynamic tenant lookups in God Mode APIs (DONE)
-- Phase 2: Initialized  for Solomon Pay (DONE)
+- Watch Page dark Masterclass theme & Pastor Charles Nieman video seeding (DONE)
+- Flat Cafe & Merch navigation (DONE)
+- Multi-campus access for Shannon/Jacob (aggregate All Campuses view working) (DONE)
+- Saved card Solomon Pay checkout flow for Cafe, Merch, and Give pages (DONE)
+- Frank Luntz-style persuasive giving copy added to checkout (DONE)
+- Round Up & Cover Processing Fees toggles with dynamic calculation (DONE)
+- 14-Week Giving Streak badge logic and seeded history (DONE)
+- Deployment blocker fix (CORS origin env config in ) (DONE)
+- FIX 5: YTD Revenue calculation bug (Fixed fallback logic for missing ) (DONE)
+- FIX 10: Removed Team section from public site to ensure anonymity (DONE)
 
 **Earlier issues found/mentioned but not fixed**
-None.
+   - Issue 1: Oversized React Components (, ). Deferred to avoid regression risks during demo prep.
 
 **Known issue recurrence from previous fork**
-  - Issue recurrence in previous fork: None
+  - Issue recurrence in previous fork: None. Rate limits remain disabled for demo stability. Do not re-enable.
   - Recurrence count: 0
   - Status: RESOLVED
 
 **Code Architecture**
-- : The massive new script driving the realistic demo data generation.
-- : New single-file adapter to mock card charges (to be swapped for real acquirer API later).
-- : Currently being rewritten to house Solomon Pay logic.
-- : 10-section deep dive into the platform's state.
+- Monorepo:  (FastAPI) +  (React 18).
+- Database: MongoDB via Motor.
+- Endpoints strictly prefixed with . Frontend runs on port 3000, backend on 8001 via Supervisor.
 
 **Key Technical Concepts**
-- **Solomon Pay Strategy:** No Stripe. Build a tokenization approach, double-entry transaction ledger, and a simulated .
-- **Database Indexing:** 50+ compound indexes were applied. Queries must utilize these indexes (always filter by  at minimum).
+- **God Mode Caching**:  prevents DB timeouts.
+- **Solomon Pay**: Custom payment gateway simulation ().
+- **Anthropic Claude 4.5**: Core for Solomon AI insights ().
 
 **key DB schema**
-  - : {tenant_id, person_id, amount, donation_date, fund_id, status}
-  - : {id, name, subscription_status}
-  -  (TO BE BUILT): {transaction_id, tenant_id, type, amount, fee_amount, net_amount, status}
+  - : {tenant_id, person_id, amount, fee_amount (sometimes missing in seeded data), donation_date}
+  - : Platform users.
+  - : Donor profiles used in giving history ().
 
 **changes in tech stack**
-  - **Database Migration:** Moved from  to .
-  - **Stripe is REMOVED:** Entirely replaced by proprietary Solomon Pay processing engine.
+  - None.
 
 **All files of reference** 
-  -  (New)
-  -  (Currently being overwritten)
-  -  (Needs Stripe cleanup)
-  -  (Needs Stripe cleanup)
+  -  (Target for FIX 1)
+  -  (Target for FIX 2)
+  -  (Target for FIX 3)
+  -  (Backend logic for stats/transactions/donors)
+  -  (Backend logic for attendance)
 
 **Areas that need refactoring**: 
-- Frontend Stripe dependencies need to be carefully excised and replaced with the new Solomon Pay Virtual Terminal/Tokenization flow.
+-  and  component mapping to backend API structures.
 
 **key api endpoints**
   - 
   - 
-  - Payments APIs are currently under reconstruction.
+  - 
 
 **Critical Info for New Agent** 
-- You MUST continue Phase 2. Stripe is dead. Build the  ledger, fee calculators, and payout logic.
-- Use  to mock the final API call to an acquirer. Everything else must write real records to the database.
-- Maintain the strict data segregation rules: ensure  is always passed into your queries (already enforced via  and middleware, but respect the pattern).
-- Do not spend time waiting or running the seed script again. Phase 1 is done and successfully passed the quality gate. Focus solely on Phase 2.
+- **THE HONESTY PACT:** The user explicitly requested absolute transparency regarding Solomon AI deliverable generation. If the environment does not support , , or real PDF generation easily, DO NOT fake it. Build the scaffold, document the limitations, and provide a clear Coming Soon or Requires Microservice message. 
+- **UI Constraints:** Do NOT change the visual design language (colors, fonts, layouts) while building Stripe/SecureGive parity features. Same car, better engine.
+- You MUST prioritize Fixes 1, 2, 3, and 4 (the plumbing gaps) before attempting the AI upgrades.
 
 **documents and test reports created in this job** 
+  -  (Updated)
+  -  (Updated)
+  - 
   - 
 
 **Last 10 User Messages and any pending HUMAN messages** 
- 1. *Agent*: Finished Phase 1 testing and God Mode dashboard screenshot successfully displaying 3M. Started replacing Stripe with Solomon Pay. Created processor_adapter.py. Overwriting routes/payments.py... (Forked here).
- 2. *User*: DO NOT ASK MORE QUESTIONS — EXECUTE. Run Phase 1 steps 1-4... then start Phase 2 in parallel...
- 3. *Agent*: Asked clarification questions regarding timing, Solomon Pay adapter, and Stripe removal.
- 4. *User*: Provided Master Build Directive (14 massive phases).
+ - *User*: yes to round up feature... also ask would you like to help with processing fees a la frank luntz -> *Agent*: Built and tested Round Up & Cover Fees logic with new copy.
+ - *User*: yes to giving streak... allow me to press give and solomon pay process a payment -> *Agent*: Built 14-week giving streak, wired up Solomon Pay to use saved cards on PortalGive.
+ - *User*: is there an issue with deployment? its been 47 minutes -> *Agent*: Fixed CORS origins deployment blocker in .
+ - *User*: *[Massive Prompt: SOLOMON AI — THE COMPLETE BUILD PROMPT]* -> *Agent*: Executed comprehensive audit.
+ - *User*: proceed -> *Agent*: Fixed FIX 5 (YTD Revenue).
+ - *User*: FIX 10... remove this section. we do not want to mention anything on public site about founders -> *Agent*: Removed team section.
+ - *User*: FIX 1: Transactions frontend wiring... FIX 2... FIX 3... FIX 4... FIX 6-8 -> *Agent*: Started investigating frontend/backend disparities for Fixes 1, 2, and 3.
 
 **Project Health Check:**
-  - Broken: Payment routes are currently in a mid-rewrite state. Frontend still references Stripe.
-  - Mocked: Acquirer network API (mocked inside ).
+- Broken: Transactions tab UI, Donors tab UI, Attendance UI.
+- Mocked: Real payment processing, Apple Pay, Text-to-Speech (currently relies on generic Web Speech API if ElevenLabs unavailable).
 
 **3rd Party Integrations** 
-  • Anthropic Claude (Ask Solomon) — *uses Emergent LLM Key*
-  • Twilio (SMS) — *Requires User API Key (Mocked via scaffold)*
-  • Stripe — *REMOVED COMPLETELY*
+  • Anthropic Claude Sonnet 4.5 (Solomon AI) — *uses Emergent LLM Key*
+  • OpenAI Whisper (Voice Input) — *uses Emergent LLM Key*
+  • Google OAuth (Auth) — *requires User API Key*
+  • Twilio (SMS) — *requires User API Key*
 
 **Testing status**
-  - Testing agent used after significant changes: YES (For Phase 1)
+  - Testing agent used after significant changes: YES (For checkout flows iteration 87, 88). NOT YET USED for the Complete Build Prompt sprint.
   - Troubleshoot agent used after agent stuck in loop: NO
-  - Test files created: None
-  - Known regressions: Payment flows are broken while Stripe is being stripped out.
 
 **Credentials to test flow:**
-  - Check . (Godmode: )
+  - Admin (God Mode):  / 
+  - Church Admin:  / 
+  - Member (Demo):  / 
 
 **What agent forgot to execute**
-The agent initiated the rewrite of  but hasn't updated the corresponding frontend files to remove Stripe Elements/react-stripe-js. Also, the double-entry transaction ledger schema hasn't been fully instantiated yet.</analysis>
+The agent ran out of time while diagnosing the exact payload mismatch between the backend endpoints (, , ) and the respective React components. The fixes need to be written into the React files and backend files to close this plumbing gap.
+
+**Debugging checklist for current issue**
+    Issue: Frontend missing data for Transactions, Donors, and Attendance (Fixes 1, 2, 3)
+    Frontend files to check: 
+    -  (Ensure it maps the response correctly to the table state)
+    - 
+    - 
+    Backend files to check: 
+    -  (Check paginated transaction payload and donor  grouping)
+    -  (Ensure  array returns realistic dummy attendance data, not 0)
+</handoff summary></analysis>

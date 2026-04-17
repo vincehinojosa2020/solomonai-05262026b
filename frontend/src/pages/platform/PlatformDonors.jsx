@@ -70,7 +70,7 @@ export default function PlatformDonors({ token }) {
           <h3 className="text-sm font-semibold text-slate-700 mb-4">Donors by Campus</h3>
           <div className="space-y-4">
             {Object.entries(data.by_campus || {}).sort(([,a],[,b]) => b - a).map(([tid, count]) => {
-              const names = { 'abundant-east-001': 'Abundant East', 'abundant-west-001': 'Abundant West', 'abundant-downtown-001': 'Abundant Downtown' };
+              const names = { 'abundant-east-001': 'Abundant East', 'abundant-west-001': 'Abundant West', 'abundant-downtown-001': 'Abundant Downtown', 'potters-house-001': "The Potter's House", 'edenx-001': 'EdenX Ministries', 'cityreach-001': 'City Reach Church', 'hillcountry-001': 'Hill Country Bible', 'cristoviene-001': 'Cristo Viene Church' };
               const pct = Math.round(count / Math.max(data.total_donors, 1) * 100);
               return (
                 <div key={tid}>
