@@ -116,18 +116,21 @@ async def _compute_platform_stats_fast() -> dict:
 
     campuses, tenant_map = await _get_real_campuses_fast()
 
+    # Fee computation helper — use stored fee_amount if present, otherwise compute
+    fee_expr = {"$ifNull": ["$fee_amount", {"$add": [{"$multiply": ["$amount", 0.019]}, 0.30]}]}
+
     # One aggregation pass — all time-buckets simultaneously
     raw = await db.donations.aggregate([
         {"$match": {"tenant_id": {"$in": campuses}}},
         {"$group": {
             "_id": "$tenant_id",
             "all_vol":  {"$sum": "$amount"},
-            "all_fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}},
+            "all_fees": {"$sum": fee_expr},
             "all_cnt":  {"$sum": 1},
             "ytd_vol":  {"$sum": {"$cond": [{"$gte": ["$donation_date", year_start]},  "$amount", 0]}},
-            "ytd_fees": {"$sum": {"$cond": [{"$gte": ["$donation_date", year_start]},  {"$ifNull": ["$fee_amount", 0]}, 0]}},
+            "ytd_fees": {"$sum": {"$cond": [{"$gte": ["$donation_date", year_start]},  fee_expr, 0]}},
             "mtd_vol":  {"$sum": {"$cond": [{"$gte": ["$donation_date", month_start]}, "$amount", 0]}},
-            "mtd_fees": {"$sum": {"$cond": [{"$gte": ["$donation_date", month_start]}, {"$ifNull": ["$fee_amount", 0]}, 0]}},
+            "mtd_fees": {"$sum": {"$cond": [{"$gte": ["$donation_date", month_start]}, fee_expr, 0]}},
             "t12_vol":  {"$sum": {"$cond": [{"$gte": ["$donation_date", twelve_ago]},  "$amount", 0]}},
             "p12_vol":  {"$sum": {"$cond": [
                 {"$and": [{"$gte": ["$donation_date", t24_ago]}, {"$lt": ["$donation_date", twelve_ago]}]},
@@ -145,7 +148,7 @@ async def _compute_platform_stats_fast() -> dict:
         {"$group": {
             "_id": {"month": "$month", "tenant": "$tenant_id"},
             "vol": {"$sum": "$amount"},
-            "fees": {"$sum": {"$ifNull": ["$fee_amount", 0]}},
+            "fees": {"$sum": {"$ifNull": ["$fee_amount", {"$add": [{"$multiply": ["$amount", 0.019]}, 0.30]}]}},
             "cnt": {"$sum": 1},
         }},
         {"$sort": {"_id.month": 1}},

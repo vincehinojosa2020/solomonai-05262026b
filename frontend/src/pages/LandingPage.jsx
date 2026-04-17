@@ -211,19 +211,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FOUNDING TEAM */}
-      <section style={{ background: S.grayLight, padding: '80px 32px' }} data-testid="team-section">
-        <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: S.blue, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>Who Built This</p>
-          <h2 style={{ fontSize: 'clamp(24px, 3vw, 32px)', fontWeight: 800, color: S.textDark, letterSpacing: '-0.02em', margin: '0 0 20px 0', lineHeight: 1.25 }}>
-            Built by a megachurch pastor, a cybersecurity expert, and a lead designer.
-          </h2>
-          <p style={{ fontSize: 16, color: S.textGray, lineHeight: 1.7, maxWidth: 600, margin: '0 auto' }}>
-            We've led churches of 10,000+. We've secured enterprise platforms. We've designed experiences millions use. Now we built the church platform we wished existed.
-          </p>
-        </div>
-      </section>
-
       {/* FINAL CTA */}
       <section style={{ background: `linear-gradient(135deg, ${S.navy} 0%, #1a2744 100%)`, padding: '80px 32px', textAlign: 'center' }} data-testid="final-cta-section">
         <div style={{ maxWidth: 700, margin: '0 auto' }}>
