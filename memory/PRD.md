@@ -1,52 +1,36 @@
 # Solomon AI — Product Requirements Document
 
-## Original Problem Statement
-Multi-tenant church management SaaS — Solomon Pay, God Mode, Bloomberg-grade reporting, Ask Solomon AI, 8 demo churches, ~$108M GMV.
-
 ## Architecture
 React 18 + FastAPI + MongoDB 7.0 | 575+ endpoints | 89 pages | Claude Sonnet 4.5 + Whisper
 
 ## Everything Built (All Verified)
 
-### Core Platform ✅
-Full multi-tenant ChMS: People, Giving, Groups, Events, Services, Kids Check-In, Volunteers, Comms, Pathways, Courses, Reports
+### Core Platform ✅ — Full multi-tenant ChMS
+### P0 Plumbing ✅ — Transactions, Donors, Attendance, Church Drill-Through
+### P1 Public Site ✅ — /privacy, /terms, /security, /pricing, forgot-password, Calendly CTA
+### P1 Solomon AI ✅ — Streaming SSE, TTS, Document Generation (PDF/PPTX/DOCX/XLSX)
+### P1 SecureGive Parity ✅ — Monday Morning Email, Payout Drill-Down, Fund Reconciliation
+### P1 CSV Import & Disputes ✅ — Planning Center auto-mapping, Fraud Risk Scoring
+### P2 Security ✅ — Tenant isolation, CORS lockdown, Session TTL 24h
+### P3 Polish ✅ — Component splitting, WCAG AA, Mobile responsiveness
+### Demo Mode Toggle ✅ — Live Data / New Church toggle in God Mode
+### Data Integrity ✅ — 100% person_id cross-referencing
+### Stripe Connect ✅ — Feature-flagged real payment processing (STRIPE_LIVE=true)
 
-### P0 Plumbing ✅
-Transactions (3M+ enriched), Donors (41K+), Attendance, Church Drill-Through, YTD Revenue
+### PPTX/DOCX Generation ✅ (NEW)
+- PDF via reportlab (with tables, sections, styled headers)
+- PPTX via python-pptx (title slide, content slides, section slides)
+- DOCX via python-docx (formatted document with tables, headings, date)
+- XLSX via openpyxl (styled headers, data rows, auto-width columns)
+- All accessible via POST /api/solomon/generate-deliverable
 
-### P1 Public Site ✅
-/privacy, /terms, /security, /pricing, forgot-password, God Mode hero, Calendly CTA
-
-### P1 Solomon AI ✅
-Streaming SSE, TTS (UK English), PDF generation, PPTX/DOCX scaffold
-
-### P1 SecureGive Parity ✅
-Monday Morning Email, Payout Drill-Down, Fund Reconciliation ($108M+)
-
-### P1 CSV Import & Disputes ✅
-Planning Center auto-mapping (16 fields), Disputes scaffold, Fraud Risk Scoring
-
-### P2 Security ✅
-Tenant isolation (40 endpoints), CORS lockdown, Session TTL 24h
-
-### P3 Polish ✅
-Component splitting, WCAG AA accessibility, Mobile responsiveness
-
-### Demo Mode Toggle ✅
-Live Data / New Church toggle with 6-step Setup Checklist
-
-### Data Integrity ✅
-100% person_id cross-referencing across all 8 tenants
-
-### Stripe Connect Integration ✅ (NEW)
-- Feature-flagged via `STRIPE_LIVE` env variable (false = Solomon Pay demo, true = real Stripe)
-- Real Stripe Checkout Sessions with platform fee (1.9% + $0.30)
-- `payment_transactions` collection for tracking all payments
-- Webhook handler for payment_intent.succeeded/failed and charge.dispute.created
-- Status polling endpoint for payment verification
-- Receipt email via Resend on successful payment
-- Frontend: dual "Solomon Pay" + "Stripe" buttons on Give page
-- **To go live**: Set `STRIPE_LIVE=true` in backend/.env
+### Custom Report Builder ✅ (NEW)
+- 5-step wizard: Source → Fields → Filters → Grouping → Preview
+- 7 quick-start templates (First-Time Givers, Lapsed Donors, Attendance Growth, etc.)
+- 5 data sources: People, Donations, Attendance, Groups, Kids Check-Ins
+- Real MongoDB query engine with filter operators (=, !=, >, <, contains, etc.)
+- Multi-format export: CSV, PDF, DOCX, PPTX, XLSX
+- Save/load report configurations
 
 ## Documentation
 - Platform Audit: `/app/SOLOMON_AI_PLATFORM_AUDIT.md`
@@ -54,6 +38,4 @@ Live Data / New Church toggle with 6-step Setup Checklist
 
 ## Remaining Backlog
 - Apple/Google Pay (via Stripe Payment Request Button)
-- Custom Report Builder
-- ElevenLabs TTS
-- PPTX/DOCX generation
+- ElevenLabs TTS upgrade (currently Web Speech API)
