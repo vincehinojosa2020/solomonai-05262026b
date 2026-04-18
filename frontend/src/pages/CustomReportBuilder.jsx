@@ -119,6 +119,38 @@ export default function CustomReportBuilder() {
     } catch { toast.info('Export requires live data connection'); }
   };
 
+  const exportFormat = async (format) => {
+    if (!previewData) { toast.error('Run a preview first'); return; }
+    try {
+      toast.loading(`Generating ${format.toUpperCase()}...`);
+      const tableData = previewData.rows && previewData.columns ? {
+        headers: previewData.columns,
+        rows: previewData.rows.map(r => previewData.columns.map(c => r[c] || '')),
+      } : null;
+      const res = await fetch(`${API_URL}/solomon/generate-deliverable`, {
+        method: 'POST', headers,
+        body: JSON.stringify({
+          type: format,
+          title: reportName || `${srcDef?.label || 'Custom'} Report`,
+          content: `Data source: ${srcDef?.label || source}\nFields: ${selectedFields.join(', ')}\nTotal records: ${previewData.total_count || 0}`,
+          table_data: tableData,
+        }),
+      });
+      toast.dismiss();
+      if (res.ok && res.headers.get('content-type')?.includes('application/')) {
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${reportName || 'report'}.${format}`;
+        a.click();
+        toast.success(`${format.toUpperCase()} downloaded`);
+      } else {
+        const data = await res.json();
+        toast.error(data.message || `${format.toUpperCase()} export failed`);
+      }
+    } catch (err) { toast.dismiss(); toast.error(`Export failed: ${err.message}`); }
+  };
+
   const srcDef = DATA_SOURCES.find(d => d.id === source);
 
   if (showSaved) {
@@ -315,7 +347,11 @@ export default function CustomReportBuilder() {
                 <input value={reportName} onChange={e => setReportName(e.target.value)} placeholder="Report name" className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm w-40" />
                 <Button variant="outline" size="sm" onClick={saveReport} data-testid="save-report-btn"><Save className="w-3.5 h-3.5 mr-1" />Save</Button>
               </div>
-              <Button size="sm" onClick={exportCSV} className="btn-primary" data-testid="export-csv-btn"><Download className="w-3.5 h-3.5 mr-1" />Export CSV</Button>
+              <Button size="sm" onClick={exportCSV} className="btn-primary" data-testid="export-csv-btn"><Download className="w-3.5 h-3.5 mr-1" />CSV</Button>
+              <Button size="sm" variant="outline" onClick={() => exportFormat('pdf')} data-testid="export-pdf-btn"><Download className="w-3.5 h-3.5 mr-1" />PDF</Button>
+              <Button size="sm" variant="outline" onClick={() => exportFormat('docx')} data-testid="export-docx-btn"><Download className="w-3.5 h-3.5 mr-1" />DOCX</Button>
+              <Button size="sm" variant="outline" onClick={() => exportFormat('pptx')} data-testid="export-pptx-btn"><Download className="w-3.5 h-3.5 mr-1" />PPTX</Button>
+              <Button size="sm" variant="outline" onClick={() => exportFormat('xlsx')} data-testid="export-xlsx-btn"><Download className="w-3.5 h-3.5 mr-1" />XLSX</Button>
             </div>
           </div>
           <div className="overflow-x-auto">

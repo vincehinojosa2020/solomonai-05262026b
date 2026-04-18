@@ -99,33 +99,6 @@ export default function LandingPage() {
               <Play style={{ width: 16, height: 16 }} /> Watch Demo
             </Link>
           </div>
-          {/* God Mode Platform Screenshot */}
-          <div style={{ marginTop: 56, borderRadius: 16, overflow: 'hidden', boxShadow: '0 25px 60px rgba(0,0,0,0.15)', border: '1px solid #e2e8f0', maxWidth: 900 }}>
-            <div style={{ background: '#0f172a', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ef4444' }} />
-                <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#f59e0b' }} />
-                <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#22c55e' }} />
-              </div>
-              <span style={{ fontSize: 12, color: '#64748b', marginLeft: 8 }}>solomonai.us/platform</span>
-            </div>
-            <div style={{ background: '#f1f5f9', padding: '24px 32px', textAlign: 'left' }}>
-              <div className="lp-grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
-                {[
-                  { label: 'Platform GMV', value: '$108.3M', color: '#0f172a' },
-                  { label: 'Total Revenue', value: '$2.4M', color: '#059669' },
-                  { label: 'Churches', value: '8', color: '#2563eb' },
-                  { label: 'Members', value: '109,900', color: '#7c3aed' },
-                ].map(kpi => (
-                  <div key={kpi.label} style={{ background: '#fff', borderRadius: 10, padding: '14px 16px', border: '1px solid #e2e8f0' }}>
-                    <p style={{ fontSize: 11, color: '#64748b', margin: '0 0 4px 0' }}>{kpi.label}</p>
-                    <p style={{ fontSize: 22, fontWeight: 800, color: kpi.color, margin: 0 }}>{kpi.value}</p>
-                  </div>
-                ))}
-              </div>
-              <p style={{ fontSize: 12, color: '#94a3b8', margin: 0, textAlign: 'center' }}>God Mode — Real-time platform oversight across all churches</p>
-            </div>
-          </div>
         </div>
       </section>
 
