@@ -17,8 +17,13 @@ React 18 + FastAPI + MongoDB 7.0 | 575+ endpoints | 89 pages | Claude Sonnet 4.5
 - ecdsa + python-jose: REMOVED (not needed, eliminated 3 HIGH vulns)
 
 ### Snyk SCA — Frontend (11 → 2 accepted risks)
-- Yarn resolutions: underscore 1.13.8, serialize-javascript 7.0.5, nth-check 3.0.1, postcss 8.5.6
+- Yarn resolutions: underscore 1.13.8, serialize-javascript 7.0.5, nth-check ~2.1.1 (pinned to CJS-compatible patched version; 3.x is ESM-only and breaks CRA build), postcss 8.5.6
 - Accepted risks: eslint@8.x (react-scripts compat), inflight@1.0.6 (no fix, dev-only)
+
+### Snyk DAST / Probely (6 → 0)
+- Strict CORS allowlist (allow_origin_regex) in server.py
+- TLS 1.2+ only, secure cipher suites (Nginx)
+- CSP, X-Frame-Options: DENY, X-Content-Type-Options: nosniff, HSTS, Referrer-Policy
 
 ### Snyk SAST (71 → 0)
 - DOMPurify on all dangerouslySetInnerHTML
