@@ -2738,7 +2738,7 @@ async def create_church_onboarding(request: Request, payload: ChurchOnboardingRe
     }
     await db.tenants.insert_one({**tenant})
 
-    import bcrypt as _bc; admin_password_hash = _bc.hashpw((payload.admin_password or "Welcome2026!").encode("utf-8"), _bc.gensalt()).decode("utf-8")
+    import bcrypt as _bc; admin_password_hash = _bc.hashpw((payload.admin_password or os.environ.get("SOLOMON_DEFAULT_PASSWORD", "Welcome2026!")).encode("utf-8"), _bc.gensalt()).decode("utf-8")
     admin_user = {
         "user_id": str(uuid.uuid4()),
         "email": payload.admin_email.lower(),
@@ -2787,7 +2787,7 @@ async def platform_create_user(request: Request, payload: dict):
     name = (payload.get("name") or "").strip()
     tenant_id = payload.get("tenant_id")
     role_template = payload.get("role_template", "member")
-    password = payload.get("password", "Welcome2026!")
+    password = payload.get("password") or os.environ.get("SOLOMON_DEFAULT_PASSWORD", "Welcome2026!")
 
     if not email or not name or not tenant_id:
         raise HTTPException(status_code=400, detail="email, name, and tenant_id are required")

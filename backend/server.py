@@ -63,30 +63,74 @@ async def structured_500_handler(request: Request, exc):
     })
 
 
-# ═══ CORS (registered early so OPTIONS preflight works) ═══
-cors_origins_env = os.environ.get("CORS_ORIGINS", "")
-if cors_origins_env == "*":
-    ALLOWED_ORIGINS = ["*"]
-else:
-    ALLOWED_ORIGINS = [
-        os.environ.get("FRONTEND_URL", ""),
-        "https://solomonai.us",
-        "https://www.solomonai.us",
-        "https://app.solomonai.us",
-    ]
-    preview_url = os.environ.get("REACT_APP_BACKEND_URL", "")
-    if preview_url:
-        ALLOWED_ORIGINS.append(preview_url)
-    ALLOWED_ORIGINS = [o for o in ALLOWED_ORIGINS if o]
+# ═══ CORS — STRICT ALLOWLIST ONLY (no wildcard reflection) ═══
+# SECURITY: Never use allow_origins=["*"] with allow_credentials=True.
+# This prevents CORS-based credential theft (Snyk Finding #6, CVSS 6.1).
+_cors_env = os.environ.get("CORS_ORIGINS", "")
+ALLOWED_ORIGINS = [
+    "https://solomonai.us",
+    "https://www.solomonai.us",
+    "https://app.solomonai.us",
+]
+_frontend_url = os.environ.get("FRONTEND_URL", "")
+if _frontend_url and _frontend_url not in ALLOWED_ORIGINS:
+    ALLOWED_ORIGINS.append(_frontend_url)
+# Add the configured CORS origin (preview URL) if it's a real domain
+if _cors_env and _cors_env != "*" and _cors_env not in ALLOWED_ORIGINS:
+    ALLOWED_ORIGINS.append(_cors_env)
+_preview_url = os.environ.get("REACT_APP_BACKEND_URL", "")
+if _preview_url and _preview_url not in ALLOWED_ORIGINS:
+    ALLOWED_ORIGINS.append(_preview_url)
+ALLOWED_ORIGINS = [o for o in ALLOWED_ORIGINS if o]
 
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=r"https://.*\.preview\.emergentagent\.com",
+    # Only match Emergent preview subdomains — NOT arbitrary domains
+    allow_origin_regex=r"^https://[a-z0-9\-]+\.preview\.emergentagent\.com$",
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
-    allow_headers=["*"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"],
 )
+
+
+# ═══ SECURITY HEADERS MIDDLEWARE ═══
+# Fixes: Missing CSP (Finding #3), Clickjacking (Finding #4), TLS hardening (Findings #5, #6)
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request as StarletteRequest
+from starlette.responses import Response as StarletteResponse
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: StarletteRequest, call_next):
+        response: StarletteResponse = await call_next(request)
+        # Content-Security-Policy — defense against XSS and resource injection
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; "
+            "img-src 'self' data: https: blob:; "
+            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; "
+            "frame-ancestors 'none'; "
+            "connect-src 'self' https: wss:; "
+            "media-src 'self' https: blob:; "
+            "frame-src 'self' https://*.thinkific.com https://js.stripe.com; "
+            "worker-src 'self' blob:; "
+            "base-uri 'self'; "
+            "form-action 'self'"
+        )
+        # X-Frame-Options — clickjacking protection (backup for older browsers)
+        response.headers["X-Frame-Options"] = "DENY"
+        # HSTS — enforce HTTPS and modern TLS (Finding #5, #6 mitigation)
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+        # Additional hardening headers
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = "camera=(), microphone=(self), geolocation=()"
+        return response
+
+app.add_middleware(SecurityHeadersMiddleware)
+
 
 
 # ═══ Mount Domain Routers ═══

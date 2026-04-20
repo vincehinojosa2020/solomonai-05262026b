@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, BookOpen, Clock, ExternalLink, Download, BadgeCheck } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
+import { safeHref } from '@/utils/sanitize';
 
 export default function PortalPathways() {
   const [courses, setCourses] = useState([]);
@@ -60,7 +61,7 @@ export default function PortalPathways() {
 
             <div className="flex flex-wrap gap-3" data-testid="next-steps-actions">
               <a
-                href={nextSteps.thinkific_url}
+                href={safeHref(nextSteps.thinkific_url)}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 rounded-full bg-slate-900 text-white px-4 py-2 text-sm font-semibold"

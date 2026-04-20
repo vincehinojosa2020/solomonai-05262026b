@@ -4,6 +4,7 @@ import { API_URL } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { safeHref } from '@/utils/sanitize';
 
 export default function ThinkificPage() {
   const [thinkificUrl, setThinkificUrl] = useState('');
@@ -97,7 +98,7 @@ export default function ThinkificPage() {
             <h3>Member Preview</h3>
             {thinkificUrl && (
               <a
-                href={thinkificUrl}
+                href={safeHref(thinkificUrl)}
                 target="_blank"
                 rel="noreferrer"
                 className="thinkific-external"

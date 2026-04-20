@@ -1,5 +1,6 @@
 import { useRef, useCallback } from 'react';
 import { Printer, AlertTriangle } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import '@/styles/labels.css';
 
 /**
@@ -13,13 +14,12 @@ export function LabelPrinter({ checkins = [], onClose }) {
   const printRef = useRef();
 
   const handlePrint = useCallback(() => {
-    // Inject the print root ID so CSS @media print only shows labels
     const original = document.body.innerHTML;
     const labelsHTML = printRef.current?.innerHTML || '';
-    document.body.innerHTML = `<div id="print-label-root">${labelsHTML}</div>`;
+    document.body.innerHTML = DOMPurify.sanitize(`<div id="print-label-root">${labelsHTML}</div>`, { ALLOWED_TAGS: ['div', 'span', 'p', 'h1', 'h2', 'h3', 'h4', 'strong', 'em', 'br', 'table', 'tr', 'td', 'th', 'thead', 'tbody', 'svg', 'path', 'circle', 'rect'] });
     window.print();
-    document.body.innerHTML = original;
-    window.location.reload(); // restore React
+    document.body.innerHTML = DOMPurify.sanitize(original, { WHOLE_DOCUMENT: false, RETURN_DOM: false });
+    window.location.reload();
   }, []);
 
   if (!checkins || checkins.length === 0) return null;

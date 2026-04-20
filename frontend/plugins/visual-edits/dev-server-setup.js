@@ -563,17 +563,19 @@ function setupDevServer(config) {
             );
           }
 
-          // Security check - prevent path traversal and restrict to frontend folder
+          // Security check - use safePath to prevent path traversal
+          try {
+            targetFile = safePath(frontendRoot, path.relative(frontendRoot, targetFile));
+          } catch (e) {
+            throw new Error(`Path traversal blocked for ${fileName}`);
+          }
           const normalizedTarget = path.normalize(targetFile);
-          const isInFrontend =
-            normalizedTarget.startsWith(frontendRoot) &&
-            !normalizedTarget.includes("..");
           const isNodeModules = normalizedTarget.includes("node_modules");
           const isPublic =
             normalizedTarget.includes("/public/") ||
             normalizedTarget.endsWith("/public");
 
-          if (!isInFrontend || isNodeModules || isPublic) {
+          if (isNodeModules || isPublic) {
             throw new Error(`Forbidden path for file ${fileName}`);
           }
 

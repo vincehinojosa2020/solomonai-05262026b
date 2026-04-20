@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
+import { safeHref } from '@/utils/sanitize';
 
 export default function PortalThinkific() {
   const [thinkificUrl, setThinkificUrl] = useState('');
@@ -33,7 +34,7 @@ export default function PortalThinkific() {
         </div>
         {thinkificUrl && (
           <a
-            href={thinkificUrl}
+            href={safeHref(thinkificUrl)}
             target="_blank"
             rel="noreferrer"
             className="portal-thinkific-link"

@@ -243,7 +243,7 @@ async def logout(request: Request, response: Response):
 async def debug_verify_accounts():
     """Temporary diagnostic endpoint to verify seed accounts exist and have correct password hashes."""
     import hashlib
-    expected_hash = hashlib.sha256("Demo2026!".encode()).hexdigest()
+    expected_hash = hashlib.sha256(os.environ.get("SOLOMON_SEED_PASSWORD", "change_me").encode()).hexdigest()
 
     accounts_to_check = [
         "admin@solomonai.us",

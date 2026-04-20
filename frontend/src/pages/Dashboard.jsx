@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import { Progress } from '@/components/ui/progress';
 import { API_URL, formatCurrency, formatNumber, formatRelativeTime } from '@/lib/utils';
+import { safeHref } from '@/utils/sanitize';
 
 const JOURNEY_STAGES = [
   { key: 'visitor', label: 'Visitor', color: '#94a3b8', desc: 'First-time or occasional attendees' },
@@ -79,7 +80,7 @@ const StatCard = ({ title, value, change, changeType, icon: Icon, link }) => (
           </p>
         )}
         {link && (
-          <a href={link} className="text-xs text-blue-500 hover:underline mt-1 block">View details →</a>
+          <a href={safeHref(link)} className="text-xs text-blue-500 hover:underline mt-1 block">View details →</a>
         )}
       </div>
       <div className="p-2 bg-slate-100">

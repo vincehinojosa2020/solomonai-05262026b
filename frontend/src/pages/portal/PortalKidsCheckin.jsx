@@ -446,7 +446,7 @@ export default function PortalKidsCheckin() {
                   <p style={{fontSize: 15, color: '#166534', marginBottom: 12, fontWeight: 500}}>The kids are in — support your church today?</p>
                   <div style={{display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap'}}>
                     {(showSuccess.nudge.give_amounts || [10, 25, 50, 100]).map(amt => (
-                      <button key={amt} onClick={(e) => { e.stopPropagation(); window.location.href = `/portal/give?amount=${amt}`; }}
+                      <button key={amt} onClick={(e) => { e.stopPropagation(); window.location.href = `/portal/give?amount=${encodeURIComponent(amt)}`; }}
                         style={{padding: '10px 18px', borderRadius: 10, background: '#22c55e', color: 'white', border: 'none', fontWeight: 600, fontSize: 15, cursor: 'pointer', minWidth: 60}}
                         data-testid={`give-nudge-${amt}`}
                       >${amt}</button>

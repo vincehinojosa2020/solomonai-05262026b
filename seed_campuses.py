@@ -19,7 +19,7 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-DEMO_PASSWORD_HASH = hashlib.sha256("Demo2026!".encode()).hexdigest()
+DEMO_PASSWORD_HASH = hashlib.sha256(os.environ.get("TEST_PASSWORD", "Demo2026!").encode()).hexdigest()
 NOW = datetime.now(timezone.utc)
 NOW_ISO = NOW.isoformat()
 TODAY = NOW.strftime("%Y-%m-%d")

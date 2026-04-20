@@ -24,7 +24,7 @@ class TestSecurityRegression:
         """Test platform admin login still works with admin@solomonai.us / Demo2026!"""
         response = self.session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@solomonai.us",
-            "password": "Demo2026!"
+            "password": os.environ.get("TEST_PASSWORD", "Demo2026!")
         })
         assert response.status_code == 200, f"Login failed: {response.text}"
         data = response.json()
@@ -38,7 +38,7 @@ class TestSecurityRegression:
         """Test church admin login still works with shannonnieman1030@gmail.com / Demo2026!"""
         response = self.session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "shannonnieman1030@gmail.com",
-            "password": "Demo2026!"
+            "password": os.environ.get("TEST_PASSWORD", "Demo2026!")
         })
         assert response.status_code == 200, f"Login failed: {response.text}"
         data = response.json()
@@ -49,7 +49,7 @@ class TestSecurityRegression:
         """Test member login still works with member@abundant.church / Demo2026!"""
         response = self.session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "member@abundant.church",
-            "password": "Demo2026!"
+            "password": os.environ.get("TEST_PASSWORD", "Demo2026!")
         })
         assert response.status_code == 200, f"Login failed: {response.text}"
         data = response.json()
@@ -63,7 +63,7 @@ class TestSecurityRegression:
         # Login as platform admin first
         login_resp = self.session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@solomonai.us",
-            "password": "Demo2026!"
+            "password": os.environ.get("TEST_PASSWORD", "Demo2026!")
         })
         assert login_resp.status_code == 200
         token = login_resp.json()["session_token"]
@@ -88,7 +88,7 @@ class TestSecurityRegression:
         # Login as platform admin first
         login_resp = self.session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@solomonai.us",
-            "password": "Demo2026!"
+            "password": os.environ.get("TEST_PASSWORD", "Demo2026!")
         })
         assert login_resp.status_code == 200
         token = login_resp.json()["session_token"]
@@ -113,7 +113,7 @@ class TestSecurityRegression:
         # Login as platform admin first
         login_resp = self.session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "admin@solomonai.us",
-            "password": "Demo2026!"
+            "password": os.environ.get("TEST_PASSWORD", "Demo2026!")
         })
         assert login_resp.status_code == 200
         token = login_resp.json()["session_token"]
@@ -198,7 +198,7 @@ class TestSecurityRegression:
         # Login as church admin
         login_resp = self.session.post(f"{BASE_URL}/api/auth/login", json={
             "email": "shannonnieman1030@gmail.com",
-            "password": "Demo2026!"
+            "password": os.environ.get("TEST_PASSWORD", "Demo2026!")
         })
         assert login_resp.status_code == 200
         token = login_resp.json()["session_token"]

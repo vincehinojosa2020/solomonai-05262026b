@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
+import { safeHref } from '@/utils/sanitize';
 
 function extractEmbedUrl(url) {
   if (!url) return null;
@@ -63,7 +64,7 @@ function DownloadLesson({ lesson }) {
         <p className="text-sm text-slate-500 mb-4">{lesson.content.file_name}</p>
       )}
       {lesson.content?.file_url ? (
-        <a href={lesson.content.file_url} target="_blank" rel="noopener noreferrer">
+        <a href={safeHref(lesson.content.file_url)} target="_blank" rel="noopener noreferrer">
           <Button data-testid="download-file-btn">
             <Download className="w-4 h-4 mr-2" />Download File
           </Button>
