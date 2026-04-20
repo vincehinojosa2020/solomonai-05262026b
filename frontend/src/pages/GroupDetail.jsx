@@ -443,7 +443,7 @@ export default function GroupDetail() {
                   </div>
                   <div className="flex items-center gap-2">
                     {res.url && (
-                      <a href={res.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">
+                      <a href={safeHref(res.url)} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">
                         <ExternalLink className="w-4 h-4" />
                       </a>
                     )}

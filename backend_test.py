@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 """
 Backend Go-Live Verification Tests for Solomon Church Management System
@@ -14,12 +15,12 @@ BASE_URL = "https://demo-ready-saas.preview.emergentagent.com/api"
 
 # Test credentials provided in review request
 TEST_ACCOUNTS = [
-    {"email": "member@abundant.church", "password": "Demo2026!", "role": "member"},
-    {"email": "member@cristoviene.church", "password": "Demo2026!", "role": "member"},
-    {"email": "admin@abundant.church", "password": "Demo2026!", "role": "admin"},
-    {"email": "admin@cristoviene.church", "password": "Demo2026!", "role": "admin"},
-    {"email": "admin@pottershouse.church", "password": "Demo2026!", "role": "admin"},
-    {"email": "admin@solomon.ai", "password": "Demo2026!", "role": "platform_admin"},
+    {"email": "member@abundant.church", "password": os.environ.get("TEST_PASSWORD", "Demo2026!"), "role": "member"},
+    {"email": "member@cristoviene.church", "password": os.environ.get("TEST_PASSWORD", "Demo2026!"), "role": "member"},
+    {"email": "admin@abundant.church", "password": os.environ.get("TEST_PASSWORD", "Demo2026!"), "role": "admin"},
+    {"email": "admin@cristoviene.church", "password": os.environ.get("TEST_PASSWORD", "Demo2026!"), "role": "admin"},
+    {"email": "admin@pottershouse.church", "password": os.environ.get("TEST_PASSWORD", "Demo2026!"), "role": "admin"},
+    {"email": "admin@solomon.ai", "password": os.environ.get("TEST_PASSWORD", "Demo2026!"), "role": "platform_admin"},
 ]
 
 # Expected data counts for member@abundant.church

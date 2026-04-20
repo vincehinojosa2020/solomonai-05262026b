@@ -10,9 +10,9 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
 # Test credentials
 MEMBER_EMAIL = "member@abundant.church"
-MEMBER_PASSWORD = "Demo2026!"
+MEMBER_PASSWORD = os.environ.get("TEST_PASSWORD", "Demo2026!")
 SHANNON_EMAIL = "shannonnieman1030@gmail.com"
-SHANNON_PASSWORD = "Demo2026!"
+SHANNON_PASSWORD = os.environ.get("TEST_PASSWORD", "Demo2026!")
 
 
 class TestAuth:

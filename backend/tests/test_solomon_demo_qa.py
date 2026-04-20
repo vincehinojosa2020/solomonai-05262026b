@@ -10,9 +10,9 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://demo-ready-saas.prev
 
 # Test credentials
 SHANNON_EMAIL = "shannonnieman1030@gmail.com"
-SHANNON_PASSWORD = "Demo2026!"
+SHANNON_PASSWORD = os.environ.get("TEST_PASSWORD", "Demo2026!")
 ADMIN_EMAIL = "admin@solomonai.us"
-ADMIN_PASSWORD = "Demo2026!"
+ADMIN_PASSWORD = os.environ.get("TEST_PASSWORD", "Demo2026!")
 
 
 class TestAuthAndLogin:

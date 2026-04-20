@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, Send, Sparkles, ChevronRight, Loader2, Trash2, Mic, Check, XCircle, ShoppingBag, Heart, Users, Calendar, Baby, Volume2, VolumeX } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
+import DOMPurify from 'dompurify';
+import { safeHref, safeRedirect } from '@/utils/sanitize';
 
 const ACTION_ICONS = {
   cafe_order: ShoppingBag,
@@ -368,7 +370,7 @@ const SolomonChat = () => {
 
   const handleActionClick = (action) => {
     if (action.action === 'navigate' && action.path) {
-      window.location.href = action.path;
+      window.location.href = safeRedirect(action.path);
     }
   };
 
@@ -465,7 +467,7 @@ const SolomonChat = () => {
                   </div>
                 )}
                 <div className={`solomon-message-content ${msg.isError ? 'error' : ''} ${msg.isActionResult ? 'action-success' : ''}`}>
-                  <div dangerouslySetInnerHTML={{ __html: formatMessage(msg.content) }} />
+                  <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatMessage(msg.content)) }} />
                   
                   {/* TTS Button for assistant messages */}
                   {msg.role === 'assistant' && msg.content && !msg.isStreaming && (
@@ -502,7 +504,7 @@ const SolomonChat = () => {
                   {/* Navigate button for action results */}
                   {msg.navigate && (
                     <button
-                      onClick={() => { window.location.href = msg.navigate; }}
+                      onClick={() => { window.location.href = safeRedirect(msg.navigate); }}
                       className="solomon-action-btn mt-2"
                       data-testid={`solomon-navigate-${idx}`}
                     >

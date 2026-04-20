@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 """
 Detailed Investigation of Production Data for Go-Live Verification
@@ -26,7 +27,7 @@ async def investigate_data():
     
     try:
         # Login as member@abundant.church
-        login_data = {"email": "member@abundant.church", "password": "Demo2026!"}
+        login_data = {"email": "member@abundant.church", "password": os.environ.get("TEST_PASSWORD", "Demo2026!")}
         async with session.post(f"{BASE_URL}/auth/login", json=login_data) as response:
             login_result = await response.json()
             token = login_result["session_token"]
@@ -72,7 +73,7 @@ async def investigate_data():
         print("=" * 70)
         
         # Login as admin
-        admin_login_data = {"email": "admin@abundant.church", "password": "Demo2026!"}
+        admin_login_data = {"email": "admin@abundant.church", "password": os.environ.get("TEST_PASSWORD", "Demo2026!")}
         async with session.post(f"{BASE_URL}/auth/login", json=admin_login_data) as response:
             admin_login_result = await response.json()
             admin_token = admin_login_result["session_token"]

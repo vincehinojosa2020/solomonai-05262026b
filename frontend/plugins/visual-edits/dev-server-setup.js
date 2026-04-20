@@ -1,9 +1,27 @@
 // dev-server-setup.js
 // Dev server middleware configuration for visual editing
+
+// Security: This plugin must NEVER run in production
+if (process.env.NODE_ENV !== 'development') {
+  module.exports = function () {}; // no-op
+  return;
+}
+
 const fs = require("fs");
 const path = require("path");
 const express = require("express");
-const { execSync } = require("child_process");
+const { execFileSync } = require("child_process");
+
+// Security: Base directory restriction for all filesystem operations
+const FRONTEND_ROOT = path.resolve(__dirname, '..', '..');
+
+function safePath(baseDir, userInput) {
+  const resolved = path.resolve(baseDir, userInput);
+  if (!resolved.startsWith(path.resolve(baseDir))) {
+    throw new Error('Path traversal attempt blocked');
+  }
+  return resolved;
+}
 
 // ───────────────────────────────────────────────────────────────────────────────
 // Variable Edit Handler - For editing dynamic content from traceable sources
@@ -99,10 +117,15 @@ function processVariableEdit(change, frontendRoot, babelTools) {
     return { success: false, error: "sourceFile or sourceFileAbs is required for variableEdit" };
   }
 
-  // Security check
+  // Security check — use safePath to prevent path traversal
+  try {
+    targetFile = safePath(frontendRoot, path.relative(frontendRoot, targetFile));
+  } catch (e) {
+    return { success: false, error: "Path traversal attempt blocked" };
+  }
   const normalizedTarget = path.normalize(targetFile);
-  if (!normalizedTarget.startsWith(frontendRoot) || normalizedTarget.includes("node_modules")) {
-    return { success: false, error: `Forbidden path: ${targetFile}` };
+  if (normalizedTarget.includes("node_modules")) {
+    return { success: false, error: "Forbidden path: node_modules" };
   }
 
   // Read and parse the file
@@ -462,8 +485,8 @@ function setupDevServer(config) {
             // Commit the change to git
             const timestamp = Date.now();
             try {
-              execSync(`git -c user.name="visual-edit" -c user.email="support@emergent.sh" add "${result.file}"`);
-              execSync(`git -c user.name="visual-edit" -c user.email="support@emergent.sh" commit -m "visual_edit_variable_${timestamp}"`);
+              execFileSync('git', ['-c', 'user.name=visual-edit', '-c', 'user.email=support@emergent.sh', 'add', result.file]);
+              execFileSync('git', ['-c', 'user.name=visual-edit', '-c', 'user.email=support@emergent.sh', 'commit', '-m', `visual_edit_variable_${timestamp}`]);
             } catch (gitError) {
               console.error(`Git commit failed for variableEdit: ${gitError.message}`);
             }
@@ -905,8 +928,8 @@ function setupDevServer(config) {
           const timestamp = Date.now();
           try {
             // Use -c flag for per-invocation git config to avoid modifying any config
-            execSync(`git -c user.name="visual-edit" -c user.email="support@emergent.sh" add "${targetFile}"`);
-            execSync(`git -c user.name="visual-edit" -c user.email="support@emergent.sh" commit -m "visual_edit_${timestamp}"`);
+            execFileSync('git', ['-c', 'user.name=visual-edit', '-c', 'user.email=support@emergent.sh', 'add', targetFile]);
+            execFileSync('git', ['-c', 'user.name=visual-edit', '-c', 'user.email=support@emergent.sh', 'commit', '-m', `visual_edit_${timestamp}`]);
           } catch (gitError) {
             console.error(`Git commit failed: ${gitError.message}`);
             // Continue even if git fails - file write succeeded

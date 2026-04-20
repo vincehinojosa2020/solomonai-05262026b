@@ -682,7 +682,8 @@ async def seed_database():
 async def seed_demo_accounts(tenant_id: str):
     """Seed or update demo accounts"""
     import hashlib
-    demo_password_hash = hashlib.sha256("Demo2026!".encode()).hexdigest()
+    _seed_password = os.environ.get("SOLOMON_SEED_PASSWORD") or "change_me_in_env"
+    demo_password_hash = hashlib.sha256(_seed_password.encode()).hexdigest()
     
     # Admin account
     await db.users.update_one(
@@ -1412,7 +1413,8 @@ async def seed_platform():
     """Seed the entire Solomon AI platform with multiple churches and demo data"""
     import hashlib
     
-    demo_password_hash = hashlib.sha256("Demo2026!".encode()).hexdigest()
+    _seed_password = os.environ.get("SOLOMON_SEED_PASSWORD") or "change_me_in_env"
+    demo_password_hash = hashlib.sha256(_seed_password.encode()).hexdigest()
     
     # Define the three demo churches
     churches = [
@@ -2194,7 +2196,7 @@ async def seed_platform():
         "message": "Platform seeded successfully",
         "results": results,
         "demo_credentials": {
-            "password": "Demo2026!",
+            "password": os.environ.get("SOLOMON_SEED_PASSWORD") or "change_me_in_env",
             "platform_admin": "admin@solomon.ai",
             "abundant_admin": "admin@abundant.church",
             "cristoviene_admin": "admin@cristoviene.church",

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Calendar, Clock, Mic, Plus, Save, FileAudio, Users, ChevronDown, ChevronUp, FileText, Sparkles, Loader2 } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
+import DOMPurify from 'dompurify';
 
 export default function MeetingsAdminPage() {
   const [slots, setSlots] = useState([]);
@@ -302,9 +303,9 @@ export default function MeetingsAdminPage() {
                             <div className="meeting-summary-box" data-testid={`meeting-summary-${meeting.id}`}>
                               <h4><Sparkles className="w-4 h-4" /> AI Summary</h4>
                               <div className="meeting-summary-text" dangerouslySetInnerHTML={{ 
-                                __html: meeting.summary
+                                __html: DOMPurify.sanitize(meeting.summary
                                   .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                  .replace(/\n/g, '<br/>') 
+                                  .replace(/\n/g, '<br/>'))
                               }} />
                             </div>
                           )}

@@ -4,6 +4,7 @@ import { usePolling } from '@/hooks/usePolling';
 import { CreditCard, DollarSign, Download, CheckCircle, ChevronDown, MapPin, Flame, Heart } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
+import { safeRedirect } from '@/utils/sanitize';
 import SolomonPayForm from '@/components/SolomonPayForm';
 import RecurringGivingManager from '@/components/RecurringGivingManager';
 import GivingGoalTracker from '@/components/GivingGoalTracker';
@@ -188,7 +189,12 @@ export default function PortalGive() {
       }
       const data = await res.json();
       if (data.url) {
-        window.location.href = data.url;
+        // Stripe checkout URL — validate before redirect
+        if (data.url.startsWith('https://checkout.stripe.com/')) {
+          window.location.href = data.url;
+        } else {
+          window.location.href = safeRedirect(data.url);
+        }
       } else if (data.mode === 'simulated') {
         toast.info('Stripe is in demo mode. Using Solomon Pay.');
         setShowPayment(true);
