@@ -35,5 +35,15 @@ React 18 + FastAPI + MongoDB 7.0 | 575+ endpoints | 89 pages | Claude Sonnet 4.5
 - `/app/SOLOMON_AI_UI_GUIDE.md`
 
 ## Remaining
-- Vite migration (eliminates last 2 frontend dep risks permanently)
-- Apple/Google Pay, ElevenLabs TTS
+- Vite migration — **DEFERRED / BLOCKED on platform** (see `/app/VITE_MIGRATION_DEFERRED.md`). Requires Emergent to port webpack-based `visual-edits` + `health-check` plugins to Vite first.
+- Apple/Google Pay — **MOCK UI shipped** (Feb 2026) at `/portal/give` + `/giving`. Auto-upgrades to real Stripe Payment Request Button when `REACT_APP_STRIPE_PUBLISHABLE_KEY` or `window.__STRIPE_PUBLISHABLE_KEY__` is set. See `/app/STRIPE_PAYMENT_REQUEST_INTEGRATION.md`.
+- ElevenLabs TTS upgrade for Ask Solomon AI.
+- K8s ingress wildcard CORS — **YAML prepared** in `/app/K8S_INGRESS_CORS_REMEDIATION.md`; requires Emergent platform engineer to apply.
+
+## Session — Feb 20, 2026
+- Fixed `craco build` ERR_REQUIRE_ESM by pinning `nth-check` resolution to `~2.1.1` (was `>=2.0.1` which pulled ESM-only 3.0.1).
+- Built `StripePaymentRequestButton` component (mock + live-ready) with official Apple Pay / Google Pay brand buttons and realistic auth sheet.
+- Wired wallet button into `MultiPaymentSelector`, `DonationCheckout` (at /giving), and `PortalGive` (at /portal/give).
+- Tested end-to-end (iterations 96 + 97): 100% pass on both flows.
+- Documented Vite migration blockers (webpack-specific Emergent plugins) in `/app/VITE_MIGRATION_DEFERRED.md`.
+- Prepared K8s ingress CORS remediation YAML in `/app/K8S_INGRESS_CORS_REMEDIATION.md`.
