@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import MerchRecommender from '@/components/MerchRecommender';
 import SolomonPayForm from '@/components/SolomonPayForm';
 import MultiPaymentSelector from '@/components/MultiPaymentSelector';
+import { safeImgSrc } from '@/utils/sanitize';
 
 export default function PortalMerch() {
   const { tenant } = useOutletContext();
@@ -218,7 +219,7 @@ export default function PortalMerch() {
             <div key={product.id} className="portal-merch-card" data-testid={`merch-product-${product.id}`}
             >
               <div className="portal-merch-image">
-                <img src={product.image_url || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80'} alt={product.name} />
+                <img src={safeImgSrc(product.image_url, 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80')} alt={product.name} />
                 {product.is_featured && <span className="portal-merch-badge">Featured</span>}
               </div>
               <div className="portal-merch-body">
@@ -256,7 +257,7 @@ export default function PortalMerch() {
             <div className="portal-merch-cart-items">
               {cartItems.map((item) => (
                 <div key={item.id} className="portal-merch-cart-item" data-testid={`merch-cart-item-${item.id}`}>
-                  <img src={item.image_url || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80'} alt={item.name} />
+                  <img src={safeImgSrc(item.image_url, 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80')} alt={item.name} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <strong style={{ display: 'block', marginBottom: 4 }}>{item.name}</strong>
                     <span style={{ color: '#64748b', fontSize: 13 }}>{formatCurrency(item.price)}</span>

@@ -12,6 +12,19 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { safeIframeSrc } from '@/utils/sanitize';
+
+// Allowed hosts for merch store preview iframe
+const MERCH_ALLOWED_HOSTS = [
+  'shopify.com',
+  'myshopify.com',
+  'squarespace.com',
+  'square.site',
+  'bigcartel.com',
+  'printful.com',
+  'printify.com',
+  'solomonai.us',
+];
 
 const defaultProductForm = {
   name: '',
@@ -247,7 +260,7 @@ export default function MerchAdminPage() {
             {merchUrl ? (
               <iframe
                 title="Merch Preview"
-                src={merchUrl}
+                src={safeIframeSrc(merchUrl, MERCH_ALLOWED_HOSTS)}
                 className="merch-iframe"
                 data-testid="merch-iframe"
               />

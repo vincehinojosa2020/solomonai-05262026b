@@ -12,11 +12,17 @@ import os
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
-# Test credentials
+# Test credentials — passwords MUST be supplied via env vars (CWE-798)
 SHANNON_EMAIL = "shannonnieman1030@gmail.com"
-SHANNON_PASSWORD = os.environ.get("TEST_PASSWORD", "Demo2026!")
+SHANNON_PASSWORD = os.environ.get("TEST_PASSWORD")
 MEMBER_EMAIL = "member@abundant.church"
-MEMBER_PASSWORD = os.environ.get("TEST_PASSWORD", "Demo2026!")
+MEMBER_PASSWORD = os.environ.get("TEST_PASSWORD")
+
+if not SHANNON_PASSWORD or not MEMBER_PASSWORD:
+    pytest.skip(
+        "TEST_PASSWORD environment variable is required to run demo-fix tests",
+        allow_module_level=True,
+    )
 
 
 class TestSession:

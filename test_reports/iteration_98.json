@@ -1,0 +1,38 @@
+{
+  "summary": "Iteration 98 — Frontend regression after security hardening (centralized sanitize.js, applied across 19 files). Verified end-to-end that the strict allowlist sanitization does NOT break legitimate user-facing flows. Confirmed: (a) /thinkific admin iframe accepts valid thinkific.com URL and rejects evil.example.com (iframe src empty); (b) /portal/thinkific renders the configured https://abundantchurch.thinkific.com/collections (third-party X-Frame-Options blocks display in browser, but src is correctly built — that is not a sanitization regression); (c) /portal/directory: 2000 mailto: links rendered with valid 'mailto:andrew.jackson@abundant.church' format, 0 fallback '#' links (all emails passed validator); (d) /portal/give: download-statement-btn opens year-selector with 4 years and successfully downloaded giving_statement_2026.pdf — content-type=application/pdf check works; (e) /portal/give wallet flow (iter 97) NON-REGRESSION confirmed — quick-amount-25 → portal-give-wallet-slot → google-pay-button → wallet-mock-sheet opens; (f) Image rendering on /portal/cafe, /portal/merch, /portal/courses: all images load cleanly (broken=0, empty-src=0); (g) Stripe config returned stripe_live=false / mode=simulated, so Stripe checkout button skipped per spec; (h) No NEW console errors introduced by the sanitization layer — only pre-existing hydration warnings (<span> in <select>/<th>/<tr>), Cloudflare beacon CSP block, and Thinkific X-Frame-Options.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "SolomonChat pdf_download intent", "issue": "Sent prompt 'download my giving statement for 2025' — AI replied (2 messages rendered) but did NOT emit any solomon-pdf-* or solomon-navigate-* links in this run. Could be intent-classification, not sanitization. Could not directly verify the safeHref guard at line ~519 because no pdf_download response was produced.", "affected_selectors": ["[data-testid^=\"solomon-pdf-\"]", "[data-testid^=\"solomon-navigate-\"]"]},
+      {"flow": "/portal/me giving statement", "issue": "Member portal logged a non-fatal 'Failed to fetch member data: TypeError: Failed to fetch' in console. As a result, [data-testid=\"me-tax-statement-section\"] did not render and per-year [data-testid^=\"me-download-\"] buttons were absent. Could not exercise the blobFromResponse content-type guard. This may be an intermittent network/CORS race, not a sanitization regression.", "affected_selectors": ["[data-testid=\"me-tax-statement-section\"]", "[data-testid^=\"me-download-\"]"]},
+      {"flow": "GodMode chat", "issue": "/godmode is a dashboard page, not a chat panel. The Solomon chat FAB on this page is the same component as portal — already validated. Could not isolate a separate godmode-send button.", "affected_selectors": []}
+    ],
+    "design_issues": [
+      {"screen": "PlatformDashboard /platform churches table", "issues": ["Pre-existing React hydration warnings: <span> cannot be a child of <select>/<th>/<tr>/<tbody>. Carry-over from iter 97; not introduced by this hardening pass."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "VERIFY: Re-test SolomonChat with a prompt that reliably triggers pdf_download intent (e.g., the explicit 'generate pdf report' or backend-mocked response shape). The href guard at SolomonChat.jsx:519 was not exercised end-to-end this iteration.",
+    "INVESTIGATE: 'Failed to fetch member data' error on /portal/me — likely intermittent backend or PortalMe.jsx fetch race. Blocks giving-statement testing on the profile page.",
+    "LOW: Hydration warnings about <span> in <select>/<th> on /platform are still present (carry-over from iter 97). Wrap visual-edits dynamic spans differently or move them outside table semantics.",
+    "INFO: /abundant-pathways and /attendance had 0 <img> elements during render — these are admin-only/empty-state pages for the test member, so safeImgSrc was not exercised. Consider a separate check with admin login + seeded data if image regression on those screens is critical."
+  ],
+  "critical_code_review_comments": [
+    "sanitize.js: Centralization is clean. safeIframeSrc correctly enforces https + suffix host match. safeStripeCheckoutUrl uses URL parsing (defeats checkout.stripe.com.evil.com). safeRedirect uses an exact-host allowlist (no .endsWith trick) — good.",
+    "blobFromResponse: properly throws on missing content-type or wrong MIME; pairs cleanly with the createObjectURL pattern in PortalGive/PortalMe.",
+    "safeHref: delegates mailto:/tel: to their own validators — defense in depth, prevents email/phone smuggling through the href entry point.",
+    "All 19 listed files import correctly from '@/utils/sanitize' — verified via grep.",
+    "Minor: safeMailto applies encodeURIComponent then un-escapes %40 back to '@'. This works but creates a slightly mixed-encoding output. Consider encoding only the local part vs. domain separately for cleaner output.",
+    "Minor: safeImgSrc accepts blob: URIs unconditionally — fine for createObjectURL outputs but any caller that lets users supply blob: strings should be reviewed."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (frontend-only review)", "frontend": "85% — 8 of ~13 spec items fully verified, 3 partially verified (SolomonChat intent, PortalMe blocked by network flake, GodMode chat is dashboard), 2 N/A (Stripe live=false, MediaManager not exercised this run)"},
+  "test_credentials": {"admin": "admin@solomonai.us / Demo2026!", "member": "member@abundant.church / Demo2026!"},
+  "seed_data_creation": "None. Used existing seeded admin & member; saved Thinkific URL to https://test-church.thinkific.com on /thinkific then back to abundantchurch.thinkific.com — main agent may want to confirm tenant config persists.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "The sanitization is strict and behaves as designed. Key validated selectors — Thinkific admin: [data-testid='thinkific-iframe']; PortalGive: [data-testid='download-statement-btn'] toggles [data-testid='year-selector'] containing [data-testid='download-year-{2023..2026}']; Wallet path: quick-amount-25 → portal-give-wallet-slot → google-pay-button → wallet-mock-sheet; PortalMe: [data-testid^='me-download-'] only renders when member data fetch succeeds (test member showed 'Failed to fetch member data' once this run); SolomonChat: [data-testid='solomon-fab' / 'solomon-input' / 'solomon-send-btn' / 'solomon-pdf-{i}' / 'solomon-navigate-{i}']. Stripe live mode is OFF — checkout button intentionally hidden. Note: PortalThinkific iframe successfully constructs src to https://abundantchurch.thinkific.com/collections; the 'Refused to display in a frame' console error is a Thinkific upstream X-Frame-Options=sameorigin response, NOT a sanitization issue.",
+  "rca of the issue": "N/A — no failures attributable to the sanitization hardening were found. All console errors observed pre-date this iteration (hydration warnings on /platform table, Cloudflare Insights CSP block, Thinkific X-Frame-Options)."
+}

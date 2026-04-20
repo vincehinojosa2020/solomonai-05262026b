@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { API_URL, formatDate, formatNumber } from '@/lib/utils';
+import { safeImgSrc } from '@/utils/sanitize';
 
 export default function AttendancePage() {
   const [services, setServices] = useState([]);
@@ -197,7 +198,7 @@ export default function AttendancePage() {
                       >
                         <div className="flex items-center gap-3">
                           {record.photo_url ? (
-                            <img src={record.photo_url} alt="" className="w-10 h-10 rounded-full" />
+                            <img src={safeImgSrc(record.photo_url)} alt="" className="w-10 h-10 rounded-full" />
                           ) : (
                             <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center">
                               <Users className="w-5 h-5 text-slate-400" />

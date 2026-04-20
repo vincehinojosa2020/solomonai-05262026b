@@ -7,7 +7,7 @@ import {
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 import DOMPurify from 'dompurify';
-import { safeRedirect } from '@/utils/sanitize';
+import { safeHref, safeRedirect } from '@/utils/sanitize';
 
 const SAMPLE_PROMPTS = [
   { text: "Give me an investor summary of our platform", icon: TrendingUp },
@@ -268,8 +268,8 @@ export default function SolomonGodMode({ isOpen, onClose }) {
               )}
               <div className={`max-w-[85%] ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-2xl rounded-tr-md px-3.5 py-2.5' : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-2xl rounded-tl-md px-3.5 py-2.5'}`}>
                 <div className="text-[13px] leading-relaxed" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatMessage(msg.content)) }} />
-                {msg.download_url && (
-                  <a href={`${API_URL}${msg.download_url}`} download={msg.filename}
+                {msg.download_url && typeof msg.download_url === 'string' && msg.download_url.startsWith('/') && (
+                  <a href={safeHref(`${API_URL}${msg.download_url}`)} download={msg.filename}
                     className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-lg text-xs font-medium hover:bg-emerald-500/30 transition-colors"
                     data-testid={`solomon-gm-download-${i}`}
                   >

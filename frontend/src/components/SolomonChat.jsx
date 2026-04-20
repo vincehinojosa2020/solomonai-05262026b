@@ -514,9 +514,9 @@ const SolomonChat = () => {
                   )}
 
                   {/* PDF Download button */}
-                  {msg.pdf_download && (
+                  {msg.pdf_download && typeof msg.pdf_download === 'string' && msg.pdf_download.startsWith('/') && (
                     <a
-                      href={`${API_URL}${msg.pdf_download}`}
+                      href={safeHref(`${API_URL}${msg.pdf_download}`)}
                       download
                       className="solomon-action-btn mt-2 inline-flex items-center gap-1.5 no-underline"
                       data-testid={`solomon-pdf-${idx}`}

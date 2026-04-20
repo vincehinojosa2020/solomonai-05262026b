@@ -5,6 +5,7 @@ import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import SolomonPayForm from '@/components/SolomonPayForm';
 import MultiPaymentSelector from '@/components/MultiPaymentSelector';
+import { safeImgSrc } from '@/utils/sanitize';
 
 const parseTime = (value) => {
   if (!value) return null;
@@ -310,7 +311,7 @@ export default function PortalCafe() {
             >
               <div style={{ height: 160, overflow: 'hidden', position: 'relative' }}>
                 <img
-                  src={item.image_url || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80'}
+                  src={safeImgSrc(item.image_url, 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80')}
                   alt={item.name}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
@@ -385,7 +386,7 @@ export default function PortalCafe() {
                       borderBottom: '1px solid #f3f4f6'
                     }} data-testid={`cafe-cart-item-${item.id}`}>
                       <img
-                        src={item.image_url || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80'}
+                        src={safeImgSrc(item.image_url, 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80')}
                         alt={item.name}
                         style={{ width: 56, height: 56, borderRadius: 8, objectFit: 'cover' }}
                       />

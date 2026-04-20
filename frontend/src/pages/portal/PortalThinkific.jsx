@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
-import { safeHref } from '@/utils/sanitize';
+import { safeHref, safeIframeSrc } from '@/utils/sanitize';
+
+const THINKIFIC_HOSTS = ['thinkific.com'];
 
 export default function PortalThinkific() {
   const [thinkificUrl, setThinkificUrl] = useState('');
@@ -54,7 +56,7 @@ export default function PortalThinkific() {
         ) : thinkificUrl ? (
           <iframe
             title="Thinkific Player"
-            src={thinkificUrl}
+            src={safeIframeSrc(thinkificUrl, THINKIFIC_HOSTS)}
             className="portal-thinkific-iframe"
             data-testid="thinkific-iframe"
           />

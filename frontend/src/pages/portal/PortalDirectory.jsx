@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { API_URL } from '@/lib/utils';
+import { safeMailto, safeTel } from '@/utils/sanitize';
 
 const STATUS_STYLES = {
   member: { bg: 'bg-blue-50', text: 'text-blue-700' },
@@ -137,12 +138,12 @@ export default function PortalDirectory() {
                   </div>
                   <div className="flex items-center gap-4 mt-1 text-xs text-slate-500">
                     {member.email && (
-                      <a href={`mailto:${member.email}`} className="flex items-center gap-1 hover:text-blue-600 transition-colors" data-testid={`directory-member-email-${idx}`}>
+                      <a href={safeMailto(member.email)} className="flex items-center gap-1 hover:text-blue-600 transition-colors" data-testid={`directory-member-email-${idx}`}>
                         <Mail className="w-3 h-3" />{member.email}
                       </a>
                     )}
                     {member.phone && (
-                      <a href={`tel:${member.phone}`} className="flex items-center gap-1 hover:text-blue-600 transition-colors" data-testid={`directory-member-phone-${idx}`}>
+                      <a href={safeTel(member.phone)} className="flex items-center gap-1 hover:text-blue-600 transition-colors" data-testid={`directory-member-phone-${idx}`}>
                         <Phone className="w-3 h-3" />{member.phone}
                       </a>
                     )}

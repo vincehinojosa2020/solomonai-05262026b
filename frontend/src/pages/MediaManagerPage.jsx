@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
+import { safeImgSrc } from '@/utils/sanitize';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -557,7 +558,7 @@ function AddVideoModal({ open, onClose, onSuccess }) {
             {/* Preview - Immediate visual feedback (Don Norman) */}
             {previewData && (
               <div className="video-preview">
-                <img src={previewData.thumbnail} alt="Video preview" />
+                <img src={safeImgSrc(previewData.thumbnail)} alt="Video preview" />
                 <CheckCircle className="w-5 h-5 text-green-500" />
                 <span>Valid YouTube video detected</span>
               </div>

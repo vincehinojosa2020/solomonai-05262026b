@@ -4,6 +4,7 @@ import { Edit2, Mail, Phone, MapPin, Calendar, Download, ChevronRight, CreditCar
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
+import { blobFromResponse, safeImgSrc } from '@/utils/sanitize';
 
 export default function PortalMe() {
   const { user, memberData, refreshData } = useOutletContext();
@@ -79,9 +80,12 @@ export default function PortalMe() {
     try {
       const res = await fetch(`${API_URL}/portal/giving/statement/${year}/pdf`);
       if (!res.ok) { toast.error('Failed to generate'); return; }
-      const blob = await res.blob();
+      // Validate content-type before creating a blob URL (CWE-79 mitigation)
+      const blob = await blobFromResponse(res, ['application/pdf']);
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = `giving_statement_${year}.pdf`;
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', `giving_statement_${year}.pdf`);
       document.body.appendChild(a); a.click(); a.remove(); window.URL.revokeObjectURL(url);
       toast.success(`${year} statement downloaded`);
     } catch { toast.error('Download failed'); }

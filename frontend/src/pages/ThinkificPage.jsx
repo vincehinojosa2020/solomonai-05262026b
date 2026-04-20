@@ -4,7 +4,9 @@ import { API_URL } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { safeHref } from '@/utils/sanitize';
+import { safeHref, safeIframeSrc } from '@/utils/sanitize';
+
+const THINKIFIC_HOSTS = ['thinkific.com'];
 
 export default function ThinkificPage() {
   const [thinkificUrl, setThinkificUrl] = useState('');
@@ -114,7 +116,7 @@ export default function ThinkificPage() {
           ) : thinkificUrl ? (
             <iframe
               title="Thinkific Preview"
-              src={thinkificUrl}
+              src={safeIframeSrc(thinkificUrl, THINKIFIC_HOSTS)}
               className="thinkific-iframe"
               data-testid="thinkific-iframe"
             />

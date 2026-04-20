@@ -4,7 +4,7 @@ import { usePolling } from '@/hooks/usePolling';
 import { CreditCard, DollarSign, Download, CheckCircle, ChevronDown, MapPin, Flame, Heart } from 'lucide-react';
 import { API_URL, formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
-import { safeRedirect } from '@/utils/sanitize';
+import { safeRedirect, safeStripeCheckoutUrl, blobFromResponse } from '@/utils/sanitize';
 import SolomonPayForm from '@/components/SolomonPayForm';
 import RecurringGivingManager from '@/components/RecurringGivingManager';
 import GivingGoalTracker from '@/components/GivingGoalTracker';
@@ -190,10 +190,12 @@ export default function PortalGive() {
       }
       const data = await res.json();
       if (data.url) {
-        // Stripe checkout URL — validate before redirect
-        if (data.url.startsWith('https://checkout.stripe.com/')) {
-          window.location.href = data.url;
+        // Stripe checkout URL — validate hostname with URL parser (CWE-601 mitigation)
+        const safeStripeUrl = safeStripeCheckoutUrl(data.url);
+        if (safeStripeUrl) {
+          window.location.href = safeStripeUrl;
         } else {
+          // Not a real Stripe URL — fall back to strict same-origin redirect
           window.location.href = safeRedirect(data.url);
         }
       } else if (data.mode === 'simulated') {
@@ -317,11 +319,12 @@ export default function PortalGive() {
       try {
         const res = await fetch(`${API_URL}/portal/giving/statement/${year}/pdf`);
         if (!res.ok) { toast.error('Failed to generate statement'); return; }
-        const blob = await res.blob();
+        // Validate content-type before creating a blob URL (CWE-79 mitigation)
+        const blob = await blobFromResponse(res, ['application/pdf']);
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
-        a.download = `giving_statement_${year}.pdf`;
+        a.setAttribute('href', url);
+        a.setAttribute('download', `giving_statement_${year}.pdf`);
         document.body.appendChild(a);
         a.click();
         a.remove();

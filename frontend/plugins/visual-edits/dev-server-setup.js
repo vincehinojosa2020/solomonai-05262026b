@@ -11,6 +11,19 @@ const fs = require("fs");
 const path = require("path");
 const express = require("express");
 const { execFileSync } = require("child_process");
+const rateLimit = require("express-rate-limit");
+
+// Security: Throttle the authenticated /edit-file endpoint so a compromised
+// Supervisor password cannot be used to DoS the dev server via AST-heavy
+// writes. 10 requests / minute is enough for real editing workflows.
+// CWE-770 mitigation.
+const editFileLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many edit requests. Please retry in a minute." },
+});
 
 // Security: Base directory restriction for all filesystem operations
 const FRONTEND_ROOT = path.resolve(__dirname, '..', '..');
@@ -400,8 +413,8 @@ function setupDevServer(config) {
       res.json({ status: "ok", time: new Date().toISOString() });
     });
 
-    // ✅ Protected file editing endpoint with AST processing
-    devServer.app.post("/edit-file", (req, res) => {
+    // ✅ Protected file editing endpoint with AST processing (rate-limited, CWE-770)
+    devServer.app.post("/edit-file", editFileLimiter, (req, res) => {
       // Validate and set CORS headers
       const origin = req.get("Origin");
       if (origin && isAllowedOrigin(origin)) {

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { API_URL } from '@/lib/utils';
+import { safeImgSrc } from '@/utils/sanitize';
 
 const CATEGORY_LABEL = {
   new_members: 'New Members',
@@ -91,7 +92,7 @@ export default function PortalCourses() {
                   {/* Thumbnail */}
                   <div className="h-36 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center relative">
                     {course.thumbnail_url ? (
-                      <img src={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover" />
+                      <img src={safeImgSrc(course.thumbnail_url)} alt={course.title} className="w-full h-full object-cover" />
                     ) : (
                       <GraduationCap className="w-12 h-12 text-white/50" />
                     )}

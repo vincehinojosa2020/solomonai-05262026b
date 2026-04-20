@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, User, Users, Calendar, X, ArrowRight } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
+import { safeImgSrc } from '@/utils/sanitize';
 
 export default function CommandPalette({ onClose }) {
   const [query, setQuery] = useState('');
@@ -158,7 +159,7 @@ export default function CommandPalette({ onClose }) {
                     data-testid={`search-result-${idx}`}
                   >
                     {item.photo_url ? (
-                      <img src={item.photo_url} alt="" className="w-8 h-8 rounded-full" />
+                      <img src={safeImgSrc(item.photo_url)} alt="" className="w-8 h-8 rounded-full" />
                     ) : (
                       <Icon className="icon" />
                     )}

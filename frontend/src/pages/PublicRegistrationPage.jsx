@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
+import { safeImgSrc } from '@/utils/sanitize';
 
 export default function PublicRegistrationPage() {
   const { eventId } = useParams();
@@ -138,7 +139,7 @@ export default function PublicRegistrationPage() {
         {/* Event Header */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6" data-testid="reg-event-header">
           {event.cover_image_url && (
-            <img src={event.cover_image_url} alt={event.name} className="w-full h-48 object-cover" />
+            <img src={safeImgSrc(event.cover_image_url)} alt={event.name} className="w-full h-48 object-cover" />
           )}
           <div className="p-6">
             <h1 className="text-2xl font-bold text-slate-900 mb-2">{event.name}</h1>

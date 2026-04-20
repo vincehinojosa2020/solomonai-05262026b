@@ -26,6 +26,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { safeImgSrc } from '@/utils/sanitize';
 
 const defaultCourseForm = {
   title: '',
@@ -424,7 +425,7 @@ export default function AbundantPathwaysAdmin() {
             <div key={course.id} className="pathways-card" data-testid={`pathways-course-${course.id}`}>
               <div className="pathways-card-media">
                 <img
-                  src={course.cover_image_url || 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80'}
+                  src={safeImgSrc(course.cover_image_url, 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80')}
                   alt={course.title}
                 />
                 <div className="pathways-card-badge">
