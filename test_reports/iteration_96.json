@@ -1,0 +1,41 @@
+{
+  "summary": "Iteration 96 - Apple/Google Pay mock wallet integration in DonationCheckout modal verified end-to-end on /giving (GivingDashboard). All UI flows passed: wallet slot renders, Google Pay button (Chromium), mock badge text, wallet sheet contents (Solomon AI, fund label, $25 amount, ••••4242 Visa, Face ID/screen-lock animation), cancel-without-success, auto-success transition to 'Thank You for Your Generosity!' screen with sp_txn_* reference, and zero console errors. CRITICAL FINDING: the wallet button is integrated into DonationCheckout (mounted in /giving GivingDashboard), but the member-facing /portal/give page (PortalGive.jsx) does NOT use DonationCheckout — it has its own custom give form, so members visiting /portal/give as instructed in the task will NOT see the Apple/Google Pay button. Verified with admin@solomonai.us via /giving where DonationCheckout actually renders.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Member give flow at /portal/give",
+        "issue": "PortalGive.jsx does NOT mount DonationCheckout, so the new StripePaymentRequestButton wallet UI is NOT visible to members on /portal/give. The wallet integration only appears at /giving (GivingDashboard via give-card link). Members are redirected from /giving to /portal so they cannot reach the wallet button at all.",
+        "affected_selectors": ["[data-testid='donation-wallet-slot']", "[data-testid='google-pay-button']", "[data-testid='apple-pay-button']"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "HIGH: Wire StripePaymentRequestButton (or DonationCheckout) into the member-facing /portal/give (PortalGive.jsx) so members actually see Apple/Google Pay. Currently only admins reaching /giving see the new button.",
+    "Confirm intended UX: should /portal/give open DonationCheckout modal, or should the wallet button be inlined directly into PortalGive's existing form above 'Give with Solomon Pay'?"
+  ],
+  "critical_code_review_comments": [
+    "StripePaymentRequestButton.jsx: clean separation of MOCK vs LIVE paths; live path is documented but not yet active. Wallet detection via UA is acceptable for mock; for LIVE, use stripe.paymentRequest().canMakePayment() before showing the button.",
+    "DonationCheckout.handleWalletSuccess correctly reuses handleSolomonPaySuccess so persistence is identical to card path. Backend /api/solomonpay/process accepted the mock token and returned a transaction_id.",
+    "Mock auth animation (~1.6s authing + ~0.75s success) feels realistic; total ~2.5s matches spec.",
+    "Sheet uses fixed inset-0 z-[100] which correctly overlays the slide-panel-overlay (z lower).",
+    "Gap: PortalGive.jsx (the route the task names) was not updated. Either route /giving for members or embed the wallet component in PortalGive."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (no backend tests run, mock token accepted)", "frontend": "100% on /giving (DonationCheckout); 0% on /portal/give (component not mounted there)"},
+  "test_credentials": {
+    "admin": "admin@solomonai.us / Demo2026! (used to reach /giving where DonationCheckout renders)",
+    "member": "member@abundant.church / Demo2026! (cannot reach /giving — redirected to /portal; /portal/give does not show wallet button)"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Wallet mock UI itself is fully functional in DonationCheckout (verified via /giving + give-card with admin login). Re-test once main agent integrates the wallet button into PortalGive.jsx (or routes members to /giving). Test selectors that worked: data-testid='give-card' to open modal, donation-amount-25 to set amount, donation-wallet-slot wraps the button, google-pay-button (Chromium), wallet-mock-badge, wallet-mock-sheet, wallet-mock-cancel, donation-success-close. /api/solomonpay/process accepts the mock_tok_google_pay_* token successfully (returned sp_txn_f95d4bbc6aeb).",
+  "rca of the issue": "Task spec referenced /portal/give but the implementation only mounted StripePaymentRequestButton inside DonationCheckout, which is only used by GivingDashboard (/giving). PortalGive.jsx is a completely separate component with its own form. Either the task description was incorrect or the integration was placed in the wrong screen. Fix: Either (a) import & render StripePaymentRequestButton inside PortalGive.jsx above the 'Give with Solomon Pay' button, or (b) replace PortalGive's custom form with a button that opens DonationCheckout."
+}

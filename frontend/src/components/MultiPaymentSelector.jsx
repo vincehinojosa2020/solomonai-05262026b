@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { CreditCard, Banknote, Smartphone } from 'lucide-react';
+import { CreditCard, Banknote } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
+import StripePaymentRequestButton from '@/components/payments/StripePaymentRequestButton';
 
 /**
  * MultiPaymentSelector — Supports:
@@ -16,24 +17,21 @@ import { toast } from 'sonner';
  *   onSelect: callback(paymentMethod: { type, token?, card_last_four? })
  *   showCash: boolean (show cash option — for admin use)
  */
-export default function MultiPaymentSelector({ amount = 0, onSelect, showCash = false }) {
+export default function MultiPaymentSelector({ amount = 0, onSelect, showCash = false, label = 'Payment' }) {
   const [savedCards, setSavedCards] = useState([]);
-  const [supportsApplePay, setSupportsApplePay] = useState(false);
-  const [supportsGooglePay, setSupportsGooglePay] = useState(false);
+  const [supportsWallet, setSupportsWallet] = useState(false);
   const [selected, setSelected] = useState('solomon_pay');
   const [showGuestCard, setShowGuestCard] = useState(false);
   const [guestCard, setGuestCard] = useState({ number: '', exp_month: '', exp_year: '', cvc: '' });
 
   useEffect(() => {
     fetchSavedCards();
-    // Detect Apple Pay
-    if (window.ApplePaySession && ApplePaySession.canMakePayments) {
-      setSupportsApplePay(true);
-    }
-    // Detect Google Pay (Payment Request API)
-    if (window.PaymentRequest) {
-      setSupportsGooglePay(true);
-    }
+    // Show wallet button if the browser exposes Apple Pay OR the Payment Request API
+    const hasApplePay =
+      typeof window.ApplePaySession !== 'undefined' &&
+      typeof window.ApplePaySession.canMakePayments === 'function';
+    const hasPaymentRequest = typeof window.PaymentRequest !== 'undefined';
+    setSupportsWallet(hasApplePay || hasPaymentRequest);
   }, []);
 
   const fetchSavedCards = async () => {
@@ -52,20 +50,16 @@ export default function MultiPaymentSelector({ amount = 0, onSelect, showCash = 
 
   const handleSelect = (type) => {
     setSelected(type);
-    if (type === 'apple_pay') handleApplePay();
-    else if (type === 'google_pay') handleGooglePay();
-    else if (type !== 'guest_card') {
+    if (type !== 'guest_card' && type !== 'wallet') {
       const card = savedCards.find(c => c.is_default) || savedCards[0];
       onSelect?.({ type, token: card?.token, card_last_four: card?.card_last_four, card_brand: card?.card_brand });
     }
   };
 
-  const handleApplePay = async () => {
-    toast.info('Apple Pay — coming soon! Use card on file for now.');
-  };
-
-  const handleGooglePay = async () => {
-    toast.info('Google Pay — coming soon! Use card on file for now.');
+  const handleWalletSuccess = (payload) => {
+    setSelected('wallet');
+    onSelect?.(payload);
+    toast.success(payload.is_mock ? 'Payment confirmed (demo)' : 'Payment confirmed');
   };
 
   const handleGuestCardSubmit = async () => {
@@ -147,29 +141,15 @@ export default function MultiPaymentSelector({ amount = 0, onSelect, showCash = 
         </div>
       )}
 
-      {/* Apple Pay */}
-      {supportsApplePay && (
-        <button
-          onClick={() => handleSelect('apple_pay')}
-          className={`w-full flex items-center gap-3 p-3 border rounded-xl transition-all ${selected === 'apple_pay' ? 'border-black bg-black text-white' : 'border-slate-200 bg-black text-white'}`}
-          data-testid="pay-apple-pay"
-          style={{ background: '#000000', color: 'white', borderColor: '#000' }}
-        >
-          <Smartphone className="w-5 h-5" />
-          <span className="text-sm font-semibold"> Pay</span>
-        </button>
-      )}
-
-      {/* Google Pay */}
-      {supportsGooglePay && !supportsApplePay && (
-        <button
-          onClick={() => handleSelect('google_pay')}
-          className="w-full flex items-center gap-3 p-3 border border-slate-200 rounded-xl bg-white hover:border-slate-300 transition-all"
-          data-testid="pay-google-pay"
-        >
-          <Smartphone className="w-5 h-5 text-blue-600" />
-          <span className="text-sm font-medium text-slate-800">G Pay</span>
-        </button>
+      {/* Apple Pay / Google Pay (Stripe Payment Request Button — auto-detects wallet) */}
+      {supportsWallet && amount >= 1 && (
+        <div className="pt-1" data-testid="wallet-pay-slot">
+          <StripePaymentRequestButton
+            amount={amount}
+            label={label}
+            onSuccess={handleWalletSuccess}
+          />
+        </div>
       )}
 
       {/* Cash */}

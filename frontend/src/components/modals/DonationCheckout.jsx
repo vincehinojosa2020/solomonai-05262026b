@@ -3,6 +3,7 @@ import { X, DollarSign, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { API_URL } from '@/lib/utils';
 import SolomonPayForm from '@/components/SolomonPayForm';
+import StripePaymentRequestButton from '@/components/payments/StripePaymentRequestButton';
 
 const DONATION_AMOUNTS = [
   { id: 'tithe_25', amount: 25, label: '$25' },
@@ -68,6 +69,23 @@ export default function DonationCheckout({ onClose, preselectedFund }) {
     const data = await response.json();
     setTransactionId(data.transaction_id);
     setStep('success');
+  };
+
+  const handleWalletSuccess = async (payload) => {
+    // Mirror the same persistence path as card payments. The backend treats
+    // wallet_type + token the same as any other tokenized card at this layer.
+    try {
+      await handleSolomonPaySuccess({
+        token: payload.token,
+        card_last_four: payload.card_last_four,
+        card_brand: payload.card_brand,
+        wallet_type: payload.wallet_type,
+        payment_method_type: payload.type,
+      });
+    } catch (e) {
+      setError(e?.message || 'Wallet payment failed');
+      setStep('error');
+    }
   };
 
   const formatCurrency = (value) => {
@@ -229,11 +247,26 @@ export default function DonationCheckout({ onClose, preselectedFund }) {
               </div>
             </div>
           )}
+
+          {getFinalAmount() >= 1 && (
+            <div className="space-y-2" data-testid="donation-wallet-slot">
+              <StripePaymentRequestButton
+                amount={getFinalAmount()}
+                label={`${funds.find(f => f.id === selectedFund)?.name || 'General Fund'}${isRecurring ? ' (Monthly)' : ''}`}
+                onSuccess={handleWalletSuccess}
+              />
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-px bg-slate-200" />
+                <span className="text-[11px] text-slate-400 uppercase tracking-wider">or</span>
+                <div className="flex-1 h-px bg-slate-200" />
+              </div>
+            </div>
+          )}
         </div>
         <div className="slide-panel-footer">
           <Button variant="outline" onClick={onClose} className="btn-secondary">Cancel</Button>
           <Button onClick={handleProceedToPayment} disabled={getFinalAmount() < 1} className="btn-primary" data-testid="donation-continue-btn">
-            Continue to SolomonPay
+            Pay with Card
           </Button>
         </div>
       </div>
