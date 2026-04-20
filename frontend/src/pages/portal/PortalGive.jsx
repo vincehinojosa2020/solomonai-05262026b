@@ -8,6 +8,7 @@ import { safeRedirect } from '@/utils/sanitize';
 import SolomonPayForm from '@/components/SolomonPayForm';
 import RecurringGivingManager from '@/components/RecurringGivingManager';
 import GivingGoalTracker from '@/components/GivingGoalTracker';
+import StripePaymentRequestButton from '@/components/payments/StripePaymentRequestButton';
 
 export default function PortalGive() {
   const { user, memberData, refreshData, tenant } = useOutletContext();
@@ -566,6 +567,32 @@ export default function PortalGive() {
           {/* Submit Button */}
           {!showPayment && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {giveAmount >= 1 && (
+                <div data-testid="portal-give-wallet-slot">
+                  <StripePaymentRequestButton
+                    amount={totalCharge}
+                    label={`${funds.find(f => f.id === fund)?.name || 'General Fund'}${frequency !== 'one-time' ? ` (${frequency})` : ''}`}
+                    onSuccess={async (payload) => {
+                      try {
+                        await handleSolomonPaySuccess({
+                          token: payload.token,
+                          card_last_four: payload.card_last_four,
+                          card_brand: payload.card_brand,
+                          wallet_type: payload.wallet_type,
+                          payment_method_type: payload.type,
+                        });
+                      } catch (e) {
+                        toast.error(e?.message || 'Wallet payment failed');
+                      }
+                    }}
+                  />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '4px 0 6px' }}>
+                    <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+                    <span style={{ fontSize: 11, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em' }}>or</span>
+                    <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+                  </div>
+                </div>
+              )}
               <button
                 onClick={handleGive}
                 disabled={isLoading || !amount}
