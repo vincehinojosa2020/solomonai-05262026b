@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://demo-ready-saas.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://secure-deploy-17.preview.emergentagent.com')
 
 # Test credentials
 SHANNON_EMAIL = "shannonnieman1030@gmail.com"

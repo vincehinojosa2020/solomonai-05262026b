@@ -1704,7 +1704,7 @@ The platform uses a custom design system built on Tailwind CSS with Shadcn/UI as
 
 The platform runs on **Emergent's managed Kubernetes** infrastructure on GCP. Two deployment environments:
 
-1. **Preview**: `https://demo-ready-saas.preview.emergentagent.com` — development/staging
+1. **Preview**: `https://secure-deploy-17.preview.emergentagent.com` — development/staging
 2. **Production**: `https://solomonai.us` — live (via Cloudflare → Emergent K8s)
 
 ### Deployment Process

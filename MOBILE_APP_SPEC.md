@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://demo-ready-saas.preview.emergentagent.com/api
+https://secure-deploy-17.preview.emergentagent.com/api
 ```
 
 ### Authentication
