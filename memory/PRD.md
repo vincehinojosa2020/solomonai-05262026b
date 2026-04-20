@@ -25,10 +25,16 @@ React 18 + FastAPI + MongoDB 7.0 | 575+ endpoints | 89 pages | Claude Sonnet 4.5
 - TLS 1.2+ only, secure cipher suites (Nginx)
 - CSP, X-Frame-Options: DENY, X-Content-Type-Options: nosniff, HSTS, Referrer-Policy
 
-### Snyk SAST (71 → 0)
+### Snyk SAST (98 → 0)
 - DOMPurify on all dangerouslySetInnerHTML
-- safeHref/safeSrc/safeRedirect utilities
+- Centralized sanitize.js: safeHref, safeImgSrc, safeIframeSrc, safeMailto, safeTel, safeRedirect, safeStripeCheckoutUrl, blobFromResponse
+- Host-allowlisted iframes (Thinkific, Shopify/Square/BigCartel for merch)
+- Mailto/tel regex-validated
+- Blob download guards validate content-type (application/pdf)
+- Stripe Checkout URL uses `new URL()` hostname === 'checkout.stripe.com' (defeats subdomain tricks)
+- Dev-server /edit-file rate-limited (20 req/min, express-rate-limit)
 - CSP meta tag, path traversal protection, credential env vars
+- Hardcoded test passwords removed — tests skip when TEST_PASSWORD env missing
 
 ## Documentation
 - `/app/SOLOMON_AI_PLATFORM_AUDIT.md`
