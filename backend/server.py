@@ -271,6 +271,22 @@ async def _deferred_startup() -> None:
 
         await asyncio.sleep(1)
 
+        # ── Eden Church auto-seed (runs ONCE per deploy; flagged in DB) ──
+        try:
+            from scripts.setup_eden_church import auto_seed_on_boot
+            result = await auto_seed_on_boot()
+            if result.get("seeded"):
+                logger.info(
+                    f"[startup] Eden Church seeded. Wiped {result.get('wiped_legacy_tenants', 0)} "
+                    f"legacy tenant(s). State: {result.get('state')}"
+                )
+            else:
+                logger.info(f"[startup] Eden Church auto-seed skipped: {result.get('reason')}")
+        except Exception as exc:
+            logger.warning(f"[startup] eden_auto_seed skipped: {exc}")
+
+        await asyncio.sleep(1)
+
         # ── TTL indexes (idempotent, safe to retry) ─────────────────────
         for coll, field, ttl in [
             ("idempotency_keys", "created_at", 86400),

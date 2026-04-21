@@ -174,6 +174,38 @@ async def verify_clean_state() -> dict:
     }
 
 
+async def auto_seed_on_boot() -> dict:
+    """Run exactly once per fresh deploy. Checks a platform_flags doc; if not
+    present, wipes any legacy Eden/EdenX data and seeds the clean Eden Church
+    tenant. Safe to call on every backend start — the flag check makes it a
+    no-op after the first successful run."""
+    flag = await db.platform_flags.find_one({"key": "eden-church-seeded"})
+    if flag and flag.get("completed"):
+        return {"seeded": False, "reason": "already_seeded", "at": flag.get("at")}
+
+    try:
+        wiped = await wipe_all_eden_tenants()
+        info = await create_fresh_eden()
+        state = await verify_clean_state()
+        now = datetime.now(timezone.utc).isoformat()
+        await db.platform_flags.update_one(
+            {"key": "eden-church-seeded"},
+            {"$set": {
+                "key": "eden-church-seeded",
+                "completed": True,
+                "at": now,
+                "wiped_legacy_tenants": wiped,
+                "state": state,
+            }},
+            upsert=True,
+        )
+        logger.info(f"Eden auto-seed complete: wiped={wiped} state={state}")
+        return {"seeded": True, "wiped_legacy_tenants": wiped, "state": state, "info": info}
+    except Exception as e:
+        logger.error(f"Eden auto-seed failed: {e}")
+        return {"seeded": False, "reason": "error", "error": str(e)}
+
+
 async def main():
     print("Wiping all existing Eden/EdenX tenants…")
     n = await wipe_all_eden_tenants()
