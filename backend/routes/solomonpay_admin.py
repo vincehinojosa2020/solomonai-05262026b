@@ -29,8 +29,13 @@ async def _get_admin(request, required_perm=None):
 
 
 @router.get("/admin/solomonpay/dashboard")
-async def solomonpay_dashboard(request: Request):
-    """SolomonPay admin dashboard — aggregate stats."""
+async def solomonpay_dashboard(request: Request, source: Optional[str] = None):
+    """SolomonPay admin dashboard — aggregate stats.
+    `source` query param filters by payment_source:
+      * "stripe" → only real Stripe PaymentIntents (test or live)
+      * "demo"   → only seeded/fake data (payment_source != stripe)
+      * None     → all donations (default)
+    """
     user = await _get_admin(request)
     tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
     now = datetime.now(timezone.utc)
@@ -39,8 +44,17 @@ async def solomonpay_dashboard(request: Request):
     month_start = now.replace(day=1).strftime("%Y-%m-%d")
     ytd_start = now.replace(month=1, day=1).strftime("%Y-%m-%d")
 
+    def _source_filter():
+        if source == "stripe":
+            return {"payment_source": "stripe"}
+        if source == "demo":
+            return {"$or": [{"payment_source": {"$ne": "stripe"}}, {"payment_source": {"$exists": False}}]}
+        return {}
+
+    src = _source_filter()
+
     async def _sum(match):
-        pipeline = [{"$match": {**match, "tenant_id": tenant_id}}, {"$group": {"_id": None, "total": {"$sum": "$amount"}, "count": {"$sum": 1}}}]
+        pipeline = [{"$match": {**match, **src, "tenant_id": tenant_id}}, {"$group": {"_id": None, "total": {"$sum": "$amount"}, "count": {"$sum": 1}}}]
         r = await db.donations.aggregate(pipeline).to_list(1)
         return {"total": round(r[0]["total"], 2) if r else 0, "count": r[0]["count"] if r else 0}
 
@@ -49,16 +63,16 @@ async def solomonpay_dashboard(request: Request):
     month = await _sum({"donation_date": {"$gte": month_start}})
     ytd = await _sum({"donation_date": {"$gte": ytd_start}})
 
-    # Active recurring count
+    # Active recurring count (not source-filtered — recurring lives separately)
     recurring_count = await db.recurring_giving.count_documents({"tenant_id": tenant_id, "is_active": True})
 
     # Average gift
-    avg_pipeline = [{"$match": {"tenant_id": tenant_id, "donation_date": {"$gte": ytd_start}}}, {"$group": {"_id": None, "avg": {"$avg": "$amount"}}}]
+    avg_pipeline = [{"$match": {**src, "tenant_id": tenant_id, "donation_date": {"$gte": ytd_start}}}, {"$group": {"_id": None, "avg": {"$avg": "$amount"}}}]
     avg_r = await db.donations.aggregate(avg_pipeline).to_list(1)
     avg_gift = round(avg_r[0]["avg"], 2) if avg_r else 0
 
     # Top fund
-    fund_pipeline = [{"$match": {"tenant_id": tenant_id, "donation_date": {"$gte": ytd_start}}}, {"$group": {"_id": "$fund_name", "total": {"$sum": "$amount"}}}, {"$sort": {"total": -1}}, {"$limit": 1}]
+    fund_pipeline = [{"$match": {**src, "tenant_id": tenant_id, "donation_date": {"$gte": ytd_start}}}, {"$group": {"_id": "$fund_name", "total": {"$sum": "$amount"}}}, {"$sort": {"total": -1}}, {"$limit": 1}]
     top_fund_r = await db.donations.aggregate(fund_pipeline).to_list(1)
     top_fund = top_fund_r[0]["_id"] if top_fund_r else "General Fund"
 
@@ -71,17 +85,23 @@ async def solomonpay_dashboard(request: Request):
             m += 12
             y -= 1
         ms = f"{y}-{m:02d}"
-        mp = [{"$match": {"tenant_id": tenant_id, "donation_date": {"$regex": f"^{ms}"}}}, {"$group": {"_id": None, "total": {"$sum": "$amount"}, "count": {"$sum": 1}}}]
+        mp = [{"$match": {**src, "tenant_id": tenant_id, "donation_date": {"$regex": f"^{ms}"}}}, {"$group": {"_id": None, "total": {"$sum": "$amount"}, "count": {"$sum": 1}}}]
         mr = await db.donations.aggregate(mp).to_list(1)
         trend.append({"month": ms, "total": round(mr[0]["total"], 2) if mr else 0, "count": mr[0]["count"] if mr else 0})
 
     # Recent 20 transactions
-    recent = await db.donations.find({"tenant_id": tenant_id}, {"_id": 0}).sort("created_at", -1).limit(20).to_list(20)
+    recent = await db.donations.find({**src, "tenant_id": tenant_id}, {"_id": 0}).sort("created_at", -1).limit(20).to_list(20)
+
+    # Counts by source (for the UI toggle badge)
+    stripe_count = await db.donations.count_documents({"tenant_id": tenant_id, "payment_source": "stripe"})
+    demo_count = await db.donations.count_documents({"tenant_id": tenant_id, "$or": [{"payment_source": {"$ne": "stripe"}}, {"payment_source": {"$exists": False}}]})
 
     return {
         "today": today, "week": week, "month": month, "ytd": ytd,
         "active_recurring": recurring_count, "avg_gift": avg_gift, "top_fund": top_fund,
         "trend": trend, "recent_transactions": [serialize_doc(d) for d in recent],
+        "source_filter": source or "all",
+        "source_counts": {"stripe": stripe_count, "demo": demo_count, "total": stripe_count + demo_count},
     }
 
 
@@ -93,12 +113,17 @@ async def solomonpay_transactions(
     date_from: Optional[str] = None, date_to: Optional[str] = None,
     amount_min: Optional[float] = None, amount_max: Optional[float] = None,
     payment_method: Optional[str] = None, sort_by: str = "donation_date", sort_dir: str = "desc",
-    search: Optional[str] = None,
+    search: Optional[str] = None, source: Optional[str] = None,
 ):
-    """Full transaction list with filtering."""
+    """Full transaction list with filtering. `source` filters by payment_source
+    (stripe | demo | None for all)."""
     user = await _get_admin(request)
     tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
     query = {"tenant_id": tenant_id}
+    if source == "stripe":
+        query["payment_source"] = "stripe"
+    elif source == "demo":
+        query["$or"] = [{"payment_source": {"$ne": "stripe"}}, {"payment_source": {"$exists": False}}]
     if fund:
         query["fund_name"] = fund
     if donor:

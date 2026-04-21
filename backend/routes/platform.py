@@ -17,6 +17,7 @@ import bcrypt
 from core import (
     db, DEFAULT_TENANT_ID, ROLE_TEMPLATES,
     get_permissions_for_user, get_session_token_from_request, audit_log,
+    get_current_admin_user,
     logger,
 )
 from core.helpers import serialize_doc, DEFAULT_MERCH_EMBED_URL, compute_health_score
@@ -25,6 +26,27 @@ from models.schemas import (
 )
 
 router = APIRouter()
+
+
+# ══════════════════════════════════════════════════════════════════════
+#  Eden Church POC — reset endpoint
+#  Wipes all Stripe-test donations/payouts/people for eden-church-001 so
+#  Vince can re-run the demo from a clean state. Keeps tenant, admin user,
+#  and fund configurations intact.
+# ══════════════════════════════════════════════════════════════════════
+@router.post("/admin/eden-church/reset")
+async def reset_eden_church(request: Request):
+    """Platform-admin only. POST — no body required."""
+    user = await get_current_admin_user(request)
+    if user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin required")
+
+    from scripts.setup_eden_church import reset_eden_data_only, verify_clean_state
+    result = await reset_eden_data_only()
+    result["state"] = await verify_clean_state()
+    await audit_log(user, "eden_church_reset", {"state": result["state"]})
+    return result
+
 
 @router.get("/platform/stats")
 async def get_platform_stats(request: Request):

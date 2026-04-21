@@ -73,6 +73,7 @@ import SongLibraryPage from "@/pages/SongLibraryPage";
 import MusicStandPage from "@/pages/MusicStandPage";
 import RegistrationsPage from "@/pages/RegistrationsPage";
 import PublicRegistrationPage from "@/pages/PublicRegistrationPage";
+import PublicGivingPage from "@/pages/PublicGivingPage";
 import CheckInSetupPage from "@/pages/CheckInSetupPage";
 import PortalCourses from "@/pages/portal/PortalCourses";
 import PortalCourseDetail from "@/pages/portal/PortalCourseDetail";
@@ -106,6 +107,7 @@ function AppRouter() {
       <Route path="/security" element={<SecurityPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/register/:eventId" element={<PublicRegistrationPage />} />
+      <Route path="/give/:churchSlug" element={<PublicGivingPage />} />
       
       {/* Platform Admin (God Mode) — standalone, no AppShell sidebar */}
       <Route

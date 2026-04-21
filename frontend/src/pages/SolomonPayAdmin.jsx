@@ -32,6 +32,7 @@ const StatCard = ({ title, value, subtitle, trend }) => (
 export default function SolomonPayAdmin() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [dashData, setDashData] = useState(null);
+  const [sourceFilter, setSourceFilter] = useState('all'); // all | stripe | demo
   const [transactions, setTransactions] = useState({ data: [], total: 0 });
   const [txPage, setTxPage] = useState(1);
   const [txSearch, setTxSearch] = useState('');
@@ -65,10 +66,11 @@ export default function SolomonPayAdmin() {
 
   const fetchDashboard = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/admin/solomonpay/dashboard`, { headers: headers() });
+      const qs = sourceFilter && sourceFilter !== 'all' ? `?source=${sourceFilter}` : '';
+      const res = await fetch(`${API_URL}/admin/solomonpay/dashboard${qs}`, { headers: headers() });
       if (res.ok) setDashData(await res.json());
     } catch (e) { console.error(e); }
-  }, []);
+  }, [sourceFilter]);
 
   const fetchTransactions = useCallback(async () => {
     const params = new URLSearchParams({ page: txPage, per_page: 50 });
@@ -76,11 +78,12 @@ export default function SolomonPayAdmin() {
     if (txFund) params.set('fund', txFund);
     if (txDateFrom) params.set('date_from', txDateFrom);
     if (txDateTo) params.set('date_to', txDateTo);
+    if (sourceFilter && sourceFilter !== 'all') params.set('source', sourceFilter);
     try {
       const res = await fetch(`${API_URL}/admin/solomonpay/transactions?${params}`, { headers: headers() });
       if (res.ok) setTransactions(await res.json());
     } catch (e) { console.error(e); }
-  }, [txPage, txSearch, txFund, txDateFrom, txDateTo]);
+  }, [txPage, txSearch, txFund, txDateFrom, txDateTo, sourceFilter]);
 
   const fetchPayouts = async () => {
     try { const res = await fetch(`${API_URL}/admin/solomonpay/payouts`, { headers: headers() }); if (res.ok) setPayouts(await res.json()); } catch (e) { console.error(e); }
@@ -244,6 +247,35 @@ export default function SolomonPayAdmin() {
       {activeTab === 'dashboard' && dashData && (
         <div className="space-y-4" data-testid="solomonpay-dashboard-tab">
         <FeatureEducationHeader featureKey="solomonpay" />
+
+          {/* Source filter — separate Stripe real transactions from seeded demo data */}
+          <div className="flex items-center gap-2 flex-wrap" data-testid="solomonpay-source-toggle">
+            {[
+              { key: 'all', label: 'All', count: dashData.source_counts?.total ?? 0 },
+              { key: 'stripe', label: 'Stripe', count: dashData.source_counts?.stripe ?? 0 },
+              { key: 'demo', label: 'Demo data', count: dashData.source_counts?.demo ?? 0 },
+            ].map((opt) => (
+              <button
+                key={opt.key}
+                onClick={() => setSourceFilter(opt.key)}
+                data-testid={`solomonpay-source-${opt.key}`}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors border ${
+                  sourceFilter === opt.key
+                    ? 'bg-slate-900 text-white border-slate-900'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                }`}
+              >
+                {opt.label}
+                <span className="ml-1.5 text-[10px] opacity-70 font-mono">{opt.count}</span>
+              </button>
+            ))}
+            {sourceFilter === 'stripe' && (
+              <span className="ml-2 text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
+                Showing real Stripe transactions only
+              </span>
+            )}
+          </div>
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <StatCard title="Today" value={formatCurrency(dashData.today.total)} subtitle={`${dashData.today.count} gifts`} />
             <StatCard title="This Week" value={formatCurrency(dashData.week.total)} subtitle={`${dashData.week.count} gifts`} />
@@ -280,15 +312,26 @@ export default function SolomonPayAdmin() {
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="bg-slate-50 text-xs text-slate-500 uppercase"><th className="px-4 py-2 text-left">Date</th><th className="px-4 py-2 text-left">Donor</th><th className="px-4 py-2 text-left">Fund</th><th className="px-4 py-2 text-right">Amount</th><th className="px-4 py-2 text-left">Status</th></tr></thead>
+                <thead><tr className="bg-slate-50 text-xs text-slate-500 uppercase"><th className="px-4 py-2 text-left">Date</th><th className="px-4 py-2 text-left">Donor</th><th className="px-4 py-2 text-left">Fund</th><th className="px-4 py-2 text-right">Amount</th><th className="px-4 py-2 text-left">Source</th><th className="px-4 py-2 text-left">Status</th></tr></thead>
                 <tbody>
                   {(dashData.recent_transactions || []).slice(0, 20).map((tx, i) => (
                     <tr key={i} className="border-t border-slate-50 hover:bg-slate-50">
                       <td className="px-4 py-2.5 font-mono text-xs">{tx.donation_date}</td>
-                      <td className="px-4 py-2.5 font-medium text-slate-700">{tx.person_name || 'Anonymous'}</td>
+                      <td className="px-4 py-2.5 font-medium text-slate-700">{tx.person_name || tx.donor_name || 'Anonymous'}</td>
                       <td className="px-4 py-2.5 text-slate-500">{tx.fund_name || 'General'}</td>
                       <td className="px-4 py-2.5 text-right font-mono font-semibold">{formatCurrency(tx.amount)}</td>
-                      <td className="px-4 py-2.5"><span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${tx.status === 'completed' ? 'bg-green-50 text-green-700' : tx.status === 'refunded' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'}`}>{tx.status || 'completed'}</span></td>
+                      <td className="px-4 py-2.5">
+                        {tx.payment_source === 'stripe' ? (
+                          <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-100" data-testid={`tx-badge-stripe-${i}`}>
+                            STRIPE{tx.test_mode ? ' · TEST' : ''}
+                          </span>
+                        ) : (
+                          <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-slate-100 text-slate-500 border border-slate-200">
+                            DEMO
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-2.5"><span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${tx.status === 'completed' || tx.status === 'succeeded' ? 'bg-green-50 text-green-700' : tx.status === 'refunded' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'}`}>{tx.status || 'completed'}</span></td>
                     </tr>
                   ))}
                 </tbody>
