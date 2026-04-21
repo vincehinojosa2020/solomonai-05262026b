@@ -44,7 +44,19 @@ async def reset_eden_church(request: Request):
     from scripts.setup_eden_church import reset_eden_data_only, verify_clean_state
     result = await reset_eden_data_only()
     result["state"] = await verify_clean_state()
-    await audit_log(user, "eden_church_reset", {"state": result["state"]})
+    try:
+        await audit_log(
+            action="eden_church_reset",
+            entity_type="tenant",
+            entity_id="eden-church-001",
+            tenant_id="eden-church-001",
+            user_id=user.get("user_id") or user.get("id", ""),
+            user_name=user.get("name", ""),
+            after_value=result["state"],
+            request=request,
+        )
+    except Exception as e:
+        logger.warning(f"eden reset audit_log failed (non-fatal): {e}")
     return result
 
 

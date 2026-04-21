@@ -40,6 +40,14 @@ React 18 + FastAPI + MongoDB 7.0 | 575+ endpoints | 89 pages | Claude Sonnet 4.5
 - `/app/SOLOMON_AI_PLATFORM_AUDIT.md`
 - `/app/SOLOMON_AI_UI_GUIDE.md`
 
+## Session — Feb 21, 2026 — Eden Church × Stripe POC
+- Wiped legacy "EdenX Ministries" tenant + seeded clean `eden-church-001` (1 admin, 4 funds, 0 everything else). Reset via `POST /api/admin/eden-church/reset` (platform_admin only).
+- Real Stripe test mode wired: new router `/app/backend/routes/stripe_elements.py` with `/api/stripe/elements/config`, `/api/churches/:slug/public-config`, `/api/stripe/create-payment-intent`, `/api/stripe/confirm-donation`, `/api/stripe/balance`, `/api/stripe/payouts`.
+- Public guest giving page at `/give/:churchSlug` (`PublicGivingPage.jsx`) — Eden Church rendered in black + cyan + Playfair Display; other tenants render dynamically from their primary/accent colors.
+- `SolomonPayAdmin.jsx` dashboard now has a 3-pill source toggle (All / Stripe / Demo data) + STRIPE·TEST vs DEMO badges on recent transactions. Backend dashboard + transactions endpoints accept `?source=stripe|demo|all`.
+- Christopher's credentials: `christopher@eden-x.io` / `EdenChurch2026!`.
+- Verified end-to-end: real PaymentIntents created, donations persisted with `payment_source='stripe'` + `test_mode=true`, idempotent confirm flow, live Stripe balance in dashboard, reset endpoint clears demo-run data on demand.
+
 ## Remaining
 - Vite migration — **DEFERRED / BLOCKED on platform** (see `/app/VITE_MIGRATION_DEFERRED.md`). Requires Emergent to port webpack-based `visual-edits` + `health-check` plugins to Vite first.
 - Apple/Google Pay — **MOCK UI shipped** (Feb 2026) at `/portal/give` + `/giving`. Auto-upgrades to real Stripe Payment Request Button when `REACT_APP_STRIPE_PUBLISHABLE_KEY` or `window.__STRIPE_PUBLISHABLE_KEY__` is set. See `/app/STRIPE_PAYMENT_REQUEST_INTEGRATION.md`.
