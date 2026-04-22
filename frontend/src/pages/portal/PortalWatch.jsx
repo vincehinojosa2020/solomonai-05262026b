@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
+import { safeRedirect } from '@/utils/sanitize';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ABUNDANT TV - Unified Watch & Library Experience
@@ -107,7 +108,7 @@ const VideoPlayer = ({ isOpen, onClose, video, onShare, user }) => {
   if (!isOpen || !video) return null;
 
   const handleGive = () => {
-    window.location.href = '/portal/give';
+    window.location.href = safeRedirect('/portal/give');
   };
 
   return (
