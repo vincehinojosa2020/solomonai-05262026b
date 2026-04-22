@@ -373,6 +373,10 @@ async def stripe_balance():
         "pending_cents": pending_cents,
         "available": round(available_cents / 100.0, 2),
         "pending": round(pending_cents / 100.0, 2),
+        # Pending funds can be paid out in test mode via the /payouts endpoint
+        # (we simulate the payout if Stripe rejects for insufficient available).
+        # This field drives the "Request Payout" button state in the UI.
+        "payable": round((available_cents + pending_cents if IS_TEST_MODE else available_cents) / 100.0, 2),
         "currency": (bal.available[0].currency if bal.available else "usd"),
         "test_mode": IS_TEST_MODE,
     }
@@ -386,43 +390,76 @@ class PayoutRequest(BaseModel):
 @router.post("/stripe/payouts")
 async def create_stripe_payout(payload: PayoutRequest):
     """Create a Stripe Payout (test mode simulates it). Persists a record in
-    the payouts collection so the dashboard can render payout history."""
+    the payouts collection so the dashboard can render payout history.
+
+    Test-mode nuance: Stripe holds test charges in `pending` for a few minutes
+    before releasing to `available`. If the demo runs before that window, the
+    Stripe API rejects the payout with "insufficient funds". In test mode we
+    therefore fall back to simulating a payout record against the pending
+    balance — so the dashboard + "Request Payout" UX is always demo-able."""
     if not stripe.api_key:
         raise HTTPException(500, "Stripe not configured on server")
 
     try:
         bal = stripe.Balance.retrieve()
         available_cents = sum(a.amount for a in bal.available)
+        pending_cents = sum(p.amount for p in bal.pending)
     except stripe.error.StripeError as e:
         raise HTTPException(502, f"Stripe balance error: {e.user_message or str(e)}")
 
+    # Amount to pay out — default is full available; in test mode fall back
+    # to pending if available is zero so the demo-time click still produces
+    # a visible payout record.
+    effective_balance_cents = available_cents if available_cents > 0 else (pending_cents if IS_TEST_MODE else 0)
     amount_cents = (
         int(round(payload.amount * 100))
         if payload.amount is not None
-        else available_cents
+        else effective_balance_cents
     )
-    if amount_cents <= 0 or amount_cents > available_cents:
+    if amount_cents <= 0 or amount_cents > effective_balance_cents:
         raise HTTPException(
             400,
-            f"Amount must be between $0.01 and available balance ${available_cents / 100:.2f}",
+            f"Amount must be between $0.01 and balance ${effective_balance_cents / 100:.2f} "
+            f"(available=${available_cents / 100:.2f} pending=${pending_cents / 100:.2f})",
         )
 
+    simulated = False
     try:
         payout = stripe.Payout.create(amount=amount_cents, currency="usd")
+        payout_id = payout.id
+        payout_status = payout.status
+        arrival = payout.arrival_date
+        method = payout.method
     except stripe.error.StripeError as e:
-        raise HTTPException(502, f"Stripe payout error: {e.user_message or str(e)}")
+        # In test mode, synthesize a payout record so the demo still shows a
+        # row in the history table. Not allowed in live mode — would be a
+        # silent failure for real money.
+        if not IS_TEST_MODE:
+            raise HTTPException(502, f"Stripe payout error: {e.user_message or str(e)}")
+        logger.warning(f"Stripe rejected test payout ({e.user_message}); simulating record for demo")
+        payout_id = f"po_simulated_{int(datetime.now(timezone.utc).timestamp())}"
+        payout_status = "pending"
+        arrival = int(datetime.now(timezone.utc).timestamp()) + 2 * 24 * 3600
+        method = "standard"
+        simulated = True
 
     record = {
-        "id": payout.id,
+        "id": payout_id,
         "tenant_id": payload.tenant_id,
-        "amount": round(payout.amount / 100.0, 2),
-        "amount_cents": payout.amount,
-        "currency": payout.currency,
-        "status": payout.status,
-        "arrival_date": payout.arrival_date,
-        "method": payout.method,
+        "amount": round(amount_cents / 100.0, 2),
+        "amount_cents": amount_cents,
+        "currency": "usd",
+        "status": payout_status,
+        "arrival_date": arrival,
+        "method": method,
         "source": "stripe",
         "test_mode": IS_TEST_MODE,
+        "simulated": simulated,
+        "note": (
+            "Test-mode simulation against pending balance — Stripe "
+            "test charges settle in a few minutes, real charges in 2 business days."
+            if simulated else None
+        ),
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     await db.payouts.insert_one(record)
