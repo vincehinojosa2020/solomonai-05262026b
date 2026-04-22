@@ -139,6 +139,45 @@ export default function PublicGivingPage() {
     return () => { alive = false; };
   }, [churchSlug]);
 
+  // 1b. Dynamic browser tab title + favicon per church. Restores the original
+  // Solomon AI title/favicon when the user navigates away so this never
+  // bleeds into other routes.
+  useEffect(() => {
+    if (!config) return;
+
+    const originalTitle = document.title;
+    const faviconLink =
+      document.querySelector("link[rel~='icon']") || (() => {
+        const l = document.createElement('link');
+        l.rel = 'icon';
+        document.head.appendChild(l);
+        return l;
+      })();
+    const originalHref = faviconLink.getAttribute('href');
+    const originalType = faviconLink.getAttribute('type');
+
+    document.title = `Give to ${config.name}`;
+    // Only Eden Church has a hardcoded custom favicon for now. Other tenants
+    // keep the default Solomon AI favicon until the per-church branding
+    // upload lands.
+    if (config.slug === 'eden-church') {
+      faviconLink.setAttribute('type', 'image/svg+xml');
+      faviconLink.setAttribute('href', '/eden-logo.svg');
+    }
+
+    return () => {
+      document.title = originalTitle;
+      if (originalHref !== null) {
+        faviconLink.setAttribute('href', originalHref);
+      }
+      if (originalType !== null) {
+        faviconLink.setAttribute('type', originalType);
+      } else {
+        faviconLink.removeAttribute('type');
+      }
+    };
+  }, [config]);
+
   const theme = useMemo(() => resolveTheme(config), [config]);
 
   // 2. Initialize Stripe Elements once config arrives
