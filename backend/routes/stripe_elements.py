@@ -24,9 +24,11 @@ from __future__ import annotations
 import logging
 import os
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Optional
 
 import stripe
+from dotenv import dotenv_values
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, EmailStr, Field
 
@@ -36,15 +38,33 @@ logger = logging.getLogger("solomon.stripe_elements")
 router = APIRouter()
 
 # ═══ Configuration ══════════════════════════════════════════════════════════
-STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "")
-STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
-STRIPE_LIVE = os.environ.get("STRIPE_LIVE", "false").lower() == "true"
+# NOTE: The Emergent pod environment exports STRIPE_API_KEY=sk_test_emergent
+# as a platform default. That value takes precedence over python-dotenv's
+# non-override load_dotenv(), which would silently leave us with the wrong
+# key. We therefore prefer the values straight out of backend/.env and only
+# fall back to os.environ when the file is empty.
+_DOTENV_VALUES = dotenv_values(Path(__file__).resolve().parents[1] / ".env")
+
+
+def _stripe_env(name: str) -> str:
+    val = (_DOTENV_VALUES.get(name) or "").strip().strip("\"'")
+    if not val:
+        val = (os.environ.get(name) or "").strip().strip("\"'")
+    return val
+
+
+STRIPE_API_KEY = _stripe_env("STRIPE_API_KEY")
+STRIPE_PUBLISHABLE_KEY = _stripe_env("STRIPE_PUBLISHABLE_KEY")
+STRIPE_LIVE = _stripe_env("STRIPE_LIVE").lower() == "true"
 
 # Treat any sk_test_ key as test mode regardless of STRIPE_LIVE
 IS_TEST_MODE = STRIPE_API_KEY.startswith("sk_test_") or not STRIPE_LIVE
 
 if STRIPE_API_KEY:
     stripe.api_key = STRIPE_API_KEY
+    logger.info(f"Stripe configured (len={len(STRIPE_API_KEY)}, prefix={STRIPE_API_KEY[:8]}, test_mode={IS_TEST_MODE})")
+else:
+    logger.warning("Stripe API key missing — /api/stripe/* endpoints will 500")
 
 # Solomon platform fee (passed to the donor if they opt to cover)
 PLATFORM_FEE_RATE = 0.019   # 1.9%
