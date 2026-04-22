@@ -2463,10 +2463,12 @@ async def get_all_platform_churches(request: Request):
 
         # Enrich with health scores and full tenant details
         churches = []
+        seen_tenant_ids: set[str] = set()
         for cb in campus_breakdown:
             tid = cb.get("tenant_id")
             if not tid:
                 continue
+            seen_tenant_ids.add(tid)
             t = await db.tenants.find_one({"id": tid}, {"_id": 0,
                 "name": 1, "city": 1, "state": 1, "plan": 1, "subdomain": 1})
             cached = await db.dashboard_stats_cache.find_one({"tenant_id": tid}, {"_id": 0})
@@ -2498,6 +2500,47 @@ async def get_all_platform_churches(request: Request):
                 "health": health,
             })
 
+        # ── Union in any tenant that has zero donations (and was therefore
+        # dropped by the donation-aggregation cache). Source of truth for the
+        # church list is the `tenants` collection — a church with no gifts
+        # yet must still show up in God Mode with zero metrics.
+        zero_metric_cursor = db.tenants.find(
+            {"id": {"$nin": list(seen_tenant_ids)}},
+            {"_id": 0, "id": 1, "name": 1, "city": 1, "state": 1,
+             "plan": 1, "subdomain": 1, "slug": 1},
+        )
+        async for t in zero_metric_cursor:
+            tid = t.get("id")
+            if not tid:
+                continue
+            cached = await db.dashboard_stats_cache.find_one({"tenant_id": tid}, {"_id": 0})
+            preset = (cached or {}).get("preset_health_score")
+            health = (
+                {
+                    "score": (cached or {}).get("preset_health_score", 0),
+                    "grade": (cached or {}).get("preset_health_grade", "N/A"),
+                    "dimensions": (cached or {}).get("preset_health_dimensions", {}),
+                }
+                if preset is not None
+                else compute_health_score(cached or {}, t)
+            )
+            churches.append({
+                "id": tid,
+                "name": t.get("name", ""),
+                "city": t.get("city", ""),
+                "state": t.get("state", ""),
+                "plan": t.get("plan", "enterprise"),
+                "subdomain": t.get("subdomain", t.get("slug", "")),
+                "total_members": (cached or {}).get("total_members", 0),
+                "giving": 0,
+                "fees": 0,
+                "txn_count": 0,
+                "ytd_giving": 0,
+                "mtd_giving": 0,
+                "active_donors": 0,
+                "health": health,
+            })
+
         churches.sort(key=lambda x: x["giving"], reverse=True)
         return {"churches": churches, "total": len(churches)}
 
@@ -2507,8 +2550,12 @@ async def get_all_platform_churches(request: Request):
 
     # Build response from just-computed stats
     churches = []
+    seen_tenant_ids: set[str] = set()
     for cb in stats.get("campus_breakdown", []):
         tid = cb.get("tenant_id")
+        if not tid:
+            continue
+        seen_tenant_ids.add(tid)
         t = await db.tenants.find_one({"id": tid}, {"_id": 0}) or {}
         cached = await db.dashboard_stats_cache.find_one({"tenant_id": tid}, {"_id": 0}) or {}
         preset = cached.get("preset_health_score")
@@ -2525,6 +2572,31 @@ async def get_all_platform_churches(request: Request):
             "mtd_giving": cb.get("mtd_giving", 0), "active_donors": cb.get("active_donors", 0),
             "health": health,
         })
+
+    # Union in zero-donation tenants (see fast-path block above for rationale)
+    async for t in db.tenants.find(
+        {"id": {"$nin": list(seen_tenant_ids)}},
+        {"_id": 0, "id": 1, "name": 1, "city": 1, "state": 1,
+         "plan": 1, "subdomain": 1, "slug": 1},
+    ):
+        tid = t.get("id")
+        if not tid:
+            continue
+        cached = await db.dashboard_stats_cache.find_one({"tenant_id": tid}, {"_id": 0}) or {}
+        preset = cached.get("preset_health_score")
+        health = ({"score": cached.get("preset_health_score", 0),
+                   "grade": cached.get("preset_health_grade", "N/A"),
+                   "dimensions": cached.get("preset_health_dimensions", {})}
+                  if preset is not None else compute_health_score(cached, t))
+        churches.append({
+            "id": tid, "name": t.get("name", ""), "city": t.get("city", ""),
+            "state": t.get("state", ""), "plan": t.get("plan", "enterprise"),
+            "subdomain": t.get("subdomain", t.get("slug", "")),
+            "total_members": cached.get("total_members", 0),
+            "giving": 0, "fees": 0, "txn_count": 0, "ytd_giving": 0,
+            "mtd_giving": 0, "active_donors": 0, "health": health,
+        })
+
     churches.sort(key=lambda x: x["giving"], reverse=True)
     return {"churches": churches, "total": len(churches)}
 
