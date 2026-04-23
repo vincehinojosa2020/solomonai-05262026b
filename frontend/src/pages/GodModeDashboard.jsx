@@ -4,7 +4,7 @@ import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 import {
   Globe, LayoutDashboard, ArrowLeftRight, Landmark, Users,
-  DollarSign, Building2, Headphones, LogOut, Plus
+  DollarSign, Building2, Headphones, LogOut, Plus, Target
 } from 'lucide-react';
 
 import PlatformExecDashboard from './platform/PlatformExecDashboard';
@@ -14,6 +14,7 @@ import PlatformDonors from './platform/PlatformDonors';
 import PlatformRevenue from './platform/PlatformRevenue';
 import PlatformChurches from './platform/PlatformChurches';
 import PlatformSupport from './platform/PlatformSupport';
+import CompetitiveIntel from './platform/CompetitiveIntel';
 import ChurchOnboardingWizard from '@/components/ChurchOnboardingWizard';
 
 const TABS = [
@@ -23,6 +24,7 @@ const TABS = [
   { id: 'donors', label: 'Donors', icon: Users },
   { id: 'revenue', label: 'Revenue', icon: DollarSign },
   { id: 'churches', label: 'Churches', icon: Building2 },
+  { id: 'intel', label: 'Intel', icon: Target },
   { id: 'support', label: 'Support', icon: Headphones },
 ];
 
@@ -138,6 +140,7 @@ export default function GodModeDashboard() {
         {activeTab === 'donors' && <PlatformDonors token={token} />}
         {activeTab === 'revenue' && <PlatformRevenue token={token} />}
         {activeTab === 'churches' && <PlatformChurches token={token} stats={stats} />}
+        {activeTab === 'intel' && <CompetitiveIntel token={token} />}
         {activeTab === 'support' && <PlatformSupport token={token} onImpersonate={handleImpersonate} />}
       </div>
     </div>

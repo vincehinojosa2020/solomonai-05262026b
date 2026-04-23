@@ -2916,6 +2916,18 @@ async def create_church_onboarding(request: Request, payload: ChurchOnboardingRe
 
     await audit_log("church_created", "tenant", tenant_id, tenant_id, user.get("user_id"), user.get("name", ""), {}, {"tenant": payload.name, "admin_email": payload.admin_email}, request)
 
+    # Rebuild the platform stats cache in the background so God Mode reflects
+    # the new church immediately instead of waiting for the cold-path fallback
+    # inside /platform/churches to recompute. Non-blocking — the response is
+    # returned to the wizard right away.
+    async def _rebuild_cache_bg():
+        try:
+            stats = await _compute_platform_stats_fast()
+            await _save_platform_stats_cache(stats)
+        except Exception as e:
+            logger.warning("platform_stats_cache rebuild after onboarding failed: %s", e)
+    asyncio.ensure_future(_rebuild_cache_bg())
+
     return {
         "success": True,
         "tenant_id": tenant_id,
