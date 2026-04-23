@@ -1,7 +1,7 @@
 """Solomon AI — Full Functional CRUD Test Script"""
 import requests, json, time, sys
 
-API = "https://secure-deploy-17.preview.emergentagent.com/api"
+API = "https://platform-stripe-feed.preview.emergentagent.com/api"
 AT = open("/tmp/admin_token").read().strip()
 MT = open("/tmp/member_token").read().strip()
 PT = open("/tmp/platform_token").read().strip()

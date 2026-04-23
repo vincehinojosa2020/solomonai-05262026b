@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://secure-deploy-17.preview.emergentagent.com/api
+https://platform-stripe-feed.preview.emergentagent.com/api
 ```
 
 ### Authentication

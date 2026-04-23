@@ -154,7 +154,7 @@
 | Question | Answer |
 |----------|--------|
 | System deployed and accessible? | **YES** |
-| Production URL | `https://secure-deploy-17.preview.emergentagent.com` |
+| Production URL | `https://platform-stripe-feed.preview.emergentagent.com` |
 | Critical bugs or blockers? | **NO** — 0 P0 bugs remaining |
 | Demo all core flows without errors? | **YES** — 127/127 functional tests pass |
 | Architecture quality | 30 modular route files, 475 routes, 96 MongoDB collections |
