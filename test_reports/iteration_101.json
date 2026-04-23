@@ -1,0 +1,33 @@
+{
+  "summary": "Validated God Mode Prompts 1-4. Backend: 4/4 pytest tests pass (churches enrichment, stripe recent/daily/stats). Frontend: /platform/transactions standalone page, stats cards with skeleton->real, status filter testid, walkthrough auto-dismiss for platform_admin, and Exec Dashboard additions (payment-metrics-row, stripe-trend-chart, recent-stripe-activity) all work. Drawer opens/closes correctly. CRITICAL FRONTEND BUG: Churches tab does not render Eden Church (connected) — UI shows 7 churches all NOT_CONNECTED with 'Stripe Connected 0/7' and 'Stripe Processed $0' tiles, even though backend /api/platform/churches correctly returns Eden with stripe_status=connected and stripe_total_processed>0. PlatformChurches is reading from parent stats.churches prop instead of the enriched API payload.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "PlatformChurches (Churches tab on /godmode)", "issue": "Eden Church row is missing from the table and Stripe Connected=0/7, Stripe Processed=$0 summary cards show stale zeros. stripe-status-connected badge absent; church-view-eden-church-001 never rendered. Root cause: component appears to use parent GodModeDashboard's stats.churches prop rather than fetching /api/platform/churches (which backend test confirms includes Eden with stripe_status='connected', stripe_total_processed>0).", "selector": "[data-testid='platform-churches'] / [data-testid='stripe-status-connected']", "priority": "HIGH"},
+      {"component": "PlatformChurches", "issue": "React key warning: 'Each child in a list should have a unique key prop' in PlatformChurches render.", "selector": "PlatformChurches.jsx render map", "priority": "LOW"}
+    ],
+    "integration_issues": [
+      {"flow": "Churches tab -> drawer for Eden", "issue": "Cannot validate drawer-open-give-page or drawer-txn-0..n because Eden row is not in DOM. Drawer works structurally (opens on a not_connected church, KPIs render, view-transactions + close buttons work).", "affected_selectors": ["[data-testid='church-view-eden-church-001']", "[data-testid='drawer-open-give-page']", "[data-testid='drawer-txn-0']"]}
+    ],
+    "design_issues": [
+      {"screen": "God Mode (dev mode)", "issues": ["Non-blocking hydration warnings from visual-edits babel plugin wrapping <th>/<tr>/<option> inside <span> — cosmetic in dev only; safe to ignore for production build."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_godmode_iter101.py", "/app/test_reports/pytest/iter101_results.xml"],
+  "action_items": [
+    "PlatformChurches.jsx: fetch /api/platform/churches directly (or have parent pass the enriched response) so Eden Church appears in the list and the Stripe Connected / Stripe Processed summary tiles use stripe_status and stripe_total_processed fields. Verify the connected badge, $102 column value, and church-view-eden-church-001 button render.",
+    "Add a unique key prop to the churches .map() inside PlatformChurches.jsx to clear the React warning."
+  ],
+  "critical_code_review_comments": [
+    "PlatformChurches is re-deriving church list from a parent prop rather than the enriched /api/platform/churches response it depends on — causing drift with Stripe status/processed fields.",
+    "StripeStatusBadge component appears correctly wired (not_connected badges rendered 7x), but needs the 'connected' path exercised by at least one row (Eden)."
+  ],
+  "updated_files": ["/app/backend/tests/test_godmode_iter101.py"],
+  "success_rate": {"backend": "100%", "frontend": "80%"},
+  "test_credentials": "admin@solomonai.us / Demo2026! (used)",
+  "seed_data_creation": "None — used existing Eden Church Stripe seed data.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend pytest /app/backend/tests/test_godmode_iter101.py is the regression suite for Prompts 1-4 backend. For the frontend Churches-tab fix, the one critical re-test is: login as admin@solomonai.us, go to /godmode -> Churches tab, verify (1) Eden Church row present, (2) it has [data-testid='stripe-status-connected'] badge, (3) $102 in Stripe Processed column, (4) click [data-testid='church-view-eden-church-001'] opens drawer with drawer-txn-0 and drawer-open-give-page visible, (5) header tiles show Stripe Connected 1/N and Stripe Processed >$0.",
+  "rca of the issue": "Churches tab likely consumes churches from GodModeDashboard's stats prop (/api/platform/stats), not the per-row enriched /api/platform/churches. Backend test directly hit /api/platform/churches and it correctly returns Eden with connected status and processed cents. Fix: have PlatformChurches.jsx call /api/platform/churches and render from that enriched payload; compute Stripe Connected count and Stripe Processed sum from the same source."
+}

@@ -96,6 +96,9 @@ export default function DemoWalkthrough({ userRole, userName, onNavigate, walkth
   const steps = userRole === 'church_admin' ? ADMIN_STEPS : MEMBER_STEPS;
 
   useEffect(() => {
+    // Platform admins don't get the tour — they know the product cold, and
+    // the modal has been blocking God-Mode interactions on fresh sessions.
+    if (userRole === 'platform_admin') return;
     // Skip if already seen (stored in DB)
     if (walkthroughSeen) return;
     const count = parseInt(sessionStorage.getItem(loginCountKey) || '0', 10);
@@ -104,7 +107,7 @@ export default function DemoWalkthrough({ userRole, userName, onNavigate, walkth
       const timer = setTimeout(() => setShowWelcome(true), 1500);
       return () => clearTimeout(timer);
     }
-  }, [storageKey, loginCountKey, walkthroughSeen]);
+  }, [storageKey, loginCountKey, walkthroughSeen, userRole]);
 
   const startWalkthrough = () => {
     setShowWelcome(false);

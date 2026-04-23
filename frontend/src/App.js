@@ -26,6 +26,7 @@ import CalendarPage from "@/pages/CalendarPage";
 import IntegrationsPage from "@/pages/IntegrationsPage";
 import PlatformDashboard from "@/pages/PlatformDashboard";
 import GodModeDashboard from "@/pages/GodModeDashboard";
+import PlatformTransactionsPage from "@/pages/platform/PlatformTransactionsPage";
 import MediaManagerPage from "@/pages/MediaManagerPage";
 import GroupsManagerPage from "@/pages/GroupsManagerPage";
 import EventsManagerPage from "@/pages/EventsManagerPage";
@@ -115,6 +116,14 @@ function AppRouter() {
         element={
           <ProtectedRoute requiredRole="platform_admin">
             <PlatformDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/platform/transactions"
+        element={
+          <ProtectedRoute requiredRole="platform_admin">
+            <PlatformTransactionsPage />
           </ProtectedRoute>
         }
       />

@@ -1,11 +1,37 @@
 import { useState, useEffect } from 'react';
 import { API_URL } from '@/lib/utils';
-import { Building2, DollarSign, Users, MapPin, TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import { Building2, DollarSign, Users, MapPin, TrendingUp, TrendingDown, Activity, Eye, CheckCircle2, Clock, XCircle } from 'lucide-react';
+import ChurchStripeDrawer from './ChurchStripeDrawer';
+
+const STATUS_META = {
+  connected:     { label: 'Connected',     icon: CheckCircle2, bg: 'bg-emerald-50',  text: 'text-emerald-700', dot: 'bg-emerald-500' },
+  pending:       { label: 'Pending',       icon: Clock,        bg: 'bg-amber-50',    text: 'text-amber-700',   dot: 'bg-amber-500' },
+  not_connected: { label: 'Not Connected', icon: XCircle,      bg: 'bg-slate-100',   text: 'text-slate-600',   dot: 'bg-slate-400' },
+};
+
+function StripeStatusBadge({ status }) {
+  const meta = STATUS_META[status] || STATUS_META.not_connected;
+  return (
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${meta.bg} ${meta.text}`}
+      data-testid={`stripe-status-${status}`}
+    >
+      <span className={`w-1.5 h-1.5 rounded-full ${meta.dot}`} />
+      {meta.label}
+    </span>
+  );
+}
 
 const fmt = (n) => {
   const v = Number(n ?? 0);
   if (isNaN(v)) return '$0';
   return v >= 1e6 ? `$${(v/1e6).toFixed(1)}M` : v >= 1e3 ? `$${(v/1e3).toFixed(0)}K` : `$${v.toFixed(0)}`;
+};
+const fmtCents = (c) => {
+  const v = Number(c ?? 0) / 100;
+  if (v >= 1e6) return `$${(v/1e6).toFixed(1)}M`;
+  if (v >= 1e3) return `$${(v/1e3).toFixed(0)}K`;
+  return `$${v.toFixed(0)}`;
 };
 const num = (n) => { const v = Number(n ?? 0); return v >= 1e3 ? `${(v/1e3).toFixed(1)}K` : `${v}`; };
 
@@ -54,6 +80,7 @@ export default function PlatformChurches({ token, stats }) {
   const [healthScores, setHealthScores] = useState({});
   const [expandedChurch, setExpandedChurch] = useState(null);
   const [allChurches, setAllChurches] = useState([]);
+  const [drawerChurch, setDrawerChurch] = useState(null);
   const campuses = stats?.campus_breakdown || [];
 
   useEffect(() => {
@@ -104,25 +131,40 @@ export default function PlatformChurches({ token, stats }) {
       fees: giving_data?.fees || c.fees || 0,
       txn_count: giving_data?.txn_count || c.txn_count || 0,
       health: healthScores[c.id || c.tenant_id],
+      stripe_status: c.stripe_status || 'not_connected',
+      stripe_total_processed: c.stripe_total_processed || 0,
+      stripe_txn_count: c.stripe_txn_count || 0,
     };
   });
 
+  // Stripe status summary for header
+  const statusCounts = enriched.reduce((acc, c) => {
+    acc[c.stripe_status] = (acc[c.stripe_status] || 0) + 1;
+    return acc;
+  }, {});
+  const totalStripeProcessed = enriched.reduce((a, c) => a + (c.stripe_total_processed || 0), 0);
+
   return (
     <div className="space-y-4" data-testid="platform-churches">
+      {drawerChurch && (
+        <ChurchStripeDrawer church={drawerChurch} token={token} onClose={() => setDrawerChurch(null)} />
+      )}
+
       {/* Summary Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { label: 'Total Churches', value: enriched.length, icon: Building2, color: '#2563eb' },
-          { label: 'Avg Health Score', value: `${Math.round(Object.values(healthScores).reduce((a, h) => a + (h?.score || 0), 0) / Math.max(Object.keys(healthScores).length, 1))}`, icon: Activity, color: '#059669' },
-          { label: 'Total Giving (All Tenants)', value: fmt(enriched.reduce((a, c) => a + (c.giving || 0), 0)), icon: DollarSign, color: '#7c3aed' },
-          { label: 'Total Transactions', value: enriched.reduce((a, c) => a + (c.txn_count || 0), 0).toLocaleString(), icon: TrendingUp, color: '#0891b2' },
+          { label: 'Stripe Connected', value: `${statusCounts.connected || 0}/${enriched.length}`, icon: Activity, color: '#10b981', sub: `${statusCounts.pending || 0} pending · ${statusCounts.not_connected || 0} offline` },
+          { label: 'Stripe Processed', value: fmtCents(totalStripeProcessed), icon: DollarSign, color: '#6366f1', sub: 'Lifetime real-card volume' },
+          { label: 'All-Time Giving', value: fmt(enriched.reduce((a, c) => a + (c.giving || 0), 0)), icon: TrendingUp, color: '#7c3aed' },
         ].map(s => (
-          <div key={s.label} className="bg-white rounded-xl border border-slate-100 p-4">
+          <div key={s.label} className="bg-white rounded-xl border border-slate-100 p-4" data-testid={`churches-summary-${s.label.toLowerCase().replace(/\s+/g, '-')}`}>
             <div className="flex items-center gap-2 mb-1">
               <s.icon className="w-4 h-4" style={{ color: s.color }} />
               <span className="text-xs text-slate-500">{s.label}</span>
             </div>
             <div className="text-2xl font-bold text-slate-900">{s.value}</div>
+            {s.sub && <div className="text-[10px] text-slate-400 mt-0.5">{s.sub}</div>}
           </div>
         ))}
       </div>
@@ -131,18 +173,20 @@ export default function PlatformChurches({ token, stats }) {
       <div className="bg-white rounded-xl border border-slate-100 overflow-hidden">
         <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between">
           <h3 className="font-semibold text-slate-800">Church Portfolio</h3>
-          <span className="text-xs text-slate-400">Click a row to see health breakdown</span>
+          <span className="text-xs text-slate-400">Click a row to see health breakdown · eye icon for Stripe details</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm" data-testid="church-portfolio-table">
             <thead className="bg-slate-50">
               <tr>
                 <th className="px-5 py-3 text-left font-medium text-slate-600">Church</th>
+                <th className="px-5 py-3 text-center font-medium text-slate-600">Stripe</th>
+                <th className="px-5 py-3 text-right font-medium text-slate-600">Stripe Processed</th>
                 <th className="px-5 py-3 text-right font-medium text-slate-600">Members</th>
                 <th className="px-5 py-3 text-right font-medium text-slate-600">All-Time Giving</th>
-                <th className="px-5 py-3 text-right font-medium text-slate-600">Fees Earned</th>
                 <th className="px-5 py-3 text-right font-medium text-slate-600">Transactions</th>
-                <th className="px-5 py-3 text-center font-medium text-slate-600">Health Score</th>
+                <th className="px-5 py-3 text-center font-medium text-slate-600">Health</th>
+                <th className="px-5 py-3 text-center font-medium text-slate-600">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -166,9 +210,12 @@ export default function PlatformChurches({ token, stats }) {
                           </div>
                         </div>
                       </td>
+                      <td className="px-5 py-3 text-center">
+                        <StripeStatusBadge status={c.stripe_status} />
+                      </td>
+                      <td className="px-5 py-3 text-right font-semibold text-indigo-700">{fmtCents(c.stripe_total_processed)}</td>
                       <td className="px-5 py-3 text-right text-slate-700">{num(c.total_members || c.members || 0)}</td>
                       <td className="px-5 py-3 text-right font-semibold text-slate-900">{fmt(c.giving)}</td>
-                      <td className="px-5 py-3 text-right text-emerald-700 font-medium">{fmt(c.fees)}</td>
                       <td className="px-5 py-3 text-right text-slate-700">{(c.txn_count || 0).toLocaleString()}</td>
                       <td className="px-5 py-3 text-center">
                         {health ? (
@@ -177,10 +224,20 @@ export default function PlatformChurches({ token, stats }) {
                           <span className="text-xs text-slate-400">—</span>
                         )}
                       </td>
+                      <td className="px-5 py-3 text-center">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDrawerChurch(c); }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-slate-200 hover:border-slate-900 hover:bg-slate-900 hover:text-white transition-colors text-xs font-medium text-slate-600"
+                          data-testid={`church-view-${c.id}`}
+                        >
+                          <Eye className="w-3 h-3" />
+                          View
+                        </button>
+                      </td>
                     </tr>
                     {isExpanded && health?.dimensions && (
                       <tr key={`${c.id}-expanded`} className="bg-slate-50/50">
-                        <td colSpan={6} className="px-5 py-4">
+                        <td colSpan={8} className="px-5 py-4">
                           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-3xl">
                             {Object.values(health.dimensions).map(dim => (
                               <ScoreDimension

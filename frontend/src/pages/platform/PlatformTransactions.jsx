@@ -26,6 +26,8 @@ export default function PlatformTransactions({ token }) {
   const [cursorHistory, setCursorHistory] = useState([]);
   const [hasMore, setHasMore] = useState(false);
   const [stats, setStats] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [statsError, setStatsError] = useState(null);
   const [churches, setChurches] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({ church: '', status: '', method: '', fund: '', search: '', start_date: '', end_date: '' });
@@ -35,17 +37,30 @@ export default function PlatformTransactions({ token }) {
   // Load stats (always live / Stripe) + church list for filter dropdown
   useEffect(() => {
     (async () => {
+      setStatsLoading(true);
+      setStatsError(null);
       try {
         const [sRes, cRes] = await Promise.all([
           fetch(`${API_URL}/platform/stripe/transactions/stats`, { headers: headers() }),
           fetch(`${API_URL}/platform/churches`, { headers: headers() }),
         ]);
-        if (sRes.ok) setStats(await sRes.json());
+        if (sRes.ok) {
+          setStats(await sRes.json());
+        } else {
+          const errText = `Stats request failed: ${sRes.status}`;
+          console.error('[PlatformTransactions]', errText);
+          setStatsError(errText);
+        }
         if (cRes.ok) {
           const data = await cRes.json();
           setChurches(data.churches || []);
         }
-      } catch (e) { /* non-fatal */ }
+      } catch (e) {
+        console.error('[PlatformTransactions] fetch error', e);
+        setStatsError(String(e.message || e));
+      } finally {
+        setStatsLoading(false);
+      }
     })();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
@@ -129,14 +144,28 @@ export default function PlatformTransactions({ token }) {
   return (
     <div className="space-y-4" data-testid="platform-transactions">
       {/* ── CEO view: summary cards (always Stripe-live) ─────────────────── */}
-      {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3" data-testid="platform-stats-cards">
-          <StatCard label="Today TPV" primary={cents(stats.today.total_amount)} secondary={`${stats.today.count} gifts`} />
-          <StatCard label="This Month TPV" primary={cents(stats.this_month.total_amount)} secondary={`${stats.this_month.count} gifts`} />
-          <StatCard label="Solomon Revenue (MTD)" primary={cents(stats.this_month.solomon_revenue)} secondary="0.35% of TPV" accent />
-          <StatCard label="Active Churches" primary={String(stats.active_churches)} secondary={`${stats.total_donors} donors`} />
-        </div>
-      )}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3" data-testid="platform-stats-cards">
+        {statsLoading ? (
+          [0, 1, 2, 3].map((i) => (
+            <div key={i} className="bg-white rounded-xl border border-slate-100 p-4 animate-pulse" data-testid={`stats-skeleton-${i}`}>
+              <div className="h-3 w-24 bg-slate-100 rounded mb-3" />
+              <div className="h-7 w-20 bg-slate-200 rounded mb-2" />
+              <div className="h-3 w-14 bg-slate-100 rounded" />
+            </div>
+          ))
+        ) : stats ? (
+          <>
+            <StatCard label="Today TPV" primary={cents(stats.today.total_amount)} secondary={`${stats.today.count} gifts`} />
+            <StatCard label="This Month TPV" primary={cents(stats.this_month.total_amount)} secondary={`${stats.this_month.count} gifts`} />
+            <StatCard label="Solomon Revenue (MTD)" primary={cents(stats.this_month.solomon_revenue)} secondary="0.35% of TPV" accent />
+            <StatCard label="Active Churches" primary={String(stats.active_churches)} secondary={`${stats.total_donors} donors`} />
+          </>
+        ) : (
+          <div className="col-span-full bg-white rounded-xl border border-red-100 p-4 text-sm text-red-600" data-testid="stats-error">
+            Unable to load stats{statsError ? `: ${statsError}` : ''}
+          </div>
+        )}
+      </div>
 
       {/* ── Source toggle ─────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
@@ -181,7 +210,7 @@ export default function PlatformTransactions({ token }) {
           <option value="">All Churches</option>
           {churches.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
         </select>
-        <select className="border border-slate-200 rounded-lg px-3 py-2 text-sm" value={filters.status} onChange={(e) => { setFilters((f) => ({ ...f, status: e.target.value })); setPage(1); setCursor(null); }}>
+        <select className="border border-slate-200 rounded-lg px-3 py-2 text-sm" value={filters.status} onChange={(e) => { setFilters((f) => ({ ...f, status: e.target.value })); setPage(1); setCursor(null); }} data-testid="txn-filter-status">
           <option value="">All Statuses</option>
           <option value="succeeded">Succeeded</option>
           <option value="pending">Pending</option>

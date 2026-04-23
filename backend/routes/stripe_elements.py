@@ -688,3 +688,54 @@ async def platform_transactions_daily(request: Request, days: int = 30):
             "total_amount": int(r["total_amount"]) if r else 0,
         })
     return {"days": out}
+
+
+@router.get("/platform/stripe/transactions/recent")
+async def platform_transactions_recent(request: Request, limit: int = 10):
+    """Most recent Stripe donations across the platform. Cheap Mongo query
+    (indexed on donation_date) so the Activity Feed loads instantly — no Stripe
+    API round-trip on every dashboard load."""
+    await _require_platform_admin(request)
+    limit = max(1, min(limit, 50))
+    rows = await db.donations.find(
+        {"payment_source": "stripe"},
+        {
+            "_id": 0,
+            "id": 1,
+            "tenant_id": 1,
+            "donation_date": 1,
+            "donor_name": 1,
+            "person_name": 1,
+            "donor_email": 1,
+            "person_email": 1,
+            "total_charged": 1,
+            "amount": 1,
+            "fund_name": 1,
+            "created_at": 1,
+            "stripe_payment_intent_id": 1,
+        },
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+
+    tenant_ids = list({r.get("tenant_id") for r in rows if r.get("tenant_id")})
+    tenants = await db.tenants.find(
+        {"id": {"$in": tenant_ids}}, {"_id": 0, "id": 1, "name": 1, "slug": 1}
+    ).to_list(None)
+    t_by_id = {t["id"]: t for t in tenants}
+
+    out = []
+    for r in rows:
+        amount = float(r.get("total_charged") or r.get("amount") or 0)
+        t = t_by_id.get(r.get("tenant_id"), {})
+        out.append({
+            "id": r.get("id") or r.get("stripe_payment_intent_id", ""),
+            "church_id": r.get("tenant_id"),
+            "church_name": t.get("name", "—"),
+            "church_slug": t.get("slug"),
+            "donor_name": r.get("donor_name") or r.get("person_name") or "Guest Donor",
+            "donor_email": r.get("donor_email") or r.get("person_email") or "",
+            "amount_cents": int(round(amount * 100)),
+            "fund": r.get("fund_name", "—"),
+            "created_at": r.get("created_at"),
+            "donation_date": r.get("donation_date"),
+        })
+    return {"data": out}

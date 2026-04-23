@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { API_URL } from '@/lib/utils';
-import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { DollarSign, TrendingUp, Users, CreditCard, Building2, ArrowUpRight, Activity, AlertTriangle, ChevronRight } from 'lucide-react';
+import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LineChart, Line } from 'recharts';
+import { DollarSign, TrendingUp, Users, CreditCard, Building2, ArrowUpRight, Activity, AlertTriangle, ChevronRight, Zap } from 'lucide-react';
 
 const COLORS = ['#2563eb', '#7c3aed', '#0891b2', '#059669', '#dc2626', '#f59e0b', '#0891b2'];
 const fmt = (n) => {
@@ -9,6 +9,142 @@ const fmt = (n) => {
   if (isNaN(v)) return '$0';
   return v >= 1e6 ? `$${(v/1e6).toFixed(1)}M` : v >= 1e3 ? `$${(v/1e3).toFixed(0)}K` : `$${v.toFixed(0)}`;
 };
+const cents = (c) => `$${((Number(c) || 0) / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const centsCompact = (c) => fmt((Number(c) || 0) / 100);
+
+function PaymentMetricsRow({ token }) {
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    if (!token) return;
+    fetch(`${API_URL}/platform/stripe/transactions/stats`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setStats(data); })
+      .catch(() => {});
+  }, [token]);
+
+  const cards = [
+    { label: 'Total Stripe Processed', value: stats ? centsCompact(stats.all_time.total_amount) : '—', sub: stats ? `${stats.all_time.count.toLocaleString()} payments` : '', icon: Zap, color: '#6366f1' },
+    { label: 'Solomon Revenue (All-Time)', value: stats ? centsCompact(stats.all_time.solomon_revenue) : '—', sub: '0.35% of Stripe TPV', icon: TrendingUp, color: '#10b981' },
+    { label: 'Active Stripe Churches', value: stats ? String(stats.active_churches) : '—', sub: 'Processing live payments', icon: Building2, color: '#0891b2' },
+    { label: 'Unique Donors (Stripe)', value: stats ? stats.total_donors.toLocaleString() : '—', sub: 'Across all tenants', icon: Users, color: '#7c3aed' },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4" data-testid="payment-metrics-row">
+      {cards.map((c, i) => (
+        <div key={c.label} className="bg-white rounded-xl border border-slate-100 p-5 hover:shadow-md transition-shadow" data-testid={`payment-metric-${i}`}>
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${c.color}15` }}>
+              <c.icon className="w-4 h-4" style={{ color: c.color }} />
+            </div>
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">{c.label}</span>
+          </div>
+          <div className="text-2xl font-bold text-slate-900">{c.value}</div>
+          <div className="text-xs text-slate-400 mt-0.5">{c.sub}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function StripeTrendChart({ token }) {
+  const [days, setDays] = useState([]);
+
+  useEffect(() => {
+    if (!token) return;
+    fetch(`${API_URL}/platform/stripe/transactions/daily?days=30`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setDays(data.days || []); })
+      .catch(() => {});
+  }, [token]);
+
+  const chartData = days.map(d => ({
+    date: (d.date || '').slice(5), // MM-DD
+    total: Math.round((d.total_amount || 0) / 100),
+    count: d.count || 0,
+  }));
+
+  return (
+    <div className="bg-white rounded-xl border border-slate-100 p-5" data-testid="stripe-trend-chart">
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <h3 className="text-sm font-semibold text-slate-700">Stripe Volume — Last 30 Days</h3>
+          <p className="text-xs text-slate-400">Daily TPV across every connected church</p>
+        </div>
+        <span className="text-[10px] font-bold tracking-wider px-2 py-1 rounded bg-indigo-50 text-indigo-700">LIVE</span>
+      </div>
+      <ResponsiveContainer width="100%" height={240}>
+        <AreaChart data={chartData}>
+          <defs>
+            <linearGradient id="gStripe" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#6366f1" stopOpacity={0.25}/>
+              <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+          <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+          <YAxis tickFormatter={(v) => fmt(v)} tick={{ fontSize: 10 }} />
+          <Tooltip formatter={(v, name) => name === 'total' ? [`$${v.toLocaleString()}`, 'TPV'] : [v, 'Count']} />
+          <Area type="monotone" dataKey="total" stroke="#6366f1" fill="url(#gStripe)" strokeWidth={2} />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function RecentStripeActivity({ token }) {
+  const [rows, setRows] = useState(null);
+
+  useEffect(() => {
+    if (!token) return;
+    fetch(`${API_URL}/platform/stripe/transactions/recent?limit=10`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { setRows(data?.data || []); })
+      .catch(() => { setRows([]); });
+  }, [token]);
+
+  return (
+    <div className="bg-white rounded-xl border border-slate-100 p-5" data-testid="recent-stripe-activity">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
+          <Activity className="w-4 h-4 text-indigo-600" />
+        </div>
+        <h3 className="text-sm font-semibold text-slate-700">Recent Stripe Activity</h3>
+        <span className="ml-auto text-xs text-slate-400">Last {rows?.length || 0}</span>
+      </div>
+      {rows === null ? (
+        <div className="space-y-2 animate-pulse">
+          {[0, 1, 2, 3, 4].map(i => <div key={i} className="h-10 bg-slate-100 rounded" />)}
+        </div>
+      ) : rows.length === 0 ? (
+        <div className="text-center py-8">
+          <Zap className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+          <p className="text-sm text-slate-400">No Stripe payments yet</p>
+          <p className="text-xs text-slate-400 mt-0.5">Activity will appear here once churches start accepting real card gifts</p>
+        </div>
+      ) : (
+        <div className="space-y-1.5" data-testid="recent-activity-list">
+          {rows.map((r, i) => (
+            <div key={r.id || i} className="flex items-center gap-3 py-2 border-b border-slate-50 last:border-0" data-testid={`recent-activity-row-${i}`}>
+              <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                <span className="text-xs font-bold text-indigo-700">{(r.donor_name || 'G').charAt(0).toUpperCase()}</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-slate-800 truncate">{r.donor_name}</p>
+                <p className="text-xs text-slate-400 truncate">{r.church_name} · {r.fund}</p>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <p className="text-sm font-bold text-slate-900">{cents(r.amount_cents)}</p>
+                <p className="text-[10px] text-slate-400">{(r.donation_date || '').slice(5)}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function AttentionRequired({ token }) {
   const [flagged, setFlagged] = useState([]);
@@ -156,6 +292,17 @@ export default function PlatformExecDashboard({ stats, token }) {
             <p className="text-xs text-slate-400 mt-1">{k.sub}</p>
           </div>
         ))}
+      </div>
+
+      {/* Payment Metrics Row — real Stripe activity (Prompt 3) */}
+      <PaymentMetricsRow token={token} />
+
+      {/* Stripe 30-day trend + Recent Activity (Prompt 3) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2">
+          <StripeTrendChart token={token} />
+        </div>
+        <RecentStripeActivity token={token} />
       </div>
 
       {/* Secondary Metrics */}

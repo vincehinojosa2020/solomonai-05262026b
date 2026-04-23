@@ -2438,6 +2438,58 @@ async def get_all_health_scores(request: Request):
     return {"churches": results}
 
 
+async def _enrich_with_stripe_status(churches: list) -> None:
+    """Attach Stripe Connect status + total_processed (cents) to each church.
+
+    Status rules (platform uses a single Stripe account, not Connect splits):
+      * "connected"    — church has at least one payment_source=stripe donation
+      * "pending"      — church has zero donations of any kind yet
+      * "not_connected"— church has donations but none via Stripe
+    Numbers are served straight from Mongo so the churches grid stays fast.
+    """
+    if not churches:
+        return
+    tenant_ids = [c["id"] for c in churches if c.get("id")]
+    if not tenant_ids:
+        return
+
+    # Group donations by tenant once
+    rows = await db.donations.aggregate([
+        {"$match": {"tenant_id": {"$in": tenant_ids}}},
+        {"$group": {
+            "_id": "$tenant_id",
+            "total_donations": {"$sum": 1},
+            "stripe_donations": {
+                "$sum": {"$cond": [{"$eq": ["$payment_source", "stripe"]}, 1, 0]}
+            },
+            "stripe_total_cents": {
+                "$sum": {"$cond": [
+                    {"$eq": ["$payment_source", "stripe"]},
+                    {"$multiply": [{"$ifNull": ["$total_charged", "$amount"]}, 100]},
+                    0,
+                ]}
+            },
+        }},
+    ]).to_list(None)
+    by_tid = {r["_id"]: r for r in rows}
+
+    for c in churches:
+        r = by_tid.get(c["id"], {})
+        stripe_count = int(r.get("stripe_donations", 0) or 0)
+        total_count = int(r.get("total_donations", 0) or 0)
+        if stripe_count > 0:
+            status = "connected"
+        elif total_count == 0:
+            status = "pending"
+        else:
+            status = "not_connected"
+        c["stripe_status"] = status
+        c["stripe_total_processed"] = int(r.get("stripe_total_cents", 0) or 0)
+        c["stripe_txn_count"] = stripe_count
+
+
+
+
 @router.get("/platform/churches")
 async def get_all_platform_churches(request: Request):
     """
@@ -2542,6 +2594,7 @@ async def get_all_platform_churches(request: Request):
             })
 
         churches.sort(key=lambda x: x["giving"], reverse=True)
+        await _enrich_with_stripe_status(churches)
         return {"churches": churches, "total": len(churches)}
 
     # ── Slow fallback (only if cache completely missing — runs once) ──────────
@@ -2598,6 +2651,7 @@ async def get_all_platform_churches(request: Request):
         })
 
     churches.sort(key=lambda x: x["giving"], reverse=True)
+    await _enrich_with_stripe_status(churches)
     return {"churches": churches, "total": len(churches)}
 
     now = datetime.now(timezone.utc)
