@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -465,3 +465,226 @@ async def create_stripe_payout(payload: PayoutRequest):
     await db.payouts.insert_one(record)
     record.pop("_id", None)
     return record
+
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  God Mode — platform-level transaction feed
+#  Jacob / Shannon / Vince's "CEO view": every Stripe donation across every
+#  connected church, queried straight from Stripe's API (source of truth),
+#  enriched with tenant metadata from MongoDB.
+# ═══════════════════════════════════════════════════════════════════════════
+from core import get_current_admin_user  # noqa: E402
+
+# In-process cache for the platform list endpoint (60 s) to avoid hammering
+# Stripe on every dashboard open. Keyed by a tuple of the filter args.
+_PLATFORM_TXN_CACHE: dict[tuple, tuple[float, dict]] = {}
+_PLATFORM_TXN_TTL_SECONDS = 60
+
+
+def _platform_fees(amount_cents: int) -> tuple[int, int, int]:
+    """Return (stripe_fee, solomon_fee, church_net) in cents."""
+    stripe_fee = round(amount_cents * 0.029) + 30
+    solomon_fee = round(amount_cents * 0.0035)
+    church_net = amount_cents - stripe_fee - solomon_fee
+    return stripe_fee, solomon_fee, church_net
+
+
+async def _require_platform_admin(request: Request) -> dict:
+    user = await get_current_admin_user(request)
+    if user.get("role") != "platform_admin":
+        raise HTTPException(403, "Platform admin required")
+    return user
+
+
+@router.get("/platform/stripe/transactions")
+async def platform_transactions(
+    request: Request,
+    limit: int = 50,
+    starting_after: Optional[str] = None,
+    church_id: Optional[str] = None,
+    status: Optional[str] = None,
+    date_from: Optional[str] = None,   # YYYY-MM-DD
+    date_to: Optional[str] = None,
+):
+    """All Stripe PaymentIntents across the platform account. Supports Stripe
+    cursor pagination via starting_after=pi_xxx."""
+    await _require_platform_admin(request)
+    if not stripe.api_key:
+        raise HTTPException(500, "Stripe not configured on server")
+
+    cache_key = (limit, starting_after, church_id, status, date_from, date_to)
+    now = datetime.now(timezone.utc).timestamp()
+    cached = _PLATFORM_TXN_CACHE.get(cache_key)
+    if cached and now - cached[0] < _PLATFORM_TXN_TTL_SECONDS:
+        return cached[1]
+
+    # Build Stripe query params
+    params: dict = {"limit": max(1, min(limit, 100))}
+    if starting_after:
+        params["starting_after"] = starting_after
+
+    # Stripe 'created' filter uses unix seconds
+    created: dict = {}
+    if date_from:
+        try:
+            created["gte"] = int(datetime.fromisoformat(date_from).replace(tzinfo=timezone.utc).timestamp())
+        except ValueError:
+            pass
+    if date_to:
+        try:
+            # inclusive end-of-day
+            end = datetime.fromisoformat(date_to).replace(tzinfo=timezone.utc)
+            created["lte"] = int(end.timestamp()) + 86399
+        except ValueError:
+            pass
+    if created:
+        params["created"] = created
+
+    try:
+        intents = stripe.PaymentIntent.list(**params)
+    except stripe.error.StripeError as e:
+        raise HTTPException(502, f"Stripe error: {e.user_message or str(e)}")
+
+    # Tenant lookup — one-shot load so we can enrich rows without per-row DB hit
+    tenants = await db.tenants.find({}, {"_id": 0, "id": 1, "name": 1, "slug": 1}).to_list(None)
+    tenant_by_id = {t["id"]: t for t in tenants}
+
+    data = []
+    for intent in intents.data:
+        md = intent.metadata or {}
+        tid = md.get("tenant_id")
+        if church_id and tid != church_id:
+            continue
+        if status and intent.status != status:
+            continue
+
+        amount_cents = intent.amount or 0
+        stripe_fee, solomon_fee, church_net = _platform_fees(amount_cents)
+
+        # Latest charge / card — best-effort, skip on error so list endpoint is robust
+        pm_type, card_last4, card_brand = "card", None, None
+        try:
+            if intent.latest_charge:
+                ch = stripe.Charge.retrieve(intent.latest_charge)
+                pm_type = ch.payment_method_details.type if ch.payment_method_details else "card"
+                if ch.payment_method_details and ch.payment_method_details.card:
+                    card_last4 = ch.payment_method_details.card.last4
+                    card_brand = ch.payment_method_details.card.brand
+        except stripe.error.StripeError:
+            pass
+
+        t = tenant_by_id.get(tid, {})
+        data.append({
+            "id": intent.id,
+            "church_id": tid,
+            "church_name": t.get("name") or md.get("church_name", "—"),
+            "church_slug": t.get("slug") or md.get("church_slug"),
+            "donor_name": (f"{md.get('donor_first_name','')} {md.get('donor_last_name','')}").strip() or "Guest Donor",
+            "donor_email": md.get("donor_email", ""),
+            "amount": amount_cents,
+            "currency": intent.currency,
+            "fund": md.get("fund", "—"),
+            "stripe_fee": stripe_fee,
+            "solomon_fee": solomon_fee,
+            "church_net": church_net,
+            "status": intent.status,
+            "created_at": datetime.fromtimestamp(intent.created, tz=timezone.utc).isoformat(),
+            "payment_method_type": pm_type,
+            "card_last4": card_last4,
+            "card_brand": card_brand,
+            "cover_fees": md.get("cover_fees") == "true",
+            "test_mode": md.get("test_mode") == "true" or IS_TEST_MODE,
+        })
+
+    result = {
+        "data": data,
+        "has_more": intents.has_more,
+        "next_cursor": data[-1]["id"] if data and intents.has_more else None,
+        "count": len(data),
+    }
+    _PLATFORM_TXN_CACHE[cache_key] = (now, result)
+    return result
+
+
+@router.get("/platform/stripe/transactions/stats")
+async def platform_transactions_stats(request: Request):
+    """Aggregate TPV + Solomon revenue across all churches. Queries our
+    MongoDB donations collection (fast) rather than Stripe's list API so the
+    dashboard loads instantly. Only counts payment_source=stripe rows so the
+    numbers reflect real payment volume, not demo data."""
+    await _require_platform_admin(request)
+
+    now = datetime.now(timezone.utc)
+    today_str = now.strftime("%Y-%m-%d")
+    week_ago = (now - timedelta(days=7)).strftime("%Y-%m-%d")
+    month_start = now.replace(day=1).strftime("%Y-%m-%d")
+
+    base_match = {"payment_source": "stripe"}
+
+    async def _bucket(date_filter):
+        pipe = [
+            {"$match": {**base_match, **date_filter}},
+            {"$group": {
+                "_id": None,
+                "count": {"$sum": 1},
+                "total_amount": {"$sum": {"$multiply": ["$total_charged", 100]}},
+            }},
+        ]
+        r = await db.donations.aggregate(pipe).to_list(1)
+        if not r:
+            return {"count": 0, "total_amount": 0, "solomon_revenue": 0}
+        total = int(r[0]["total_amount"])
+        return {"count": r[0]["count"], "total_amount": total, "solomon_revenue": round(total * 0.0035)}
+
+    today = await _bucket({"donation_date": today_str})
+    this_week = await _bucket({"donation_date": {"$gte": week_ago}})
+    this_month = await _bucket({"donation_date": {"$gte": month_start}})
+    all_time = await _bucket({})
+
+    active_churches = len(await db.donations.distinct("tenant_id", base_match))
+    total_donors = len(await db.donations.distinct("donor_email", base_match))
+
+    return {
+        "today": today,
+        "this_week": this_week,
+        "this_month": this_month,
+        "all_time": all_time,
+        "active_churches": active_churches,
+        "total_donors": total_donors,
+    }
+
+
+@router.get("/platform/stripe/transactions/daily")
+async def platform_transactions_daily(request: Request, days: int = 30):
+    """Daily volume for the last N days — feeds the Dashboard trend chart.
+    Returns 0 for days with no activity so the chart axis is continuous."""
+    await _require_platform_admin(request)
+    days = max(1, min(days, 180))
+    now = datetime.now(timezone.utc)
+    start = now - timedelta(days=days - 1)
+
+    pipe = [
+        {"$match": {
+            "payment_source": "stripe",
+            "donation_date": {"$gte": start.strftime("%Y-%m-%d")},
+        }},
+        {"$group": {
+            "_id": "$donation_date",
+            "count": {"$sum": 1},
+            "total_amount": {"$sum": {"$multiply": ["$total_charged", 100]}},
+        }},
+    ]
+    rows = await db.donations.aggregate(pipe).to_list(None)
+    by_date = {r["_id"]: r for r in rows}
+
+    out = []
+    for i in range(days):
+        d = (start + timedelta(days=i)).strftime("%Y-%m-%d")
+        r = by_date.get(d)
+        out.append({
+            "date": d,
+            "count": r["count"] if r else 0,
+            "total_amount": int(r["total_amount"]) if r else 0,
+        })
+    return {"days": out}
