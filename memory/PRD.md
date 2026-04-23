@@ -40,7 +40,17 @@ React 18 + FastAPI + MongoDB 7.0 | 575+ endpoints | 89 pages | Claude Sonnet 4.5
 - `/app/SOLOMON_AI_PLATFORM_AUDIT.md`
 - `/app/SOLOMON_AI_UI_GUIDE.md`
 
-## Session — Apr 23, 2026 — Vince's "God Mode" Prompts 1-4 (DONE)
+## Session — Apr 23, 2026 — P2 Batch + Competitive Intel (DONE)
+- **A — Cache auto-refresh**: POST `/api/platform/churches/create` now upserts `dashboard_stats_cache.total_members=11` for the new tenant and fires a background `_rebuild_cache_bg()` so God-Mode `campus_breakdown` + all downstream views (`/platform/stats`, revenue-by-church, churches tile totals) include the new church within ~8s. `_compute_platform_stats_fast` also appends zero-donation tenants so brand-new churches show up even before the first gift. iter-104 8/8 pytest green.
+- **B — K8s ingress wildcard CORS**: YAML and Kong / nginx examples already in `/app/K8S_INGRESS_CORS_REMEDIATION.md`. Added `/app/scripts/verify_cors.sh` smoke script — runs four ACAO/ACAC/preflight checks against a target domain. Ready for platform engineer to apply (no app-code change needed).
+- **C — Competitive Intel module** (new — God Mode → Intel tab):
+  - 80-church seed from Vince's McKinsey "Top 350" research at `/app/backend/data/top_churches_seed.py` (ranked by attendance, vendor tagged).
+  - `/app/backend/routes/competitive_intel.py`: seed, search (q + vendor), pins CRUD (max 5), Claude Sonnet 4.5 digest (via Emergent LLM key) cached on the pin.
+  - `/app/frontend/src/pages/platform/CompetitiveIntel.jsx`: Watchlist + Catalog + per-pin Claude digest drawer.
+  - Registered as new "Intel" tab in `GodModeDashboard.jsx`.
+  - Every tested endpoint + UI flow green in iter-103 (10/11 backend, 100% frontend for Intel) and iter-104 retest.
+
+
 - **Prompt 1** — `/api/platform/churches` now includes **zero-donation tenants** so Eden (and any new church) renders even before a first gift. DONE.
 - **Prompt 2** — **Platform Transactions feed** live at `/platform/transactions` (`PlatformTransactionsPage.jsx`). Standalone God-Mode chrome, stats-card skeleton→real, status filter testid, stripe-live/demo toggle, export CSV. DONE.
 - **Prompt 3** — **Enhanced Exec Dashboard** on `/godmode`: new `PaymentMetricsRow` (Total Stripe Processed, Solomon Revenue all-time, Active Stripe Churches, Unique Donors), `StripeTrendChart` (30-day AreaChart, LIVE badge), `RecentStripeActivity` (last 10 Stripe donations). DONE.
