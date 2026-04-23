@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { API_URL } from '@/lib/utils';
 import { Building2, DollarSign, Users, MapPin, TrendingUp, TrendingDown, Activity, Eye, CheckCircle2, Clock, XCircle } from 'lucide-react';
 import ChurchStripeDrawer from './ChurchStripeDrawer';
@@ -79,7 +79,7 @@ function ScoreDimension({ label, value, unit, score }) {
 export default function PlatformChurches({ token, stats }) {
   const [healthScores, setHealthScores] = useState({});
   const [expandedChurch, setExpandedChurch] = useState(null);
-  const [allChurches, setAllChurches] = useState([]);
+  const [allChurches, setAllChurches] = useState(null);   // null = not-yet-fetched
   const [drawerChurch, setDrawerChurch] = useState(null);
   const campuses = stats?.campus_breakdown || [];
 
@@ -110,16 +110,25 @@ export default function PlatformChurches({ token, stats }) {
       if (res.ok) {
         const data = await res.json();
         setAllChurches(data.churches || []);
+      } else {
+        setAllChurches([]);
       }
     } catch (e) {
-      // Fallback to campus_breakdown
-      setAllChurches(campuses.map(c => ({ ...c, id: c.tenant_id })));
+      console.error('[PlatformChurches] fetch failed', e);
+      setAllChurches([]);
     }
   };
 
-  const churches = allChurches.length > 0 ? allChurches : campuses.map(c => ({ ...c, id: c.tenant_id }));
+  // Prefer the enriched /platform/churches response (has stripe_status,
+  // stripe_total_processed, and zero-donation tenants). Fall back to the
+  // campus_breakdown prop only on the first render / when the fetch fails.
+  const churches = (allChurches && allChurches.length > 0)
+    ? allChurches
+    : campuses.map(c => ({ ...c, id: c.tenant_id }));
 
-  if (!campuses.length && !churches.length) return <div className="p-8 text-slate-400">Loading churches...</div>;
+  if (allChurches === null && !campuses.length) {
+    return <div className="p-8 text-slate-400" data-testid="churches-loading">Loading churches...</div>;
+  }
 
   // Merge campus giving data with church list
   const enriched = churches.map(c => {
@@ -194,9 +203,8 @@ export default function PlatformChurches({ token, stats }) {
                 const health = c.health;
                 const isExpanded = expandedChurch === c.id;
                 return (
-                  <>
+                  <Fragment key={c.id}>
                     <tr
-                      key={c.id}
                       className="hover:bg-slate-50/50 cursor-pointer"
                       onClick={() => setExpandedChurch(isExpanded ? null : c.id)}
                       data-testid={`church-row-${c.id}`}
@@ -236,7 +244,7 @@ export default function PlatformChurches({ token, stats }) {
                       </td>
                     </tr>
                     {isExpanded && health?.dimensions && (
-                      <tr key={`${c.id}-expanded`} className="bg-slate-50/50">
+                      <tr className="bg-slate-50/50">
                         <td colSpan={8} className="px-5 py-4">
                           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-3xl">
                             {Object.values(health.dimensions).map(dim => (
@@ -252,7 +260,7 @@ export default function PlatformChurches({ token, stats }) {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </Fragment>
                 );
               })}
             </tbody>
