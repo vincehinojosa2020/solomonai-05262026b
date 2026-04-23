@@ -320,7 +320,8 @@ async def _compute_platform_stats_fast() -> dict:
 
 async def _save_platform_stats_cache(data: dict) -> None:
     try:
-        await db.platform_stats_cache.replace_one({"id": "global"}, {**data, "id": "global"}, upsert=True)
+        payload = {**data, "id": "global", "updated_at": datetime.now(timezone.utc).isoformat()}
+        await db.platform_stats_cache.replace_one({"id": "global"}, payload, upsert=True)
     except Exception as exc:
         logger.warning(f"[stats_cache] save failed: {exc}")
 
@@ -2978,6 +2979,136 @@ async def create_church_onboarding(request: Request, payload: ChurchOnboardingRe
         "admin_user_id": admin_user["user_id"],
         "message": f"Church '{payload.name}' created successfully with admin account."
     }
+
+
+# Collections that carry a tenant_id and therefore must be scrubbed when a
+# church is deleted. Ordered roughly "leaf → trunk" so FK-style references
+# (e.g., group_members → groups) are dropped before their parents. If a
+# future collection also stores tenant_id, add it here to keep deletes clean.
+_TENANT_SCOPED_COLLECTIONS = [
+    "activity_log",
+    "attendance",
+    "audit_log",
+    "communications",
+    "dashboard_stats_cache",
+    "donation_batches",
+    "donations",
+    "events",
+    "funds",
+    "group_members",
+    "group_types",
+    "groups",
+    "households",
+    "media_categories",
+    "media_videos",
+    "pathways_courses",
+    "pathways_enrollments",
+    "pathways_lessons",
+    "people",
+    "pledges",
+    "prayer_requests",
+    "recurring_giving",
+    "service_types",
+    "services",
+    "support_tickets",
+    "platform_flags",
+]
+
+
+@router.delete("/platform/churches/{tenant_id}")
+async def delete_church_cascading(request: Request, tenant_id: str, dry_run: bool = False):
+    """Hard-delete a tenant and every record tied to it.
+
+    Designed for QA / sales-demo cleanup. Platform-admin only. The endpoint
+    fans a `delete_many({tenant_id: ...})` across every tenant-scoped
+    collection, drops the tenant doc itself, kills active sessions for its
+    users, and rebuilds the platform stats cache so downstream God-Mode
+    views converge immediately.
+
+    Use `?dry_run=true` to see the deletion plan without committing.
+    """
+    session_token = get_session_token_from_request(request)
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    session = await db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
+    if not user or user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+    if not tenant:
+        raise HTTPException(status_code=404, detail=f"Tenant '{tenant_id}' not found")
+
+    # Guardrails: block deletion of the seed / protected tenants so a stray
+    # curl can't nuke Eden Church or whichever tenant is configured as the
+    # always-on demo tenant.
+    protected = {"eden-church-001"}
+    if tenant_id in protected:
+        raise HTTPException(status_code=400, detail=f"Tenant '{tenant_id}' is protected and cannot be deleted")
+
+    # Build deletion plan
+    plan: dict = {}
+    for coll in _TENANT_SCOPED_COLLECTIONS:
+        try:
+            plan[coll] = await db[coll].count_documents({"tenant_id": tenant_id})
+        except Exception:
+            plan[coll] = 0
+    plan["users"] = await db.users.count_documents({"tenant_id": tenant_id})
+    plan["user_sessions"] = await db.user_sessions.count_documents({"tenant_id": tenant_id})
+    plan["tenants"] = 1
+
+    if dry_run:
+        return {"dry_run": True, "tenant_id": tenant_id, "name": tenant.get("name"), "would_delete": plan}
+
+    # Execute
+    deleted: dict = {}
+    for coll in _TENANT_SCOPED_COLLECTIONS:
+        try:
+            res = await db[coll].delete_many({"tenant_id": tenant_id})
+            deleted[coll] = res.deleted_count
+        except Exception as e:
+            logger.warning("delete_church cascade: %s failed: %s", coll, e)
+            deleted[coll] = 0
+
+    # Kill sessions then delete users (order matters for the JWT/session middleware)
+    user_ids = [u["user_id"] async for u in db.users.find({"tenant_id": tenant_id}, {"_id": 0, "user_id": 1})]
+    if user_ids:
+        sess_res = await db.user_sessions.delete_many({"user_id": {"$in": user_ids}})
+        deleted["user_sessions"] = sess_res.deleted_count
+    user_res = await db.users.delete_many({"tenant_id": tenant_id})
+    deleted["users"] = user_res.deleted_count
+
+    # Finally the tenant itself
+    tenant_res = await db.tenants.delete_one({"id": tenant_id})
+    deleted["tenants"] = tenant_res.deleted_count
+
+    await audit_log(
+        "church_deleted", "tenant", tenant_id, tenant_id,
+        user.get("user_id"), user.get("name", ""),
+        {"tenant": tenant.get("name")},
+        {"deleted_counts": deleted},
+        request,
+    )
+
+    # Rebuild cache in the background so God-Mode drops the deleted tenant
+    # from campus_breakdown within the next cache cycle.
+    async def _rebuild_bg():
+        try:
+            stats = await _compute_platform_stats_fast()
+            await _save_platform_stats_cache(stats)
+        except Exception as e:
+            logger.warning("cache rebuild after delete failed: %s", e)
+    asyncio.ensure_future(_rebuild_bg())
+
+    return {
+        "success": True,
+        "tenant_id": tenant_id,
+        "name": tenant.get("name"),
+        "deleted": deleted,
+    }
+
 
 
 # ============== PLATFORM USER MANAGEMENT ==============
