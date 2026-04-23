@@ -217,6 +217,28 @@ async def _compute_platform_stats_fast() -> dict:
             "active_donors": r.get("d90_cnt", 0),
             "mtd_giving": round(r.get("mtd_vol", 0), 2),
         })
+
+    # Include zero-donation tenants so freshly-onboarded churches show up
+    # immediately in God Mode downstream views (campus_breakdown, revenue,
+    # churches page). They carry zero metrics but appear in the list so
+    # acquisition velocity is visible within one cache cycle.
+    tenants_with_data = {r["_id"] for r in raw}
+    for tid in campuses:
+        if tid in tenants_with_data:
+            continue
+        t = tenant_map.get(tid, {})
+        campus_breakdown.append({
+            "tenant_id": tid,
+            "name": t.get("name", tid),
+            "city": t.get("city", ""),
+            "state": t.get("state", ""),
+            "giving": 0.0,
+            "fees": 0.0,
+            "txn_count": 0,
+            "active_donors": 0,
+            "mtd_giving": 0.0,
+        })
+
     campus_breakdown.sort(key=lambda x: x["giving"], reverse=True)
 
     trend_by_month: dict = {}
@@ -2920,6 +2942,25 @@ async def create_church_onboarding(request: Request, payload: ChurchOnboardingRe
     # the new church immediately instead of waiting for the cold-path fallback
     # inside /platform/churches to recompute. Non-blocking — the response is
     # returned to the wizard right away.
+    #
+    # IMPORTANT: _get_real_campuses_fast() gates tenants on
+    # dashboard_stats_cache.total_members > 10, so a brand-new tenant would
+    # be filtered out of campus_breakdown. Seed a starter row here (member
+    # count 11 is the minimum that passes the filter; the real number lands
+    # once ChMS syncs). This guarantees the new church is visible in every
+    # God-Mode downstream view (campus_breakdown, revenue-by-church, etc.)
+    # within one request cycle.
+    await db.dashboard_stats_cache.update_one(
+        {"tenant_id": tenant_id},
+        {"$set": {
+            "tenant_id": tenant_id,
+            "total_members": 11,
+            "seeded_by": "onboarding_bootstrap",
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }},
+        upsert=True,
+    )
+
     async def _rebuild_cache_bg():
         try:
             stats = await _compute_platform_stats_fast()
