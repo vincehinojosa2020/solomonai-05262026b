@@ -272,6 +272,27 @@ async def _deferred_startup() -> None:
 
         await asyncio.sleep(1)
 
+        # ── Emergency-recovery seed (runs ONLY if tenants collection is
+        #    truly empty — catastrophic state from an aggressive cleanup).
+        #    Idempotent: instant no-op when even one tenant exists.
+        try:
+            from scripts.emergency_seed import emergency_seed_if_empty
+            recovery = await emergency_seed_if_empty()
+            if recovery.get("action") == "seeded":
+                logger.warning(
+                    "[startup] EMERGENCY RECOVERY seeded "
+                    f"{recovery.get('tenants')} tenants, "
+                    f"{recovery.get('users')} users, "
+                    f"{recovery.get('funds')} funds. "
+                    "Fresh deploy from empty state."
+                )
+            elif recovery.get("action") == "error":
+                logger.error(f"[startup] emergency_seed error: {recovery.get('error')}")
+            else:
+                logger.info(f"[startup] emergency_seed: {recovery.get('reason')} ({recovery.get('count')} tenants)")
+        except Exception as exc:
+            logger.warning(f"[startup] emergency_seed skipped: {exc}")
+
         # ── Eden Church auto-seed (runs ONCE per deploy; flagged in DB) ──
         try:
             from scripts.setup_eden_church import auto_seed_on_boot

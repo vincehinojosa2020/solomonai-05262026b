@@ -40,7 +40,13 @@ React 18 + FastAPI + MongoDB 7.0 | 575+ endpoints | 89 pages | Claude Sonnet 4.5
 - `/app/SOLOMON_AI_PLATFORM_AUDIT.md`
 - `/app/SOLOMON_AI_UI_GUIDE.md`
 
-## Session — Apr 23, 2026 — P2 Polish (DONE)
+## Session — Apr 25, 2026 — Production Recovery (DONE)
+- **Symptom 1** (`/platform → Churches → "Failed to load"`): Root cause was a stale Webpack hot-reload bundle, not an empty database (DB had 9 tenants the entire time). A `sudo supervisorctl restart frontend` rebuilt the bundle and fetchAllChurches fired correctly — 9 churches now render with Eden showing CONNECTED $204.40.
+- **Symptom 2** (`/give/eden-church → "Server could not record donation"`): Could not reproduce on preview — Stripe Elements POST → /api/stripe/create-payment-intent → /api/stripe/confirm-donation all return 200; donor sees "Thank you" with $100 + $2.20 fee + $102.20 total + Visa 4242 + transaction ID.
+- **Defensive idempotent startup seed** (`/app/backend/scripts/emergency_seed.py`): hooks into server startup BEFORE the existing Eden auto-seed. Runs ONLY when `db.tenants.count_documents({}) == 0` (catastrophic state). Recreates Eden + 7 demo tenants per Vince's spec, plus admin@solomonai.us / christopher@eden-x.io users (sha256 hash to match existing pattern), 4 Eden funds, and dashboard_stats_cache rows so all tenants appear in God Mode immediately. Verified via wipe → recover → restore round-trip.
+- **Acceptance**: 3/3 preview tests green — Churches list (9 + Eden CONNECTED), Give page (Thank-you), SolomonPay ($100 visible).
+
+
 - **DELETE endpoint**: new `DELETE /api/platform/churches/{tenant_id}` (platform_admin-only) cascades across 26 tenant-scoped collections + users + user_sessions, supports `?dry_run=true`, protects `eden-church-001`, writes `audit_log` entry, and fires an async cache rebuild so God-Mode drops the tenant from `campus_breakdown` within ~10s. Regression suite: `/app/backend/tests/test_delete_church_iter105.py`. iter-105 → 11/11 green.
 - **Cache observability**: `_save_platform_stats_cache` now stamps `updated_at` (ISO-8601 UTC) on every write — stale-cache debugging is a `db.platform_stats_cache.findOne({id:'global'}, {updated_at:1})` away.
 
