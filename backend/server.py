@@ -276,7 +276,7 @@ async def _deferred_startup() -> None:
         #    truly empty — catastrophic state from an aggressive cleanup).
         #    Idempotent: instant no-op when even one tenant exists.
         try:
-            from scripts.emergency_seed import emergency_seed_if_empty
+            from scripts.emergency_seed import emergency_seed_if_empty, heal_tenant_slugs
             recovery = await emergency_seed_if_empty()
             if recovery.get("action") == "seeded":
                 logger.warning(
@@ -290,6 +290,12 @@ async def _deferred_startup() -> None:
                 logger.error(f"[startup] emergency_seed error: {recovery.get('error')}")
             else:
                 logger.info(f"[startup] emergency_seed: {recovery.get('reason')} ({recovery.get('count')} tenants)")
+
+            # Self-healing pass: backfill missing slug/subdomain on every boot
+            # so the public give-page URL works even on legacy seeds.
+            heal = await heal_tenant_slugs()
+            if heal.get("healed"):
+                logger.warning(f"[startup] heal_tenant_slugs: backfilled {heal['healed']} tenants")
         except Exception as exc:
             logger.warning(f"[startup] emergency_seed skipped: {exc}")
 

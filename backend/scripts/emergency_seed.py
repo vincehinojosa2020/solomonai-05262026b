@@ -56,6 +56,49 @@ def _sha256(pw: str) -> str:
     return hashlib.sha256(pw.encode()).hexdigest()
 
 
+async def heal_tenant_slugs() -> dict:
+    """Self-healing pass: ensure every tenant doc carries `slug` AND
+    `subdomain` so the public give-page URL works regardless of which key
+    a particular deploy seeded against.
+
+    This runs on every backend boot (cheap — <50 docs in our scale) and is
+    fully idempotent: only updates docs that are missing one of the keys.
+    """
+    healed = 0
+    try:
+        cursor = db.tenants.find(
+            {"$or": [
+                {"slug": {"$exists": False}}, {"slug": None}, {"slug": ""},
+                {"subdomain": {"$exists": False}}, {"subdomain": None}, {"subdomain": ""},
+            ]},
+            {"_id": 0, "id": 1, "slug": 1, "subdomain": 1, "name": 1},
+        )
+        async for t in cursor:
+            tid = t.get("id") or ""
+            # Derive a slug from id by stripping the trailing "-001" suffix
+            # if present, else use the id itself, else lowercased name.
+            slug = t.get("slug") or t.get("subdomain")
+            if not slug:
+                if tid.endswith("-001"):
+                    slug = tid[:-4]
+                elif tid:
+                    slug = tid
+                elif t.get("name"):
+                    slug = t["name"].lower().replace(" ", "-")
+            patch = {}
+            if not t.get("slug") and slug:
+                patch["slug"] = slug
+            if not t.get("subdomain") and slug:
+                patch["subdomain"] = slug
+            if patch:
+                await db.tenants.update_one({"id": tid}, {"$set": patch})
+                healed += 1
+        return {"healed": healed}
+    except Exception as e:
+        logger.warning(f"[heal_tenant_slugs] failed: {e}")
+        return {"healed": 0, "error": str(e)}
+
+
 async def emergency_seed_if_empty() -> dict:
     """Run on backend startup.
 

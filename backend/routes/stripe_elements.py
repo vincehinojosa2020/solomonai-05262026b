@@ -78,8 +78,17 @@ def _compute_cover_fee(amount: float) -> float:
 
 
 async def _tenant_by_slug(slug: str) -> dict:
-    """Resolve a church slug → tenant doc (without Mongo _id)."""
-    t = await db.tenants.find_one({"slug": slug}, {"_id": 0})
+    """Resolve a church identifier → tenant doc (without Mongo _id).
+
+    Accepts any of three keys so the public give-page URL is forgiving across
+    deployments where the seed naming has drifted (some deploys store
+    ``slug='eden-church'``, others only ``subdomain='eden'``, others only
+    the canonical ``id='eden-church-001'``).
+    """
+    t = await db.tenants.find_one(
+        {"$or": [{"slug": slug}, {"subdomain": slug}, {"id": slug}]},
+        {"_id": 0},
+    )
     if not t:
         raise HTTPException(status_code=404, detail=f"Church not found: {slug}")
     return t

@@ -40,7 +40,13 @@ React 18 + FastAPI + MongoDB 7.0 | 575+ endpoints | 89 pages | Claude Sonnet 4.5
 - `/app/SOLOMON_AI_PLATFORM_AUDIT.md`
 - `/app/SOLOMON_AI_UI_GUIDE.md`
 
-## Session — Apr 25, 2026 — Production Recovery (DONE)
+## Session — Apr 25, 2026 — Give-page lookup hardening (DONE)
+- **Root cause** (`/give/eden-church → "Church not found"`): the lookup helper `_tenant_by_slug()` only matched the `slug` field. On Vince's deployed DB the seed names had drifted — most tenants stored `subdomain` but had `slug: null` (e.g., `potters-house-001` had `subdomain="pottershouse"` but no slug). Any /give/<x> URL that didn't match the literal slug exactly returned 404 or 500.
+- **Fix 1** (`/app/backend/routes/stripe_elements.py` line 80): `_tenant_by_slug()` now matches `slug OR subdomain OR id` so any of `eden-church`, `eden-church-001`, or `eden` resolves the same tenant.
+- **Fix 2** (`/app/backend/scripts/emergency_seed.py`): new `heal_tenant_slugs()` runs at startup (after the 60s warm-up) and backfills missing/null slug+subdomain on every tenant — derived from the canonical `id` minus the `-001` suffix. Idempotent. 8 tenants healed on this preview.
+- **Verified**: all 10 lookup-key permutations (eden-church, eden-church-001, eden, pottershouse, potters-house-001, cristoviene, cristoviene-001, hillcountry, abundant-east, etc.) → HTTP 200. Live `/give/eden-church` renders the Eden branded page with $25-$500 presets, Stripe Elements card field, no error.
+
+
 - **Symptom 1** (`/platform → Churches → "Failed to load"`): Root cause was a stale Webpack hot-reload bundle, not an empty database (DB had 9 tenants the entire time). A `sudo supervisorctl restart frontend` rebuilt the bundle and fetchAllChurches fired correctly — 9 churches now render with Eden showing CONNECTED $204.40.
 - **Symptom 2** (`/give/eden-church → "Server could not record donation"`): Could not reproduce on preview — Stripe Elements POST → /api/stripe/create-payment-intent → /api/stripe/confirm-donation all return 200; donor sees "Thank you" with $100 + $2.20 fee + $102.20 total + Visa 4242 + transaction ID.
 - **Defensive idempotent startup seed** (`/app/backend/scripts/emergency_seed.py`): hooks into server startup BEFORE the existing Eden auto-seed. Runs ONLY when `db.tenants.count_documents({}) == 0` (catastrophic state). Recreates Eden + 7 demo tenants per Vince's spec, plus admin@solomonai.us / christopher@eden-x.io users (sha256 hash to match existing pattern), 4 Eden funds, and dashboard_stats_cache rows so all tenants appear in God Mode immediately. Verified via wipe → recover → restore round-trip.
