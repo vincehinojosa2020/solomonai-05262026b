@@ -100,8 +100,8 @@ class TestBlock1B_SchedulerAPIs:
         assert isinstance(data["recent_runs"], list), "recent_runs should be a list"
         
         # Check scheduler section
-        assert "scheduler" in data, f"Missing 'scheduler' key"
-        assert data["scheduler"]["active"] == True, "Scheduler should be active"
+        assert "scheduler" in data, "Missing 'scheduler' key"
+        assert data["scheduler"]["active"], "Scheduler should be active"
         
         print(f"PASS: Scheduler stats: {stats}")
 
@@ -311,7 +311,7 @@ class TestBlock2E_Auth:
         """GET /api/auth/session returns 200 or 401 (not 404)"""
         resp = requests.get(f"{BASE_URL}/api/auth/session")
         # Should NOT be 404 - endpoint must exist
-        assert resp.status_code != 404, f"Auth session endpoint not found (404)"
+        assert resp.status_code != 404, "Auth session endpoint not found (404)"
         print(f"PASS: /api/auth/session exists, status={resp.status_code}")
 
     def test_auth_login_endpoint(self):
@@ -360,5 +360,5 @@ if __name__ == "__main__":
     import subprocess
     subprocess.run([
         "pytest", __file__, "-v", "--tb=short",
-        f"--junitxml=/app/test_reports/pytest/pytest_results_iter78.xml"
+        "--junitxml=/app/test_reports/pytest/pytest_results_iter78.xml"
     ])

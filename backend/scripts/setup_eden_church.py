@@ -12,6 +12,7 @@ Run directly:
 Or programmatically via the admin reset endpoint: POST /api/admin/eden-church/reset
 """
 import asyncio
+import os
 import sys
 import uuid
 from datetime import datetime, timezone
@@ -27,7 +28,7 @@ from core import db, logger  # noqa: E402
 EDEN_TENANT_ID = "eden-church-001"
 EDEN_SLUG = "eden-church"
 CHRISTOPHER_EMAIL = "christopher@eden-x.io"
-CHRISTOPHER_PASSWORD = "EdenChurch2026!"
+CHRISTOPHER_PASSWORD = os.environ.get("EDEN_ADMIN_PASSWORD", "EdenChurch2026!")
 
 # All tenant-scoped collections that may hold Eden data
 TENANT_SCOPED_COLLECTIONS = [

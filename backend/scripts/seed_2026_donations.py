@@ -3,7 +3,7 @@ import pymongo
 import os
 import random
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 
 client = pymongo.MongoClient(os.environ.get('MONGO_URL', 'mongodb://localhost:27017'))
 db = client[os.environ.get('DB_NAME', 'solomonai')]

@@ -34,7 +34,7 @@ def _load_backend_url():
 
 BASE_URL = _load_backend_url()
 ADMIN_EMAIL = "admin@solomonai.us"
-ADMIN_PASSWORD = "Demo2026!"
+ADMIN_PASSWORD = os.environ.get("TEST_PASSWORD", "Demo2026!")
 
 
 @pytest.fixture(scope="module")
@@ -67,7 +67,7 @@ class TestCacheAutoRefreshFix:
             "subdomain": subdomain,
             "admin_email": f"cache-verify-{unique}@example.com",
             "admin_name": "Cache Verify Admin",
-            "admin_password": "Demo2026!",
+            "admin_password": ADMIN_PASSWORD,
             "city": "Verify City",
             "state": "CA",
         }

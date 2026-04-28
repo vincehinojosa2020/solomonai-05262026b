@@ -42,7 +42,7 @@ class TestAuthAndLogin:
         data = response.json()
         # Role is at top level, not nested in user
         assert data.get("role") == "platform_admin", f"Not platform admin, got role: {data.get('role')}"
-        print(f"✓ Platform admin login successful")
+        print("✓ Platform admin login successful")
 
 
 class TestDashboardStats:
@@ -335,7 +335,7 @@ class TestReportsPage:
         
         # Should have some attendance data from monthly_reports
         assert avg_attendance > 0 or len(weekly) > 0, "Should have attendance data"
-        print(f"✓ Attendance report verified")
+        print("✓ Attendance report verified")
     
     def test_reports_groups_tab(self):
         """Reports > Groups tab should show Active Groups > 0"""
@@ -358,7 +358,7 @@ class TestReportsPage:
         print(f"  Groups list: {len(groups)}")
         
         assert active_groups > 0 or len(groups) > 0, "Should have groups data"
-        print(f"✓ Groups report verified")
+        print("✓ Groups report verified")
     
     def test_reports_checkin_tab(self):
         """Reports > Check-In tab should show Total Check-Ins > 0"""
@@ -380,7 +380,7 @@ class TestReportsPage:
         print(f"  Avg Per Sunday: {summary.get('avg_per_sunday', 0)}")
         
         # Data may come from monthly_reports enrichment
-        print(f"✓ Check-in report verified")
+        print("✓ Check-in report verified")
     
     def test_reports_membership_tab(self):
         """Reports > Membership tab should show Total Members > 0"""
@@ -419,7 +419,7 @@ class TestReportsPage:
         print(f"  Kids: {data.get('kids', {})}")
         print(f"  Groups: {data.get('groups', {})}")
         
-        print(f"✓ Executive summary verified")
+        print("✓ Executive summary verified")
 
 
 class TestAuditLog:
@@ -448,7 +448,7 @@ class TestAuditLog:
             for entry in entries[:3]:
                 print(f"    - {entry.get('action_type', entry.get('action'))}: {entry.get('description', entry.get('details', ''))[:50]}")
         
-        print(f"✓ Audit log verified")
+        print("✓ Audit log verified")
 
 
 if __name__ == "__main__":

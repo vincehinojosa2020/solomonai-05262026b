@@ -6,10 +6,7 @@ El Paso, TX demographics, Pareto giving distribution, 3-year history
 import asyncio
 import os
 import random
-import math
 import uuid
-import hashlib
-import secrets
 from datetime import datetime, timezone, timedelta, date
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
@@ -1333,7 +1330,7 @@ async def seed():
         if fd["_id"]:
             fund_totals[fd["_id"]] = fd["total"]
     total_fund = sum(fund_totals.values())
-    log.info(f"\n  Fund Distribution:")
+    log.info("\n  Fund Distribution:")
     for fn, ft in sorted(fund_totals.items(), key=lambda x: -x[1]):
         pct = ft / total_fund * 100
         log.info(f"    {fn}: ${ft:,.0f} ({pct:.1f}%)")

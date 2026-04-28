@@ -5,7 +5,6 @@ Tests for the 5 new features matching SecureGive parity.
 import pytest
 import requests
 import os
-import time
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
@@ -134,7 +133,7 @@ class TestPhase5GapClosure:
         data = resp.json()
         donation = data["donation"]
         
-        assert donation["fees_covered_by_donor"] == True
+        assert donation["fees_covered_by_donor"]
         assert donation["base_amount"] == base_amount
         assert donation["processing_fee"] == expected_fee, f"Expected fee {expected_fee}, got {donation['processing_fee']}"
         assert donation["amount"] == expected_total, f"Expected total {expected_total}, got {donation['amount']}"

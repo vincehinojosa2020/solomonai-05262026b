@@ -7,7 +7,6 @@ Tests for the new Recurring Giving Management feature:
 import pytest
 import requests
 import os
-import time
 import uuid
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
@@ -59,7 +58,7 @@ class TestRecurringGivingPortal:
     
     def test_create_recurring_giving(self, member_session):
         """POST /api/portal/recurring-giving - Create recurring donation schedule"""
-        unique_id = uuid.uuid4().hex[:8]
+        uuid.uuid4().hex[:8]
         payload = {
             "amount": 50.00,
             "fund_id": "general",

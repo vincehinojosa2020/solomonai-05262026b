@@ -1,7 +1,11 @@
 """Seed Abundant East, West, Downtown campuses with 3 years of realistic data."""
-import asyncio, random, uuid, hashlib
+import asyncio
+import random
+import uuid
+import hashlib
 from datetime import datetime, timezone, timedelta, date
-import motor.motor_asyncio, os
+import motor.motor_asyncio
+import os
 from dotenv import load_dotenv
 
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))

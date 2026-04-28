@@ -275,7 +275,7 @@ async def seed_campus(db, tenant_id, campus):
         print(f"    {pct}% ({i+len(batch):,}/{len(all_donations):,})")
 
     # Generate weekly payouts
-    print(f"  Generating payouts...")
+    print("  Generating payouts...")
     payout_start = datetime(2023, 1, 2, tzinfo=timezone.utc)
     payout_end = datetime(2026, 3, 31, tzinfo=timezone.utc)
     mondays = get_mondays(payout_start, payout_end)

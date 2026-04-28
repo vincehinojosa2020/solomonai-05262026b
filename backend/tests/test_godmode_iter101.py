@@ -5,7 +5,7 @@ import requests
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://exec-metrics-hub.preview.emergentagent.com").rstrip("/")
 ADMIN_EMAIL = "admin@solomonai.us"
-ADMIN_PASS = "Demo2026!"
+ADMIN_PASS = os.environ.get("TEST_PASSWORD", "Demo2026!")
 
 
 @pytest.fixture(scope="module")

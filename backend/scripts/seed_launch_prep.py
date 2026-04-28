@@ -5,7 +5,11 @@ Seed Cristo Viene + fix all 7 church caches to match launch spec:
 - Health scores: Abundant = A+, others = B-
 - Subscription tier: Enterprise ($2,000/mo) for all 10K+ churches
 """
-import asyncio, random, uuid, hashlib, os
+import asyncio
+import random
+import uuid
+import hashlib
+import os
 from datetime import datetime, timezone, timedelta, date
 import motor.motor_asyncio
 from dotenv import load_dotenv
@@ -60,7 +64,7 @@ async def seed_cristo_viene():
     }}, upsert=True)
 
     await db.users.update_one({'email': 'admin@cristoviene.church'}, {'$set': {
-        'user_id': f'admin_cristoviene', 'email': 'admin@cristoviene.church',
+        'user_id': 'admin_cristoviene', 'email': 'admin@cristoviene.church',
         'name': 'Pastor Carlos Mendoza', 'role': 'church_admin',
         'tenant_id': tid, 'password_hash': DEMO_PW,
         'created_at': datetime.now(timezone.utc).isoformat(),

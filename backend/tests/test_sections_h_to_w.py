@@ -264,7 +264,7 @@ class TestReportsTabs:
             headers=church_headers()
         )
         assert res.status_code == 200, f"Expected 200, got {res.status_code}: {res.text}"
-        print(f"PASS: /api/admin/audit-log?category=giving returned 200")
+        print("PASS: /api/admin/audit-log?category=giving returned 200")
 
     def test_kids_history_report(self):
         """H: GET /api/reports/kids-history (Check-In tab)"""
@@ -276,9 +276,9 @@ class TestReportsTabs:
         assert res.status_code in [200, 404], \
             f"Expected 200 or 404, got {res.status_code}: {res.text}"
         if res.status_code == 200:
-            print(f"PASS: /api/reports/kids-history returned 200")
+            print("PASS: /api/reports/kids-history returned 200")
         else:
-            print(f"INFO: /api/reports/kids-history returned 404 (no data)")
+            print("INFO: /api/reports/kids-history returned 404 (no data)")
 
     def test_cafe_report(self):
         """H: GET /api/reports/cafe (Cafe & Merch tab)"""
@@ -334,7 +334,7 @@ class TestBulkUpdatePeople:
             headers=church_headers()
         )
         assert res.status_code == 400, f"Expected 400 for empty ids, got {res.status_code}"
-        print(f"PASS: bulk-update rejects empty ids with 400")
+        print("PASS: bulk-update rejects empty ids with 400")
 
     def test_bulk_update_no_valid_fields_returns_400(self):
         """Q: Bulk update with invalid fields should return 400"""
@@ -348,7 +348,7 @@ class TestBulkUpdatePeople:
             headers=church_headers()
         )
         assert res.status_code == 400, f"Expected 400 for invalid fields, got {res.status_code}"
-        print(f"PASS: bulk-update rejects invalid fields with 400")
+        print("PASS: bulk-update rejects invalid fields with 400")
 
     def test_bulk_update_requires_auth(self):
         """Q: /admin/people/bulk-update should require auth"""

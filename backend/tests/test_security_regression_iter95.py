@@ -5,7 +5,6 @@ Tests for Snyk security fixes: login, platform stats, Solomon AI, Stripe config
 import pytest
 import requests
 import os
-import hashlib
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
@@ -154,7 +153,7 @@ class TestSecurityRegression:
         data = response.json()
         assert "response" in data, "No response in Solomon chat"
         assert "session_id" in data, "No session_id in Solomon chat"
-        print(f"PASS: Solomon AI chat endpoint works - got response")
+        print("PASS: Solomon AI chat endpoint works - got response")
     
     # ============== STRIPE CONFIG REGRESSION ==============
     
@@ -183,13 +182,13 @@ class TestSecurityRegression:
             # The React SPA fallback has "Solomon AI" title
             assert "Solomon AI" in content, "Expected React SPA fallback"
             assert "test-login" not in content.lower() or "Test Login Form" not in content, "test-login.html content should not exist"
-        print(f"PASS: test-login.html returns React SPA fallback (file deleted)")
+        print("PASS: test-login.html returns React SPA fallback (file deleted)")
     
     def test_health_endpoint(self):
         """Test health endpoint still works"""
         response = self.session.get(f"{BASE_URL}/api/health")
         assert response.status_code == 200, f"Health check failed: {response.status_code}"
-        print(f"PASS: Health endpoint works")
+        print("PASS: Health endpoint works")
     
     # ============== FUND RECONCILIATION REGRESSION ==============
     
@@ -228,7 +227,7 @@ class TestCSPMetaTag:
         # Check for CSP meta tag
         assert 'Content-Security-Policy' in content, "CSP meta tag not found in index.html"
         assert "default-src 'self'" in content, "CSP default-src directive not found"
-        print(f"PASS: CSP meta tag exists in index.html")
+        print("PASS: CSP meta tag exists in index.html")
 
 
 if __name__ == "__main__":

@@ -100,7 +100,7 @@ class TestRegressionPlatformDashboard:
         # Check for expected KPI fields
         assert "churches" in data or "platform" in data
         churches = data.get("churches", {})
-        assert churches.get("total", 0) >= 8, f"Expected 8+ churches"
+        assert churches.get("total", 0) >= 8, "Expected 8+ churches"
         print(f"Platform stats: {churches.get('total', 0)} churches, {data.get('members', {}).get('total', 0)} members")
     
     def test_platform_organizations_list(self, platform_admin_token):

@@ -1,5 +1,6 @@
 """Solomon AI — Portal User Journeys + Ask Solomon + Data Integrity Tests"""
-import requests, json, time
+import requests
+import json
 
 API = "https://exec-metrics-hub.preview.emergentagent.com/api"
 AT = open("/tmp/admin_token").read().strip()
@@ -265,7 +266,7 @@ if r.ok:
         for m in members 
         if isinstance(m, dict) and "tenant_id" in m
     )
-    log("DI1","Tenant Isolation","PASS" if all_same_tenant else "FAIL", f"All members scoped to tenant")
+    log("DI1","Tenant Isolation","PASS" if all_same_tenant else "FAIL", "All members scoped to tenant")
 else:
     log("DI1","Tenant Isolation","FAIL", f"{r.status_code}")
 

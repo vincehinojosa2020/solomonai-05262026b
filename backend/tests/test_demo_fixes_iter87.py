@@ -129,7 +129,7 @@ class TestAggregateDashboard:
         assert "campuses" in data, "Response should contain 'campuses' array"
         campuses = data["campuses"]
         
-        print(f"Campus breakdown:")
+        print("Campus breakdown:")
         for campus in campuses:
             print(f"  - {campus.get('name')}: {campus.get('members')} members")
         
@@ -150,7 +150,7 @@ class TestAggregateDashboard:
         assert response.status_code == 200
         
         data = response.json()
-        campuses = data.get("campuses", [])
+        data.get("campuses", [])
         
         # Check total members
         total = data.get("total_members", 0)
@@ -215,8 +215,8 @@ class TestDemoAccountFlags:
         print(f"demo_walkthrough_seen: {demo_walkthrough_seen}")
         
         # Demo accounts should have these flags set to suppress modals
-        assert onboarding_completed == True, "Demo account should have onboarding_completed=true"
-        assert demo_walkthrough_seen == True, "Demo account should have demo_walkthrough_seen=true"
+        assert onboarding_completed, "Demo account should have onboarding_completed=true"
+        assert demo_walkthrough_seen, "Demo account should have demo_walkthrough_seen=true"
 
 
 if __name__ == "__main__":

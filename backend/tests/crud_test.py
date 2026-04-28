@@ -1,5 +1,6 @@
 """Solomon AI — Full Functional CRUD Test Script"""
-import requests, json, time, sys
+import requests
+import json
 
 API = "https://exec-metrics-hub.preview.emergentagent.com/api"
 AT = open("/tmp/admin_token").read().strip()
@@ -126,7 +127,7 @@ if loc_id:
     r = get("/admin/checkin/locations")
     locs = r.json().get("locations", r.json()) if r.ok else []
     if isinstance(locs, list):
-        found = any(l.get("id") == loc_id for l in locs)
+        found = any(loc.get("id") == loc_id for loc in locs)
     else:
         found = False
     log("C1b","Location in list","PASS" if found else "FAIL")
@@ -195,19 +196,19 @@ else:
 try:
     r = get("/admin/giving/report")
     log("G3b","Giving Report","PASS" if r.ok else "FAIL")
-except:
+except Exception:
     log("G3b","Giving Report","PASS","(timeout — slow query, endpoint works)")
 
 try:
     r = get("/admin/giving/report?group_by=fund")
     log("G3c","Report by Fund","PASS" if r.ok else "FAIL")
-except:
+except Exception:
     log("G3c","Report by Fund","PASS","(timeout — endpoint works, slow query)")
 
 try:
     r = get("/admin/giving/report?group_by=donor")
     log("G3d","Report by Donor","PASS" if r.ok else "FAIL")
-except:
+except Exception:
     log("G3d","Report by Donor","PASS","(timeout — endpoint works, slow query)")
 
 # G4: Export CSV
@@ -217,7 +218,7 @@ try:
         log("G4","Export CSV","PASS", f"Size: {len(r.content)} bytes")
     else:
         log("G4","Export CSV","FAIL", f"{r.status_code}")
-except:
+except Exception:
     log("G4","Export CSV","PASS","(timeout — endpoint works, large CSV)")
 
 # G5: Giving integrations

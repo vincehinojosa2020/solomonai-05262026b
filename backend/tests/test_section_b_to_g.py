@@ -113,7 +113,7 @@ class TestDashboardStats:
         assert mtd_goal is not None, "mtd_goal is None"
         assert isinstance(mtd_goal, (int, float)), f"mtd_goal is not a number: {mtd_goal}"
         # mtd_goal != mtd_goal means NaN
-        assert mtd_goal == mtd_goal, f"mtd_goal is NaN"
+        assert mtd_goal == mtd_goal, "mtd_goal is NaN"
 
     def test_dashboard_stats_mtd_goal_greater_than_zero(self, church_admin_session):
         """B.3: mtd_goal > 0 for seeded churches"""

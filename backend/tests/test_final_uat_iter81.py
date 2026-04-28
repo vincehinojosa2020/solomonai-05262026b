@@ -9,7 +9,6 @@ Covers all Section W checklist items for backend APIs:
 - Cross-tenant isolation
 - Performance: login + dashboard under 5 seconds
 """
-import pytest
 import requests
 import os
 import time
@@ -194,7 +193,7 @@ class TestPayouts:
         if r.status_code == 200:
             text = r.text
             assert "NaN" not in text, f"Found NaN in payouts: {text[:300]}"
-            print(f"PASS: Payouts no NaN")
+            print("PASS: Payouts no NaN")
         else:
             print(f"NOTE: /api/platform/payouts returned {r.status_code} — checking stats endpoint instead")
 
@@ -234,7 +233,7 @@ class TestIntegrations:
                 assert "securegive" not in text
                 print("PASS: No Pushpay/SecureGive in settings API")
             else:
-                print(f"NOTE: Both integrations endpoints returned non-200 — verifying via code (tested in UI)")
+                print("NOTE: Both integrations endpoints returned non-200 — verifying via code (tested in UI)")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -282,7 +281,7 @@ class TestReports9Tabs:
             headers=church_headers(), timeout=15
         )
         assert r.status_code == 200, f"Giving tab: {r.status_code}"
-        print(f"PASS: Giving tab /api/reports/giving-by-fund → 200")
+        print("PASS: Giving tab /api/reports/giving-by-fund → 200")
 
     def test_attendance_report(self):
         r = requests.get(
@@ -290,12 +289,12 @@ class TestReports9Tabs:
             headers=church_headers(), timeout=15
         )
         assert r.status_code == 200, f"Attendance tab: {r.status_code}"
-        print(f"PASS: Attendance tab /api/reports/attendance → 200")
+        print("PASS: Attendance tab /api/reports/attendance → 200")
 
     def test_groups_report(self):
         r = requests.get(f"{BASE_URL}/api/reports/groups", headers=church_headers(), timeout=15)
         assert r.status_code == 200, f"Groups tab: {r.status_code}"
-        print(f"PASS: Groups tab /api/reports/groups → 200")
+        print("PASS: Groups tab /api/reports/groups → 200")
 
     def test_checkin_report(self):
         r = requests.get(
@@ -303,7 +302,7 @@ class TestReports9Tabs:
             headers=church_headers(), timeout=15
         )
         assert r.status_code == 200, f"Check-In tab: {r.status_code}"
-        print(f"PASS: Check-In tab /api/reports/kids-history → 200")
+        print("PASS: Check-In tab /api/reports/kids-history → 200")
 
     def test_cafe_merch_report(self):
         r = requests.get(
@@ -311,18 +310,18 @@ class TestReports9Tabs:
             headers=church_headers(), timeout=15
         )
         assert r.status_code == 200, f"Cafe & Merch tab: {r.status_code}"
-        print(f"PASS: Cafe & Merch tab /api/reports/cafe → 200")
+        print("PASS: Cafe & Merch tab /api/reports/cafe → 200")
 
     def test_membership_report(self):
         r = requests.get(f"{BASE_URL}/api/reports/membership", headers=church_headers(), timeout=15)
         assert r.status_code == 200, f"Membership tab: {r.status_code}"
-        print(f"PASS: Membership tab /api/reports/membership → 200")
+        print("PASS: Membership tab /api/reports/membership → 200")
 
     def test_cross_analysis_report(self):
         """Executive summary serves as Cross-Analysis data source"""
         r = requests.get(f"{BASE_URL}/api/reports/executive-summary", headers=church_headers(), timeout=15)
         assert r.status_code == 200, f"Cross-Analysis tab: {r.status_code}"
-        print(f"PASS: Cross-Analysis tab /api/reports/executive-summary → 200")
+        print("PASS: Cross-Analysis tab /api/reports/executive-summary → 200")
 
     def test_audit_log(self):
         r = requests.get(
@@ -334,7 +333,7 @@ class TestReports9Tabs:
         # Check it has entries field
         assert "entries" in data or "logs" in data or isinstance(data, list), \
             f"Audit log unexpected format: {str(data)[:200]}"
-        print(f"PASS: Audit Log tab /api/admin/audit-log → 200")
+        print("PASS: Audit Log tab /api/admin/audit-log → 200")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -472,7 +471,7 @@ class TestPerformance:
 
     def test_platform_stats_under_5s(self):
         start = time.time()
-        r = requests.get(f"{BASE_URL}/api/platform/stats", headers=platform_headers(), timeout=15)
+        requests.get(f"{BASE_URL}/api/platform/stats", headers=platform_headers(), timeout=15)
         elapsed = time.time() - start
         # Allow up to 10s for network latency (external URL)
         assert elapsed < 10.0, f"Platform stats too slow: {elapsed:.2f}s"

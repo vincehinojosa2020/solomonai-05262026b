@@ -344,6 +344,12 @@ async def confirm_donation(payload: ConfirmDonationRequest):
         }},
     )
 
+    # Bust dashboard caches so God Mode + Solomon Pay see the new gift
+    # within the next request — not after the 30s TTL.
+    _STATS_CACHE["ts"] = 0.0
+    _STATS_CACHE["data"] = None
+    _PLATFORM_TXN_CACHE.clear()
+
     return {"status": "succeeded", "donation": donation, "already_recorded": False}
 
 

@@ -91,7 +91,7 @@ class TestGivingGoals:
         res = requests.get(f"{BASE_URL}/api/portal/giving-goal?year=2026", headers=portal_headers)
         assert res.status_code == 200
         data = res.json()
-        assert data["has_goal"] == True
+        assert data["has_goal"]
         assert data["target_amount"] == 15000.00
         assert data["progress_pct"] >= 0
         print(f"✓ GET giving goal after set: target=${data['target_amount']}, progress={data['progress_pct']}%")
@@ -130,7 +130,7 @@ class TestGivingGoals:
         res = requests.get(f"{BASE_URL}/api/portal/giving-goal?year=2026", headers=portal_headers)
         assert res.status_code == 200
         data = res.json()
-        assert data["has_goal"] == False
+        assert not data["has_goal"]
         assert data["target_amount"] == 0
         print("✓ Goal correctly shows as not set after delete")
     
@@ -194,8 +194,8 @@ class TestCustomFieldDefinitions:
         data = res.json()
         assert data["field_type"] == "select"
         assert len(data["options"]) == 4
-        assert data["required"] == True
-        print(f"✓ CREATE select field with 4 options")
+        assert data["required"]
+        print("✓ CREATE select field with 4 options")
         # Clean up
         requests.delete(f"{BASE_URL}/api/admin/custom-field-definitions/{data['id']}", headers=admin_headers)
     
@@ -214,7 +214,7 @@ class TestCustomFieldDefinitions:
         assert res.status_code == 200
         data = res.json()
         assert data["field_type"] == "multiselect"
-        print(f"✓ CREATE multiselect field")
+        print("✓ CREATE multiselect field")
         # Clean up
         requests.delete(f"{BASE_URL}/api/admin/custom-field-definitions/{data['id']}", headers=admin_headers)
     
@@ -232,7 +232,7 @@ class TestCustomFieldDefinitions:
         assert res.status_code == 200
         data = res.json()
         assert data["field_type"] == "boolean"
-        print(f"✓ CREATE boolean field")
+        print("✓ CREATE boolean field")
         # Clean up
         requests.delete(f"{BASE_URL}/api/admin/custom-field-definitions/{data['id']}", headers=admin_headers)
     
@@ -250,7 +250,7 @@ class TestCustomFieldDefinitions:
         assert res.status_code == 200
         data = res.json()
         assert data["field_type"] == "date"
-        print(f"✓ CREATE date field")
+        print("✓ CREATE date field")
         # Clean up
         requests.delete(f"{BASE_URL}/api/admin/custom-field-definitions/{data['id']}", headers=admin_headers)
     
@@ -268,7 +268,7 @@ class TestCustomFieldDefinitions:
         assert res.status_code == 200
         data = res.json()
         assert data["field_type"] == "number"
-        print(f"✓ CREATE number field")
+        print("✓ CREATE number field")
         # Clean up
         requests.delete(f"{BASE_URL}/api/admin/custom-field-definitions/{data['id']}", headers=admin_headers)
     
@@ -286,7 +286,7 @@ class TestCustomFieldDefinitions:
         assert res.status_code == 200
         data = res.json()
         assert data["field_type"] == "textarea"
-        print(f"✓ CREATE textarea field")
+        print("✓ CREATE textarea field")
         # Clean up
         requests.delete(f"{BASE_URL}/api/admin/custom-field-definitions/{data['id']}", headers=admin_headers)
     
@@ -307,9 +307,9 @@ class TestCustomFieldDefinitions:
         assert res.status_code == 200, f"Expected 200, got {res.status_code}: {res.text}"
         data = res.json()
         assert data["name"] == "TEST_Updated_Nickname"
-        assert data["required"] == True
+        assert data["required"]
         assert data["category"] == "church"
-        print(f"✓ UPDATE custom field: name, required, category changed")
+        print("✓ UPDATE custom field: name, required, category changed")
     
     def test_create_duplicate_field_rejected(self, admin_headers):
         """POST /api/admin/custom-field-definitions - Reject duplicate field name"""
@@ -488,7 +488,7 @@ class TestRegistrationAddOns:
         )
         # May return 200 with config or 200 with null config
         assert res.status_code == 200, f"Expected 200, got {res.status_code}: {res.text}"
-        print(f"✓ GET registration config for event")
+        print("✓ GET registration config for event")
     
     def test_save_config_with_enhanced_addons(self, admin_headers):
         """POST /api/admin/registrations/configs/{event_id} - Save config with enhanced add-ons"""
@@ -534,7 +534,7 @@ class TestRegistrationAddOns:
             json=config
         )
         assert res.status_code == 200, f"Expected 200, got {res.status_code}: {res.text}"
-        print(f"✓ SAVE config with 3 enhanced add-ons (description, required, max_qty)")
+        print("✓ SAVE config with 3 enhanced add-ons (description, required, max_qty)")
     
     def test_verify_addon_fields_persisted(self, admin_headers):
         """GET /api/admin/registrations/configs/{event_id} - Verify add-on fields saved"""
@@ -556,7 +556,7 @@ class TestRegistrationAddOns:
                 assert "description" in addon or addon.get("description") is not None, "description field missing"
                 assert "required" in addon, "required field missing"
                 assert "max_qty" in addon, "max_qty field missing"
-                print(f"✓ Add-on enhanced fields verified: description, required, max_qty present")
+                print("✓ Add-on enhanced fields verified: description, required, max_qty present")
             else:
                 print("✓ Config retrieved (no add-ons to verify)")
         else:
@@ -576,7 +576,7 @@ class TestRegistrationAddOns:
                 for addon in config["add_ons"]:
                     # Verify enhanced fields are exposed to public
                     print(f"  Add-on: {addon.get('name')} - desc: {addon.get('description', 'N/A')}, required: {addon.get('required', False)}")
-            print(f"✓ Public registration endpoint working")
+            print("✓ Public registration endpoint working")
         else:
             print(f"✓ Public registration endpoint returned {res.status_code} (event may not be public)")
 

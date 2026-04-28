@@ -53,10 +53,10 @@ class TestStripeConfig:
         data = response.json()
         
         # Verify stripe_live is true
-        assert data.get("stripe_live") == True, f"Expected stripe_live=true, got {data.get('stripe_live')}"
+        assert data.get("stripe_live"), f"Expected stripe_live=true, got {data.get('stripe_live')}"
         
         # Verify stripe_configured is true
-        assert data.get("stripe_configured") == True, f"Expected stripe_configured=true, got {data.get('stripe_configured')}"
+        assert data.get("stripe_configured"), f"Expected stripe_configured=true, got {data.get('stripe_configured')}"
         
         # Verify platform_fee_rate is present
         assert "platform_fee_rate" in data, "platform_fee_rate should be present"
@@ -95,7 +95,7 @@ class TestStripeCheckoutGiving:
         assert data["session_id"].startswith("cs_"), f"session_id should start with 'cs_', got {data['session_id'][:10]}..."
         
         # Verify stripe_live is true
-        assert data.get("stripe_live") == True, f"Expected stripe_live=true, got {data.get('stripe_live')}"
+        assert data.get("stripe_live"), f"Expected stripe_live=true, got {data.get('stripe_live')}"
         
         # Verify amount matches
         assert data.get("amount") == 50.00, f"Expected amount=50.00, got {data.get('amount')}"
@@ -178,7 +178,7 @@ class TestStripeCheckoutGiving:
         data = response.json()
         assert "detail" in data or "error" in data, "Error response should contain detail or error message"
         
-        print(f"✓ Minimum amount validation: 400 returned for $0.50 donation")
+        print("✓ Minimum amount validation: 400 returned for $0.50 donation")
 
 
 class TestStripeCheckoutStatus:
@@ -209,7 +209,7 @@ class TestStripeCheckoutStatus:
         # Verify required fields
         assert "status" in data, "Response should contain 'status'"
         assert "payment_status" in data, "Response should contain 'payment_status'"
-        assert data.get("stripe_live") == True, f"Expected stripe_live=true, got {data.get('stripe_live')}"
+        assert data.get("stripe_live"), f"Expected stripe_live=true, got {data.get('stripe_live')}"
         
         print(f"✓ Status check: session={session_id[:20]}..., status={data['status']}, payment_status={data['payment_status']}")
 
@@ -288,9 +288,9 @@ class TestSolomonPayRegression:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
-        assert data.get("success") == True or "transaction_id" in data, f"Payment should succeed: {data}"
+        assert data.get("success") or "transaction_id" in data, f"Payment should succeed: {data}"
         
-        print(f"✓ Solomon Pay regression: Payment processed successfully with Visa 4242")
+        print("✓ Solomon Pay regression: Payment processed successfully with Visa 4242")
 
 
 if __name__ == "__main__":

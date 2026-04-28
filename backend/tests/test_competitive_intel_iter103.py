@@ -33,7 +33,7 @@ def _load_backend_url():
 
 BASE_URL = _load_backend_url()
 ADMIN_EMAIL = "admin@solomonai.us"
-ADMIN_PASSWORD = "Demo2026!"
+ADMIN_PASSWORD = os.environ.get("TEST_PASSWORD", "Demo2026!")
 
 
 # ─── Fixtures ──────────────────────────────────────────────────────────────
@@ -231,7 +231,7 @@ class TestCacheAutoRefresh:
             "subdomain": f"cache-test-{unique}",
             "admin_email": f"cache-{unique}@example.com",
             "admin_name": "Cache Test Admin",
-            "admin_password": "Demo2026!",
+            "admin_password": os.environ.get("TEST_PASSWORD", "Demo2026!"),
             "city": "Test City",
             "state": "CA",
         }

@@ -64,7 +64,7 @@ class TestPlatformStats:
     def test_stats_ok(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/stats", headers=platform_headers, timeout=20)
         assert r.status_code == 200, f"Expected 200, got {r.status_code}: {r.text[:200]}"
-        print(f"PASS: /api/platform/stats returned 200")
+        print("PASS: /api/platform/stats returned 200")
 
     def test_stats_gmv_over_50m(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/stats", headers=platform_headers, timeout=20)
@@ -131,7 +131,7 @@ class TestPlatformStats:
         campuses = data.get("campus_breakdown", [])
         for c in campuses:
             assert not c.get("name", "").startswith("TEST_"), f"TEST_ church in breakdown: {c['name']}"
-        print(f"PASS: No TEST_ churches in campus_breakdown")
+        print("PASS: No TEST_ churches in campus_breakdown")
 
 
 # ── Activity Feed ──────────────────────────────────────────────────────────
@@ -247,7 +247,7 @@ class TestImpersonate:
         data = r.json()
         token = data.get("session_token") or data.get("token")
         assert token, f"Expected token in response, got: {data}"
-        print(f"PASS: impersonate returned token successfully")
+        print("PASS: impersonate returned token successfully")
         # NOTE: API returns 'token' key but PlatformDashboard.jsx checks 'd.session_token' — BUG in frontend
 
 
@@ -265,7 +265,7 @@ class TestChurchAdminBlocked:
                 stats_r = requests.get(f"{BASE_URL}/api/platform/stats",
                                       headers={"Authorization": f"Bearer {token}"})
                 assert stats_r.status_code == 403, f"Church admin should get 403, got {stats_r.status_code}"
-                print(f"PASS: Church admin gets 403 on /api/platform/stats")
+                print("PASS: Church admin gets 403 on /api/platform/stats")
             else:
                 print("INFO: No token in response, skipping")
         else:

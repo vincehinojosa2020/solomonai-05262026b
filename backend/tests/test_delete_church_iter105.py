@@ -47,9 +47,9 @@ def _load_mongo():
 
 BASE_URL = _load_backend_url()
 ADMIN_EMAIL = "admin@solomonai.us"
-ADMIN_PASSWORD = "Demo2026!"
+ADMIN_PASSWORD = os.environ.get("TEST_PASSWORD", "Demo2026!")
 CHURCH_ADMIN_EMAIL = "christopher@eden-x.io"
-CHURCH_ADMIN_PASSWORD = "EdenChurch2026!"
+CHURCH_ADMIN_PASSWORD = os.environ.get("TEST_EDEN_PASSWORD", "EdenChurch2026!")
 MONGO_URL, DB_NAME = _load_mongo()
 
 
@@ -90,7 +90,7 @@ def _create_tenant(admin_session) -> tuple[str, str, str]:
         "subdomain": subdomain,
         "admin_email": admin_email,
         "admin_name": "Del Admin",
-        "admin_password": "Demo2026!",
+        "admin_password": ADMIN_PASSWORD,
         "city": "Del City",
         "state": "CA",
     }
@@ -169,7 +169,7 @@ class TestRealDeleteAndCache:
     def test_real_delete_cascades_and_refreshes_cache(self, admin_session):
         # Capture cache updated_at before
         pre_stats = admin_session.get(f"{BASE_URL}/api/platform/stats", timeout=20).json()
-        pre_updated_at = pre_stats.get("updated_at")
+        pre_stats.get("updated_at")
         # Even if None pre-fix, we just care about the post value being a populated ISO string.
 
         tid, _, admin_email = _create_tenant(admin_session)

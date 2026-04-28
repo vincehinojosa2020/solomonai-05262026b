@@ -21,7 +21,7 @@ if cache and 'data' in cache:
         for c in data['campus_breakdown']:
             if 'northeast' in c.get('name', '').lower():
                 c['name'] = 'Abundant Downtown'
-                print(f'Updated campus_breakdown entry to: Abundant Downtown')
+                print('Updated campus_breakdown entry to: Abundant Downtown')
         db.platform_stats_cache.update_one(
             {'cache_key': 'platform_stats'},
             {'$set': {'data': data}}
@@ -34,7 +34,7 @@ for doc in db.dashboard_stats_cache.find({'tenant_name': re.compile('northeast',
         {'_id': doc['_id']},
         {'$set': {'tenant_name': 'Abundant Downtown'}}
     )
-    print(f'Updated dashboard_stats_cache for tenant')
+    print('Updated dashboard_stats_cache for tenant')
 
 # Also update health scores cache
 for doc in db.platform_stats_cache.find({'cache_key': 'health_scores'}):

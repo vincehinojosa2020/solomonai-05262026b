@@ -9,7 +9,6 @@ Tests for action execution via Solomon chat:
 import pytest
 import requests
 import os
-import time
 import uuid
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
@@ -77,7 +76,7 @@ class TestSolomonAgenticPhase6:
         
         # Should NOT have pending_action for non-action query
         assert data.get("pending_action") is None, f"Non-action query should not have pending_action, got: {data.get('pending_action')}"
-        print(f"✓ Non-action query returned response without pending_action")
+        print("✓ Non-action query returned response without pending_action")
     
     def test_chat_action_query_returns_pending_action(self, member_session):
         """POST /api/solomon/chat — action query should return pending_action"""
@@ -145,7 +144,7 @@ class TestSolomonAgenticPhase6:
         assert response.status_code == 200, f"Execute action failed: {response.text}"
         data = response.json()
         
-        assert data.get("success") == True, f"Action not successful: {data}"
+        assert data.get("success"), f"Action not successful: {data}"
         assert "order_id" in data, "Missing order_id in response"
         assert "message" in data, "Missing message in response"
         assert "TEST_Latte" in data["message"], f"Order message should mention item: {data['message']}"
@@ -175,7 +174,7 @@ class TestSolomonAgenticPhase6:
         assert response.status_code == 200, f"Execute action failed: {response.text}"
         data = response.json()
         
-        assert data.get("success") == True, f"Action not successful: {data}"
+        assert data.get("success"), f"Action not successful: {data}"
         assert "donation_id" in data, "Missing donation_id in response"
         assert "message" in data, "Missing message in response"
         assert "$25" in data["message"], f"Donation message should mention amount: {data['message']}"
@@ -203,7 +202,7 @@ class TestSolomonAgenticPhase6:
         assert response.status_code == 200, f"Request failed: {response.text}"
         data = response.json()
         
-        assert data.get("success") == False, f"Zero amount donation should fail: {data}"
+        assert not data.get("success"), f"Zero amount donation should fail: {data}"
         assert "positive" in data.get("message", "").lower(), f"Should mention positive amount: {data}"
         
         print(f"✓ Invalid donation correctly rejected: {data['message']}")
@@ -232,7 +231,7 @@ class TestSolomonAgenticPhase6:
         assert response.status_code == 200, f"Execute action failed: {response.text}"
         data = response.json()
         
-        assert data.get("success") == True, f"Action not successful: {data}"
+        assert data.get("success"), f"Action not successful: {data}"
         assert "schedule_id" in data, "Missing schedule_id in response"
         assert "message" in data, "Missing message in response"
         assert "weekly" in data["message"].lower(), f"Message should mention frequency: {data['message']}"
@@ -293,7 +292,7 @@ class TestSolomonAgenticPhase6:
         assert response.status_code == 200, f"Request failed: {response.text}"
         data = response.json()
         
-        assert data.get("success") == False, f"Nonexistent event should fail: {data}"
+        assert not data.get("success"), f"Nonexistent event should fail: {data}"
         assert "could not find" in data.get("message", "").lower(), f"Should mention not found: {data}"
         
         print(f"✓ Nonexistent event correctly rejected: {data['message']}")
@@ -351,7 +350,7 @@ class TestSolomonAgenticPhase6:
         assert response.status_code == 200, f"Request failed: {response.text}"
         data = response.json()
         
-        assert data.get("success") == False, f"Nonexistent group should fail: {data}"
+        assert not data.get("success"), f"Nonexistent group should fail: {data}"
         assert "could not find" in data.get("message", "").lower(), f"Should mention not found: {data}"
         
         print(f"✓ Nonexistent group correctly rejected: {data['message']}")
@@ -378,7 +377,7 @@ class TestSolomonAgenticPhase6:
         assert response.status_code == 200, f"Execute action failed: {response.text}"
         data = response.json()
         
-        assert data.get("success") == True, f"Action not successful: {data}"
+        assert data.get("success"), f"Action not successful: {data}"
         assert "order_id" in data, "Missing order_id in response"
         assert "message" in data, "Missing message in response"
         assert "TEST_T-Shirt" in data["message"], f"Order message should mention item: {data['message']}"
@@ -405,7 +404,7 @@ class TestSolomonAgenticPhase6:
         assert response.status_code == 200, f"Request failed: {response.text}"
         data = response.json()
         
-        assert data.get("success") == False, f"Unknown action should fail: {data}"
+        assert not data.get("success"), f"Unknown action should fail: {data}"
         assert "unknown" in data.get("message", "").lower(), f"Should mention unknown: {data}"
         
         print(f"✓ Unknown action type correctly rejected: {data['message']}")
@@ -434,7 +433,7 @@ class TestSolomonAgenticPhase6:
         data = response.json()
         
         assert "messages" in data or "session_id" in data, f"Invalid history response: {data}"
-        print(f"✓ Solomon history endpoint working")
+        print("✓ Solomon history endpoint working")
     
     # ============== SESSION CLEAR TEST ==============
     
@@ -461,7 +460,7 @@ class TestSolomonAgenticPhase6:
         assert "message" in data, f"Missing message in response: {data}"
         assert "cleared" in data["message"].lower(), f"Should confirm cleared: {data}"
         
-        print(f"✓ Solomon session clear working")
+        print("✓ Solomon session clear working")
 
 
 # Run tests if executed directly

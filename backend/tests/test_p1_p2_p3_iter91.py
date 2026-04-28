@@ -115,7 +115,7 @@ class TestTenantIsolation:
         data = response.json()
         # Should return giving data structure
         assert "by_fund" in data or "summary" in data or isinstance(data, list)
-        print(f"PASS: Giving report returned tenant-scoped data")
+        print("PASS: Giving report returned tenant-scoped data")
     
     def test_reports_membership_scoped_to_tenant(self, church_admin_session):
         """Verify membership report is scoped to the logged-in user's tenant"""
@@ -123,7 +123,7 @@ class TestTenantIsolation:
         assert response.status_code == 200
         data = response.json()
         assert "by_status" in data or "total" in data or "summary" in data
-        print(f"PASS: Membership report returned tenant-scoped data")
+        print("PASS: Membership report returned tenant-scoped data")
     
     def test_dashboard_activity_scoped_to_tenant(self, church_admin_session):
         """Verify dashboard activity is scoped to the logged-in user's tenant"""

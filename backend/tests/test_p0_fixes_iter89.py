@@ -132,8 +132,8 @@ class TestFix1PlatformTransactions:
         
         # Verify different transactions on different pages
         if len(data1["transactions"]) > 0 and len(data2["transactions"]) > 0:
-            txn1_ids = [t.get("id") or t.get("donation_date") for t in data1["transactions"]]
-            txn2_ids = [t.get("id") or t.get("donation_date") for t in data2["transactions"]]
+            [t.get("id") or t.get("donation_date") for t in data1["transactions"]]
+            [t.get("id") or t.get("donation_date") for t in data2["transactions"]]
             # Pages should have different content
             print(f"✓ Page 1 has {len(data1['transactions'])} transactions")
             print(f"✓ Page 2 has {len(data2['transactions'])} transactions")
@@ -312,7 +312,7 @@ class TestFix4ChurchDetailDrillthrough:
         assert response.status_code == 200, f"Church detail endpoint failed: {response.status_code} - {response.text}"
         data = response.json()
         
-        print(f"✓ Church detail endpoint returned data for abundant-east-001")
+        print("✓ Church detail endpoint returned data for abundant-east-001")
         
         # Verify response structure
         assert "church" in data, "Missing 'church' key"
@@ -462,7 +462,7 @@ class TestPlatformStats:
         assert "transactions" in data, "Missing 'transactions' key"
         assert "campus_breakdown" in data, "Missing 'campus_breakdown' key"
         
-        print(f"✓ Platform stats loaded successfully")
+        print("✓ Platform stats loaded successfully")
         print(f"✓ All-time giving: ${data.get('giving', {}).get('all_time', 0):,.2f}")
         print(f"✓ Total transactions: {data.get('transactions', {}).get('total', 0):,}")
 

@@ -6,7 +6,11 @@ Calibrates existing churches to match the correct financial model:
   - 4-5% YoY growth (2023 < 2024 < 2025)
   - Tier distribution: Tithers 5%, Committed 15%, Engaged 25%, Regular 25%, Occasional 30%
 """
-import asyncio, random, uuid, hashlib, os
+import asyncio
+import random
+import uuid
+import hashlib
+import os
 from datetime import datetime, timezone, timedelta, date
 import motor.motor_asyncio
 from dotenv import load_dotenv

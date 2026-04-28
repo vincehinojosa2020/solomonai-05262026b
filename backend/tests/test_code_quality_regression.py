@@ -10,7 +10,6 @@ Tests to verify that code quality changes did NOT break existing functionality:
 import pytest
 import requests
 import os
-import hashlib
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
@@ -228,7 +227,7 @@ class TestPlatformEndpoints:
         data = response.json()
         # API returns a list of organizations
         assert isinstance(data, list) or "organizations" in data
-        print(f"✓ Platform organizations endpoint works")
+        print("✓ Platform organizations endpoint works")
     
     def test_platform_health(self, api_client, platform_admin_token):
         """GET /api/platform/health works"""

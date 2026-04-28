@@ -1,0 +1,36 @@
+{
+  "summary": "Iteration 106 — Backend-only verification of P0 confirm_donation cache-bust + P1 cleanup. P0 PASSES end-to-end: drove a real $1.00 Stripe test PaymentIntent (pm_card_visa) through POST /api/stripe/create-payment-intent → stripe.PaymentIntent.confirm → POST /api/stripe/confirm-donation, then immediately re-hit /api/platform/stripe/transactions/stats and observed all_time.count increment by exactly 1 well within the 30s TTL window — proving _STATS_CACHE['ts']=0 and _PLATFORM_TXN_CACHE.clear() at stripe_elements.py:349-351 actually invalidate the cached payload. All 6 tests in test_cache_bust_iter106.py pass (10.5s). Regressions also pass: /api/health=ok, /api/platform/stripe/transactions/stats returns full payload (today/this_week/this_month/all_time + active_churches + total_donors) and 401s without auth, /recent returns Stripe activity rows with the expected keys, /api/platform/churches returns rows including stripe_status / stripe_total_processed / stripe_txn_count. P1 partially complete: recent test files (iter101/103/104/105) collect cleanly under pytest --collect-only (34 tests, 0 collection errors) and ruff backend/tests/ is 100% clean (0 errors). However ruff backend/routes/ + backend/scripts/ still surface 15 E741 ambiguous-variable-name warnings (14 in routes, 1 in scripts) that the P1 plan called out — see action_items. E712 (==True/False) and E711 (==None) are fully clean across tests/routes/scripts.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "lint:backend/routes/", "issue": "14 E741 ambiguous-variable-name warnings remain (e.g. `for l in logs` in platform.py:595, portal.py:839, sms_routes.py:79, plus 11 more). P1 plan called for ambiguous var name cleanup across routes — not done yet."},
+      {"endpoint": "lint:backend/scripts/", "issue": "1 E741 remaining in scripts. Also note backend/scripts/seed_master.py has many E701 (multiple statements on one line) — not in P1 scope but worth a follow-up."}
+    ]
+  },
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_cache_bust_iter106.py",
+    "/app/test_reports/pytest/iter106_results.xml"
+  ],
+  "action_items": [
+    "Fix the 14 E741 ambiguous-variable-name lint errors in backend/routes/ (rename loop variable `l` → `entry`/`leader`/`log` in platform.py:595, portal.py:839, sms_routes.py:79, and 11 other call sites). `ruff check backend/routes/ --select E741 --fix --unsafe-fixes` will auto-rename most.",
+    "Fix the 1 E741 remaining in backend/scripts/ (run `ruff check backend/scripts/ --select E741`).",
+    "Optional follow-up: backend/scripts/seed_master.py has many E701 (multi-statement-on-one-line) violations — outside this iteration's P1 scope but flagged for housekeeping."
+  ],
+  "critical_code_review_comments": [
+    "stripe_elements.py:349-351 — cache-bust on confirm_donation works, but it is set inline as `_STATS_CACHE['ts']=0.0; _STATS_CACHE['data']=None; _PLATFORM_TXN_CACHE.clear()`. core/stripe_sync.py:backfill_from_intents already centralises the same logic. Consider extracting a single `invalidate_platform_caches()` helper in stripe_elements (or a shared core/cache.py) and calling it from both confirm_donation and backfill_from_intents so the bust contract lives in one place — today if a third write path lands, it can drift.",
+    "stripe_elements.py:498 _PLATFORM_TXN_CACHE is keyed on (limit, starting_after, church_id, status, date_from, date_to). After confirm_donation we .clear() the whole dict — correct, but on a busy platform this nukes ALL paginated cursors. For the demo scale that's fine; at scale consider keying by tenant_id and only invalidating the affected church's keys.",
+    "stripe_elements.py:639 _STATS_CACHE is a single-entry process-local dict. With multiple uvicorn workers the cache-bust only invalidates the worker that handled the confirm-donation; other workers keep serving stale stats for up to 30s. Currently single-worker so not an issue, but flag for any future scale-out — should move to Redis or a versioned key.",
+    "test_competitive_intel_iter103.py:36/234 + test_cache_autorefresh_iter104.py:37/70 + test_delete_church_iter105.py:50/52/93 — all now read TEST_PASSWORD from env with a Demo2026!/EdenChurch2026! fallback. Good. setup_eden_church.py:30/31 also moved to env. Consider adding a one-line note in /app/memory/test_credentials.md saying these envs override the file values, so future engineers know."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_cache_bust_iter106.py"
+  ],
+  "success_rate": {"backend": "100% (6/6 in iter106 + 34/34 collect for iter101-105)", "frontend": "n/a — backend-only per request"},
+  "test_credentials": "admin@solomonai.us / Demo2026! (platform_admin). Stripe test card path: stripe.PaymentIntent.confirm(pi, payment_method='pm_card_visa') from sk_test_* in backend/.env.",
+  "seed_data_creation": "Two TEST_cache_bust_iter106@example.com donations (one per test run) + 2 payment_transactions rows were created during the cache-bust test, then explicitly deleted via db.donations.delete_many + db.payment_transactions.delete_many. Final state: 0 residual TEST_cache_bust_iter106 rows.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "P0 confirm_donation cache-bust is fully verified end-to-end via real Stripe test PaymentIntent (no mocking). The canonical reproduction is in /app/backend/tests/test_cache_bust_iter106.py::test_confirm_donation_busts_stats_cache — keep this as the regression for any future writes to /stripe/confirm-donation or _STATS_CACHE/_PLATFORM_TXN_CACHE handling. The test self-cleans via TEST_cache_bust_iter106@example.com tag. Outstanding P1 work: 15 E741 ambiguous-variable-name warnings in backend/routes/ (14) + backend/scripts/ (1). E712 and E711 are 100% clean — only ambiguous-var-name remains.",
+  "rca of the issue": "N/A — verification run, not a bug fix. The fix at stripe_elements.py:349-351 (set ts=0.0, data=None, clear PLATFORM_TXN_CACHE) is correct and observably effective: pre-fix the /stats endpoint would have served the cached count for up to 30s after a new donation; post-fix the very next call reflects the new gift (verified by all_time.count incrementing from N to N+1 with sub-second elapsed time between confirm-donation and the second /stats call)."
+}

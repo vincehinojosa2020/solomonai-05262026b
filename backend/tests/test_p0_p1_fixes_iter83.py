@@ -17,7 +17,6 @@ Checklist:
 import pytest
 import requests
 import os
-import time
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
@@ -74,7 +73,7 @@ class TestP03Revenue:
     def test_revenue_returns_200(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/revenue", headers=platform_headers, timeout=25)
         assert r.status_code == 200, f"Expected 200, got {r.status_code}: {r.text[:300]}"
-        print(f"PASS: /api/platform/revenue returned 200")
+        print("PASS: /api/platform/revenue returned 200")
 
     def test_revenue_all_time_fees_over_1m(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/revenue", headers=platform_headers, timeout=25)
@@ -97,7 +96,7 @@ class TestP03Revenue:
         r = requests.get(f"{BASE_URL}/api/platform/revenue", headers=platform_headers, timeout=25)
         data = r.json()
         by_church = data.get("by_church", [])
-        assert len(by_church) > 0, f"Expected non-empty by_church, got empty"
+        assert len(by_church) > 0, "Expected non-empty by_church, got empty"
         print(f"PASS: by_church has {len(by_church)} entries")
 
 
@@ -110,7 +109,7 @@ class TestP02Donors:
         # Donors endpoint takes 50+ seconds due to large aggregations
         r = requests.get(f"{BASE_URL}/api/platform/donors/stats", headers=platform_headers, timeout=90)
         assert r.status_code == 200, f"Expected 200, got {r.status_code}: {r.text[:300]}"
-        print(f"PASS: /api/platform/donors/stats returned 200")
+        print("PASS: /api/platform/donors/stats returned 200")
 
     def test_donors_total_over_zero(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/donors/stats", headers=platform_headers, timeout=90)
@@ -161,7 +160,7 @@ class TestP11Churches:
     def test_churches_returns_200(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/churches", headers=platform_headers, timeout=25)
         assert r.status_code == 200, f"Expected 200, got {r.status_code}: {r.text[:300]}"
-        print(f"PASS: /api/platform/churches returned 200")
+        print("PASS: /api/platform/churches returned 200")
 
     def test_churches_count_is_7(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/churches", headers=platform_headers, timeout=25)
@@ -178,7 +177,7 @@ class TestP11Churches:
         churches = data.get("churches", [])
         test_churches = [c for c in churches if c.get("name", "").startswith("TEST_")]
         assert len(test_churches) == 0, f"Found TEST_ churches: {[c['name'] for c in test_churches]}"
-        print(f"PASS: No TEST_ churches found")
+        print("PASS: No TEST_ churches found")
 
     def test_churches_have_health_badges(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/churches", headers=platform_headers, timeout=25)
@@ -216,7 +215,7 @@ class TestP11HealthScores:
     def test_health_scores_returns_200(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/health-scores", headers=platform_headers, timeout=25)
         assert r.status_code == 200, f"Expected 200, got {r.status_code}: {r.text[:300]}"
-        print(f"PASS: /api/platform/health-scores returned 200")
+        print("PASS: /api/platform/health-scores returned 200")
 
     def test_health_scores_no_test_entries(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/health-scores", headers=platform_headers, timeout=25)
@@ -247,28 +246,28 @@ class TestP12AbundantHealthScore:
         churches = data.get("churches", [])
         # Find Abundant Church
         abundant = [c for c in churches if "Abundant" in c.get("name", "")]
-        assert len(abundant) > 0, f"No Abundant Church entry found in health-scores"
+        assert len(abundant) > 0, "No Abundant Church entry found in health-scores"
         for a in abundant:
             grade = a.get("health", {}).get("grade", "")
             score = a.get("health", {}).get("score", 0)
             print(f"INFO: {a['name']} health score = {score}, grade = {grade}")
             assert grade in ["A+", "A", "A-", "B+", "B", "B-"], \
                 f"Expected Abundant health grade B or better, got '{grade}' (score={score})"
-        print(f"PASS: Abundant Church health grade is B or better")
+        print("PASS: Abundant Church health grade is B or better")
 
     def test_abundant_health_in_churches_endpoint(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/churches", headers=platform_headers, timeout=25)
         data = r.json()
         churches = data.get("churches", [])
         abundant = [c for c in churches if "Abundant" in c.get("name", "")]
-        assert len(abundant) > 0, f"No Abundant Church in churches endpoint"
+        assert len(abundant) > 0, "No Abundant Church in churches endpoint"
         for a in abundant:
             grade = a.get("health", {}).get("grade", "N/A")
             score = a.get("health", {}).get("score", 0)
             print(f"INFO: {a['name']} in churches endpoint: grade={grade}, score={score}")
             # Grade should not be N/A or missing
             assert grade not in ["N/A", "", None], f"Abundant health grade should not be N/A: {grade}"
-        print(f"PASS: Abundant Church has valid health grade in /churches endpoint")
+        print("PASS: Abundant Church has valid health grade in /churches endpoint")
 
 
 # ─── P1-3: Activity Feed with Real Donor Names ───────────────────────────────
@@ -279,7 +278,7 @@ class TestP13ActivityFeed:
     def test_activity_feed_returns_200(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/activity-feed", headers=platform_headers, timeout=20)
         assert r.status_code == 200, f"Expected 200, got {r.status_code}: {r.text[:300]}"
-        print(f"PASS: /api/platform/activity-feed returned 200")
+        print("PASS: /api/platform/activity-feed returned 200")
 
     def test_activity_feed_has_events(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/activity-feed", headers=platform_headers, timeout=20)
@@ -316,7 +315,7 @@ class TestP13ActivityFeed:
         donation_events = [e for e in events if e.get("type") == "donation"]
         for ev in donation_events[:5]:  # Check first 5
             assert ev.get("amount", 0) >= 500, f"Donation event amount should be >= $500 (filtered): {ev.get('amount')}"
-        print(f"PASS: Donation events have amounts >= $500")
+        print("PASS: Donation events have amounts >= $500")
 
 
 # ─── P0-1: Solomon Platform Admin Context ───────────────────────────────────
@@ -332,7 +331,7 @@ class TestP01SolomonPlatformAdmin:
             timeout=30
         )
         assert r.status_code == 200, f"Expected 200, got {r.status_code}: {r.text[:300]}"
-        print(f"PASS: /api/solomon/chat returned 200")
+        print("PASS: /api/solomon/chat returned 200")
 
     def test_solomon_mrr_not_denied(self, platform_headers):
         """Solomon should NOT say 'I don't have access' to platform admin"""
@@ -352,7 +351,7 @@ class TestP01SolomonPlatformAdmin:
         print(f"INFO: Solomon response to MRR question: {response[:200]}...")
         assert not has_denial, f"Solomon denied access to MRR data for platform_admin: {response[:300]}"
         assert has_mrr_data, f"Solomon response doesn't seem to contain MRR data: {response[:300]}"
-        print(f"PASS: Solomon answered MRR question with data")
+        print("PASS: Solomon answered MRR question with data")
 
     def test_solomon_highest_giving_church(self, platform_headers):
         """Solomon should say Abundant or Potter's House has highest giving"""
@@ -373,7 +372,7 @@ class TestP01SolomonPlatformAdmin:
         print(f"INFO: Solomon response to highest giving: {response[:300]}...")
         assert mentions_church or has_amounts, \
             f"Solomon should name churches or amounts for highest giving: {response[:300]}"
-        print(f"PASS: Solomon answered highest giving church question")
+        print("PASS: Solomon answered highest giving church question")
 
 
 # ─── Platform Stats (GMV > $90M after Abundant campus seeding) ───────────────
@@ -455,7 +454,7 @@ class TestPlatformTransactions:
     def test_transactions_returns_200(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/transactions", headers=platform_headers, timeout=20)
         assert r.status_code == 200, f"Expected 200, got {r.status_code}: {r.text[:200]}"
-        print(f"PASS: /api/platform/transactions returned 200")
+        print("PASS: /api/platform/transactions returned 200")
 
     def test_transactions_total_count(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/transactions", headers=platform_headers, timeout=20)
@@ -489,7 +488,7 @@ class TestPlatformPayouts:
     def test_payouts_returns_200(self, platform_headers):
         r = requests.get(f"{BASE_URL}/api/platform/payouts", headers=platform_headers, timeout=20)
         assert r.status_code == 200, f"Expected 200, got {r.status_code}: {r.text[:200]}"
-        print(f"PASS: /api/platform/payouts returned 200")
+        print("PASS: /api/platform/payouts returned 200")
 
 
 # ─── Impersonate Endpoint ────────────────────────────────────────────────────
@@ -508,7 +507,7 @@ class TestImpersonate:
         data = r.json()
         token = data.get("token")
         assert token is not None, f"Expected 'token' in response, got: {data}"
-        assert data.get("impersonating") == True, f"Expected impersonating:true, got: {data}"
+        assert data.get("impersonating"), f"Expected impersonating:true, got: {data}"
         print(f"PASS: Impersonate returned token={token[:20]}...")
 
     def test_impersonate_invalid_tenant(self, platform_headers):
