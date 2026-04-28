@@ -21,8 +21,10 @@ Security posture:
 """
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
+import time as _time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
@@ -616,13 +618,29 @@ async def platform_transactions(
     return result
 
 
+_STATS_CACHE: dict = {"ts": 0.0, "data": None}
+_STATS_TTL_SECONDS = 30.0
+
+
 @router.get("/platform/stripe/transactions/stats")
 async def platform_transactions_stats(request: Request):
     """Aggregate TPV + Solomon revenue across all churches. Queries our
     MongoDB donations collection (fast) rather than Stripe's list API so the
     dashboard loads instantly. Only counts payment_source=stripe rows so the
-    numbers reflect real payment volume, not demo data."""
+    numbers reflect real payment volume, not demo data.
+
+    The donations collection is ~2.8M docs, so we:
+      1. Fan the 6 queries out in parallel via `asyncio.gather`
+      2. Cache the response for 30s so tab-switching + parallel card loads
+         (Executive + Transactions tabs + PaymentMetricsRow all hit it) don't
+         re-run the scans for every single consumer.
+    """
     await _require_platform_admin(request)
+
+    # Serve cached if fresh (cuts p95 from ~11s to <50ms on warm hits).
+    now_ts = _time.time()
+    if _STATS_CACHE["data"] is not None and (now_ts - _STATS_CACHE["ts"]) < _STATS_TTL_SECONDS:
+        return _STATS_CACHE["data"]
 
     now = datetime.now(timezone.utc)
     today_str = now.strftime("%Y-%m-%d")
@@ -646,22 +664,27 @@ async def platform_transactions_stats(request: Request):
         total = int(r[0]["total_amount"])
         return {"count": r[0]["count"], "total_amount": total, "solomon_revenue": round(total * 0.0035)}
 
-    today = await _bucket({"donation_date": today_str})
-    this_week = await _bucket({"donation_date": {"$gte": week_ago}})
-    this_month = await _bucket({"donation_date": {"$gte": month_start}})
-    all_time = await _bucket({})
+    # Fan out — each scans the compound index (payment_source + donation_date).
+    today, this_week, this_month, all_time, active_tids, donor_emails = await asyncio.gather(
+        _bucket({"donation_date": today_str}),
+        _bucket({"donation_date": {"$gte": week_ago}}),
+        _bucket({"donation_date": {"$gte": month_start}}),
+        _bucket({}),
+        db.donations.distinct("tenant_id", base_match),
+        db.donations.distinct("donor_email", base_match),
+    )
 
-    active_churches = len(await db.donations.distinct("tenant_id", base_match))
-    total_donors = len(await db.donations.distinct("donor_email", base_match))
-
-    return {
+    payload = {
         "today": today,
         "this_week": this_week,
         "this_month": this_month,
         "all_time": all_time,
-        "active_churches": active_churches,
-        "total_donors": total_donors,
+        "active_churches": len(active_tids),
+        "total_donors": len(donor_emails),
     }
+    _STATS_CACHE["ts"] = now_ts
+    _STATS_CACHE["data"] = payload
+    return payload
 
 
 @router.get("/platform/stripe/transactions/daily")

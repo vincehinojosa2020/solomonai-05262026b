@@ -89,7 +89,7 @@ export default function AppShell() {
   const exitImpersonation = () => {
     sessionStorage.removeItem('impersonate_tenant');
     setImpersonatedTenant(null);
-    navigate('/platform');
+    navigate('/godmode');
   };
 
   useEffect(() => {

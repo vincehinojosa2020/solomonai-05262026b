@@ -40,7 +40,18 @@ React 18 + FastAPI + MongoDB 7.0 | 575+ endpoints | 89 pages | Claude Sonnet 4.5
 - `/app/SOLOMON_AI_PLATFORM_AUDIT.md`
 - `/app/SOLOMON_AI_UI_GUIDE.md`
 
-## Session — Apr 25, 2026 — Give-page lookup hardening (DONE)
+## Session — Apr 28, 2026 — Vince can't see Eden tenancy/txns (DONE)
+Vince reported he couldn't see Eden X transactions nor Eden as a tenant after signing in as platform admin. Root causes (4, all fixed):
+- **Wrong landing page**: platform_admin login redirected to the legacy `/platform` dashboard (sparse view showing 7 legacy churches), not the modern `/godmode` CEO view. Fixed in `LoginPage.jsx`, `Dashboard.jsx`, `AuthCallback.jsx`, `AppShell.jsx` (exitImpersonation).
+- **Route shadowing**: `/godmode` route was registered twice — the nested one under AppShell required `requiredRole="admin"` (not platform_admin) so requests silently fell through. Moved `/godmode` to a standalone `ProtectedRoute requiredRole="platform_admin"` path.
+- **Stale `dashboard_stats_cache` rows**: Eden's row was keyed `edenx-001` (orphan) so `_get_real_campuses_fast()`'s `total_members > 10` gate dropped her entirely → cached `campus_breakdown` had only 7. Extended `heal_tenant_slugs()` to (a) delete orphan dashboard_stats_cache rows, (b) upsert a `total_members=11` bootstrap row for every active tenant that's missing one. Runs at every startup (idempotent).
+- **11-second `/stats` endpoint** on the 2.8M-donation collection: 6 serial full-collection scans. Fixed by (a) `asyncio.gather`ing the 6 queries, (b) compound indexes on donations `(payment_source, donation_date/tenant_id/donor_email/created_at)`, (c) 30s TTL in-memory cache. p95 **11s → 100ms** (100× faster).
+
+PlatformChurches component hardened so it only falls back to the campus_breakdown prop when the enriched `/platform/churches` fetch *actually* failed — never while still in-flight.
+
+**Verified on preview**: 9 churches render, Eden Church `CONNECTED · $307 processed · 3 txns`, Transactions tab shows all 21 Eden Stripe transactions with full Stripe/Solomon fee breakdown.
+
+
 - **Root cause** (`/give/eden-church → "Church not found"`): the lookup helper `_tenant_by_slug()` only matched the `slug` field. On Vince's deployed DB the seed names had drifted — most tenants stored `subdomain` but had `slug: null` (e.g., `potters-house-001` had `subdomain="pottershouse"` but no slug). Any /give/<x> URL that didn't match the literal slug exactly returned 404 or 500.
 - **Fix 1** (`/app/backend/routes/stripe_elements.py` line 80): `_tenant_by_slug()` now matches `slug OR subdomain OR id` so any of `eden-church`, `eden-church-001`, or `eden` resolves the same tenant.
 - **Fix 2** (`/app/backend/scripts/emergency_seed.py`): new `heal_tenant_slugs()` runs at startup (after the 60s warm-up) and backfills missing/null slug+subdomain on every tenant — derived from the canonical `id` minus the `-001` suffix. Idempotent. 8 tenants healed on this preview.

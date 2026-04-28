@@ -56,7 +56,7 @@ export default function AuthCallback() {
         if (role === 'member') {
           navigate('/portal', { state: { user: userData }, replace: true });
         } else if (role === 'platform_admin') {
-          navigate('/platform', { state: { user: userData }, replace: true });
+          navigate('/godmode', { state: { user: userData }, replace: true });
         } else {
           navigate('/dashboard', { state: { user: userData }, replace: true });
         }

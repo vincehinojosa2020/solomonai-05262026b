@@ -121,8 +121,13 @@ export default function PlatformChurches({ token, stats }) {
 
   // Prefer the enriched /platform/churches response (has stripe_status,
   // stripe_total_processed, and zero-donation tenants). Fall back to the
-  // campus_breakdown prop only on the first render / when the fetch fails.
-  const churches = (allChurches && allChurches.length > 0)
+  // campus_breakdown prop ONLY on the first render / when the fetch fails.
+  // Using allChurches === null as the "still loading" sentinel keeps the
+  // header counters honest — we never render "0/7 Connected" while the
+  // richer API response is still in-flight.
+  const fetchSucceeded = allChurches !== null;
+  const fetchReturnedData = fetchSucceeded && allChurches.length > 0;
+  const churches = fetchReturnedData
     ? allChurches
     : campuses.map(c => ({ ...c, id: c.tenant_id }));
 
@@ -136,9 +141,12 @@ export default function PlatformChurches({ token, stats }) {
     return {
       ...c,
       id: c.id || c.tenant_id,
-      giving: giving_data?.giving || c.giving || 0,
-      fees: giving_data?.fees || c.fees || 0,
-      txn_count: giving_data?.txn_count || c.txn_count || 0,
+      // When the enriched API brought data, trust its giving/fees/txn_count
+      // (it carries the enriched stripe breakdown). Fall back to campus_breakdown
+      // only when the API fetch failed entirely.
+      giving: fetchReturnedData ? (c.giving ?? 0) : (giving_data?.giving ?? c.giving ?? 0),
+      fees: fetchReturnedData ? (c.fees ?? 0) : (giving_data?.fees ?? c.fees ?? 0),
+      txn_count: fetchReturnedData ? (c.txn_count ?? 0) : (giving_data?.txn_count ?? c.txn_count ?? 0),
       health: healthScores[c.id || c.tenant_id],
       stripe_status: c.stripe_status || 'not_connected',
       stripe_total_processed: c.stripe_total_processed || 0,

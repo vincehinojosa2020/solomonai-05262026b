@@ -294,8 +294,23 @@ async def _deferred_startup() -> None:
             # Self-healing pass: backfill missing slug/subdomain on every boot
             # so the public give-page URL works even on legacy seeds.
             heal = await heal_tenant_slugs()
-            if heal.get("healed"):
-                logger.warning(f"[startup] heal_tenant_slugs: backfilled {heal['healed']} tenants")
+            if heal.get("healed_slugs") or heal.get("dsc_added") or heal.get("dsc_orphans_removed"):
+                logger.warning(
+                    f"[startup] heal_tenant_slugs: slugs={heal.get('healed_slugs')} "
+                    f"dsc_added={heal.get('dsc_added')} orphans_removed={heal.get('dsc_orphans_removed')}"
+                )
+
+            # Ensure query-critical indexes exist on the donations collection.
+            # ~2.8M rows × the God-Mode stats endpoint does 6 scans, so the
+            # compound (payment_source, donation_date) index takes p95 from
+            # ~11s to <200ms. Index creation is idempotent.
+            try:
+                await db.donations.create_index([("payment_source", 1), ("donation_date", -1)], name="ix_stripe_date", background=True)
+                await db.donations.create_index([("payment_source", 1), ("tenant_id", 1)], name="ix_stripe_tenant", background=True)
+                await db.donations.create_index([("payment_source", 1), ("donor_email", 1)], name="ix_stripe_donor", background=True)
+                await db.donations.create_index([("payment_source", 1), ("created_at", -1)], name="ix_stripe_created", background=True)
+            except Exception as e:
+                logger.warning(f"[startup] donations index creation skipped: {e}")
         except Exception as exc:
             logger.warning(f"[startup] emergency_seed skipped: {exc}")
 

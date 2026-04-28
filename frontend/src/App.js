@@ -127,6 +127,14 @@ function AppRouter() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/godmode"
+        element={
+          <ProtectedRoute requiredRole="platform_admin">
+            <GodModeDashboard />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Admin Protected routes */}
       <Route element={
@@ -135,7 +143,6 @@ function AppRouter() {
         </ProtectedRoute>
       }>
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/godmode" element={<GodModeDashboard />} />
         <Route path="/people" element={<PeopleList />} />
         <Route path="/people/:personId" element={<PersonDetail />} />
         <Route path="/households" element={<HouseholdsPage />} />

@@ -160,10 +160,10 @@ export default function Dashboard() {
   const [aggregateMode, setAggregateMode] = useState(localStorage.getItem('campus_mode') === 'all');
   const [aggregateData, setAggregateData] = useState(null);
 
-  // Redirect platform admins to their dashboard
+  // Redirect platform admins to God Mode (full transaction + Stripe view)
   useEffect(() => {
     if (user?.role === 'platform_admin') {
-      navigate('/platform', { replace: true });
+      navigate('/godmode', { replace: true });
     }
   }, [user, navigate]);
 

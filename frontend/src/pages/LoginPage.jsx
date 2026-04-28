@@ -57,7 +57,7 @@ export default function LoginPage() {
       if (data.role === 'member') {
         navigate('/portal', { state: { user: data } });
       } else if (data.role === 'platform_admin') {
-        navigate('/platform', { state: { user: data } });
+        navigate('/godmode', { state: { user: data } });
       } else {
         navigate('/dashboard', { state: { user: data } });
       }
