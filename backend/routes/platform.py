@@ -2903,6 +2903,35 @@ async def create_church_onboarding(request: Request, payload: ChurchOnboardingRe
     tenant_id = f"{subdomain}-001"
     now_iso = datetime.now(timezone.utc).isoformat()
 
+    # ── Optional Stripe Connect onboarding (BLOCKER #1 fix) ──
+    # Try to provision an Express account up-front so the wizard returns
+    # a ready-to-go onboarding link. If Stripe is unreachable / not
+    # configured, we still create the tenant in `not_started` state so the
+    # platform admin can retry via the dedicated /platform/churches/{id}/connect/start
+    # endpoint. The tenant is unable to accept gifts until status="active".
+    from core.connect import (
+        create_express_account, create_account_link, default_fee_schedule,
+        CONNECT_STATUS_NOT_STARTED, CONNECT_STATUS_ONBOARDING,
+    )
+    connect_account_id = None
+    connect_status = CONNECT_STATUS_NOT_STARTED
+    connect_onboarding_url = None
+    if os.environ.get("STRIPE_API_KEY"):
+        try:
+            base_url = os.environ.get("APP_BASE_URL") or str(request.base_url).rstrip("/").replace("/api", "")
+            acct = await create_express_account(
+                tenant_id=tenant_id,
+                tenant_name=payload.name,
+                admin_email=payload.admin_email.lower(),
+            )
+            connect_account_id = acct.id
+            connect_status = CONNECT_STATUS_ONBOARDING
+            link = await create_account_link(acct.id, base_url)
+            connect_onboarding_url = link.url
+        except Exception as e:
+            # Fail-soft: tenant still gets created, admin retries Connect later.
+            logger.warning(f"[onboarding] Stripe Connect provisioning failed for {tenant_id}: {e}")
+
     tenant = {
         "id": tenant_id,
         "name": payload.name,
@@ -2917,7 +2946,12 @@ async def create_church_onboarding(request: Request, payload: ChurchOnboardingRe
         "estimated_members": payload.estimated_members,
         "service_times": payload.service_times,
         "created_at": now_iso,
-        "onboarded_by": user.get("user_id")
+        "onboarded_by": user.get("user_id"),
+        # Connect fields (BLOCKER #1)
+        "stripe_connect_account_id": connect_account_id,
+        "stripe_connect_status": connect_status,
+        "stripe_connect_onboarded_at": None,
+        "fee_schedule": default_fee_schedule(),
     }
     await db.tenants.insert_one({**tenant})
 
@@ -2977,6 +3011,10 @@ async def create_church_onboarding(request: Request, payload: ChurchOnboardingRe
         "church_name": payload.name,
         "admin_email": payload.admin_email,
         "admin_user_id": admin_user["user_id"],
+        # Connect onboarding (BLOCKER #1)
+        "stripe_connect_account_id": connect_account_id,
+        "stripe_connect_status": connect_status,
+        "stripe_connect_onboarding_url": connect_onboarding_url,
         "message": f"Church '{payload.name}' created successfully with admin account."
     }
 

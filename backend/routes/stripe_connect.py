@@ -358,6 +358,53 @@ async def stripe_webhook(request: Request):
                 "created_at": datetime.now(timezone.utc).isoformat(),
             })
 
+        elif event_type == "account.updated":
+            # BLOCKER #1 — Connect account state changed.
+            # data_object IS the account itself. Resolve the tenant via
+            # metadata.tenant_id (we set this at create_express_account
+            # time) or by stripe_connect_account_id lookup.
+            from core.connect import derive_status_from_account, CONNECT_STATUS_ACTIVE
+            acct_id = data_object.get("id")
+            md_tenant = (data_object.get("metadata") or {}).get("tenant_id")
+            tenant_doc = None
+            if md_tenant:
+                tenant_doc = await db.tenants.find_one({"id": md_tenant}, {"_id": 0})
+            if not tenant_doc and acct_id:
+                tenant_doc = await db.tenants.find_one({"stripe_connect_account_id": acct_id}, {"_id": 0})
+            if tenant_doc:
+                new_status = derive_status_from_account(data_object)
+                update = {"stripe_connect_status": new_status}
+                if new_status == CONNECT_STATUS_ACTIVE and not tenant_doc.get("stripe_connect_onboarded_at"):
+                    update["stripe_connect_onboarded_at"] = datetime.now(timezone.utc).isoformat()
+                await db.tenants.update_one({"id": tenant_doc["id"]}, {"$set": update})
+                logger.info(f"[stripe_webhook] account.updated → tenant {tenant_doc['id']} → {new_status}")
+
+        elif event_type == "account.application.deauthorized":
+            # Tenant disconnected the Connect account from our platform.
+            # No more payment processing for this church until they reconnect.
+            from core.connect import CONNECT_STATUS_RESTRICTED
+            acct_id = data_object.get("id") or (event.get("account") if isinstance(event, dict) else getattr(event, "account", None))
+            if acct_id:
+                tenant_doc = await db.tenants.find_one({"stripe_connect_account_id": acct_id}, {"_id": 0})
+                if tenant_doc:
+                    await db.tenants.update_one(
+                        {"id": tenant_doc["id"]},
+                        {"$set": {"stripe_connect_status": CONNECT_STATUS_RESTRICTED}},
+                    )
+                    # Audit alert — surfaced on God Mode platform_flags.
+                    await db.platform_flags.update_one(
+                        {"key": f"connect-deauthorized-{tenant_doc['id']}"},
+                        {"$set": {
+                            "tenant_id": tenant_doc["id"],
+                            "tenant_name": tenant_doc.get("name", ""),
+                            "alert_type": "connect_deauthorized",
+                            "severity": "critical",
+                            "raised_at": datetime.now(timezone.utc).isoformat(),
+                        }},
+                        upsert=True,
+                    )
+                    logger.error(f"[stripe_webhook] CONNECT DEAUTHORIZED for tenant {tenant_doc['id']}")
+
         # Mark event processed
         await db.stripe_webhook_events.update_one(
             {"event_id": event_id},
@@ -438,3 +485,129 @@ async def _send_receipt(txn: dict):
         logger.info(f"Receipt sent to {email} for ${amount}")
     except Exception as e:
         logger.error(f"Receipt email failed: {e}")
+
+
+
+# ═══════════════════════════════════════════════════════════════════════
+#  Stripe Connect — per-tenant account management (BLOCKER #1)
+# ═══════════════════════════════════════════════════════════════════════
+
+@router.post("/platform/churches/{tenant_id}/connect/start")
+async def start_connect_onboarding(tenant_id: str, request: Request):
+    """Provision a new Express Connect account for an existing tenant
+    (or refresh the onboarding link for one mid-flow). Platform-admin only."""
+    user = await get_current_portal_user(request)
+    if user.get("role") != "platform_admin":
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    from core.connect import (
+        create_express_account, create_account_link,
+        CONNECT_STATUS_ONBOARDING, CONNECT_STATUS_ACTIVE,
+    )
+
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+    if not tenant:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+    if tenant.get("stripe_connect_status") == CONNECT_STATUS_ACTIVE:
+        raise HTTPException(status_code=400, detail="Connect account already active")
+    if not STRIPE_API_KEY:
+        raise HTTPException(status_code=503, detail="Stripe not configured on server")
+
+    base_url = os.environ.get("APP_BASE_URL") or str(request.base_url).rstrip("/").replace("/api", "")
+    account_id = tenant.get("stripe_connect_account_id")
+    if not account_id:
+        # Find the tenant's primary admin email for the Stripe Account.email
+        admin_user = await db.users.find_one(
+            {"tenant_id": tenant_id, "role": "church_admin"},
+            {"_id": 0, "email": 1},
+        )
+        admin_email = (admin_user or {}).get("email", f"admin@{tenant.get('subdomain','solomon')}.church")
+        try:
+            acct = await create_express_account(
+                tenant_id=tenant_id,
+                tenant_name=tenant["name"],
+                admin_email=admin_email,
+            )
+            account_id = acct.id
+            await db.tenants.update_one(
+                {"id": tenant_id},
+                {"$set": {
+                    "stripe_connect_account_id": account_id,
+                    "stripe_connect_status": CONNECT_STATUS_ONBOARDING,
+                }},
+            )
+        except stripe.error.StripeError as e:
+            raise HTTPException(status_code=502, detail=f"Stripe error: {e.user_message or str(e)}")
+
+    try:
+        link = await create_account_link(account_id, base_url)
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=502, detail=f"Stripe link error: {e.user_message or str(e)}")
+
+    return {
+        "tenant_id": tenant_id,
+        "stripe_connect_account_id": account_id,
+        "onboarding_url": link.url,
+        "expires_at": link.expires_at,
+    }
+
+
+@router.post("/platform/churches/{tenant_id}/connect/refresh")
+async def refresh_connect_status(tenant_id: str, request: Request):
+    """Pull the latest account status from Stripe and persist. Useful after
+    a church admin completes the onboarding flow but before Stripe's
+    `account.updated` webhook arrives."""
+    user = await get_current_portal_user(request)
+    if user.get("role") not in ("platform_admin", "church_admin"):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    if user.get("role") == "church_admin" and user.get("tenant_id") != tenant_id:
+        raise HTTPException(status_code=403, detail="Cannot refresh another church's status")
+
+    from core.connect import sync_tenant_status_from_stripe
+    result = await sync_tenant_status_from_stripe(db, tenant_id)
+    if not result.get("updated"):
+        raise HTTPException(status_code=400, detail=result.get("reason", "refresh_failed"))
+    return result
+
+
+@router.get("/platform/churches/{tenant_id}/connect/login-link")
+async def connect_dashboard_link(tenant_id: str, request: Request):
+    """Issue a one-time URL that drops the church admin into their Express
+    Stripe dashboard (payouts, balance, taxes). Platform/church admin only."""
+    user = await get_current_portal_user(request)
+    if user.get("role") not in ("platform_admin", "church_admin"):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    if user.get("role") == "church_admin" and user.get("tenant_id") != tenant_id:
+        raise HTTPException(status_code=403, detail="Cannot access another church's dashboard")
+
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+    acct_id = (tenant or {}).get("stripe_connect_account_id")
+    if not acct_id:
+        raise HTTPException(status_code=400, detail="No Connect account for this tenant")
+
+    try:
+        from core.connect import _run_stripe
+        link = await _run_stripe(stripe.Account.create_login_link, acct_id)
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=502, detail=f"Stripe error: {e.user_message or str(e)}")
+    return {"url": link.url}
+
+
+@router.get("/admin/connect/status")
+async def admin_connect_status(request: Request):
+    """Church admin's view of their own Connect status — drives the
+    /admin/settings/payments page UI."""
+    user = await get_current_portal_user(request)
+    tenant_id = user.get("tenant_id")
+    if not tenant_id:
+        raise HTTPException(status_code=400, detail="No tenant context")
+    tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+    if not tenant:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+    return {
+        "tenant_id": tenant_id,
+        "stripe_connect_status": tenant.get("stripe_connect_status", "not_started"),
+        "has_account": bool(tenant.get("stripe_connect_account_id")),
+        "onboarded_at": tenant.get("stripe_connect_onboarded_at"),
+        "fee_schedule": tenant.get("fee_schedule") or {},
+    }

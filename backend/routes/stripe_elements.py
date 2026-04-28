@@ -25,6 +25,7 @@ import asyncio
 import logging
 import os
 import time as _time
+import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
@@ -135,6 +136,13 @@ async def public_church_config(slug: str):
         "website_url": t.get("website"),
         "pastor_name": t.get("pastor_name"),
         "stripe_test_mode": t.get("stripe_test_mode", IS_TEST_MODE),
+        # ── Connect (BLOCKER #1) ──
+        # Frontend uses these to (a) initialize Stripe.js with stripeAccount
+        # so the card element talks to the connected account directly, and
+        # (b) hide the giving form behind a "this church can't accept gifts
+        # yet" message when status != active.
+        "connected_account_id": t.get("stripe_connect_account_id"),
+        "accepts_payments": t.get("stripe_connect_status") == "active",
     }
 
 
@@ -155,7 +163,14 @@ class CreatePaymentIntentRequest(BaseModel):
 @router.post("/stripe/create-payment-intent")
 async def create_payment_intent(payload: CreatePaymentIntentRequest):
     """Create a Stripe PaymentIntent tied to a specific church + fund. No auth
-    required — this is the guest giving path."""
+    required — this is the guest giving path.
+
+    Connect (BLOCKER #1): direct charge on the tenant's connected account.
+    `stripe_account=` puts the charge on the connected account's statement
+    (church's name on donor's bank statement), and `application_fee_amount`
+    captures Solomon's cut. Tenants without an active Connect account fail
+    closed with 400 — donors see "payment processing not configured for
+    this church"."""
     if not stripe.api_key:
         raise HTTPException(500, "Stripe not configured on server")
 
@@ -164,10 +179,23 @@ async def create_payment_intent(payload: CreatePaymentIntentRequest):
 
     tenant = await _tenant_by_slug(payload.church_slug)
 
+    # ── Require active Connect account (BLOCKER #1) ──
+    from core.connect import (
+        require_active_connect_account, calculate_application_fee, get_fee_schedule,
+        PaymentConfigError,
+    )
+    try:
+        tenant = await require_active_connect_account(db, tenant["id"])
+    except PaymentConfigError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    connect_account_id = tenant["stripe_connect_account_id"]
+    fee_schedule = get_fee_schedule(tenant)
+
     base_amount = round(payload.amount, 2)
     fee = _compute_cover_fee(base_amount) if payload.cover_fees else 0.0
     total = round(base_amount + fee, 2)
     amount_cents = int(round(total * 100))
+    application_fee_amount = calculate_application_fee(amount_cents, fee_schedule)
 
     metadata = {
         "tenant_id": tenant["id"],
@@ -220,6 +248,9 @@ async def create_payment_intent(payload: CreatePaymentIntentRequest):
             metadata=metadata,
             statement_descriptor_suffix=suffix,
             receipt_email=metadata["donor_email"] or None,
+            # ── Connect: direct charge on the tenant's connected account ──
+            application_fee_amount=application_fee_amount,
+            stripe_account=connect_account_id,
             idempotency_key=idempotency_key,
         )
     except stripe.error.StripeError as e:
@@ -248,6 +279,10 @@ async def create_payment_intent(payload: CreatePaymentIntentRequest):
         "total_amount": total,
         "base_amount": base_amount,
         "fee_amount": fee,
+        # Frontend must initialize Stripe(...) with stripeAccount to talk to
+        # the connected account (direct charge model).
+        "connected_account_id": connect_account_id,
+        "application_fee_amount": application_fee_amount,
     }
 
 
@@ -265,9 +300,17 @@ async def confirm_donation(payload: ConfirmDonationRequest):
         raise HTTPException(500, "Stripe not configured on server")
 
     tenant = await _tenant_by_slug(payload.church_slug)
+    # Connect direct charges live on the connected account, so the PI must
+    # be retrieved with stripe_account=. The tenant doc already has the id.
+    connect_account_id = tenant.get("stripe_connect_account_id")
 
     try:
-        intent = stripe.PaymentIntent.retrieve(payload.payment_intent_id)
+        if connect_account_id:
+            intent = stripe.PaymentIntent.retrieve(
+                payload.payment_intent_id, stripe_account=connect_account_id,
+            )
+        else:
+            intent = stripe.PaymentIntent.retrieve(payload.payment_intent_id)
     except stripe.error.StripeError as e:
         raise HTTPException(502, f"Stripe error: {e.user_message or str(e)}")
 
@@ -302,7 +345,12 @@ async def confirm_donation(payload: ConfirmDonationRequest):
     ch_id = None
     try:
         if intent.payment_method:
-            pm = stripe.PaymentMethod.retrieve(intent.payment_method)
+            if connect_account_id:
+                pm = stripe.PaymentMethod.retrieve(
+                    intent.payment_method, stripe_account=connect_account_id,
+                )
+            else:
+                pm = stripe.PaymentMethod.retrieve(intent.payment_method)
             pm_id = pm.id
             if pm.type == "card" and pm.card:
                 pm_brand = pm.card.brand
@@ -391,6 +439,228 @@ async def get_payment_intent_status(intent_id: str):
         "status": intent.status,
         "amount": intent.amount,
         "currency": intent.currency,
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════
+#  Recurring Giving — SetupIntent flow (BLOCKER #3)
+# ═══════════════════════════════════════════════════════════════════════
+class CreateRecurringSetupRequest(BaseModel):
+    church_slug: str
+    donor_email: str
+    donor_first_name: Optional[str] = ""
+    donor_last_name: Optional[str] = ""
+
+
+@router.post("/stripe/recurring/setup-intent")
+async def create_recurring_setup_intent(payload: CreateRecurringSetupRequest):
+    """First-time donor sets up recurring giving:
+
+      1. We resolve the church's Connect account (must be active).
+      2. We create or fetch a Stripe Customer **on the connected account**
+         (Connect direct-charge model — customers live on the connected
+         account, not the platform).
+      3. We mint a SetupIntent so the donor's card collected via Stripe
+         Elements is saved to that Customer for off-session use.
+      4. The frontend confirms the SetupIntent client-side, then calls
+         `POST /stripe/recurring/confirm` to receive the saved
+         payment_method_id and create the recurring_giving record.
+    """
+    if not stripe.api_key:
+        raise HTTPException(500, "Stripe not configured on server")
+    tenant = await _tenant_by_slug(payload.church_slug)
+
+    from core.connect import require_active_connect_account, PaymentConfigError, _run_stripe
+    try:
+        tenant = await require_active_connect_account(db, tenant["id"])
+    except PaymentConfigError as e:
+        raise HTTPException(400, detail=str(e))
+    connect_account_id = tenant["stripe_connect_account_id"]
+
+    # ── Find or create the Stripe Customer on the connected account ──
+    email = (payload.donor_email or "").lower().strip()
+    if not email:
+        raise HTTPException(400, "Donor email is required for recurring giving")
+
+    existing_donor = await db.recurring_donors.find_one(
+        {"tenant_id": tenant["id"], "donor_email": email}, {"_id": 0}
+    )
+    customer_id = (existing_donor or {}).get("stripe_customer_id")
+
+    if not customer_id:
+        try:
+            customer = await _run_stripe(
+                stripe.Customer.create,
+                email=email,
+                name=f"{payload.donor_first_name} {payload.donor_last_name}".strip() or None,
+                metadata={"tenant_id": tenant["id"], "source": "recurring_setup"},
+                stripe_account=connect_account_id,
+            )
+        except stripe.error.StripeError as e:
+            raise HTTPException(502, f"Stripe error: {e.user_message or str(e)}")
+        customer_id = customer.id
+        await db.recurring_donors.update_one(
+            {"tenant_id": tenant["id"], "donor_email": email},
+            {"$set": {
+                "tenant_id": tenant["id"],
+                "donor_email": email,
+                "donor_first_name": payload.donor_first_name or "",
+                "donor_last_name": payload.donor_last_name or "",
+                "stripe_customer_id": customer_id,
+                "connected_account_id": connect_account_id,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            }},
+            upsert=True,
+        )
+
+    # ── Mint the SetupIntent ──
+    try:
+        si = await _run_stripe(
+            stripe.SetupIntent.create,
+            customer=customer_id,
+            payment_method_types=["card"],
+            usage="off_session",
+            metadata={"tenant_id": tenant["id"], "donor_email": email},
+            stripe_account=connect_account_id,
+        )
+    except stripe.error.StripeError as e:
+        raise HTTPException(502, f"Stripe error: {e.user_message or str(e)}")
+
+    return {
+        "client_secret": si.client_secret,
+        "setup_intent_id": si.id,
+        "customer_id": customer_id,
+        "connected_account_id": connect_account_id,
+    }
+
+
+class ConfirmRecurringRequest(BaseModel):
+    church_slug: str
+    setup_intent_id: str
+    amount: float = Field(..., gt=0)
+    fund: str = "Tithes"
+    frequency: str = "monthly"   # "weekly" | "biweekly" | "monthly" | "annually"
+    donor_email: str
+    donor_first_name: Optional[str] = ""
+    donor_last_name: Optional[str] = ""
+    cover_fees: bool = False
+
+
+@router.post("/stripe/recurring/confirm")
+async def confirm_recurring_setup(payload: ConfirmRecurringRequest):
+    """After the frontend confirms the SetupIntent client-side, we:
+
+      1. Verify the SetupIntent succeeded server-side (never trust client).
+      2. Read the saved payment_method_id off the SetupIntent.
+      3. Charge the first installment immediately (off_session=True).
+      4. Persist a recurring_giving row keyed for the scheduler to process
+         every subsequent cycle.
+    """
+    if not stripe.api_key:
+        raise HTTPException(500, "Stripe not configured on server")
+    if payload.frequency not in {"weekly", "biweekly", "monthly", "annually"}:
+        raise HTTPException(400, f"Invalid frequency: {payload.frequency}")
+
+    tenant = await _tenant_by_slug(payload.church_slug)
+    from core.connect import (
+        require_active_connect_account, calculate_application_fee,
+        get_fee_schedule, PaymentConfigError, _run_stripe,
+    )
+    try:
+        tenant = await require_active_connect_account(db, tenant["id"])
+    except PaymentConfigError as e:
+        raise HTTPException(400, detail=str(e))
+    connect_account_id = tenant["stripe_connect_account_id"]
+    fee_schedule = get_fee_schedule(tenant)
+
+    try:
+        si = await _run_stripe(
+            stripe.SetupIntent.retrieve,
+            payload.setup_intent_id,
+            stripe_account=connect_account_id,
+        )
+    except stripe.error.StripeError as e:
+        raise HTTPException(502, f"Stripe error: {e.user_message or str(e)}")
+
+    if si.status != "succeeded":
+        raise HTTPException(400, f"SetupIntent not succeeded (status={si.status})")
+    payment_method_id = si.payment_method
+    customer_id = si.customer
+    if not payment_method_id or not customer_id:
+        raise HTTPException(400, "SetupIntent missing payment_method or customer")
+
+    # Charge first installment off_session
+    base_amount = round(payload.amount, 2)
+    fee = _compute_cover_fee(base_amount) if payload.cover_fees else 0.0
+    total = round(base_amount + fee, 2)
+    amount_cents = int(round(total * 100))
+    application_fee = calculate_application_fee(amount_cents, fee_schedule)
+
+    from services.processor_adapter import ACTIVE_ADAPTER, ChargeStatus
+    schedule_id = str(uuid.uuid4())
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    first_charge = await ACTIVE_ADAPTER.charge_card(
+        tenant_id=tenant["id"],
+        donor_id=(payload.donor_email or "").lower(),
+        amount_cents=amount_cents,
+        payment_method_id=payment_method_id,
+        stripe_customer_id=customer_id,
+        connected_account_id=connect_account_id,
+        application_fee_amount=application_fee,
+        idempotency_key=f"recur_first_{schedule_id}",
+        metadata={
+            "tenant_id": tenant["id"],
+            "schedule_id": schedule_id,
+            "fund": payload.fund,
+            "frequency": payload.frequency,
+            "donor_email": (payload.donor_email or "").lower(),
+            "source": "recurring_first_charge",
+        },
+        description=f"First recurring {payload.frequency} gift to {payload.fund}",
+    )
+    if first_charge.status != ChargeStatus.SUCCESS:
+        raise HTTPException(402, f"First charge failed: {first_charge.message}")
+
+    # Compute next charge date based on frequency
+    from services.recurring_scheduler import _calculate_next_charge_date
+    next_charge_date = _calculate_next_charge_date(payload.frequency, today_str)
+
+    # Persist the recurring schedule
+    await db.recurring_giving.insert_one({
+        "id": schedule_id,
+        "tenant_id": tenant["id"],
+        "tenant_stripe_connect_account_id": connect_account_id,
+        "person_id": "",
+        "donor_email": (payload.donor_email or "").lower(),
+        "donor_first_name": payload.donor_first_name or "",
+        "donor_last_name": payload.donor_last_name or "",
+        "amount": base_amount,
+        "cover_fees": bool(payload.cover_fees),
+        "fund_name": payload.fund,
+        "frequency": payload.frequency,
+        "payment_method_type": "card",
+        "stripe_customer_id": customer_id,
+        "stripe_payment_method_id": payment_method_id,
+        "is_active": True,
+        "next_charge_date": next_charge_date,
+        "last_processed_date": today_str,
+        "consecutive_failures": 0,
+        "last_transaction_id": first_charge.processor_reference_id,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    })
+
+    # Bust dashboard caches so the gift shows up immediately
+    _STATS_CACHE["ts"] = 0.0
+    _STATS_CACHE["data"] = None
+    _PLATFORM_TXN_CACHE.clear()
+
+    return {
+        "schedule_id": schedule_id,
+        "first_charge_processor_reference_id": first_charge.processor_reference_id,
+        "next_charge_date": next_charge_date,
+        "frequency": payload.frequency,
     }
 
 

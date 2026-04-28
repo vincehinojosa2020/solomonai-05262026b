@@ -191,7 +191,13 @@ export default function PublicGivingPage() {
         if (!publishable_key) throw new Error('Payments not configured');
         if (disposed) return;
 
-        const stripe = window.Stripe(publishable_key);
+        // Connect (BLOCKER #1): if the church has an active Connect account,
+        // initialize Stripe with stripeAccount so the card element + later
+        // confirmCardPayment talk to the connected account directly.
+        const stripeOpts = config.connected_account_id
+          ? { stripeAccount: config.connected_account_id }
+          : undefined;
+        const stripe = window.Stripe(publishable_key, stripeOpts);
         stripeRef.current = stripe;
 
         const elements = stripe.elements();

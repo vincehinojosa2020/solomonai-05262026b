@@ -49,7 +49,8 @@ async def _process_single_schedule(db, schedule: dict, today_str: str) -> dict:
     Process one recurring giving schedule.
     Returns {"status": "success"|"failed"|"skipped", "message": str, "donation_id": Optional[str]}.
     """
-    from services.processor_adapter import ACTIVE_ADAPTER, ChargeStatus
+    from services.processor_adapter import ACTIVE_ADAPTER, ChargeStatus, PaymentConfigError
+    from core.connect import calculate_application_fee, get_fee_schedule
 
     sid = schedule.get("id", "unknown")
 
@@ -57,36 +58,67 @@ async def _process_single_schedule(db, schedule: dict, today_str: str) -> dict:
     if schedule.get("last_processed_date") == today_str:
         return {"status": "skipped", "message": "Already processed today", "donation_id": None}
 
-    # ── Resolve payment token ──
-    token = None
-    pm_id = schedule.get("payment_method_id")
-    if pm_id:
-        pm = await db.payment_methods.find_one(
-            {"id": pm_id, "is_active": True}, {"_id": 0}
-        )
-        if pm:
-            token = pm.get("token") or pm.get("solomonpay_token", f"tok_recurring_{pm.get('card_last_four','0000')}")
-    if not token:
-        token = f"tok_recurring_auto_{uuid.uuid4().hex[:8]}"
+    # ── Resolve payment method (Stripe PaymentMethod ID, not raw token) ──
+    pm_id = schedule.get("stripe_payment_method_id") or schedule.get("payment_method_id")
+    stripe_customer_id = schedule.get("stripe_customer_id")
+
+    if not pm_id:
+        # Fall back to legacy payment_methods collection lookup for old rows
+        legacy_pm = schedule.get("payment_method_id")
+        if legacy_pm:
+            pm_doc = await db.payment_methods.find_one(
+                {"id": legacy_pm, "is_active": True}, {"_id": 0}
+            )
+            if pm_doc:
+                pm_id = pm_doc.get("stripe_payment_method_id") or pm_doc.get("token")
+                stripe_customer_id = stripe_customer_id or pm_doc.get("stripe_customer_id")
+
+    # ── Resolve Connect account on the tenant (cached, but verify) ──
+    tenant_id = schedule.get("tenant_id", "")
+    connected_account_id = schedule.get("tenant_stripe_connect_account_id")
+    fee_schedule = None
+    tenant = None
+    if not connected_account_id or not fee_schedule:
+        tenant = await db.tenants.find_one({"id": tenant_id}, {"_id": 0})
+        if tenant:
+            connected_account_id = connected_account_id or tenant.get("stripe_connect_account_id")
+            fee_schedule = get_fee_schedule(tenant)
 
     # ── Charge ──
     amount = schedule.get("amount", 0)
     amount_cents = int(round(amount * 100))
     method = schedule.get("payment_method_type", "card")
-    tenant_id = schedule.get("tenant_id", "")
     description = f"Recurring {schedule.get('frequency','monthly')} gift to {schedule.get('fund_name','General Fund')}"
+    application_fee = calculate_application_fee(amount_cents, fee_schedule) if fee_schedule else 0
+    # Idempotency_key prevents double-charging on scheduler retry within
+    # the same UTC day for the same schedule.
+    idempotency_key = f"recur_{sid}_{today_str}"
+    metadata = {
+        "tenant_id": tenant_id,
+        "schedule_id": sid,
+        "recurring": "true",
+        "fund_name": schedule.get("fund_name", "General Fund"),
+    }
 
     try:
+        if not pm_id:
+            raise PaymentConfigError("No payment method on file for this schedule")
+        common_kwargs = dict(
+            tenant_id=tenant_id,
+            donor_id=schedule.get("person_id", ""),
+            amount_cents=amount_cents,
+            payment_method_id=pm_id,
+            stripe_customer_id=stripe_customer_id,
+            connected_account_id=connected_account_id,
+            application_fee_amount=application_fee,
+            idempotency_key=idempotency_key,
+            metadata=metadata,
+            description=description,
+        )
         if method == "ach":
-            result = await ACTIVE_ADAPTER.charge_ach(
-                token=token, amount_cents=amount_cents, description=description,
-                metadata={"tenant_id": tenant_id, "schedule_id": sid, "recurring": True}
-            )
+            result = await ACTIVE_ADAPTER.charge_ach(**common_kwargs)
         else:
-            result = await ACTIVE_ADAPTER.charge_card(
-                token=token, amount_cents=amount_cents, description=description,
-                metadata={"tenant_id": tenant_id, "schedule_id": sid, "recurring": True}
-            )
+            result = await ACTIVE_ADAPTER.charge_card(**common_kwargs)
 
         if result.status == ChargeStatus.SUCCESS:
             # ── Record transaction + donation ──
@@ -162,6 +194,25 @@ async def _process_single_schedule(db, schedule: dict, today_str: str) -> dict:
             update["is_active"] = False
             update["paused_reason"] = "auto_paused_3_failures"
             logger.warning(f"[SCHEDULER] Schedule {sid} auto-paused after {failures} failures")
+            # Surface to church admin via platform_flags so the admin
+            # dashboard can notify the donor and prompt for a new card.
+            try:
+                await db.platform_flags.update_one(
+                    {"key": f"recurring-failed-{sid}"},
+                    {"$set": {
+                        "tenant_id": schedule.get("tenant_id", ""),
+                        "alert_type": "recurring_terminal_failure",
+                        "severity": "warning",
+                        "schedule_id": sid,
+                        "person_id": schedule.get("person_id"),
+                        "amount": schedule.get("amount"),
+                        "last_failure_reason": str(exc)[:300],
+                        "raised_at": datetime.now(timezone.utc).isoformat(),
+                    }},
+                    upsert=True,
+                )
+            except Exception:
+                pass
         else:
             # Schedule retry for next day
             retry_date = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")

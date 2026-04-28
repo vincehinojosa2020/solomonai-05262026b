@@ -1,0 +1,48 @@
+{
+  "summary": "Iter108 — Stripe Connect per-tenant (BLOCKER #1) + StripeAdapter (BLOCKER #3) verification. 19/19 backend tests PASS. Frontend has ONE BUG: /give/eden-church renders the full giving form with 'GIVE $102.20' button and 4 Stripe iframes mounted EVEN THOUGH accepts_payments=false (Eden has stripe_connect_status='not_started'). Per requirements, the page MUST show 'Payment processing not configured' and NOT mount Stripe.js when accepts_payments=false. Currently a donor can fill the form and only hits the 400 error after clicking submit — this is the documented failure mode the requirements explicitly want fixed.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "PublicGivingPage.jsx (/give/eden-church)",
+        "issue": "When public-config returns accepts_payments=false (Eden has stripe_connect_status='not_started'), the page STILL renders the full giving form, mounts 4 Stripe iframes (CARD field), and displays an enabled 'GIVE $102.20' button. Requirement explicitly states: 'shows Payment processing not configured message AND the Stripe.js card element does NOT mount when accepts_payments=false'. Donors will fill out the form and only discover they cannot give after hitting submit (400 from backend). Need a guard at the top of PublicGivingPage that, when accepts_payments=false, renders only a 'this church can't accept gifts yet — please contact your admin' card and returns early, BEFORE calling loadStripe() and BEFORE rendering the Elements provider.",
+        "selector": "form button:has-text('GIVE')",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "/give/eden-church",
+        "issues": [
+          "Hydration warnings: '<span> cannot be a child of <option>' and '<span> cannot be a child of <select>' from FUND dropdown (carryover from iter107).",
+          "CSP violation: cloudflareinsights.com/beacon.min.js blocked by script-src CSP (carryover)."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_connect_iter108.py",
+    "/app/test_reports/pytest/iter108_results.xml"
+  ],
+  "action_items": [
+    "FIX: PublicGivingPage.jsx — when public-config response has accepts_payments=false, render a 'Payment processing not configured for this church' message and EARLY RETURN before loadStripe() / Elements provider mount. Currently 4 Stripe iframes mount and a fully clickable GIVE button is shown for Eden (stripe_connect_status='not_started'). Requirement: the form must NOT be visible until the church completes Connect onboarding. Reference: requested behavior was 'shows clear message AND Stripe.js card element does NOT mount when accepts_payments=false'.",
+    "(Optional, carryover from iter107) Clean up <span> inside <select>/<option> hydration warnings on /give/* and CSP-blocked cloudflare beacon."
+  ],
+  "critical_code_review_comments": [
+    "core/connect.py — clean separation, Connect helpers + tenant guard look production-ready. require_active_connect_account fails closed correctly. calculate_application_fee defends against amount_cents - 1 floor (good).",
+    "routes/stripe_elements.py:163-258 create_payment_intent — Connect gate hooked correctly via require_active_connect_account; stripe_account + application_fee_amount passed to PaymentIntent.create; idempotency seed includes cover_fees (iter107 fix landed). Good.",
+    "routes/stripe_connect.py:382-406 account.application.deauthorized handler — recovers acct_id from data.object.id OR event.account; persists platform_flags row + flips status to restricted. Verified working via webhook simulation.",
+    "routes/stripe_connect.py:495-552 connect/start — gracefully maps stripe.error.StripeError to 502 with user_message; this is the path that will return 'You can only create new accounts if you've signed up for Connect' once Vince attempts provisioning. Code shape is correct.",
+    "services/processor_adapter.py — _select_adapter() correctly env-gated; SimulationAdapter.__init__ refuses ENVIRONMENT=production with RuntimeError; StripeAdapter passes stripe_account + application_fee_amount + idempotency_key to PI.create. Adapter swap is zero-code as claimed.",
+    "services/recurring_scheduler.run_recurring_batch(db) takes db as a positional argument — fine for caller code, but worth documenting in the module docstring. Test had to import core.db to call it."
+  ],
+  "updated_files": ["/app/backend/tests/test_connect_iter108.py"],
+  "success_rate": {"backend": "100% (19/19)", "frontend": "page loads but BLOCKER #1 frontend gate not implemented — form renders for not-yet-connected tenants"},
+  "test_credentials": "admin@solomonai.us / Demo2026! (platform_admin); christopher@eden-x.io / EdenChurch2026! (eden church_admin) — both verified.",
+  "seed_data_creation": "Tests temporarily flip eden-church-001.stripe_connect_account_id='acct_test_FAKE_FOR_PI_TEST' / status='active' for the PI-reaches-Stripe and SetupIntent-reaches-Stripe tests, then RESTORE to {null, 'not_started'} in a try/finally. Webhook test inserts ephemeral evt_test_iter108_* event_ids into stripe_webhook_events (TTL 90d). platform_flags row 'connect-deauthorized-eden-church-001' is created and DELETED in teardown. One throwaway tenant-less user (TEST_iter108_notenant_*) created + deleted for the BLOCKER #5 isolation test. Final state: Eden is back to {null, 'not_started'}, no leaked test data.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "All BLOCKER #1 backend wiring works (PI gate, webhook account.updated→active, account.application.deauthorized→restricted+platform_flags, per-tenant stripe_account, application_fee_amount, public-config exposes connected_account_id+accepts_payments). BLOCKER #3 adapter swap verified env-driven (stripe ↔ simulation, prod refuses simulation). BLOCKER #5 partial: /api/admin/giving/summary returns 403 for tenant-less user. The single remaining gap is FRONTEND: PublicGivingPage.jsx must early-return with a 'not configured' message when accepts_payments=false, BEFORE mounting Stripe Elements. Re-run /app/backend/tests/test_connect_iter108.py after the frontend fix — backend tests should still all pass. NOTE on Connect provisioning: POST /platform/churches/{id}/connect/start returned 200 (not 502) in this test run — that means Stripe Connect IS now enabled on Vince's dashboard (the 'one-click step' from agent-context note appears to be done). Confirm with Vince.",
+  "rca of the issue": "Frontend bug: PublicGivingPage.jsx initializes Stripe (loadStripe + Elements provider) and renders the full form regardless of public-config.accepts_payments. The backend correctly fails-closed at PI-creation time with 400 'Payment processing not configured', but a donor only sees that error after filling out name/email/card and clicking GIVE. Fix: gate the entire <Elements> + form render block on `if (!config.accepts_payments) return <NotConfiguredCard church={config} />;` placed BEFORE loadStripe. Also gate loadStripe itself so we don't fetch Stripe.js unnecessarily for non-accepting churches. Reproduction: visit /give/eden-church (Eden has stripe_connect_status='not_started', accepts_payments returns false) — form is fully interactive with 4 Stripe iframes mounted and 'GIVE $102.20' button enabled."
+}

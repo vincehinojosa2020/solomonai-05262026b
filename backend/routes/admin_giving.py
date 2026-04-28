@@ -9,7 +9,7 @@ import io
 import logging
 
 from core import (
-    db, DEFAULT_TENANT_ID,
+    db,
     get_current_admin_user, require_permission, require_tenant,
     logger,
 )
@@ -23,7 +23,7 @@ router = APIRouter()
 async def get_admin_giving_summary(request: Request):
     """Tenant-scoped giving summary endpoint for admin dashboard."""
     user = await get_current_admin_user(request)
-    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    tenant_id = require_tenant(user)
     return await get_tenant_giving_metrics(tenant_id)
 
 @router.get("/admin/giving/report")
@@ -36,7 +36,7 @@ async def get_giving_report(
 ):
     """Get giving report with aggregated statistics"""
     user = await get_current_admin_user(request)
-    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    tenant_id = require_tenant(user)
     
     query = {"tenant_id": tenant_id, "status": "completed"}
     
@@ -195,7 +195,7 @@ async def export_giving_csv(
 ):
     """Export giving data as CSV"""
     user = await get_current_admin_user(request)
-    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    tenant_id = require_tenant(user)
     
     query = {"tenant_id": tenant_id, "status": "completed"}
     
@@ -288,7 +288,7 @@ async def export_giving_csv(
 async def get_year_end_statement(request: Request, person_id: str, year: int = 2025):
     """Generate year-end giving statement data for a specific person"""
     user = await get_current_admin_user(request)
-    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    tenant_id = require_tenant(user)
     
     # Get person info
     person = await db.people.find_one({"id": person_id, "tenant_id": tenant_id}, {"_id": 0})
@@ -368,7 +368,7 @@ async def get_year_end_statement(request: Request, person_id: str, year: int = 2
 async def get_processor_settings(request: Request):
     """Get configured payment processor for this tenant."""
     user = await require_permission(request, "admin.giving.view")
-    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    tenant_id = require_tenant(user)
     settings = await db.payment_processor_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
     if not settings:
         settings = {"tenant_id": tenant_id, "active_processor": "manual", "processors": {"manual": {"enabled": True, "status": "connected"}}}
@@ -385,7 +385,7 @@ async def get_giving_settings_alias(request: Request):
 async def update_processor_settings(request: Request, payload: dict):
     """Configure payment processor for this tenant."""
     user = await require_permission(request, "admin.giving.edit")
-    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    tenant_id = require_tenant(user)
     processor_id = payload.get("processor_id")
     action = payload.get("action", "connect")
 
@@ -432,7 +432,7 @@ async def update_giving_settings_alias(request: Request, payload: dict):
 async def get_giving_integrations(request: Request):
     """Get giving processor integration status for current church."""
     user = await get_current_admin_user(request)
-    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    tenant_id = require_tenant(user)
     config = await db.giving_integrations.find_one({"tenant_id": tenant_id}, {"_id": 0})
     if not config:
         config = {
@@ -451,7 +451,7 @@ async def get_giving_integrations(request: Request):
 async def connect_giving_processor(request: Request):
     """Connect a giving processor (mocked for demo)."""
     user = await get_current_admin_user(request)
-    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    tenant_id = require_tenant(user)
     body = await request.json()
     processor = body.get("processor")
     if processor not in ("solomon_pay", "pushpay", "securegive"):
@@ -486,7 +486,7 @@ async def connect_giving_processor(request: Request):
 async def disconnect_giving_processor(request: Request):
     """Disconnect the active giving processor."""
     user = await get_current_admin_user(request)
-    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    tenant_id = require_tenant(user)
     body = await request.json()
     processor = body.get("processor")
     now_iso = datetime.now(timezone.utc).isoformat()
@@ -513,7 +513,7 @@ async def get_all_recurring_giving(
 ):
     """Get all recurring giving schedules for this tenant (admin view)."""
     user = await get_current_admin_user(request)
-    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    tenant_id = require_tenant(user)
 
     query = {"tenant_id": tenant_id}
     if status and status in ("active", "paused", "cancelled"):
@@ -553,7 +553,7 @@ async def get_all_recurring_giving(
 async def admin_update_recurring_status(request: Request, schedule_id: str, payload: dict):
     """Admin: change status of a recurring giving schedule."""
     user = await get_current_admin_user(request)
-    tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
+    tenant_id = require_tenant(user)
 
     new_status = payload.get("status")
     if new_status not in ("active", "paused", "cancelled"):

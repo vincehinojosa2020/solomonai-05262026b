@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 import uuid
 import logging
 
-from core import db, DEFAULT_TENANT_ID, get_session_token_from_request, get_current_portal_user, logger
+from core import db, get_session_token_from_request, get_current_portal_user, require_tenant, logger
 from core.helpers import serialize_doc
 from services.processor_adapter import ACTIVE_ADAPTER, ChargeStatus
 
@@ -68,19 +68,20 @@ class SolomonPayChargeRequest(BaseModel):
 
 @router.post("/solomonpay/process")
 async def solomonpay_charge(request: Request, payload: SolomonPayChargeRequest):
-    """Process a payment through Solomon Pay."""
-    user = None
-    user_id = "anonymous"
-    tenant_id = DEFAULT_TENANT_ID
-    person_id = None
-    try:
-        user = await get_current_portal_user(request)
-        if user:
-            user_id = user.get("user_id", "anonymous")
-            tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
-            person_id = user.get("person_id")
-    except Exception:
-        pass
+    """Process a payment through Solomon Pay.
+
+    Tenant context is REQUIRED — anonymous donations through this endpoint
+    are no longer routed to a default tenant (tenant-isolation hardening,
+    audit BLOCKER #5). Donors who want to give without an account use
+    /api/stripe/create-payment-intent + the public giving page, which
+    resolves tenant from `church_slug`.
+    """
+    user = await get_current_portal_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    user_id = user.get("user_id", "anonymous")
+    tenant_id = require_tenant(user)
+    person_id = user.get("person_id")
 
     # Calculate fees
     intended_amount = payload.amount
@@ -401,7 +402,7 @@ async def get_solomonpay_transactions(request: Request, limit: int = 50):
     user = await get_current_portal_user(request)
     if not user or user.get("role") not in ["church_admin", "admin", "platform_admin"]:
         raise HTTPException(status_code=403, detail="Admin access required")
-    tenant_id = user.get("tenant_id", DEFAULT_TENANT_ID)
+    tenant_id = require_tenant(user)
     txns = await db.solomonpay_transactions.find(
         {"tenant_id": tenant_id}, {"_id": 0}
     ).sort("created_at", -1).limit(limit).to_list(limit)
