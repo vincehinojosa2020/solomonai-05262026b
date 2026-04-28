@@ -182,7 +182,12 @@ export default function PublicGivingPage() {
 
   // 2. Initialize Stripe Elements once config arrives
   useEffect(() => {
+    // Skip Stripe init entirely for tenants without an active Connect
+    // account — they can't accept gifts yet, so we don't load Stripe.js
+    // at all (saves a 200kb script on the not-configured page) and we
+    // surface a clear message in the render path below.
     if (!config || stripeRef.current) return;
+    if (config.accepts_payments === false) return;
     let disposed = false;
     (async () => {
       try {
@@ -363,6 +368,50 @@ export default function PublicGivingPage() {
           <p style={{ marginTop: 32, fontSize: 11, color: theme.muted, letterSpacing: '0.15em', textTransform: 'uppercase' }}>
             Powered by Solomon Pay
           </p>
+        </main>
+      </div>
+    );
+  }
+
+  // ── BLOCKER #1 frontend gate ──
+  // Tenants without an active Stripe Connect account cannot accept gifts.
+  // Render a clear "not configured" card and short-circuit the entire form
+  // (including loadStripe / Elements mount) so donors don't waste time
+  // filling in card details before discovering the church isn't onboarded.
+  if (config.accepts_payments === false) {
+    return (
+      <div style={shell} data-testid="give-not-configured">
+        <TopNav theme={theme} />
+        <main style={{ maxWidth: 560, margin: '0 auto', padding: '64px 24px' }}>
+          <div style={{
+            background: theme.panel,
+            border: `1px solid ${theme.border}`,
+            padding: 32,
+            borderRadius: theme.radius,
+            textAlign: 'center',
+          }}>
+            <h1 style={{
+              fontFamily: theme.headingFont,
+              fontStyle: 'italic',
+              color: theme.accent,
+              fontSize: 'clamp(1.75rem, 5vw, 2.5rem)',
+              margin: 0,
+              marginBottom: 16,
+            }} data-testid="give-not-configured-heading">
+              Online giving coming soon
+            </h1>
+            <p style={{ color: theme.text, fontSize: 16, lineHeight: 1.55, marginTop: 0, marginBottom: 16 }}>
+              {config.name} is finalizing their secure payment setup with Solomon Pay.
+              Online giving will be available here shortly.
+            </p>
+            <p style={{ color: theme.muted, fontSize: 14, marginTop: 0 }}>
+              In the meantime, please contact your church administrator for
+              alternative ways to give.
+            </p>
+            <p style={{ marginTop: 32, fontSize: 11, color: theme.muted, letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+              Powered by Solomon Pay
+            </p>
+          </div>
         </main>
       </div>
     );

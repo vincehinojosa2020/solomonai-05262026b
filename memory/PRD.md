@@ -1,5 +1,58 @@
 # Solomon AI — Product Requirements Document
 
+## Session — Apr 28, 2026 (BLOCKER #1 + #3 sprint) — Stripe Connect + StripeAdapter
+
+### BLOCKER #1 — Stripe Connect per tenant ✅
+**Schema:** New tenant fields `stripe_connect_account_id`, `stripe_connect_status` (`not_started|onboarding|pending_verification|active|restricted`), `stripe_connect_onboarded_at`, `fee_schedule {platform_percent: 0.019, platform_fixed_cents: 30, override: false}`. Migration `scripts/migrate_2026_04_28_connect_fields.py` applied to all 9 existing tenants (idempotent).
+
+**Helpers (`core/connect.py`):** `create_express_account`, `create_test_custom_account` (test-mode-only, refuses sk_live), `create_account_link`, `retrieve_account`, `derive_status_from_account`, `sync_tenant_status_from_stripe`, `require_active_connect_account`, `get_fee_schedule`, `default_fee_schedule`, `calculate_application_fee`, `PaymentConfigError`.
+
+**Onboarding wizard (`routes/platform.py:2876`):** Now provisions `stripe.Account.create(type='express', country='US', business_type='non_profit', capabilities={card_payments,transfers}, business_profile.mcc='8661' [Religious Organizations])` + `stripe.AccountLink.create()`. Fail-soft: tenant still gets created in `not_started` if Stripe is unreachable, retry via dedicated endpoint.
+
+**Standalone Connect endpoints (`routes/stripe_connect.py`):**
+- `POST /api/platform/churches/{tenant_id}/connect/start` — provision/refresh onboarding link (platform_admin)
+- `POST /api/platform/churches/{tenant_id}/connect/refresh` — pull latest account state from Stripe (platform_admin or matching church_admin)
+- `GET /api/platform/churches/{tenant_id}/connect/login-link` — issue Express dashboard link
+- `GET /api/admin/connect/status` — church admin's view of own Connect status
+
+**Webhook handlers (`routes/stripe_connect.py`):** `account.updated` → derives status, sets `stripe_connect_onboarded_at` on first activation. `account.application.deauthorized` → flips to `restricted` + raises platform_flags alert.
+
+**Direct charges (`routes/stripe_elements.py`):** `stripe.PaymentIntent.create()` now passes `stripe_account=connected_account_id` + `application_fee_amount=calculate_application_fee()`. `confirm_donation` retrieves PI/PaymentMethod with `stripe_account=`. `/churches/{slug}/public-config` exposes `connected_account_id` + `accepts_payments` so the frontend pre-configures Stripe.js. **Tenants without active Connect now fail-closed at PI-creation with 400 "Payment processing not configured for this church".**
+
+**Frontend gate (`PublicGivingPage.jsx`):** When `accepts_payments=false`, page renders "Online giving coming soon" card and skips loadStripe / Elements mount entirely (verified 0 Stripe iframes for not-yet-onboarded tenants). When `accepts_payments=true`, Stripe.js initializes with `{stripeAccount: connected_account_id}` for direct-charge mode.
+
+**Seed script (`scripts/seed_connect_accounts.py`):** Test-mode batch provisioning of `custom` Connect accounts for the 9 demo tenants. Refuses live key + production env. Currently blocked on Stripe-dashboard step (Vince must enable Connect at https://dashboard.stripe.com/connect — one-click).
+
+### BLOCKER #3 — Replace SimulationAdapter with StripeAdapter ✅
+**`services/processor_adapter.py` rewritten:**
+- New abstract signature: `charge_card(*, tenant_id, donor_id, amount_cents, payment_method_id, stripe_customer_id, connected_account_id, application_fee_amount, idempotency_key, metadata, description)` — keyword-only, Connect-aware.
+- `StripeAdapter` — calls `stripe.PaymentIntent.create(off_session=True, confirm=True, stripe_account=..., application_fee_amount=..., idempotency_key=...)` for both card and ACH (us_bank_account); maps CardError → DECLINED, other errors → ERROR.
+- `SimulationAdapter` — local-dev only, refuses to instantiate when `ENVIRONMENT=production`.
+- `ACTIVE_ADAPTER` selected by env: `PAYMENT_ADAPTER=stripe` (default, prod) or `simulation` (dev). Production env forces stripe adapter even if simulation requested.
+
+**Recurring infrastructure:**
+- `services/recurring_scheduler.py:_process_single_schedule` updated for new adapter kwargs. Reads `stripe_payment_method_id` + `stripe_customer_id` + `tenant_stripe_connect_account_id` denormalized off the schedule. Idempotency key `recur_{schedule_id}_{date}` prevents double-charge on intra-day retry. Terminal failure (3 strikes) raises a `platform_flags` alert for church admin notification.
+- New routes: `POST /api/stripe/recurring/setup-intent` (creates Stripe Customer on connected account + returns SetupIntent client_secret) and `POST /api/stripe/recurring/confirm` (verifies SetupIntent succeeded server-side, charges first installment, persists recurring_giving doc).
+
+### BLOCKER #5 (partial) — Tenant isolation in payment routes ✅
+- `routes/admin_giving.py` — replaced 11 instances of `or DEFAULT_TENANT_ID` with `require_tenant(user)` (raises 403 instead of routing to abundant-east).
+- `routes/payments.py:/solomonpay/process` — now requires authenticated tenant context (was anonymous fallback).
+
+### Verified iter108: backend 19/19 ✅, frontend gate added after report.
+
+### New env vars
+- `PAYMENT_ADAPTER` — `stripe` (default) or `simulation` (dev)
+- `APP_BASE_URL` — used to build Connect onboarding refresh/return URLs
+- `STRIPE_WEBHOOK_SECRET` — set this from `whsec_*` in production
+
+### Action items for Vince before first real $ flows
+1. Enable Stripe Connect on the dashboard at https://dashboard.stripe.com/connect (one-click, free in test mode)
+2. Run `cd /app/backend && python -m scripts.seed_connect_accounts` to provision test Connect accounts for the 9 demo tenants
+3. Set `STRIPE_WEBHOOK_SECRET=whsec_...` in production .env (BLOCKER #2 fully active in live mode)
+4. Form the LLC + apply for Stripe live mode
+
+---
+
 ## Session — Apr 28, 2026 (Week-1 audit fixes) — Stop the Bleeding
 **Status: Items a-f shipped (covers BLOCKERS #2/#4/#5/#6/#7/#8). #1 Stripe Connect, #3 SimulationAdapter, #9 APM/backups remain open.**
 
