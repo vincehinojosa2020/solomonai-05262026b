@@ -87,7 +87,7 @@ async def get_course_admin(request: Request, course_id: str):
     lessons = await _db.course_lessons.find({"course_id": course_id, "tenant_id": tenant_id}, {"_id": 0}).sort("order", 1).to_list(500)
     # group lessons under modules
     for m in modules:
-        m["lessons"] = [l for l in lessons if l["module_id"] == m["id"]]
+        m["lessons"] = [lsn for lsn in lessons if lsn["module_id"] == m["id"]]
     course["modules"] = modules
     course["enrolled_count"] = await _db.course_enrollments.count_documents({"course_id": course_id, "tenant_id": tenant_id})
     course["lesson_count"] = len(lessons)
@@ -300,7 +300,7 @@ async def portal_list_courses(request: Request):
             c["progress"] = 0
         # estimate total duration
         lessons = await _db.course_lessons.find({"course_id": c["id"], "tenant_id": tenant_id}, {"_id": 0, "duration_minutes": 1}).to_list(500)
-        c["total_duration_minutes"] = sum(l.get("duration_minutes", 0) for l in lessons)
+        c["total_duration_minutes"] = sum(lsn.get("duration_minutes", 0) for lsn in lessons)
     return {"courses": courses}
 
 
@@ -321,7 +321,7 @@ async def portal_my_courses(request: Request):
             course["enrolled_at"] = e.get("enrolled_at")
             course["completed_at"] = e.get("completed_at")
             lessons_all = await _db.course_lessons.find({"course_id": course["id"], "tenant_id": tenant_id}, {"_id": 0, "duration_minutes": 1}).to_list(500)
-            course["total_duration_minutes"] = sum(l.get("duration_minutes", 0) for l in lessons_all)
+            course["total_duration_minutes"] = sum(lsn.get("duration_minutes", 0) for lsn in lessons_all)
             courses.append(course)
     return {"courses": courses}
 
@@ -340,16 +340,16 @@ async def portal_course_detail(request: Request, course_id: str):
     # get progress
     progress_docs = await _db.course_lesson_progress.find({"user_id": user["user_id"], "course_id": course_id, "tenant_id": tenant_id}, {"_id": 0}).to_list(500)
     progress_map = {p["lesson_id"]: p for p in progress_docs}
-    for l in lessons:
-        prog = progress_map.get(l["id"])
-        l["completed"] = prog["status"] == "completed" if prog else False
-        if l["type"] == "quiz" and prog:
-            l["quiz_score"] = prog.get("quiz_score")
-            l["quiz_passed"] = prog.get("quiz_passed")
+    for lsn in lessons:
+        prog = progress_map.get(lsn["id"])
+        lsn["completed"] = prog["status"] == "completed" if prog else False
+        if lsn["type"] == "quiz" and prog:
+            lsn["quiz_score"] = prog.get("quiz_score")
+            lsn["quiz_passed"] = prog.get("quiz_passed")
     for m in modules:
-        m["lessons"] = [l for l in lessons if l["module_id"] == m["id"]]
-    total_lessons = sum(1 for l in lessons if l.get("is_required", True))
-    completed_count = sum(1 for l in lessons if l.get("completed") and l.get("is_required", True))
+        m["lessons"] = [lsn for lsn in lessons if lsn["module_id"] == m["id"]]
+    total_lessons = sum(1 for lsn in lessons if lsn.get("is_required", True))
+    completed_count = sum(1 for lsn in lessons if lsn.get("completed") and lsn.get("is_required", True))
     course["modules"] = modules
     course["enrolled"] = enrollment is not None
     course["enrolled_at"] = enrollment.get("enrolled_at") if enrollment else None
@@ -357,7 +357,7 @@ async def portal_course_detail(request: Request, course_id: str):
     course["progress"] = round(completed_count / total_lessons * 100) if total_lessons > 0 else 0
     course["lesson_count"] = total_lessons
     course["completed_lessons"] = completed_count
-    course["total_duration_minutes"] = sum(l.get("duration_minutes", 0) for l in lessons)
+    course["total_duration_minutes"] = sum(lsn.get("duration_minutes", 0) for lsn in lessons)
     return course
 
 
@@ -409,7 +409,7 @@ async def portal_get_lesson(request: Request, course_id: str, lesson_id: str):
     all_modules = await _db.course_modules.find({"course_id": course_id, "tenant_id": tenant_id}, {"_id": 0, "id": 1, "order": 1}).sort("order", 1).to_list(100)
     mod_order = {m["id"]: m["order"] for m in all_modules}
     sorted_lessons = sorted(all_lessons, key=lambda x: (mod_order.get(x["module_id"], 0), x.get("order", 0)))
-    lesson_ids = [l["id"] for l in sorted_lessons]
+    lesson_ids = [lsn["id"] for lsn in sorted_lessons]
     current_idx = lesson_ids.index(lesson_id) if lesson_id in lesson_ids else -1
     lesson["prev_lesson_id"] = lesson_ids[current_idx - 1] if current_idx > 0 else None
     lesson["next_lesson_id"] = lesson_ids[current_idx + 1] if current_idx < len(lesson_ids) - 1 else None
@@ -571,8 +571,8 @@ async def seed_academy_course():
     await _db.courses.insert_one({**course})
     for m in modules:
         await _db.course_modules.insert_one({**m})
-    for l in lessons:
-        await _db.course_lessons.insert_one({**l})
+    for lsn in lessons:
+        await _db.course_lessons.insert_one({**lsn})
     print("Seeded 'Abundant Next Steps' course with 5 modules and 7 lessons")
 
 

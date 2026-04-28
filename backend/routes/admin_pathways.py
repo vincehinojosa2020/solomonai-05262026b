@@ -242,7 +242,7 @@ async def get_pathways_lessons(request: Request, course_id: str):
         {"_id": 0}
     ).sort("sort_order", 1).to_list(200)
 
-    return {"lessons": [serialize_doc(l) for l in lessons]}
+    return {"lessons": [serialize_doc(lsn) for lsn in lessons]}
 
 
 @router.post("/admin/pathways/courses/{course_id}/lessons")

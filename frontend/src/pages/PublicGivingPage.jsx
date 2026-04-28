@@ -40,7 +40,7 @@ const loadStripeJs = () =>
     s.src = STRIPE_JS_URL;
     s.async = true;
     s.onload = () => resolve(window.Stripe);
-    s.onerror = () => reject(new Error('Failed to load Stripe.js'));
+    s.onerror = () => reject(new Error('Failed to load payment system'));
     document.head.appendChild(s);
   });
 
@@ -188,7 +188,7 @@ export default function PublicGivingPage() {
       try {
         await loadStripeJs();
         const { publishable_key } = await fetch(`${API_URL}/stripe/elements/config`).then((r) => r.json());
-        if (!publishable_key) throw new Error('Stripe not configured');
+        if (!publishable_key) throw new Error('Payments not configured');
         if (disposed) return;
 
         const stripe = window.Stripe(publishable_key);
@@ -197,6 +197,7 @@ export default function PublicGivingPage() {
         const elements = stripe.elements();
         const card = elements.create('card', {
           hidePostalCode: false,
+          disableLink: true,
           style: {
             base: {
               fontSize: '16px',
@@ -224,7 +225,7 @@ export default function PublicGivingPage() {
         };
         tryMount();
       } catch (e) {
-        setError(e.message || 'Stripe failed to load');
+        setError(e.message || 'Payment system failed to load');
       }
     })();
     return () => {
@@ -699,7 +700,7 @@ function Receipt({ theme, donation }) {
       <div style={last}>
         <span style={{ color: theme.muted }}>Transaction</span>
         <span style={{ fontFamily: 'monospace', fontSize: 12 }}>
-          {donation.stripe_payment_intent_id?.slice(0, 18)}…
+          {donation.stripe_payment_intent_id?.replace(/^pi_/, '').slice(0, 18)}…
         </span>
       </div>
     </div>

@@ -557,7 +557,7 @@ export default function PlatformDashboard() {
                 </div>
                 <div className="divide-y divide-slate-100">
                   {[
-                    { step: 1, title: 'Connect Bank Account', desc: 'Link your church\'s bank via Stripe Connect to receive payouts', status: 'pending', cta: 'Connect Bank' },
+                    { step: 1, title: 'Connect Bank Account', desc: 'Link your church\'s bank via Solomon Pay to receive payouts', status: 'pending', cta: 'Connect Bank' },
                     { step: 2, title: 'Import Members', desc: 'Upload a CSV from Planning Center, Breeze, or any spreadsheet', status: 'pending', cta: 'Import CSV' },
                     { step: 3, title: 'Set Up Giving Page', desc: 'Configure your online giving page with funds and suggested amounts', status: 'pending', cta: 'Configure' },
                     { step: 4, title: 'Configure Kids Check-In', desc: 'Set up classrooms, label printing, and security codes', status: 'pending', cta: 'Set Up' },

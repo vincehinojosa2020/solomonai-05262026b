@@ -1,5 +1,20 @@
 # Solomon AI — Product Requirements Document
 
+## Session — Apr 28, 2026 (continued) — P0 cache-bust + P1 cleanup + Stripe rebrand (DONE)
+**P0 — confirm_donation cache-bust** so God Mode Platform-Admin header cards reflect new gifts on the very next request rather than after the 30s TTL. Inserted `_STATS_CACHE['ts']=0.0; _STATS_CACHE['data']=None; _PLATFORM_TXN_CACHE.clear()` at `routes/stripe_elements.py:347-351` right after the donations.insert_one. Verified end-to-end via real Stripe test PaymentIntent in `tests/test_cache_bust_iter106.py` — `all_time.count` increments by exactly 1 sub-second after confirm-donation. iter-106 6/6 green.
+
+**P1 — Code Quality cleanup**:
+- Removed hardcoded `Demo2026!` / `EdenChurch2026!` literals from `tests/test_godmode_iter101.py`, `tests/test_competitive_intel_iter103.py`, `tests/test_cache_autorefresh_iter104.py`, `tests/test_delete_church_iter105.py`, and `scripts/setup_eden_church.py` — all now read from env (`TEST_PASSWORD` / `EDEN_ADMIN_PASSWORD`) with the documented fallback.
+- ruff `backend/tests/` → 0 errors (was 109). ruff `backend/routes/ + backend/scripts/` E712/E711/E741 → 0 errors. Renamed all ambiguous `l` loop vars to descriptive names (`lsn`/`leader`/`log`/`last`) across `routes/courses.py`, `routes/admin_pathways.py`, `routes/platform.py`, `routes/portal.py`, `routes/sms_routes.py`, `scripts/seed_giving_history.py`.
+
+**Brand cleanup — never expose "Stripe" to customers (donors / church admins / members)**:
+- `PortalGive.jsx` — toast "Stripe is in demo mode" → "Demo mode — using Solomon Pay"; CTA "Pay $X with Stripe" → "Pay $X with secure checkout".
+- `PublicGivingPage.jsx` — error "Stripe not configured" → "Payments not configured"; "Stripe failed to load" → "Payment system failed to load"; "Failed to load Stripe.js" → "Failed to load payment system"; transaction-id receipt now strips the `pi_` prefix; `card.create({disableLink: true})` to suppress Stripe Link's "link" autofill chip.
+- `SolomonPayAdmin.jsx` (church-admin Solomon Pay dashboard) — filter pill "Stripe" → "Live"; status banner "Showing real Stripe transactions only" → "Showing live Solomon Pay transactions only"; row badge "STRIPE · TEST" → "LIVE · TEST".
+- `PlatformDashboard.jsx` — onboarding step 1 "Link bank via Stripe Connect" → "Link bank via Solomon Pay".
+- Internal/God-Mode surfaces (`/godmode`, `/platform/transactions`, `ChurchStripeDrawer`, `SolomonGodMode` chat suggestions) intentionally left alone — these are platform-admin-only, where Vince knowing the underlying processor is fine.
+- Verified: public `/give/eden-church` body text contains zero occurrences of "stripe" (case-insensitive).
+
 ## Architecture
 React 18 + FastAPI + MongoDB 7.0 | 575+ endpoints | 89 pages | Claude Sonnet 4.5 + Whisper
 

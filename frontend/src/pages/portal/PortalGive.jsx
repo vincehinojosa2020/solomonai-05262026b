@@ -199,7 +199,7 @@ export default function PortalGive() {
           window.location.href = safeRedirect(data.url);
         }
       } else if (data.mode === 'simulated') {
-        toast.info('Stripe is in demo mode. Using Solomon Pay.');
+        toast.info('Demo mode — using Solomon Pay.');
         setShowPayment(true);
       }
     } catch (err) {
@@ -618,7 +618,7 @@ export default function PortalGive() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   }}
                 >
-                  {stripeLoading ? 'Redirecting...' : `Pay ${amount ? formatCurrency(totalCharge) : ''} with Stripe`}
+                  {stripeLoading ? 'Redirecting...' : `Pay ${amount ? formatCurrency(totalCharge) : ''} with secure checkout`}
                 </button>
               )}
             </div>

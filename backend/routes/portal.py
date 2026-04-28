@@ -836,7 +836,7 @@ async def get_available_groups(request: Request):
     leaders_map = {}
     if leader_ids:
         leaders_list = await db.people.find({"id": {"$in": leader_ids}}, {"_id": 0}).to_list(len(leader_ids))
-        leaders_map = {l["id"]: l for l in leaders_list}
+        leaders_map = {leader["id"]: leader for leader in leaders_list}
     for g in groups:
         if g.get("leader_id"):
             g["leader"] = serialize_doc(leaders_map.get(g["leader_id"]))

@@ -592,7 +592,7 @@ async def platform_reports_audit(request: Request, limit: int = 50, category: st
         query["category"] = category
     logs = await db.audit_log.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
     total = await db.audit_log.count_documents({"tenant_id": {"$in": campuses}})
-    return {"entries": [serialize_doc(l) for l in logs], "total": total}
+    return {"entries": [serialize_doc(log) for log in logs], "total": total}
 
 
 @router.get("/platform/reports/retention-cohort")

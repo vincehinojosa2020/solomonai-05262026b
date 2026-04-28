@@ -248,11 +248,11 @@ export default function SolomonPayAdmin() {
         <div className="space-y-4" data-testid="solomonpay-dashboard-tab">
         <FeatureEducationHeader featureKey="solomonpay" />
 
-          {/* Source filter — separate Stripe real transactions from seeded demo data */}
+          {/* Source filter — separate live processed transactions from seeded demo data */}
           <div className="flex items-center gap-2 flex-wrap" data-testid="solomonpay-source-toggle">
             {[
               { key: 'all', label: 'All', count: dashData.source_counts?.total ?? 0 },
-              { key: 'stripe', label: 'Stripe', count: dashData.source_counts?.stripe ?? 0 },
+              { key: 'stripe', label: 'Live', count: dashData.source_counts?.stripe ?? 0 },
               { key: 'demo', label: 'Demo data', count: dashData.source_counts?.demo ?? 0 },
             ].map((opt) => (
               <button
@@ -271,7 +271,7 @@ export default function SolomonPayAdmin() {
             ))}
             {sourceFilter === 'stripe' && (
               <span className="ml-2 text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
-                Showing real Stripe transactions only
+                Showing live Solomon Pay transactions only
               </span>
             )}
           </div>
@@ -323,7 +323,7 @@ export default function SolomonPayAdmin() {
                       <td className="px-4 py-2.5">
                         {tx.payment_source === 'stripe' ? (
                           <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-100" data-testid={`tx-badge-stripe-${i}`}>
-                            STRIPE{tx.test_mode ? ' · TEST' : ''}
+                            LIVE{tx.test_mode ? ' · TEST' : ''}
                           </span>
                         ) : (
                           <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-slate-100 text-slate-500 border border-slate-200">

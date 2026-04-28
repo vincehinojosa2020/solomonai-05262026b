@@ -137,18 +137,18 @@ def gen_donors(tenant_id, count):
     for i in range(count):
         while True:
             f = random.choice(FIRST)
-            l = random.choice(LAST)
-            key = f"{f}_{l}_{i}"
+            last = random.choice(LAST)
+            key = f"{f}_{last}_{i}"
             if key not in used:
                 used.add(key)
                 break
         donors.append({
             "id": f"donor_{tenant_id}_{i:05d}",
             "tenant_id": tenant_id,
-            "name": f"{f} {l}",
+            "name": f"{f} {last}",
             "first_name": f,
-            "last_name": l,
-            "email": f"{f.lower()}.{l.lower()}{i}@email.com",
+            "last_name": last,
+            "email": f"{f.lower()}.{last.lower()}{i}@email.com",
             "card_label": random.choice(CARD_BRANDS),
         })
     return donors

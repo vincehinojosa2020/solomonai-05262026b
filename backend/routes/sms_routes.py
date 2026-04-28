@@ -76,7 +76,7 @@ async def get_sms_logs(request: Request, page: int = 1, per_page: int = 50):
     query = {"tenant_id": tenant_id}
     total = await db.sms_logs.count_documents(query)
     logs = await db.sms_logs.find(query, {"_id": 0}).sort("created_at", -1).skip((page-1)*per_page).limit(per_page).to_list(per_page)
-    return {"logs": [serialize_doc(l) for l in logs], "total": total}
+    return {"logs": [serialize_doc(log) for log in logs], "total": total}
 
 
 @router.get("/admin/sms/text-to-give/config")
