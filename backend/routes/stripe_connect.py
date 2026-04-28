@@ -278,13 +278,21 @@ async def stripe_webhook(request: Request):
         logger.info(f"[stripe_webhook] already processed {event_id} ({event_type})")
         return {"received": True, "duplicate": True}
 
-    # Record-then-process so a crash mid-handler still leaves a marker
-    await db.stripe_webhook_events.insert_one({
-        "event_id": event_id,
-        "event_type": event_type,
-        "received_at": datetime.now(timezone.utc),
-        "processed": False,
-    })
+    # Record-then-process so a crash mid-handler still leaves a marker.
+    # The unique index on event_id (server.py) makes this race-safe:
+    # Stripe parallelizes retries, so two workers can both pass the
+    # find_one above. The second insert raises DuplicateKeyError, which
+    # we treat as "another worker is handling it" rather than a 5xx.
+    from pymongo.errors import DuplicateKeyError
+    try:
+        await db.stripe_webhook_events.insert_one({
+            "event_id": event_id,
+            "event_type": event_type,
+            "received_at": datetime.now(timezone.utc),
+            "processed": False,
+        })
+    except DuplicateKeyError:
+        return {"received": True, "duplicate": True}
 
     try:
         # ── Map session_id (Checkout) or payment_intent_id (Elements) ──

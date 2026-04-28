@@ -1,5 +1,40 @@
 # Solomon AI — Product Requirements Document
 
+## Session — Apr 28, 2026 (Week-1 audit fixes) — Stop the Bleeding
+**Status: Items a-f shipped (covers BLOCKERS #2/#4/#5/#6/#7/#8). #1 Stripe Connect, #3 SimulationAdapter, #9 APM/backups remain open.**
+
+### Item (a) — PCI scope reduction (BLOCKER #4)
+- DELETED `POST /api/solomonpay/tokenize` and `POST /api/solomonpay/tokenize-bank` from `routes/payments.py:197-242` (replaced by NOTE block). These accepted raw PAN+CVC+routing+account numbers in HTTP bodies.
+- DELETED matching frontend raw-card form from `MultiPaymentSelector.jsx` (the `handleGuestCardSubmit` flow + the "Enter Card" button + the card-number/exp/cvc input panel). Card capture is now exclusively through Stripe.js Elements on `PublicGivingPage` and `PortalGive`.
+
+### Item (b) — Webhook signature verification (BLOCKER #2)
+- `routes/stripe_connect.py /webhook/stripe` rewritten to call `stripe.Webhook.construct_event()` against `STRIPE_WEBHOOK_SECRET`. Fail-closed if secret missing under `sk_live_*`. Bad signature → 400, invalid payload → 400.
+- New `db.stripe_webhook_events` collection with unique index on `event_id` and 90-day TTL. Idempotency: duplicate deliveries return `{received:true, duplicate:true}`. DuplicateKeyError caught on concurrent-retry race.
+- New env slot `STRIPE_WEBHOOK_SECRET=` in `backend/.env` (operator must set the real `whsec_*` secret in production).
+
+### Item (c) — PaymentIntent idempotency_key (BLOCKER #8)
+- `routes/stripe_elements.py:204-217` now passes a deterministic `idempotency_key` to `stripe.PaymentIntent.create()`. Seed: SHA256 of `tenant_id : donor_email : base_amount_cents : cover_fees : minute`. Same donor double-tap within 60s → same PI on Stripe side. Cover-fees-toggle creates a NEW PI (regression `test_cover_fees_toggle_creates_new_pi`).
+
+### Item (d) — Production-mode seed gating (BLOCKER #6)
+- `core/seed_accounts.py:ensure_mobile_demo_accounts()` no-ops in production.
+- `scripts/emergency_seed.py:emergency_seed_if_empty()` no-ops in production.
+- `scripts/setup_eden_church.py:auto_seed_on_boot()` no-ops in production (this was wiping legacy "EdenX" tenants on every startup).
+- Bootstrap passwords now from `ADMIN_BOOTSTRAP_PASSWORD` / `EDEN_ADMIN_PASSWORD` env with documented fallbacks for dev only.
+- New `scripts/_prod_guard.py:refuse_in_production()` helper called from every CLI seed script's `__main__`. Requires explicit `I_KNOW_WHAT_IM_DOING=yes` to override.
+
+### Item (e) — `change_me` default removed + debug endpoints gated (BLOCKER #5)
+- `routes/auth.py:_refuse_in_production()` raises 404 in prod for `/auth/debug/verify-accounts` and `/auth/debug/test-login`.
+- `SOLOMON_SEED_PASSWORD` default of `"change_me"` deleted: missing env now raises 503 (fail-closed).
+
+### Item (f) — Production gunicorn config (BLOCKER #7)
+- Installed `gunicorn==25.3.0`. `requirements.txt` regenerated.
+- New `backend/gunicorn.conf.py`: 4 UvicornWorkers, 60s timeout, max-requests=10000 with jitter. Refuses to start in production with WORKERS<2 or `--reload`.
+- New `backend/deploy/supervisord.production.conf` ready to drop on the production host (`/etc/supervisor/conf.d/backend-prod.conf`). The Emergent preview pod's supervisor file remains platform-managed (read-only).
+
+### Verified iter107: 18/18 green after cover-fees follow-up.
+
+---
+
 ## Session — Apr 28, 2026 (continued) — P0 cache-bust + P1 cleanup + Stripe rebrand (DONE)
 **P0 — confirm_donation cache-bust** so God Mode Platform-Admin header cards reflect new gifts on the very next request rather than after the 30s TTL. Inserted `_STATS_CACHE['ts']=0.0; _STATS_CACHE['data']=None; _PLATFORM_TXN_CACHE.clear()` at `routes/stripe_elements.py:347-351` right after the donations.insert_one. Verified end-to-end via real Stripe test PaymentIntent in `tests/test_cache_bust_iter106.py` — `all_time.count` increments by exactly 1 sub-second after confirm-donation. iter-106 6/6 green.
 

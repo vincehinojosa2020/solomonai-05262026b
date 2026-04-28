@@ -197,15 +197,18 @@ async def create_payment_intent(payload: CreatePaymentIntentRequest):
     # collapses to one PI on Stripe's side. Stripe stores idempotency keys
     # for 24 hours, which is more than enough.
     #
-    # We deliberately include base_amount_cents (not total) so a donor
-    # toggling "cover fees" off then on within the same minute creates a
-    # NEW PI rather than reusing the previous total — the dollar amount
-    # actually charged is different.
+    # We deliberately include base_amount_cents AND cover_fees in the key
+    # so a donor toggling "cover fees" off then on within the same minute
+    # creates a NEW PI rather than reusing the previous one — the dollar
+    # amount actually charged to Stripe differs (Stripe rejects same-key
+    # different-body with 400 "Keys for idempotent requests can only be
+    # used with the same parameters they were first used with").
     import hashlib as _hl
     import time as _t
     _key_seed = (
         f"{tenant['id']}:{(payload.donor_email or '').lower()}:"
-        f"{int(round(base_amount * 100))}:{int(_t.time() // 60)}"
+        f"{int(round(base_amount * 100))}:{int(payload.cover_fees)}:"
+        f"{int(_t.time() // 60)}"
     )
     idempotency_key = "solpay_pi_" + _hl.sha256(_key_seed.encode()).hexdigest()[:32]
 
