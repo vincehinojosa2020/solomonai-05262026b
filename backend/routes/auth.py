@@ -239,11 +239,25 @@ async def logout(request: Request, response: Response):
     return {"message": "Logged out"}
 
 
+def _refuse_in_production():
+    """BLOCKER #5 from production audit — debug endpoints below leak password
+    hash prefixes, similar-email lookups, and accept arbitrary email/password
+    pairs to echo back diagnostic data. They are dev-only."""
+    if os.environ.get("ENVIRONMENT", "").lower() == "production":
+        raise HTTPException(status_code=404, detail="Not found")
+
+
 @router.get("/auth/debug/verify-accounts")
 async def debug_verify_accounts():
     """Temporary diagnostic endpoint to verify seed accounts exist and have correct password hashes."""
+    _refuse_in_production()
     import hashlib
-    expected_hash = hashlib.sha256(os.environ.get("SOLOMON_SEED_PASSWORD", "change_me").encode()).hexdigest()
+    seed_password = os.environ.get("SOLOMON_SEED_PASSWORD")
+    if not seed_password:
+        # Fail-closed: never compare against a hardcoded default like "change_me"
+        # which lets anyone who reads the source guess the expected hash.
+        raise HTTPException(status_code=503, detail="SOLOMON_SEED_PASSWORD not configured")
+    expected_hash = hashlib.sha256(seed_password.encode()).hexdigest()
 
     accounts_to_check = [
         "admin@solomonai.us",
@@ -283,6 +297,7 @@ async def debug_verify_accounts():
 @router.post("/auth/debug/test-login")
 async def debug_test_login(request: Request, payload: EmailLoginRequest):
     """Temporary diagnostic endpoint - simulates login flow and reports each step."""
+    _refuse_in_production()
     import hashlib
     
     steps = []

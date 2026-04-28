@@ -361,11 +361,21 @@ async def _deferred_startup() -> None:
         for coll, field, ttl in [
             ("idempotency_keys", "created_at", 86400),
             ("user_sessions", "expires_at", 0),
+            # Stripe webhook events: keep 90d for audit/replay analysis,
+            # then auto-purge. Stripe retries are 3d max so this is plenty.
+            ("stripe_webhook_events", "received_at", 90 * 86400),
         ]:
             try:
                 await getattr(db, coll).create_index(field, expireAfterSeconds=ttl)
             except Exception:
                 pass
+
+        # Unique index on event_id so duplicate webhook deliveries can never
+        # double-insert (defense in depth on top of the find_one check).
+        try:
+            await db.stripe_webhook_events.create_index("event_id", unique=True)
+        except Exception:
+            pass
 
         # ── Kids check-in team seed ──────────────────────────────────────
         try:

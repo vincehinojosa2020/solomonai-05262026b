@@ -194,52 +194,20 @@ async def solomonpay_charge(request: Request, payload: SolomonPayChargeRequest):
     }
 
 
-# ═══════ Tokenize (client should use this before charging) ═══════
-
-class TokenizeCardRequest(BaseModel):
-    card_number: str = Field(..., min_length=13, max_length=19)
-    exp_month: int = Field(..., ge=1, le=12)
-    exp_year: int = Field(..., ge=2026)
-    cvc: str = Field(..., min_length=3, max_length=4)
-
-
-@router.post("/solomonpay/tokenize")
-async def tokenize_card(payload: TokenizeCardRequest):
-    """Tokenize a card — returns a token, NEVER stores raw card data."""
-    result = await ACTIVE_ADAPTER.tokenize_card(
-        card_number=payload.card_number,
-        exp_month=payload.exp_month,
-        exp_year=payload.exp_year,
-        cvc=payload.cvc,
-    )
-    return {
-        "token": result.token,
-        "card_last_four": result.card_last_four,
-        "card_brand": result.card_brand,
-        "exp_month": result.exp_month,
-        "exp_year": result.exp_year,
-    }
-
-
-class TokenizeBankRequest(BaseModel):
-    routing_number: str = Field(..., min_length=9, max_length=9)
-    account_number: str = Field(..., min_length=4, max_length=17)
-    account_type: str = "checking"
-
-
-@router.post("/solomonpay/tokenize-bank")
-async def tokenize_bank(payload: TokenizeBankRequest):
-    """Tokenize a bank account for ACH payments."""
-    result = await ACTIVE_ADAPTER.tokenize_bank(
-        routing_number=payload.routing_number,
-        account_number=payload.account_number,
-        account_type=payload.account_type,
-    )
-    return {
-        "token": result.token,
-        "account_last_four": result.card_last_four,
-        "account_type": payload.account_type,
-    }
+# ═══════ Tokenization ═══════
+# REMOVED 2026-04-28 — BLOCKER #4 from production audit.
+#
+# Previous endpoints `/solomonpay/tokenize` and `/solomonpay/tokenize-bank`
+# accepted raw PAN + CVC + routing/account numbers in the HTTP request body,
+# putting Solomon AI in PCI-DSS Level 1 scope (CDE) and creating MSB exposure
+# on ACH. There is NO replacement — all card capture must go through
+# Stripe.js Elements (already used at PublicGivingPage.jsx and PortalGive.jsx
+# via /api/stripe/create-payment-intent + stripe.confirmCardPayment), and
+# bank capture must go through Stripe Financial Connections / Plaid Link.
+#
+# The frontend never called these endpoints (verified: grep "/solomonpay/tokenize"
+# /app/frontend/src/ returns 0 hits). They are deleted to remove attack
+# surface. Do NOT reintroduce raw-card endpoints under any flag.
 
 
 # ═══════ Refunds ═══════

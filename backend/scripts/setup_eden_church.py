@@ -179,7 +179,15 @@ async def auto_seed_on_boot() -> dict:
     """Run exactly once per fresh deploy. Checks a platform_flags doc; if not
     present, wipes any legacy Eden/EdenX data and seeds the clean Eden Church
     tenant. Safe to call on every backend start — the flag check makes it a
-    no-op after the first successful run."""
+    no-op after the first successful run.
+
+    BLOCKER #6 from production audit: also no-op in production. In prod,
+    Eden Church (or any real church) must come through the proper
+    onboarding wizard, not a startup hook that can wipe live tenant data.
+    """
+    if os.environ.get("ENVIRONMENT", "").lower() == "production":
+        return {"seeded": False, "reason": "production_environment"}
+
     flag = await db.platform_flags.find_one({"key": "eden-church-seeded"})
     if flag and flag.get("completed"):
         return {"seeded": False, "reason": "already_seeded", "at": flag.get("at")}
@@ -229,4 +237,6 @@ async def main():
 
 
 if __name__ == "__main__":
+    from scripts._prod_guard import refuse_in_production
+    refuse_in_production(__file__)
     asyncio.run(main())

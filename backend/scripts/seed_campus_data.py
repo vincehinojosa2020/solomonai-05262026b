@@ -202,4 +202,6 @@ async def seed():
     client.close()
 
 if __name__ == "__main__":
+    from scripts._prod_guard import refuse_in_production
+    refuse_in_production(__file__)
     asyncio.run(seed())

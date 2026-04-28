@@ -21,8 +21,6 @@ export default function MultiPaymentSelector({ amount = 0, onSelect, showCash = 
   const [savedCards, setSavedCards] = useState([]);
   const [supportsWallet, setSupportsWallet] = useState(false);
   const [selected, setSelected] = useState('solomon_pay');
-  const [showGuestCard, setShowGuestCard] = useState(false);
-  const [guestCard, setGuestCard] = useState({ number: '', exp_month: '', exp_year: '', cvc: '' });
 
   useEffect(() => {
     fetchSavedCards();
@@ -62,30 +60,10 @@ export default function MultiPaymentSelector({ amount = 0, onSelect, showCash = 
     toast.success(payload.is_mock ? 'Payment confirmed (demo)' : 'Payment confirmed');
   };
 
-  const handleGuestCardSubmit = async () => {
-    if (!guestCard.number || !guestCard.exp_month || !guestCard.exp_year) {
-      toast.error('Fill all card fields');
-      return;
-    }
-    try {
-      const res = await fetch(`${API_URL}/solomonpay/tokenize`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          card_number: guestCard.number.replace(/\s/g, ''),
-          exp_month: parseInt(guestCard.exp_month),
-          exp_year: parseInt(guestCard.exp_year),
-          cvc: guestCard.cvc,
-        }),
-      });
-      if (res.ok) {
-        const d = await res.json();
-        onSelect?.({ type: 'guest_card', token: d.token, card_last_four: d.card_last_four, card_brand: d.card_brand });
-        toast.success('Card ready');
-        setShowGuestCard(false);
-      }
-    } catch { toast.error('Card error'); }
-  };
+  // NOTE: Raw-card entry was REMOVED 2026-04-28 (PCI scope reduction —
+  // BLOCKER #4 from production audit). Card capture flows through Stripe
+  // Elements on the giving pages; this component now only offers
+  // Apple/Google Pay (Stripe Payment Request Button), card-on-file, and cash.
 
   return (
     <div className="space-y-2" data-testid="multi-payment-selector">
@@ -109,37 +87,9 @@ export default function MultiPaymentSelector({ amount = 0, onSelect, showCash = 
         </button>
       )}
 
-      {/* Guest card entry */}
-      <button
-        onClick={() => { setSelected('guest_card'); setShowGuestCard(!showGuestCard); }}
-        className={`w-full flex items-center gap-3 p-3 border rounded-xl transition-all ${selected === 'guest_card' ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}
-        data-testid="pay-guest-card"
-      >
-        <CreditCard className="w-5 h-5 text-slate-600" />
-        <div className="text-left">
-          <p className="text-sm font-medium text-slate-800">Enter Card</p>
-          <p className="text-xs text-slate-500">Visa, Mastercard, Amex</p>
-        </div>
-      </button>
-
-      {showGuestCard && (
-        <div className="border border-slate-200 rounded-xl p-3 space-y-2 bg-slate-50">
-          <input
-            type="text" maxLength={19} placeholder="Card number"
-            value={guestCard.number} onChange={e => setGuestCard({...guestCard, number: e.target.value})}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono"
-            data-testid="guest-card-number"
-          />
-          <div className="grid grid-cols-3 gap-2">
-            <input type="text" maxLength={2} placeholder="MM" value={guestCard.exp_month} onChange={e => setGuestCard({...guestCard, exp_month: e.target.value})} className="px-3 py-2 border border-slate-200 rounded-lg text-sm" />
-            <input type="text" maxLength={4} placeholder="YYYY" value={guestCard.exp_year} onChange={e => setGuestCard({...guestCard, exp_year: e.target.value})} className="px-3 py-2 border border-slate-200 rounded-lg text-sm" />
-            <input type="text" maxLength={4} placeholder="CVC" value={guestCard.cvc} onChange={e => setGuestCard({...guestCard, cvc: e.target.value})} className="px-3 py-2 border border-slate-200 rounded-lg text-sm" />
-          </div>
-          <button onClick={handleGuestCardSubmit} className="w-full py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700" data-testid="guest-card-submit">
-            Use This Card
-          </button>
-        </div>
-      )}
+      {/* Guest card entry was removed for PCI scope reduction (2026-04-28).
+          Donors who don't have a card on file are routed to the Stripe
+          Elements giving page or use Apple/Google Pay below. */}
 
       {/* Apple Pay / Google Pay (Stripe Payment Request Button — auto-detects wallet) */}
       {supportsWallet && amount >= 1 && (

@@ -5,9 +5,12 @@ from fastapi import APIRouter, HTTPException, Request
 from datetime import datetime, timezone
 from typing import Optional, Dict
 from pydantic import BaseModel
+import json
 import uuid
 import os
 import logging
+
+import stripe
 
 from core import db, get_session_token_from_request, get_current_portal_user, logger
 
@@ -16,6 +19,13 @@ router = APIRouter()
 # ═══ Configuration ═══
 STRIPE_LIVE = os.environ.get("STRIPE_LIVE", "false").lower() == "true"
 STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "")
+# REQUIRED in production. Generate at https://dashboard.stripe.com/webhooks
+# and store as STRIPE_WEBHOOK_SECRET=whsec_... in backend/.env. Without this,
+# /api/webhook/stripe rejects every event (fail-closed) — see audit BLOCKER #2.
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+
+if STRIPE_API_KEY:
+    stripe.api_key = STRIPE_API_KEY
 
 # Solomon platform fee: 1.9% + $0.30
 PLATFORM_FEE_RATE = 0.019
@@ -214,87 +224,144 @@ async def get_checkout_status(request: Request, session_id: str):
 
 @router.post("/webhook/stripe")
 async def stripe_webhook(request: Request):
-    """Handle Stripe webhook events: payment success, failure, disputes."""
+    """Handle Stripe webhook events: payment success, failure, disputes.
+
+    Hardening (BLOCKER #2 from audit):
+      1. Reject any request without a valid Stripe-Signature header signed
+         by STRIPE_WEBHOOK_SECRET. Fail-closed in production.
+      2. Verify the signature with stripe.Webhook.construct_event() — this
+         raises ValueError on bad signatures and SignatureVerificationError
+         on tampered payloads.
+      3. Persist the event_id in db.stripe_webhook_events BEFORE processing
+         so retried/replayed events (Stripe retries up to 3 days) can't
+         double-create donations.
+    """
     body = await request.body()
-    sig = request.headers.get("Stripe-Signature", "")
+    sig_header = request.headers.get("Stripe-Signature", "")
+
+    # ── 1. Fail-closed if the secret isn't configured ──
+    if not STRIPE_WEBHOOK_SECRET:
+        # Allow local development without a webhook (parse JSON unverified)
+        # ONLY when STRIPE_API_KEY is a test key. In production (sk_live_*)
+        # we reject so a missing secret can never create donations from
+        # forged payloads.
+        if STRIPE_API_KEY.startswith("sk_live_"):
+            logger.error("[stripe_webhook] STRIPE_WEBHOOK_SECRET missing under live key — rejecting")
+            raise HTTPException(status_code=503, detail="Webhook secret not configured")
+        logger.warning("[stripe_webhook] STRIPE_WEBHOOK_SECRET missing — accepting unverified (test mode only)")
+        try:
+            event = json.loads(body.decode("utf-8"))
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid JSON")
+    else:
+        # ── 2. Verify the signature ──
+        try:
+            event = stripe.Webhook.construct_event(
+                payload=body,
+                sig_header=sig_header,
+                secret=STRIPE_WEBHOOK_SECRET,
+            )
+        except ValueError:
+            logger.warning("[stripe_webhook] invalid payload")
+            raise HTTPException(status_code=400, detail="Invalid payload")
+        except stripe.error.SignatureVerificationError:
+            logger.warning(f"[stripe_webhook] bad signature from {request.client.host if request.client else '?'}")
+            raise HTTPException(status_code=400, detail="Invalid signature")
+
+    event_id = event.get("id") if isinstance(event, dict) else event["id"]
+    event_type = event.get("type") if isinstance(event, dict) else event["type"]
+    data_object = (event.get("data", {}) if isinstance(event, dict) else event["data"]).get("object", {})
+
+    # ── 3. Idempotency: have we processed this event already? ──
+    seen = await db.stripe_webhook_events.find_one({"event_id": event_id}, {"_id": 0})
+    if seen:
+        logger.info(f"[stripe_webhook] already processed {event_id} ({event_type})")
+        return {"received": True, "duplicate": True}
+
+    # Record-then-process so a crash mid-handler still leaves a marker
+    await db.stripe_webhook_events.insert_one({
+        "event_id": event_id,
+        "event_type": event_type,
+        "received_at": datetime.now(timezone.utc),
+        "processed": False,
+    })
 
     try:
-        from emergentintegrations.payments.stripe.checkout import StripeCheckout
+        # ── Map session_id (Checkout) or payment_intent_id (Elements) ──
+        session_id = data_object.get("id")
+        if event_type.startswith("payment_intent."):
+            # For PI events, the metadata might point to a Checkout session
+            session_id = data_object.get("metadata", {}).get("checkout_session_id") or session_id
 
-        host_url = str(request.base_url).rstrip("/")
-        webhook_url = f"{host_url}/api/webhook/stripe"
-        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+        txn = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0}) if session_id else None
 
-        event = await stripe_checkout.handle_webhook(body, sig)
-
-        logger.info(f"Stripe webhook: {event.event_type} for session {event.session_id}")
-
-        # Update payment_transactions
-        if event.session_id:
-            txn = await db.payment_transactions.find_one({"session_id": event.session_id}, {"_id": 0})
-
-            if event.event_type in ("checkout.session.completed", "payment_intent.succeeded"):
-                if txn and txn.get("payment_status") != "paid":
-                    await db.payment_transactions.update_one(
-                        {"session_id": event.session_id},
-                        {"$set": {
-                            "payment_status": "paid",
-                            "status": "completed",
-                            "webhook_event": event.event_type,
-                            "updated_at": datetime.now(timezone.utc).isoformat(),
-                        }}
-                    )
-
-                    # Create donation if not already created
-                    existing_donation = await db.donations.find_one({"stripe_session_id": event.session_id})
-                    if not existing_donation and txn:
-                        donation = {
-                            "id": str(uuid.uuid4()),
-                            "tenant_id": txn.get("tenant_id", ""),
-                            "person_id": txn.get("user_id", ""),
-                            "amount": txn.get("amount", 0),
-                            "fee_amount": txn.get("platform_fee", 0),
-                            "net_amount": round(txn.get("amount", 0) - txn.get("platform_fee", 0), 2),
-                            "fund_name": txn.get("fund_name", "General Fund"),
-                            "donation_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-                            "payment_method": "card",
-                            "processor": "stripe",
-                            "stripe_session_id": event.session_id,
-                            "status": "completed",
-                            "is_recurring": False,
-                            "created_at": datetime.now(timezone.utc).isoformat(),
-                        }
-                        await db.donations.insert_one(donation)
-                        await _send_receipt(txn)
-
-            elif event.event_type in ("payment_intent.payment_failed", "checkout.session.expired"):
+        if event_type in ("checkout.session.completed", "payment_intent.succeeded"):
+            if txn and txn.get("payment_status") != "paid":
                 await db.payment_transactions.update_one(
-                    {"session_id": event.session_id},
+                    {"session_id": session_id},
+                    {"$set": {
+                        "payment_status": "paid",
+                        "status": "completed",
+                        "webhook_event": event_type,
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                    }}
+                )
+                existing_donation = await db.donations.find_one({"stripe_session_id": session_id})
+                if not existing_donation and txn:
+                    donation = {
+                        "id": str(uuid.uuid4()),
+                        "tenant_id": txn.get("tenant_id", ""),
+                        "person_id": txn.get("user_id", ""),
+                        "amount": txn.get("amount", 0),
+                        "fee_amount": txn.get("platform_fee", 0),
+                        "net_amount": round(txn.get("amount", 0) - txn.get("platform_fee", 0), 2),
+                        "fund_name": txn.get("fund_name", "General Fund"),
+                        "donation_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                        "payment_method": "card",
+                        "processor": "stripe",
+                        "stripe_session_id": session_id,
+                        "status": "completed",
+                        "is_recurring": False,
+                        "created_at": datetime.now(timezone.utc).isoformat(),
+                    }
+                    await db.donations.insert_one(donation)
+                    await _send_receipt(txn)
+
+        elif event_type in ("payment_intent.payment_failed", "checkout.session.expired"):
+            if session_id:
+                await db.payment_transactions.update_one(
+                    {"session_id": session_id},
                     {"$set": {
                         "payment_status": "failed",
                         "status": "failed",
-                        "webhook_event": event.event_type,
+                        "webhook_event": event_type,
                         "updated_at": datetime.now(timezone.utc).isoformat(),
                     }}
                 )
 
-            elif event.event_type == "charge.dispute.created":
-                # Record dispute
-                await db.disputes.insert_one({
-                    "id": str(uuid.uuid4()),
-                    "session_id": event.session_id,
-                    "tenant_id": txn.get("tenant_id", "") if txn else "",
-                    "amount": txn.get("amount", 0) if txn else 0,
-                    "status": "open",
-                    "event_type": event.event_type,
-                    "created_at": datetime.now(timezone.utc).isoformat(),
-                })
+        elif event_type == "charge.dispute.created":
+            await db.disputes.insert_one({
+                "id": str(uuid.uuid4()),
+                "session_id": session_id,
+                "tenant_id": txn.get("tenant_id", "") if txn else "",
+                "amount": txn.get("amount", 0) if txn else 0,
+                "status": "open",
+                "event_type": event_type,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            })
 
+        # Mark event processed
+        await db.stripe_webhook_events.update_one(
+            {"event_id": event_id},
+            {"$set": {"processed": True, "processed_at": datetime.now(timezone.utc)}},
+        )
         return {"received": True}
 
     except Exception as e:
-        logger.error(f"Stripe webhook error: {e}")
-        return {"received": True, "error": str(e)}
+        # Don't 500 — Stripe will retry, and we have the event_id recorded
+        # so the next retry's idempotency check still fires. Just log.
+        logger.error(f"[stripe_webhook] processing {event_id} ({event_type}) failed: {e}")
+        return {"received": True, "error": "processing_deferred"}
 
 
 # ═══ Payment Configuration Status ═══

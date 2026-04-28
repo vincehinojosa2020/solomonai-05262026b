@@ -14,10 +14,24 @@ from core import (
 from core.helpers import DEFAULT_NEXT_STEPS_URL
 
 
+def _is_production() -> bool:
+    """BLOCKER #6 from production audit — never seed demo accounts in prod."""
+    return os.environ.get("ENVIRONMENT", "").lower() == "production"
+
+
 async def ensure_mobile_demo_accounts():
-    """Ensure required demo users exist for mobile QA and onboarding."""
+    """Ensure required demo users exist for mobile QA and onboarding.
+
+    NO-OP in production: this function rewrites admin@solomonai.us's
+    password_hash to a hash of `Demo2026!` on every invocation, which is a
+    catastrophic security regression if it ever runs against a live DB.
+    """
+    if _is_production():
+        logging.info("[seed_accounts] skipped — production environment")
+        return
     now_iso = datetime.now(timezone.utc).isoformat()
-    demo_password_hash = hashlib.sha256("Demo2026!".encode()).hexdigest()
+    bootstrap_password = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD", "Demo2026!")
+    demo_password_hash = hashlib.sha256(bootstrap_password.encode()).hexdigest()
 
     tenant_defaults = [
         {"id": "abundant-east-001", "name": "Abundant East", "subdomain": "abundant-east", "subscription_status": "active", "created_at": now_iso, "organization_id": "abundant-org-001", "organization_name": "Abundant Church", "city": "El Paso", "state": "TX", "plan": "enterprise", "monthly_rate": 2999, "senior_pastor": "Pastor David Martinez"},

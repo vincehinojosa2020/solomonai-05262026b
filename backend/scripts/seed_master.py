@@ -1340,4 +1340,13 @@ async def seed():
 
 
 if __name__ == "__main__":
+    if os.environ.get("ENVIRONMENT", "").lower() == "production":
+        # BLOCKER #6 from production audit — never plant 28.5M synthetic
+        # giving rows in a production database. Require explicit override.
+        if os.environ.get("I_KNOW_WHAT_IM_DOING") != "yes":
+            raise SystemExit(
+                "Refusing to run seed_master.py against ENVIRONMENT=production. "
+                "This script seeds 28.5M synthetic donations and demo accounts. "
+                "Set I_KNOW_WHAT_IM_DOING=yes only if you have a written reason."
+            )
     asyncio.run(seed())

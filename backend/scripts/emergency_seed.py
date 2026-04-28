@@ -19,17 +19,31 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import os
 from datetime import datetime, timezone
 
 from core import db
 
 logger = logging.getLogger("solomon.emergency_seed")
 
+# ── Production safety gate ───────────────────────────────────────────────
+# BLOCKER #6 from the production audit: this seed script must NEVER run in
+# a production environment, where it could (a) overwrite real admin
+# credentials with the demo password, (b) re-seed 7 fake demo tenants if
+# the tenants collection is ever transiently empty during a migration.
+#
+# Set ENVIRONMENT=production in the prod backend/.env to harden.
+def _is_production() -> bool:
+    return os.environ.get("ENVIRONMENT", "").lower() == "production"
+
+
 # ── Account material ─────────────────────────────────────────────────────
+# These are bootstrap defaults for non-production environments only. In
+# production the seed function exits early before these are referenced.
 ADMIN_EMAIL = "admin@solomonai.us"
-ADMIN_PASSWORD = "Demo2026!"
+ADMIN_PASSWORD = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD", "Demo2026!")
 CHRISTOPHER_EMAIL = "christopher@eden-x.io"
-CHRISTOPHER_PASSWORD = "EdenChurch2026!"
+CHRISTOPHER_PASSWORD = os.environ.get("EDEN_ADMIN_PASSWORD", "EdenChurch2026!")
 
 # ── Tenant catalog (per Vince's spec) ────────────────────────────────────
 EDEN_TENANT_ID = "eden-church-001"  # canonical id elsewhere in the codebase
@@ -150,8 +164,12 @@ async def emergency_seed_if_empty() -> dict:
       {"action": "error",  "error": "..."}
 
     The function is fully idempotent — it only touches the DB when
-    `tenants` is empty.
+    `tenants` is empty. Additionally, it is fully NO-OP in production
+    (ENVIRONMENT=production), where re-seeding is never desired even on
+    a transiently empty collection.
     """
+    if _is_production():
+        return {"action": "skipped", "reason": "production_environment"}
     try:
         existing = await db.tenants.count_documents({})
         if existing > 0:

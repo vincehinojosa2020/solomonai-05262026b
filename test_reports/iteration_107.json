@@ -1,0 +1,50 @@
+{
+  "summary": "Iteration 107 — Week-1 'Stop the Bleeding' production audit verification (BLOCKERS #2/#4/#5/#6/#8). 17 of 18 backend tests PASS. Frontend verified: /give/eden-church loads with Stripe Elements card field mounted (7 Stripe iframes), /portal/give renders without any raw-card inputs and MultiPaymentSelector source confirms guest-card form is deleted. ONE REAL BUG FOUND in the BLOCKER #8 idempotency_key implementation — toggling cover_fees while keeping (donor_email, base_amount, minute) the same causes Stripe to return 400 'Keys for idempotent requests can only be used with the same parameters' which our endpoint surfaces as 502. The code comment at routes/stripe_elements.py:200-203 claims 'toggling cover fees off then on within the same minute creates a NEW PI' but the seed at line 207-208 only includes base_amount_cents (not cover_fees and not the actual amount_cents being charged), so the key is identical even though the body amount differs. All other items pass: tokenize/tokenize-bank=404, webhook dev-fallback works + persists event_id, webhook idempotency dedupe returns duplicate:true, unique index on event_id confirmed, secret-set mode rejects no-sig and bogus-sig with 400, PI same-payload returns same id, both admin logins work, /api/auth/debug/* still serve in dev (development env), /api/health=ok, real Stripe pm_card_visa confirm-donation flow inserts donation row, prod_guard.refuse_in_production() raises SystemExit when ENVIRONMENT=production, emergency_seed.emergency_seed_if_empty() returns {action:'skipped',reason:'production_environment'} in prod.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "POST /api/stripe/create-payment-intent",
+        "issue": "BLOCKER #8 idempotency_key bug — toggling cover_fees on the same (donor, base_amount, minute) yields IDENTICAL idempotency_key but DIFFERENT amount_cents body. Stripe returns 400 'Keys for idempotent requests can only be used with the same parameters'; our endpoint surfaces as 502 'Stripe error: Keys for idempotent requests...'. The code comment at routes/stripe_elements.py:200-203 explicitly claims this case 'creates a NEW PI' but the implementation contradicts itself. Fix: include either `cover_fees` flag or `amount_cents` (total) in the _key_seed at routes/stripe_elements.py:207-208, e.g. `f\"{tenant['id']}:{(payload.donor_email or '').lower()}:{int(round(base_amount * 100))}:{int(payload.cover_fees)}:{int(_t.time() // 60)}\"`. Real-world impact: any donor on /give/* who clicks 'cover the fees' checkbox after first attempting without it (a common UX pattern) within the same minute gets a 502 error instead of a new PI.",
+        "priority": "HIGH"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "/give/eden-church",
+        "issues": [
+          "Hydration warnings in console: '<span> cannot be a child of <option>' and '<span> cannot be a child of <select>' — React hydration errors from the FUND <select> dropdown. Non-blocking but should be cleaned up.",
+          "CSP violation: 'cloudflareinsights.com/beacon.min.js' blocked by script-src CSP. Either remove the cloudflare beacon injection or whitelist it in the CSP."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_week1_blockers_iter107.py",
+    "/app/test_reports/pytest/iter107_results.xml"
+  ],
+  "action_items": [
+    "FIX BLOCKER #8 cover_fees idempotency bug in routes/stripe_elements.py:207-208 — include cover_fees (or total amount_cents) in the _key_seed string so toggling fee-coverage produces a distinct idempotency_key. Without this fix, the documented behavior ('toggling cover_fees creates a NEW PI') is contradicted by reality (Stripe 400 → our 502). Reproduction: test_cover_fees_toggle_creates_new_pi in /app/backend/tests/test_week1_blockers_iter107.py.",
+    "OPTIONAL clean up React hydration warnings on /give/* (span inside select/option) and CSP-blocked cloudflareinsights beacon."
+  ],
+  "critical_code_review_comments": [
+    "routes/stripe_elements.py:200-208 — the idempotency_key comment and code disagree. Either (a) the comment is correct and the code should add cover_fees to the seed, or (b) the comment should be removed and the test should expect a 400 idempotency conflict. Option (a) is safer — donors WILL flip the cover-fees checkbox while the form is still open. (Test confirms Stripe returns: 'Keys for idempotent requests can only be used with the same parameters they were first used with. Try using a key other than solpay_pi_xxx if you meant to execute a different request.')",
+    "routes/stripe_connect.py:243-255 — the dev fallback (no STRIPE_WEBHOOK_SECRET, sk_test_* key) accepts unverified payloads. This is intentional per the comment, but combined with the missing X-Forwarded-For/host check it means anyone who knows the preview URL can insert arbitrary event_ids into db.stripe_webhook_events and (depending on payload shape) trigger donation insertions via the same handler. Recommend either (a) requiring a shared-secret header in dev too, or (b) restricting the dev path to internal IPs / only accept payloads with no metadata.payment_intent_id resolution.",
+    "routes/stripe_connect.py:282-287 — the record-then-process pattern inserts the event row before the unique-index dedup check fires (the find_one at 276 happens first, then the insert at 282). On concurrent retries from Stripe (which can happen — Stripe parallelizes retries), two workers could both pass the find_one check and then race on the insert. The unique index will reject the second insert with DuplicateKeyError, but our code doesn't catch it — so the second concurrent retry will 500. Wrap line 282 in try/except DuplicateKeyError → return {received:true, duplicate:true}.",
+    "routes/auth.py:259 — SOLOMON_SEED_PASSWORD missing → 503. Good. But the message 'SOLOMON_SEED_PASSWORD not configured' on a public-facing endpoint leaks that there IS a debug endpoint at this path. Combine with the _refuse_in_production() at line 246 which returns 404 in prod — so in prod no leak, in dev only seeing 503 if dev forgot to set the env. Fine as-is but worth noting."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_week1_blockers_iter107.py"
+  ],
+  "success_rate": {"backend": "94% (17/18)", "frontend": "100% (give page + portal/give verified, no raw-card form anywhere)"},
+  "test_credentials": "admin@solomonai.us / Demo2026! (platform_admin); christopher@eden-x.io / EdenChurch2026! (eden church admin). Both confirmed working via /api/auth/login regression.",
+  "seed_data_creation": "TestStripeWebhookWithSecret class temporarily flips STRIPE_WEBHOOK_SECRET=whsec_test_iter107_xyz in /app/backend/.env, restarts backend, then restores original on teardown — verified backend health is 200 after teardown. TestPaymentIntentIdempotency creates 2-3 throwaway Stripe PIs with TEST_idempotency_iter107@example.com / TEST_iter107_nofees@example.com (Stripe test mode, auto-expire). TestConfirmDonationStripeFlow creates 1 real $1 PI, confirms with pm_card_visa, then deletes the donation + payment_transactions rows by donor_email tag. ~12 ephemeral stripe_webhook_events rows created with TTL 90 days (event_id evt_test_iter107_*).",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Iter107 verified Week-1 production audit BLOCKERS #2/#4/#5/#6 fully — only BLOCKER #8 has a single edge-case bug (cover_fees toggle within same minute → Stripe 400 → our 502). The fix is a one-line addition to the _key_seed at routes/stripe_elements.py:207-208 to include cover_fees or total amount_cents. Once main agent fixes, re-run /app/backend/tests/test_week1_blockers_iter107.py::TestPaymentIntentIdempotency::test_cover_fees_toggle_creates_new_pi to confirm. Note: TestStripeWebhookWithSecret class restarts backend twice (~10s total) — schedule it last if combining with other test files. test_real_stripe_pi_confirm_donation requires church_slug in confirm-donation payload (added in iter107). The webhook dev-fallback path is intentionally unsigned for sk_test_*; flag for security review when promoting to prod.",
+  "rca of the issue": "BLOCKER #8 cover_fees-toggle bug RCA: at routes/stripe_elements.py:204-210, the idempotency_key seed is `f\"{tenant['id']}:{donor_email}:{base_amount_cents}:{minute}\"`. The author intended toggling cover_fees to produce a different key (per the comment block), but cover_fees never enters the seed. When a donor checks 'cover fees' after a prior unchecked POST in the same minute, the same key is sent to Stripe with a different `amount` parameter. Stripe enforces 'same key requires same body' and returns 400 with detail 'Keys for idempotent requests can only be used with the same parameters they were first used with.'. Our handler at line 222-224 catches StripeError and re-raises as HTTPException(502, ...). Mitigation: change seed to `f\"{tenant['id']}:{donor_email}:{base_amount_cents}:{int(payload.cover_fees)}:{minute}\"`. Reproduced 100% of the time in test_cover_fees_toggle_creates_new_pi when the two requests fall in the same UTC minute window."
+}

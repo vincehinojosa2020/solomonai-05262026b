@@ -189,6 +189,26 @@ async def create_payment_intent(payload: CreatePaymentIntentRequest):
     # statement_descriptor_suffix caps at 22 chars; strip to alphanumerics
     suffix = "".join(c for c in tenant["name"].upper() if c.isalnum() or c == " ")[:20] or "SOLOMON PAY"
 
+    # ── Idempotency (BLOCKER #8 from production audit) ──
+    # Donor double-tap on flaky cell, browser back-button retry, or our
+    # own retry middleware would otherwise create N PaymentIntents for the
+    # same gift. We key the request by (tenant, donor email, base amount,
+    # rounded-down minute) so a true duplicate within the same minute
+    # collapses to one PI on Stripe's side. Stripe stores idempotency keys
+    # for 24 hours, which is more than enough.
+    #
+    # We deliberately include base_amount_cents (not total) so a donor
+    # toggling "cover fees" off then on within the same minute creates a
+    # NEW PI rather than reusing the previous total — the dollar amount
+    # actually charged is different.
+    import hashlib as _hl
+    import time as _t
+    _key_seed = (
+        f"{tenant['id']}:{(payload.donor_email or '').lower()}:"
+        f"{int(round(base_amount * 100))}:{int(_t.time() // 60)}"
+    )
+    idempotency_key = "solpay_pi_" + _hl.sha256(_key_seed.encode()).hexdigest()[:32]
+
     try:
         intent = stripe.PaymentIntent.create(
             amount=amount_cents,
@@ -197,6 +217,7 @@ async def create_payment_intent(payload: CreatePaymentIntentRequest):
             metadata=metadata,
             statement_descriptor_suffix=suffix,
             receipt_email=metadata["donor_email"] or None,
+            idempotency_key=idempotency_key,
         )
     except stripe.error.StripeError as e:
         logger.error(f"Stripe create intent failed: {e}")
