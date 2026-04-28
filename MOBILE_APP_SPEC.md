@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://platform-stripe-feed.preview.emergentagent.com/api
+https://exec-metrics-hub.preview.emergentagent.com/api
 ```
 
 ### Authentication

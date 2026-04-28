@@ -1,7 +1,7 @@
 """Solomon AI — Portal User Journeys + Ask Solomon + Data Integrity Tests"""
 import requests, json, time
 
-API = "https://platform-stripe-feed.preview.emergentagent.com/api"
+API = "https://exec-metrics-hub.preview.emergentagent.com/api"
 AT = open("/tmp/admin_token").read().strip()
 MT = open("/tmp/member_token").read().strip()
 PT = open("/tmp/platform_token").read().strip()

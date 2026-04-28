@@ -29,11 +29,11 @@
   "seed_data_creation": "None",
   "retest_needed": false,
   "should_main_agent_self_test": false,
-  "context_for_next_testing_agent": "All P1/P2/P3 features verified working. CORS_ORIGINS is set to 'https://platform-stripe-feed.preview.emergentagent.com' (not wildcard). Session TTL implemented with 24-hour expiry in core/__init__.py get_current_admin_user and get_current_portal_user functions. Tenant isolation working via _resolve_tenant helper in public_api.py and _resolve_report_tenant in reports.py. CSV Import at /admin/members/import with Planning Center auto-mapping (First Name, Last Name, Email, Phone, Status, Campus patterns). Disputes scaffold at /api/platform/disputes returns summary with win_rate. Fraud risk at /api/platform/fraud/risk-scores returns risk_summary with high_value_transactions_30d. Landing page has God Mode KPI screenshot with Platform GMV $108.3M, Total Revenue $2.4M, Churches 8, Members 109,900. Footer has Privacy/Terms/Security links and Calendly CTA (https://calendly.com/solomonai). Login page has autocomplete='off' on email/password inputs, aria-label attributes, and forgot password link to /forgot-password. Mobile responsiveness working with hamburger menu toggle.",
+  "context_for_next_testing_agent": "All P1/P2/P3 features verified working. CORS_ORIGINS is set to 'https://exec-metrics-hub.preview.emergentagent.com' (not wildcard). Session TTL implemented with 24-hour expiry in core/__init__.py get_current_admin_user and get_current_portal_user functions. Tenant isolation working via _resolve_tenant helper in public_api.py and _resolve_report_tenant in reports.py. CSV Import at /admin/members/import with Planning Center auto-mapping (First Name, Last Name, Email, Phone, Status, Campus patterns). Disputes scaffold at /api/platform/disputes returns summary with win_rate. Fraud risk at /api/platform/fraud/risk-scores returns risk_summary with high_value_transactions_30d. Landing page has God Mode KPI screenshot with Platform GMV $108.3M, Total Revenue $2.4M, Churches 8, Members 109,900. Footer has Privacy/Terms/Security links and Calendly CTA (https://calendly.com/solomonai). Login page has autocomplete='off' on email/password inputs, aria-label attributes, and forgot password link to /forgot-password. Mobile responsiveness working with hamburger menu toggle.",
   "features_verified": {
     "p2_cors_lockdown": {
       "status": "PASS",
-      "details": "CORS_ORIGINS='https://platform-stripe-feed.preview.emergentagent.com' (not wildcard *)"
+      "details": "CORS_ORIGINS='https://exec-metrics-hub.preview.emergentagent.com' (not wildcard *)"
     },
     "p2_session_ttl": {
       "status": "PASS",

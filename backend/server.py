@@ -311,6 +311,33 @@ async def _deferred_startup() -> None:
                 await db.donations.create_index([("payment_source", 1), ("created_at", -1)], name="ix_stripe_created", background=True)
             except Exception as e:
                 logger.warning(f"[startup] donations index creation skipped: {e}")
+
+            # ── Stripe → Mongo backfill (boot + every 60s) ─────────────
+            # Paranoid sync: if the frontend's confirm-donation call never
+            # landed (tab closed mid-payment, network drop, webhook not
+            # configured yet), the charge is on Stripe but our donations
+            # collection is blind to it. Periodically pull the last 24h of
+            # PIs and insert anything missing. This is what makes Vince's
+            # "instantaneous" promise real for Christopher's church-admin
+            # view + for platform-admin God Mode.
+            try:
+                from core.stripe_sync import sync_recent
+                added_now = await sync_recent(hours=72, limit=100)
+                if added_now:
+                    logger.warning(f"[startup] stripe_sync backfilled {added_now} missing donations on boot")
+
+                async def _stripe_sync_loop():
+                    while True:
+                        await asyncio.sleep(60)
+                        try:
+                            n = await sync_recent(hours=24, limit=100)
+                            if n:
+                                logger.info(f"[stripe_sync_loop] backfilled {n} donations")
+                        except Exception as e:
+                            logger.warning(f"[stripe_sync_loop] tick failed: {e}")
+                asyncio.ensure_future(_stripe_sync_loop())
+            except Exception as e:
+                logger.warning(f"[startup] stripe_sync init failed: {e}")
         except Exception as exc:
             logger.warning(f"[startup] emergency_seed skipped: {exc}")
 

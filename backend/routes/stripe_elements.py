@@ -615,6 +615,18 @@ async def platform_transactions(
         "count": len(data),
     }
     _PLATFORM_TXN_CACHE[cache_key] = (now, result)
+
+    # Fire-and-forget: backfill any Stripe PaymentIntents that never made it
+    # into the donations collection (frontend confirm-donation drops due to
+    # closed tabs, network drops, etc.). Keeps Christopher's /solomonpay
+    # view + stats cache in lock-step with live Stripe activity. Background
+    # task so this endpoint stays sub-300ms.
+    try:
+        from core.stripe_sync import backfill_from_intents
+        asyncio.ensure_future(backfill_from_intents(intents.data))
+    except Exception as e:
+        logger.warning(f"[platform_transactions] backfill schedule failed: {e}")
+
     return result
 
 
