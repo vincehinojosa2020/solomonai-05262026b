@@ -162,3 +162,103 @@ async def sentry_test(request: Request):
         "sentry_smoke_test: intentional error from /api/health/sentry-test "
         f"(user={user.get('user_id')}) — if you see this in Sentry, capture is working."
     )
+
+
+
+# ──────────────────────────────────────────────────────────────────────
+#  ONE-SHOT: seed Stripe Connect account IDs into tenant docs.
+#  Platform-admin only. Idempotent. Required because the preview
+#  Connect onboarding seed script never ran against production Atlas,
+#  so production tenants have stripe_connect_account_id=null and the
+#  giving form's accepts_payments gate (correctly) returns false.
+#
+#  Vince hits this from his browser once after deploy:
+#     POST /api/platform/seed-connect-ids
+#     Authorization: Bearer <platform_admin_token>
+#
+#  Response: a per-tenant before/after summary.
+#  Safe to call multiple times — only writes when account_id is missing
+#  OR when the existing value differs from the canonical map.
+# ──────────────────────────────────────────────────────────────────────
+CANONICAL_CONNECT_ACCOUNTS = {
+    "eden-church-001":        "acct_1TRVWmJyE7zM7lxV",
+    "abundant-church-001":    "acct_1TRVWFFLhzsPtPxj",
+    "abundant-east-001":      "acct_1TRVWKFX1LQycf9p",
+    "abundant-downtown-001":  "acct_1TRVWO2UEqb1nY3L",
+    "abundant-west-001":      "acct_1TRVWSFQBi4A6opd",
+    "potters-house-001":      "acct_1TRVWW2UWbVU32sa",
+    "cityreach-001":          "acct_1TRVWaFVPswnbTrm",
+    "hillcountry-001":        "acct_1TRVWdFYVzOINe2c",
+    "cristoviene-001":        "acct_1TRVWhFMrsVdQxaV",
+}
+
+
+@router.post("/platform/seed-connect-ids")
+async def seed_connect_ids(request: Request):
+    user = await _require_authenticated(request, roles=("platform_admin",))
+    now_iso = datetime.now(timezone.utc).isoformat()
+    summary = []
+
+    for tenant_id, account_id in CANONICAL_CONNECT_ACCOUNTS.items():
+        existing = await db.tenants.find_one(
+            {"id": tenant_id},
+            {"_id": 0, "id": 1, "name": 1,
+             "stripe_connect_account_id": 1, "stripe_connect_status": 1,
+             "accepts_payments": 1},
+        )
+        if not existing:
+            summary.append({
+                "tenant_id": tenant_id, "action": "skipped",
+                "reason": "tenant doc not found",
+            })
+            continue
+
+        before = {
+            "stripe_connect_account_id": existing.get("stripe_connect_account_id"),
+            "stripe_connect_status": existing.get("stripe_connect_status"),
+            "accepts_payments": existing.get("accepts_payments"),
+        }
+        # Idempotent: if everything already matches, skip the write.
+        if (
+            before["stripe_connect_account_id"] == account_id
+            and before["stripe_connect_status"] == "active"
+            and before["accepts_payments"] is True
+        ):
+            summary.append({
+                "tenant_id": tenant_id, "name": existing.get("name"),
+                "action": "skipped", "reason": "already correct",
+                "before": before,
+            })
+            continue
+
+        result = await db.tenants.update_one(
+            {"id": tenant_id},
+            {"$set": {
+                "stripe_connect_account_id": account_id,
+                "stripe_connect_status": "active",
+                "stripe_connect_onboarded_at": now_iso,
+                "accepts_payments": True,
+            }},
+        )
+        summary.append({
+            "tenant_id": tenant_id, "name": existing.get("name"),
+            "action": "updated" if result.modified_count else "no-op",
+            "before": before,
+            "after": {
+                "stripe_connect_account_id": account_id,
+                "stripe_connect_status": "active",
+                "accepts_payments": True,
+            },
+        })
+
+    updated = sum(1 for s in summary if s["action"] == "updated")
+    skipped = sum(1 for s in summary if s["action"] == "skipped")
+    return {
+        "ok": True,
+        "tenants_total": len(CANONICAL_CONNECT_ACCOUNTS),
+        "updated": updated,
+        "skipped": skipped,
+        "triggered_by": user.get("user_id"),
+        "ts": now_iso,
+        "summary": summary,
+    }
