@@ -142,17 +142,23 @@ async def public_church_config(slug: str):
         # (b) hide the giving form behind a "this church can't accept gifts
         # yet" message.
         #
-        # Gate: if the church has a `stripe_connect_account_id`, they've
-        # been through Connect onboarding — let the form render. The
-        # `stripe_connect_status` field can drift stale (Stripe webhooks
-        # can be missed, manual seeds skip it, etc.); the actual ledger
-        # of "can this account take charges" lives at Stripe, and Stripe
-        # will return a clean error to the customer if onboarding is
-        # incomplete. Far better than blanket "coming soon" copy when the
-        # account is actively processing donations.
+        # Gate priority:
+        #   1. Explicit `accepts_payments: false` on the tenant doc → off
+        #      (admin-controlled kill switch — set false to pull a misbehaving
+        #      church off the giving form without a code deploy).
+        #   2. Otherwise: church is "live" if they have a Connect account_id
+        #      AND status is not in the explicit-bad list. The status field
+        #      can drift stale (Stripe webhooks can be missed, manual seeds
+        #      skip it); having an account_id means they completed Connect
+        #      onboarding. Stripe will still reject the actual charge
+        #      cleanly if the account isn't ready, vs. blanket "coming soon"
+        #      copy when the account is actively processing donations.
         "connected_account_id": t.get("stripe_connect_account_id"),
-        "accepts_payments": bool(t.get("stripe_connect_account_id"))
-            and t.get("stripe_connect_status") not in ("rejected", "deauthorized", "disabled"),
+        "accepts_payments": (
+            t.get("accepts_payments") is not False
+            and bool(t.get("stripe_connect_account_id"))
+            and t.get("stripe_connect_status") not in ("rejected", "deauthorized", "disabled")
+        ),
     }
 
 
