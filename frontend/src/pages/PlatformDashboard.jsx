@@ -483,7 +483,7 @@ export default function PlatformDashboard() {
         </div>
         <nav className="flex-1 py-4 overflow-y-auto">
           {NAV.map(item=>(
-            <button key={item.id} onClick={()=>{setSection(item.id);if(item.id!=='dashboard')setDemoMode('live');}} className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium transition-all ${section===item.id?'bg-blue-600 text-white':'text-slate-400 hover:text-white hover:bg-slate-800'}`} data-testid={`nav-${item.id}`}>
+            <button key={item.id} onClick={()=>{setSection(item.id);if(item.id==='churches')setSelectedChurchId(null);if(item.id!=='dashboard')setDemoMode('live');}} className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium transition-all ${section===item.id?'bg-blue-600 text-white':'text-slate-400 hover:text-white hover:bg-slate-800'}`} data-testid={`nav-${item.id}`}>
               <item.icon className="w-4 h-4 flex-shrink-0"/>
               {item.label}
               {item.badge&&<span className="ml-auto text-[9px] bg-blue-500 text-white px-1.5 py-0.5 rounded-full font-bold">PAY</span>}

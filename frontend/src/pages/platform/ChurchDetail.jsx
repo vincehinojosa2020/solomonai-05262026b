@@ -46,7 +46,12 @@ export default function ChurchDetail({ token, tenantId, onBack }) {
           <div>HTTP {errorDetail.status}</div>
           {errorDetail.cid && <div>request id: {errorDetail.cid}</div>}
           {errorDetail.body && <div className="mt-1 break-all">{errorDetail.body}</div>}
-          <button onClick={() => window.location.reload()} className="mt-3 px-3 py-1 bg-slate-900 text-white rounded text-xs" data-testid="church-detail-retry">Retry</button>
+          <div className="mt-3 flex gap-2">
+            <button onClick={() => window.location.reload()} className="px-3 py-1 bg-slate-900 text-white rounded text-xs" data-testid="church-detail-retry">Retry</button>
+            {onBack && (
+              <button onClick={onBack} className="px-3 py-1 bg-slate-200 text-slate-900 rounded text-xs" data-testid="church-detail-back">← Back to Churches</button>
+            )}
+          </div>
         </div>
       )}
     </div>

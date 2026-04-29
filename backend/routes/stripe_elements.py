@@ -977,23 +977,47 @@ async def platform_transactions_stats(request: Request):
         total = int(r[0]["total_amount"])
         return {"count": r[0]["count"], "total_amount": total, "solomon_revenue": round(total * 0.0035)}
 
-    # Fan out — each scans the compound index (payment_source + donation_date).
-    today, this_week, this_month, all_time, active_tids, donor_emails = await asyncio.gather(
+    async def _cached_distinct():
+        """Reuse the platform_stats_cache for active_churches / total_donors —
+        running `db.donations.distinct(...)` over 2.8M rows on Atlas times out
+        at 10s. The platform stats cache is rebuilt on every donation
+        (bust_donation_caches → mark stale → next /platform/stats refreshes it),
+        so the values are at most one minute behind."""
+        try:
+            cached = await db.platform_stats_cache.find_one({"id": "global"}, {"_id": 0})
+            if cached:
+                p = cached.get("platform", {})
+                return p.get("active_churches", 0), p.get("total_donors", 0)
+        except Exception:
+            pass
+        return None, None
+
+    # Fan out — each bucket scans the compound index (payment_source + donation_date).
+    # Distinct calls served from cache to avoid 10s+ Atlas timeouts.
+    today, this_week, this_month, all_time, (active_churches, total_donors) = await asyncio.gather(
         _bucket({"donation_date": today_str}),
         _bucket({"donation_date": {"$gte": week_ago}}),
         _bucket({"donation_date": {"$gte": month_start}}),
         _bucket({}),
-        db.donations.distinct("tenant_id", base_match),
-        db.donations.distinct("donor_email", base_match),
+        _cached_distinct(),
     )
+
+    # Fallback if cache is empty or has 0s: count tenants instead of distinct.
+    if not active_churches:
+        try:
+            active_churches = await db.tenants.count_documents({})
+        except Exception:
+            active_churches = 0
+    if total_donors is None:
+        total_donors = 0  # opt out of distinct on cold start (Atlas timeout risk)
 
     payload = {
         "today": today,
         "this_week": this_week,
         "this_month": this_month,
         "all_time": all_time,
-        "active_churches": len(active_tids),
-        "total_donors": len(donor_emails),
+        "active_churches": active_churches,
+        "total_donors": total_donors,
     }
     _STATS_CACHE["ts"] = now_ts
     _STATS_CACHE["data"] = payload

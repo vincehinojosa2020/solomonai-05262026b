@@ -12,6 +12,7 @@ Solomon AI — Realtime + Launch Status routes
 """
 from __future__ import annotations
 
+import asyncio
 import os
 import time as _time
 from datetime import datetime, timezone, timedelta
@@ -79,34 +80,34 @@ async def launch_status(request: Request):
     mongo_latency_ms = None
     try:
         t0 = _time.perf_counter()
-        await db.command("ping")
+        await asyncio.wait_for(db.command("ping"), timeout=2.0)
         mongo_latency_ms = round((_time.perf_counter() - t0) * 1000, 1)
-    except Exception as e:
+    except Exception:
         mongo_status = "down"
 
-    # ── Donation pulse ──
-    last_donation = await db.donations.find_one(
+    # ── Donation pulse ── (each query gets a 2s budget; on timeout we
+    #     return None for the field and degrade to 'yellow' overall, never
+    #     500 — UptimeRobot must NEVER see a 5xx from this endpoint.)
+    async def _safe(coro, timeout=2.0):
+        try:
+            return await asyncio.wait_for(coro, timeout=timeout)
+        except Exception:
+            return None
+
+    last_donation = await _safe(db.donations.find_one(
         {}, {"_id": 0, "amount": 1, "tenant_id": 1, "created_at": 1, "donation_date": 1},
         sort=[("created_at", -1)],
-    )
+    ))
     last_donation_at = (last_donation or {}).get("created_at")
     last_donation_amount = (last_donation or {}).get("amount")
 
     one_hour_ago = (datetime.now(timezone.utc) - timedelta(hours=1)).isoformat()
-    donations_last_hour = await db.donations.count_documents(
-        {"created_at": {"$gte": one_hour_ago}}
-    )
     one_min_ago = (datetime.now(timezone.utc) - timedelta(minutes=1)).isoformat()
-    donations_last_minute = await db.donations.count_documents(
-        {"created_at": {"$gte": one_min_ago}}
-    )
-
-    # ── Stripe webhook health ──
-    stripe_webhook_recent = await db.stripe_webhook_events.count_documents(
-        {"received_at": {"$gte": datetime.now(timezone.utc) - timedelta(hours=1)}}
-    )
-    stripe_webhook_failed = await db.stripe_webhook_events.count_documents(
-        {"processed": False, "received_at": {"$lte": datetime.now(timezone.utc) - timedelta(minutes=5)}}
+    donations_last_hour, donations_last_minute, stripe_webhook_recent, stripe_webhook_failed = await asyncio.gather(
+        _safe(db.donations.count_documents({"created_at": {"$gte": one_hour_ago}})),
+        _safe(db.donations.count_documents({"created_at": {"$gte": one_min_ago}})),
+        _safe(db.stripe_webhook_events.count_documents({"received_at": {"$gte": datetime.now(timezone.utc) - timedelta(hours=1)}})),
+        _safe(db.stripe_webhook_events.count_documents({"processed": False, "received_at": {"$lte": datetime.now(timezone.utc) - timedelta(minutes=5)}})),
     )
 
     # ── Status derivation ──
@@ -114,7 +115,7 @@ async def launch_status(request: Request):
     overall = "green"
     if mongo_status != "ok":
         overall = "red"
-    elif stripe_webhook_failed > 0:
+    elif (stripe_webhook_failed or 0) > 0 or last_donation is None:
         overall = "yellow"
 
     return {

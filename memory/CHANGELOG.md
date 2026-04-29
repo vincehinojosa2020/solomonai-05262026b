@@ -171,3 +171,28 @@ Fixed 76→0 instances across 12 files:
 
 ### Skipped
 - Test 5 (kill MongoDB) — would impact shared dev pod. Run against staging cluster pre-launch.
+
+## April 29, 2026 — Production hotfix sprint
+
+### Critical fixes for production cluster (solomonai.us / MongoDB Atlas)
+
+1. **"Failed to load church data" on /platform Churches tab** — root cause: clicking a church then later clicking the "Churches" sidebar item didn't reset `selectedChurchId`, so `ChurchDetail` kept rendering with a stale tenant_id (HTTP 404 "Church not found"). Fixed by:
+   - `PlatformDashboard.jsx:486` — sidebar nav now sets `selectedChurchId = null` when user clicks "Churches" 
+   - `ChurchDetail.jsx` — error UI now shows a "← Back to Churches" button so the user can recover even if the URL got stuck
+
+2. **Atlas timeouts on `platform_transactions_*` and `launch_status`** — `db.donations.distinct(...)` over 2.8M rows was timing out at 10s. Fixed:
+   - `stripe_elements.platform_transactions_stats` — now serves `active_churches` and `total_donors` from `platform_stats_cache.platform.*` (rebuilt on every donation, max 60s lag) instead of two distinct() calls
+   - `realtime.launch_status` — every count_documents/find_one wrapped in `asyncio.wait_for(timeout=2)`; never 500s, returns degraded "yellow" overall on any individual sub-query timeout
+   - `server.py /api/health?deep=true` — bumped Atlas ping timeout from 250ms → 2s (Atlas RTT is 50-200ms; 250ms was tripping UptimeRobot during normal latency spikes)
+   - `server.py` startup — added compound indexes `ix_payment_source_date` and `ix_payment_source_created` on `donations` so platform-wide stripe filters are index-bounded on Atlas
+
+3. **Eden church admin saw 1 of 52 donations** — root cause: `/admin/giving/report` filtered `status: "completed"` but Stripe webhook + Stripe Connect insertions write `status: "succeeded"`. Fixed: route now accepts `status: {$in: ["completed", "succeeded", null]}` so legacy seeds, manual entries, and Stripe webhook donations all surface.
+
+### Verification (preview env, mirrors production code)
+- `/api/health?deep=true` → 100ms
+- `/api/health/launch-status` → green, mongo 0.2ms, donations.last_hour=34
+- `/api/platform/stripe/transactions/stats` → 104ms (was 10s+ Atlas timeout)
+- Eden church admin (`christopher@eden-x.io / EdenChurch2026!`) → sees all 52 Eden donations totaling $3,756
+- Platform admin /platform Churches tab → loads all 9 churches including Eden ($45,846 giving, 526 txns, stripe_status=connected)
+- /platform Churches tab on stale state → shows "Back to Churches" button instead of blocking error
+

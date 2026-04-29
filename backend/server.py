@@ -58,11 +58,12 @@ async def _health_api(deep: bool = False):
     }
     if not deep:
         return payload
-    # Deep check: mongo ping (fail-fast 250ms timeout)
+    # Deep check: mongo ping with a 2s budget (Atlas RTT is 50-200ms; tight 
+    # 250ms was tripping UptimeRobot during normal Atlas latency spikes).
     payload["checks"] = {}
     try:
         t0 = _time.perf_counter()
-        await asyncio.wait_for(client.admin.command("ping"), timeout=0.25)
+        await asyncio.wait_for(client.admin.command("ping"), timeout=2.0)
         payload["checks"]["mongo"] = {
             "status": "ok",
             "latency_ms": round((_time.perf_counter() - t0) * 1000, 1),
@@ -446,6 +447,11 @@ async def _deferred_startup() -> None:
             await db.donations.create_index([("tenant_id", 1), ("donation_date", -1)], name="ix_tenant_date", background=True)
             await db.donations.create_index("created_at", name="ix_created_at", background=True)
             await db.donations.create_index("stripe_payment_intent_id", name="ix_stripe_pi", background=True, sparse=True)
+            # Platform-wide stripe queries — covers the "what hit Stripe today/week/month"
+            # buckets in /api/platform/stripe/transactions/*. Without this, Atlas
+            # has to scan every doc filtering by payment_source.
+            await db.donations.create_index([("payment_source", 1), ("donation_date", -1)], name="ix_payment_source_date", background=True)
+            await db.donations.create_index([("payment_source", 1), ("created_at", -1)], name="ix_payment_source_created", background=True)
             # Realtime events tail — short TTL since this is just a poll
             # signal, not a permanent record.
             await db.realtime_events.create_index("ts", expireAfterSeconds=3600, name="ix_ts_ttl")

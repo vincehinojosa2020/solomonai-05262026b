@@ -38,7 +38,10 @@ async def get_giving_report(
     user = await get_current_admin_user(request)
     tenant_id = require_tenant(user)
     
-    query = {"tenant_id": tenant_id, "status": "completed"}
+    # Accept both "completed" (manual entry / legacy seeds) and "succeeded"
+    # (Stripe webhook + Stripe Connect naming). Donations missing the field
+    # entirely also surface so historical seed data is visible.
+    query = {"tenant_id": tenant_id, "status": {"$in": ["completed", "succeeded", None]}}
     
     if start_date:
         query["donation_date"] = {"$gte": start_date}
@@ -197,7 +200,7 @@ async def export_giving_csv(
     user = await get_current_admin_user(request)
     tenant_id = require_tenant(user)
     
-    query = {"tenant_id": tenant_id, "status": "completed"}
+    query = {"tenant_id": tenant_id, "status": {"$in": ["completed", "succeeded", None]}}
     
     if start_date:
         query["donation_date"] = {"$gte": start_date}
