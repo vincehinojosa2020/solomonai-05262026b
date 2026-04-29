@@ -420,6 +420,18 @@ async def _deferred_startup() -> None:
 
         await asyncio.sleep(1)
 
+        # ── Stripe Connect ID auto-seed (idempotent; converges prod Atlas)
+        # ── Why: production tenants ship with stripe_connect_account_id=null
+        #    so the giving page renders "Online giving coming soon". This
+        #    self-heals on every boot.
+        try:
+            from core.connect_seed import auto_seed_connect_on_boot
+            await auto_seed_connect_on_boot()
+        except Exception as exc:
+            logger.warning("startup_connect_seed_import_failed", extra={"exc_type": type(exc).__name__})
+
+        await asyncio.sleep(1)
+
         # ── TTL indexes (idempotent, safe to retry) ─────────────────────
         for coll, field, ttl in [
             ("idempotency_keys", "created_at", 86400),

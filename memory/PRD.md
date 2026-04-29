@@ -1,5 +1,26 @@
 # Solomon AI — Product Requirements Document
 
+## Session — Apr 29, 2026 — Auto-Seed Stripe Connect IDs on Boot ✅ SHIPPED
+
+**Problem**: Production Atlas tenants shipped with `stripe_connect_account_id=null`, so every public giving page rendered "Online giving coming soon". Vince refused manual mongosh / curl steps — needed self-healing on boot.
+
+**Solution**:
+- `/app/backend/core/connect_seed.py` (new): single source of truth for the 9 canonical tenant→`acct_*` mappings + idempotent `seed_connect_accounts()` helper.
+- `/app/backend/server.py` `_deferred_startup()`: now calls `auto_seed_connect_on_boot()` after the existing Eden auto-seed step. Fully exception-isolated, runs after the 60 s Atlas grace period.
+- `/app/backend/routes/realtime.py`: `POST /api/platform/seed-connect-ids` now thin-wraps the same helper (manual fallback retained).
+
+**Verification (this session)**:
+1. Wiped Eden's Connect fields on preview Mongo to simulate prod state (`accepts_payments=False`, `connected_account_id=None`).
+2. Restarted backend → after ~60 s, log emitted `[startup] connect_seed complete updated=1 skipped=8 not_found=0`.
+3. `/api/churches/eden-church/public-config` returned `accepts_payments=True, connected_account_id=acct_1TRVWmJyE7zM7lxV`.
+4. Confirmed no-op behavior on subsequent boot: `updated=0 skipped=9`.
+
+**Files changed**:
+- New: `/app/backend/core/connect_seed.py`
+- Edit: `/app/backend/server.py` (`_deferred_startup`)
+- Edit: `/app/backend/routes/realtime.py` (delegates to helper)
+
+
 ## Session — Apr 29, 2026 — Eden X Mega-Church Battle Test 🚀 GO
 
 **Verdict: cleared for launch.**
