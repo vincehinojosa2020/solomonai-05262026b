@@ -1,5 +1,65 @@
 # Solomon AI — Product Requirements Document
 
+## Session — Apr 29, 2026 — Sprint #10 Launch Readiness 🚀
+
+**Status:** All 9 production-audit BLOCKERs closed. Sprint #10 ships the launch-week deliverables: Sentry live, churches list fast + correct, real-time donation visibility under 3s, Launch Status widget on God Mode.
+
+### Shipped this sprint
+1. **Sentry DSN wired & verified** — manual capture event `9e6388e5f25a4772bba2ce5be60529d0` delivered to Vince's Sentry project with `tenant_id=eden-church-001` tag attached. Diagnostic endpoint `GET /api/health/sentry-test` for ongoing retest.
+2. **/platform Churches loads all 9 tenants** — fixed `_enrich_with_stripe_status` (now reads `tenant.stripe_connect_status` instead of 2.8M-row aggregation), batched the per-tenant `find_one` loops, added union-in of zero-donation tenants in the sidebar Churches tab.
+3. **Real-time donation visibility** — central `bust_donation_caches()` invalidates 6 cache layers from every donation write path; new `GET /api/realtime/donations` polled every 10s by `GivingDashboard.jsx` with sonner toast on new gift; church-admin scoped, platform-admin cross-tenant. **Measured confirm→visible: 156 ms.**
+4. **Launch Status widget** (`components/platform/LaunchStatusWidget.jsx`) on God Mode → Exec — green/amber/red composite of API + Mongo + Sentry + Stripe webhook + donation pulse + uptime. Auto-polls every 15s. Status: GREEN.
+5. **Hot-path indexes built** (foreground): `ix_created_at`, `ix_stripe_pi`, `ix_tenant_lifetime`, `ix_tenant_id`. Pulled `find_one + count_documents` from 1000ms → 1ms.
+6. **Detail endpoint parallelized** via `asyncio.gather` — 8 serial reads → 1 round-trip.
+
+### Endpoint perf — final
+| Endpoint                                          | Was       | Now    | Notes                       |
+|---------------------------------------------------|-----------|--------|-----------------------------|
+| `GET /api/admin/giving/report`                    | 185 ms    | 188 ms | Already fast                |
+| `GET /api/platform/stats`                         | 131 ms    | 132 ms | Cache-first                 |
+| `GET /api/platform/stripe/transactions/stats`     | 104 ms    | 111 ms |                             |
+| `GET /api/portal/giving/history`                  | 135 ms    | 127 ms |                             |
+| `GET /api/platform/churches`                      | **5707**  | **103**| 55× faster                  |
+| `GET /api/platform/churches/{id}/detail`          | 1.7 s     | ~0.4 s | Parallelized                |
+| `GET /api/realtime/donations`                     | 1203 ms   | 95 ms  | 12× faster                  |
+| `GET /api/health/launch-status`                   | 3288 ms   | 97 ms  | 33× faster                  |
+
+### Load test — Sunday-morning simulation
+50 concurrent donations w/ Stripe `pm_card_visa` test PM:
+| Metric                                | Value          |
+|---------------------------------------|----------------|
+| Success rate                          | 50/50 (100%)   |
+| 5xx errors                            | 0              |
+| Unique PI ids (idempotency)           | 50/50          |
+| Wall-clock total                      | 34 s           |
+| Per-donation avg                      | ~680 ms        |
+| confirm→visible-in-tail (single)      | **156 ms**     |
+| confirm→visible-in-tail (post-burst)  | <1 s           |
+
+### Cache audit
+| Cache                       | Old TTL   | Busts on donation? |
+|-----------------------------|-----------|--------------------|
+| `_STATS_CACHE`              | 30 s      | **Yes**            |
+| `_PLATFORM_TXN_CACHE`       | 60 s      | **Yes**            |
+| `core._cache` (dashboard)   | 300 s     | **Yes**            |
+| `db.platform_stats_cache`   | 900 s     | **Yes** (mark stale) |
+| `db.platform_donors_cache`  | manual    | **Yes** (mark stale) |
+| `db.dashboard_stats_cache`  | manual    | **Yes** (`_stale=true`) |
+
+### Webhook reliability
+- bad signature → 400 ✓
+- duplicate event_id → `{received:true, duplicate:true}` ✓
+- in-DB processed flag, TTL'd by `received_at` ✓
+
+### Pre-launch checklist for Vince
+1. Confirm Sentry dashboard shows event `9e6388e5f25a4772bba2ce5be60529d0` with `tenant_id=eden-church-001`.
+2. Cron: `*/15 * * * * /app/backend/scripts/backup.sh --retain-days 30 --upload s3` (set `S3_BUCKET`).
+3. Point UptimeRobot at `/api/health?deep=true` → page on 503.
+4. Add prod webhook URL in Stripe Dashboard → Developers → Webhooks.
+
+---
+
+
 ## Session — Apr 29, 2026 — Sprint #9 Observability & Backups (BLOCKER #9) ✅
 
 **All 9 production-audit BLOCKERs are now resolved.** Solomon AI is launch-ready.

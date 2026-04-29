@@ -417,8 +417,39 @@ export default function PlatformDashboard() {
     toast.success('Exported');
   };
 
+  // Pull the enriched /platform/churches list so zero-donation tenants
+  // (which campus_breakdown drops) still surface in the grid. Fall back to
+  // campus_breakdown only if the call hasn't completed yet — keeps the page
+  // responsive on first paint.
+  const [allChurchesList, setAllChurchesList] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    const tick = async () => {
+      try {
+        const r = await fetch(`${API_URL}/platform/churches`, { headers: getAuth() });
+        if (!cancelled && r.ok) {
+          const j = await r.json();
+          setAllChurchesList(j.churches || []);
+        }
+      } catch (_) {}
+    };
+    tick();
+    const id = setInterval(tick, 60000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, []);
+
   const g=stats?.giving||{}; const f=stats?.fees||{}; const p=stats?.platform||{};
-  const churches=sortAbundantFirst(stats?.campus_breakdown||[]);
+  // Union of campus_breakdown (has giving columns) + /platform/churches (has zero-donation tenants).
+  const churches = (() => {
+    const cb = sortAbundantFirst(stats?.campus_breakdown || []);
+    if (!allChurchesList) return cb;
+    const seen = new Set(cb.map(c => c.tenant_id));
+    const extras = allChurchesList
+      .filter(c => !seen.has(c.id) && !seen.has(c.tenant_id))
+      .map(c => ({ tenant_id: c.id || c.tenant_id, name: c.name, city: c.city, state: c.state,
+                   giving: 0, fees: 0, txn_count: 0, ytd_giving: 0, mtd_giving: 0, active_donors: 0 }));
+    return [...cb, ...extras];
+  })();
   const trend=stats?.giving_trend||[];
   const monthlyData=trend.map(m=>({month:m.month?.slice(5)||m.month,giving:Math.round(m.total_giving||0),fees:Math.round(m.total_fees||0),...Object.fromEntries(Object.entries(m.by_campus||{}).map(([n,v])=>[n.split(' ')[0],Math.round(v)]))}));
   const attention=churches.filter(c=>{ const h=healthScores[c.tenant_id]; return h&&['C','D','F'].includes(h.grade?.charAt(0)); });

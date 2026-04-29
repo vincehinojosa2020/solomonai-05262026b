@@ -88,3 +88,59 @@ Fixed 76→0 instances across 12 files:
 
 ### Outcome
 **All 9 production audit BLOCKERs resolved.** Solomon AI is launch-ready for processing real donations.
+
+## April 29, 2026 — Sprint #10 (Launch Readiness)
+
+### Shipped
+- **Sentry DSN wired** — production project DSN added to `.env`. Verified end-to-end: HttpTransport active, capture_message returned event_id `9e6388e5f25a4772bba2ce5be60529d0`, scope tags carry `tenant_id` + `user_id` + `correlation_id` via `sentry_scope_middleware`. New diagnostic endpoint `GET /api/health/sentry-test` (platform_admin only) for retest after each deploy.
+- **Real-time donation visibility** — sub-3s SLA achieved.
+  - `core/realtime.py` — central `bust_donation_caches(tenant_id)` resets `_STATS_CACHE`, `_PLATFORM_TXN_CACHE`, in-process core cache, AND stamps Mongo cache rows (`platform_stats_cache`, `platform_donors_cache`, `dashboard_stats_cache`) as stale. Called from `confirm_donation`, `stripe_webhook` (payment_intent.succeeded), `recurring_scheduler`, and `stripe_sync` backfill.
+  - `GET /api/realtime/donations?since=ISO8601` — lightweight tail; church_admin scoped, platform_admin cross-tenant. Frontend polls 10s.
+  - **Measured confirm→visible latency: 156 ms** (was 1246 ms, 8× faster).
+- **Hot-path query perf** — donations collection has 2.83 M rows. Built foreground indexes:
+  - `ix_created_at` (single-field, for cross-tenant tail + last-gift)
+  - `ix_stripe_pi` (sparse, for confirm idempotency dedup)
+  - `ix_tenant_lifetime` on `people` (for top-roster drill-through)
+  - `ix_tenant_id` on `people` (for person hash lookups)
+- **Endpoint perf table after fixes** (was → now):
+  - `/api/admin/giving/report` — 188 ms ✓
+  - `/api/platform/stats` — 132 ms ✓ (cache-first)
+  - `/api/platform/stripe/transactions/stats` — 111 ms ✓
+  - `/api/portal/giving/history` — 127 ms ✓
+  - `/api/platform/churches` — 5707 → 103 ms (55× faster) ✓
+  - `/api/platform/churches/{id}/detail` — 1.7s → ~400ms after parallelizing 8 reads via `asyncio.gather` ✓
+  - `/api/realtime/donations` — 1203 → 95 ms (12× faster) ✓
+  - `/api/health/launch-status` — 3288 → 97 ms (33× faster) ✓
+- **`_enrich_with_stripe_status` rewritten** — was scanning 2.8M donations to derive Connect state; now reads `tenant.stripe_connect_status` (Connect Platform's source of truth) in O(1) hash. All 9 tenants now correctly classified as `connected`.
+- **Launch Status widget** (`components/platform/LaunchStatusWidget.jsx`) — green/amber/red composite for God Mode → Exec tab. Polls `/api/health/launch-status` every 15s. Shows API + Mongo latency, Sentry status, Stripe webhook health, last-gift amount + age, gifts in last hour + minute, process uptime.
+- **God Mode auto-refresh** — `/platform/stats` re-pulled every 30s; church admin `GivingDashboard` polls `/realtime/donations` every 10s and toasts each new gift via sonner.
+- **Frontend fixes**:
+  - `ChurchDetail.jsx` silent fail replaced with HTTP code + `correlation_id` + retry button.
+  - `PlatformDashboard.jsx` Churches tab unions `/platform/churches` (zero-donation tenants now visible) — fixes "8 vs 9 churches" discrepancy.
+- **Load test results (50 concurrent donations w/ Stripe `pm_card_visa`)**:
+  - 50/50 success, 0 5xx, 50/50 unique PI ids (idempotency working)
+  - Wall: 34 s (Stripe API serialization, not our code; per-call avg 680 ms)
+  - confirm→visible-in-tail: 156 ms (well under 3 s SLA)
+- **Webhook reliability**:
+  - bad signature → 400 ✓
+  - duplicate event → `{received: true, duplicate: true}` ✓
+  - signature secret loaded from `.env` ✓
+
+### Test results
+- iteration_110: backend 21/21 PASS · frontend 85% (LaunchStatusWidget green; 8-vs-9 churches now fixed in this session)
+
+### Pre-launch checklist
+1. Verify Sentry event `9e6388e5f25a4772bba2ce5be60529d0` arrived in dashboard with `tenant_id=eden-church-001`.
+2. Run cron: `*/15 * * * * /app/backend/scripts/backup.sh --retain-days 30 --upload s3` (set `S3_BUCKET`).
+3. Point UptimeRobot at `/api/health?deep=true` — page on 503.
+4. Add real Stripe webhook endpoint URL in Stripe Dashboard → Developers → Webhooks.
+
+### Cache audit table (final)
+| Cache                         | Old TTL  | Now busts on donation? |
+|-------------------------------|----------|------------------------|
+| `_STATS_CACHE`                | 30 s     | **Yes**                |
+| `_PLATFORM_TXN_CACHE`         | 60 s     | **Yes**                |
+| `core._cache` (dashboard)     | 300 s    | **Yes**                |
+| `db.platform_stats_cache`     | 900 s    | **Yes** (timestamp reset) |
+| `db.platform_donors_cache`    | manual   | **Yes** (timestamp reset) |
+| `db.dashboard_stats_cache`    | manual   | **Yes** (`_stale=true`)|
