@@ -140,9 +140,19 @@ async def public_church_config(slug: str):
         # Frontend uses these to (a) initialize Stripe.js with stripeAccount
         # so the card element talks to the connected account directly, and
         # (b) hide the giving form behind a "this church can't accept gifts
-        # yet" message when status != active.
+        # yet" message.
+        #
+        # Gate: if the church has a `stripe_connect_account_id`, they've
+        # been through Connect onboarding — let the form render. The
+        # `stripe_connect_status` field can drift stale (Stripe webhooks
+        # can be missed, manual seeds skip it, etc.); the actual ledger
+        # of "can this account take charges" lives at Stripe, and Stripe
+        # will return a clean error to the customer if onboarding is
+        # incomplete. Far better than blanket "coming soon" copy when the
+        # account is actively processing donations.
         "connected_account_id": t.get("stripe_connect_account_id"),
-        "accepts_payments": t.get("stripe_connect_status") == "active",
+        "accepts_payments": bool(t.get("stripe_connect_account_id"))
+            and t.get("stripe_connect_status") not in ("rejected", "deauthorized", "disabled"),
     }
 
 
