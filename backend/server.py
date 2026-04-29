@@ -238,6 +238,7 @@ from routes.disputes import router as disputes_router
 from routes.stripe_connect import router as stripe_connect_router
 from routes.stripe_elements import router as stripe_elements_router
 from routes.competitive_intel import router as competitive_intel_router
+from routes.realtime import router as realtime_router
 
 _domain_routers = [
     auth_router, portal_router, solomon_router,
@@ -252,7 +253,7 @@ _domain_routers = [
     geofence_router, announcements_router, media_uploads_router,
     giving_nudge_router, courses_router, solomonpay_admin_router,
     sms_router, printer_router, disputes_router, stripe_connect_router,
-    stripe_elements_router, competitive_intel_router,
+    stripe_elements_router, competitive_intel_router, realtime_router,
 ]
 
 for router in _domain_routers:
@@ -437,6 +438,24 @@ async def _deferred_startup() -> None:
             await db.stripe_webhook_events.create_index("event_id", unique=True)
         except Exception:
             pass
+
+        # ── Hot-path donation indexes for sub-200ms admin/giving + church
+        #    drill-through. Idempotent. ────────────────────────────────────
+        try:
+            await db.donations.create_index([("tenant_id", 1), ("created_at", -1)], name="ix_tenant_created", background=True)
+            await db.donations.create_index([("tenant_id", 1), ("donation_date", -1)], name="ix_tenant_date", background=True)
+            await db.donations.create_index("created_at", name="ix_created_at", background=True)
+            await db.donations.create_index("stripe_payment_intent_id", name="ix_stripe_pi", background=True, sparse=True)
+            # Realtime events tail — short TTL since this is just a poll
+            # signal, not a permanent record.
+            await db.realtime_events.create_index("ts", expireAfterSeconds=3600, name="ix_ts_ttl")
+            await db.realtime_events.create_index([("tenant_id", 1), ("ts", -1)], name="ix_tenant_ts", background=True)
+            # `people` is hit hard on every drill-through; tenant_id+lifetime_giving
+            # backs the top-roster query and tenant_id+id covers the person lookup.
+            await db.people.create_index([("tenant_id", 1), ("lifetime_giving", -1)], name="ix_tenant_lifetime", background=True)
+            await db.people.create_index([("tenant_id", 1), ("id", 1)], name="ix_tenant_id", background=True)
+        except Exception as e:
+            logger.warning("startup_realtime_indexes_skipped", extra={"exc_type": type(e).__name__})
 
         # ── Kids check-in team seed ──────────────────────────────────────
         try:

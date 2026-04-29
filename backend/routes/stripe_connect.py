@@ -336,6 +336,10 @@ async def stripe_webhook(request: Request):
                     }
                     await db.donations.insert_one(donation)
                     await _send_receipt(txn)
+                    # Real-time visibility: bust every dashboard cache so the
+                    # church admin sees this gift within seconds, not 15 min.
+                    from core.realtime import bust_donation_caches
+                    await bust_donation_caches(donation.get("tenant_id"))
 
         elif event_type in ("payment_intent.payment_failed", "checkout.session.expired"):
             if session_id:

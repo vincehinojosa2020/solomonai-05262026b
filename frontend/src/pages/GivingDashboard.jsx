@@ -68,6 +68,37 @@ export default function GivingDashboard() {
     fetchIntegrations();
   }, [page]);
 
+  // ── Real-time donation tail: poll /api/realtime/donations every 10s
+  //    and toast on each new donation. Also auto-refresh stats. ──────
+  useEffect(() => {
+    let lastSince = new Date().toISOString();
+    let cancelled = false;
+    const tick = async () => {
+      try {
+        const token = sessionStorage.getItem('session_token');
+        if (!token) return;
+        const res = await fetch(`${API_URL}/realtime/donations?since=${encodeURIComponent(lastSince)}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok || cancelled) return;
+        const j = await res.json();
+        lastSince = j.server_time || lastSince;
+        const fresh = j.donations || [];
+        if (fresh.length > 0) {
+          fresh.forEach(d => {
+            toast.success(`New gift: $${Number(d.amount).toFixed(2)} to ${d.fund_name || 'General'}`, {
+              description: d.donor_name || 'Anonymous donor',
+              duration: 6000,
+            });
+          });
+          fetchGivingData();
+        }
+      } catch (_) { /* polling never throws */ }
+    };
+    const id = setInterval(tick, 10000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, []);
+
   const fetchGivingData = async () => {
     setLoading(true);
     try {

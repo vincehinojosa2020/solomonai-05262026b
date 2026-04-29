@@ -418,10 +418,11 @@ async def confirm_donation(payload: ConfirmDonationRequest):
     )
 
     # Bust dashboard caches so God Mode + Solomon Pay see the new gift
-    # within the next request — not after the 30s TTL.
-    _STATS_CACHE["ts"] = 0.0
-    _STATS_CACHE["data"] = None
-    _PLATFORM_TXN_CACHE.clear()
+    # within the next request — not after the 30s/15-min TTL. Awaits the
+    # full bust including MongoDB cache rows for sub-3s visibility on
+    # both church-admin and platform-admin dashboards.
+    from core.realtime import bust_donation_caches
+    await bust_donation_caches(tenant["id"])
 
     return {"status": "succeeded", "donation": donation, "already_recorded": False}
 
@@ -653,9 +654,8 @@ async def confirm_recurring_setup(payload: ConfirmRecurringRequest):
     })
 
     # Bust dashboard caches so the gift shows up immediately
-    _STATS_CACHE["ts"] = 0.0
-    _STATS_CACHE["data"] = None
-    _PLATFORM_TXN_CACHE.clear()
+    from core.realtime import bust_donation_caches
+    await bust_donation_caches(tenant["id"])
 
     return {
         "schedule_id": schedule_id,

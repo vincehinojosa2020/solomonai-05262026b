@@ -16,20 +16,41 @@ const GRADE_COLORS = {
 export default function ChurchDetail({ token, tenantId, onBack }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [errorDetail, setErrorDetail] = useState(null);
 
   useEffect(() => {
     if (!tenantId) return;
     setLoading(true);
+    setErrorDetail(null);
     fetch(`${API_URL}/platform/churches/${tenantId}/detail`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then(r => r.ok ? r.json() : null)
+      .then(async (r) => {
+        const cid = r.headers.get('x-request-id');
+        if (r.ok) return r.json();
+        const text = await r.text().catch(() => '');
+        setErrorDetail({ status: r.status, cid, body: text.slice(0, 500) });
+        return null;
+      })
       .then(d => { if (d) setData(d); })
+      .catch(e => setErrorDetail({ status: 'network', cid: null, body: e?.message || String(e) }))
       .finally(() => setLoading(false));
   }, [tenantId, token]);
 
   if (loading) return <div className="p-8 text-slate-400" data-testid="church-detail-loading">Loading church detail...</div>;
-  if (!data) return <div className="p-8 text-red-500">Failed to load church data</div>;
+  if (!data) return (
+    <div className="p-8" data-testid="church-detail-error">
+      <div className="text-red-600 font-semibold mb-2">Failed to load church data</div>
+      {errorDetail && (
+        <div className="text-xs text-slate-600 bg-red-50 border border-red-200 rounded-lg p-3 font-mono">
+          <div>HTTP {errorDetail.status}</div>
+          {errorDetail.cid && <div>request id: {errorDetail.cid}</div>}
+          {errorDetail.body && <div className="mt-1 break-all">{errorDetail.body}</div>}
+          <button onClick={() => window.location.reload()} className="mt-3 px-3 py-1 bg-slate-900 text-white rounded text-xs" data-testid="church-detail-retry">Retry</button>
+        </div>
+      )}
+    </div>
+  );
 
   const { church, health, summary, monthly_giving, top_donors, recent_transactions, members } = data;
   const grade = health?.grade || 'N/A';

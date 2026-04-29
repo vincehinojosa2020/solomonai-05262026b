@@ -133,13 +133,12 @@ async def backfill_from_intents(intents: Iterable, tenant_hint: dict | None = No
             logger.warning(f"[stripe_sync] insert failed for {intent.id}: {e}")
 
     if inserted:
-        logger.info(f"[stripe_sync] backfilled {inserted} donations from Stripe")
-        # Invalidate the stats cache so dashboards reflect the new rows
+        logger.info("stripe_sync_backfilled", extra={"count": inserted})
+        # Invalidate every dashboard cache so the new rows surface
+        # everywhere within the next request, not after the long TTL.
         try:
-            from routes.stripe_elements import _STATS_CACHE, _PLATFORM_TXN_CACHE
-            _STATS_CACHE["ts"] = 0.0
-            _STATS_CACHE["data"] = None
-            _PLATFORM_TXN_CACHE.clear()
+            from core.realtime import bust_donation_caches
+            await bust_donation_caches(None)
         except Exception:
             pass
 

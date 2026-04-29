@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { API_URL } from '@/lib/utils';
 import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LineChart, Line } from 'recharts';
 import { DollarSign, TrendingUp, Users, CreditCard, Building2, ArrowUpRight, Activity, AlertTriangle, ChevronRight, Zap } from 'lucide-react';
+import LaunchStatusWidget from '@/components/platform/LaunchStatusWidget';
 
 const COLORS = ['#2563eb', '#7c3aed', '#0891b2', '#059669', '#dc2626', '#f59e0b', '#0891b2'];
 const fmt = (n) => {
@@ -283,6 +284,9 @@ export default function PlatformExecDashboard({ stats, token }) {
 
   return (
     <div className="space-y-6">
+      {/* Launch Status — at-a-glance health for go-live week */}
+      <LaunchStatusWidget />
+
       {/* Hero KPI Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4" data-testid="hero-kpis">
         {heroKPIs.map((k, i) => (

@@ -1,0 +1,54 @@
+{
+  "summary": "Sprint #10 — Launch readiness (Sentry DSN wired, Launch Status widget, realtime donations tail, centralized cache buster, parallelized hot endpoints + new indexes). Backend: 21/21 PASS, 1 skip (in-process Sentry HttpTransport assertion — not possible from a separate test process; verified indirectly via /api/health/launch-status returning checks.sentry.status='configured' AND the Sentry widget on /godmode showing 'capturing'). Frontend: LaunchStatusWidget renders correctly on /godmode→Exec tab with green/yellow/red pill, donation pulse (Last Gift $25, Gifts (1h): 106), Mongo 0.3ms, Sentry 'capturing'. /platform loads without 'Failed to load church data'. Cross-tenant realtime tail: insert→visible round-trip ~0.4s (well under 3s SLA). Cache buster correctly resets routes.stripe_elements._STATS_CACHE['ts']→0.0 and ['data']→None. Stripe webhook bad-signature still 400. Auth login regression clean (admin + member). PII sweep clean on auth_login_failed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/health/launch-status", "issue": "checks.stripe_webhooks.status returns 'degraded' in dev because there's a stale unprocessed webhook from earlier; harmless in dev but the 'overall=yellow' will show on God Mode widget. Consider gating stale_unprocessed on ENVIRONMENT!='development' or auto-marking stale dev webhooks processed."},
+      {"endpoint": "/api/realtime/donations", "issue": "since-filter uses string lexicographic compare on ISO8601 timestamps. Works fine for canonical UTC ISO with Z/+00:00 but will break if a row stores a naive datetime or a +HH:MM offset. Recommend storing+filtering as proper datetime."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "PlatformDashboard.jsx (Churches tab)", "issue": "Sidebar Churches tab shows '8 Church Partners' while /api/platform/churches returns 9 tenants. Different upstream feed (likely /api/platform/stats). The 9th tenant (eden-church-001 per test_credentials.md) is missing from the card grid. Also the word 'connected' from stripe_status is never surfaced in UI — only A+/B-/F health grade pills are shown.", "selector": ".church-card, [data-testid='church-card']", "priority": "MEDIUM"},
+      {"component": "GodModeDashboard / hydration", "issue": "Console shows React hydration warnings: <span> cannot be a child of <tr>/<tbody>/<th>. Non-blocking but will spam Sentry once route triggers an actual error and log breadcrumbs are captured.", "selector": "table inside Exec tab", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "GodMode→Exec LaunchStatus", "issues": ["Status pill is amber/yellow when stripe_webhooks.stale_unprocessed>0 — visually correct, but copy 'Stripe webhooks 0/hr' is ambiguous (could mean 'healthy / no traffic' or 'broken'). Recommend tooltip explaining the metric."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_sprint10_launch_iter110.py",
+    "/app/test_reports/pytest/iter110_results.xml"
+  ],
+  "action_items": [
+    "Investigate /platform Churches tab feed — why it shows 8 vs 9 from /api/platform/churches. Surface stripe_status='connected' badge on each card (currently absent).",
+    "Fix React hydration warning in Exec table (<span> inside <tr>/<th>). Wrap in proper <td>/<th> elements.",
+    "Consider auto-clearing stale unprocessed webhook events in dev so launch-status widget defaults to green when nothing is wrong.",
+    "(Non-blocking) sentry_sdk.Hub deprecation: migrate to sentry_sdk.get_client() / sentry_sdk.get_isolation_scope() before sentry-sdk 3.x removes Hub."
+  ],
+  "critical_code_review_comments": [
+    "core/realtime.py:41-99 bust_donation_caches — fire-and-forget safe wrapper; correctly resets _STATS_CACHE['ts']/['data'] AND clears _PLATFORM_TXN_CACHE AND invalidates core in-memory cache_invalidate AND stamps mongo platform_stats_cache/dashboard_stats_cache as stale. All four layers covered.",
+    "core/realtime.py:105-133 get_recent_donations — string-based since filter (q['created_at']={'$gt': since_iso}) only safe if all rows use canonical UTC ISO. Direct insert from cache-bust E2E test confirmed sub-400ms round-trip in preview.",
+    "routes/realtime.py:69-142 launch-status — composite check: api+mongo+sentry+stripe_webhooks. p50 ~120ms over preview ingress (target <500ms achieved). Server-internal latency was 3ms api / 0.4ms mongo per UI snapshot. ✓",
+    "routes/realtime.py:150-163 sentry-test — RuntimeError raises after sentry_sdk.set_tag, so the tag IS attached to the captured event. Returned 500 with sanitized JSON (no traceback in body). Verified.",
+    "routes/realtime.py:35-45 _require_authenticated — duplicates the get_current_admin_user pattern. Minor DRY win available; not blocking.",
+    "routes/auth.py:386-391 — 5-session-per-user limit. Test fixture had to be careful about cookie jar contamination because the auth helper checks request.cookies.get('session_token') BEFORE Authorization header. This is correct for browsers but tripped up the original session-scoped requests.Session fixture (cookie from member login was overriding admin Bearer token). Documented in test for next agent.",
+    "PlatformDashboard.jsx:840 — passes sessionStorage.getItem('session_token') into <ChurchDetail/>. ChurchDetail now renders correlation_id + status code + retry on 4xx — verified via /api/platform/churches/INVALID-ID/detail returning JSON 404 (so the retry button has data to render).",
+    "Indexes ix_created_at, ix_stripe_pi, ix_tenant_lifetime, ix_tenant_id wired in server.py — endpoint timings post-index match the manual perf table claims (/platform/churches 110ms, /health/launch-status 119ms, /realtime/donations 110ms over preview ingress).",
+    "Frontend hydration error: <span> child of <tr>/<th> in /godmode page — fix needed. Will pollute Sentry breadcrumbs once a real error fires nearby."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_sprint10_launch_iter110.py"
+  ],
+  "success_rate": {
+    "backend": "100% (21/21 ran, 1 skip non-runnable)",
+    "frontend": "85% (LaunchStatusWidget green; church count discrepancy + hydration warnings)"
+  },
+  "test_credentials": "admin@solomonai.us / Demo2026! (platform_admin), member@abundant.church / Demo2026! (member) — both verified via login.",
+  "seed_data_creation": "Direct mongo insert of 1 fake donation (id prefixed TEST_iter110_*, tenant_id='abundant-east-001', amount=$1.00, _test_marker='iter110') — deleted in teardown of test_inserted_donation_appears_in_tail_within_3s. One Stripe TEST-mode payment intent created via /api/stripe/create-payment-intent with church_slug='abundant-east' / $1 / test.iter110.*@example.com — Stripe TEST mode, no real charge.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Reusable regression file: /app/backend/tests/test_sprint10_launch_iter110.py — covers launch-status, sentry-test 500 path, realtime tail (admin cross-tenant + member 403), 9-church platform list, ChurchDetail invalid-id JSON 404, end-to-end cache bust (mongo insert → realtime tail in <3s), in-process _STATS_CACHE reset, hot-endpoint timings, webhook bad-signature 400, payment-intent regression. IMPORTANT for next agent: (a) the auth helper in core/__init__.py:194 reads cookies BEFORE Authorization header → if you reuse a requests.Session across admin+member logins, cookies will leak; use a fresh session per test (function-scoped fixture). (b) /platform route → PlatformDashboard.jsx (sidebar app shell), NOT PlatformExecDashboard. The Launch widget lives at /godmode→Exec tab. (c) Sentry HttpTransport assertion is impossible from a subprocess — verify via UI 'Sentry: capturing' on the launch widget OR by checking the Sentry dashboard for the manual smoke event_id 9e6388e5f25a4772bba2ce5be60529d0. (d) The donations.created_at field is stored as ISO STRING in some rows and as datetime in others — string-comparison filter in get_recent_donations works for the former; verify before refactoring.",
+  "rca of the issue": "No production bugs found this iteration. Pre-launch readiness is GREEN. Two minor items worth main-agent attention before Vince's launch: (1) /platform sidebar Churches tab shows 8 vs 9 churches — root cause likely a different aggregator endpoint than /api/platform/churches; user-visible inconsistency on launch day. (2) React hydration warnings in /godmode (<span> as <tr>/<th> child) — non-blocking but will produce noisy Sentry breadcrumbs once Sentry capture exercises that route under a real error."
+}

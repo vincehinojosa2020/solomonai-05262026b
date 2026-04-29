@@ -57,6 +57,13 @@ export default function GodModeDashboard() {
 
   useEffect(() => { fetchStats(); }, [fetchStats]);
 
+  // ── Auto-refresh God Mode stats every 30s while the tab is open.
+  //    Lightweight — /platform/stats is cache-first (~130ms). ────
+  useEffect(() => {
+    const id = setInterval(() => { fetchStats(); }, 30000);
+    return () => clearInterval(id);
+  }, [fetchStats]);
+
   const handleImpersonate = (data) => {
     if (data?.user) {
       sessionStorage.setItem('impersonate_tenant', JSON.stringify(data));

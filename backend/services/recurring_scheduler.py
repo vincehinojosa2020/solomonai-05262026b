@@ -174,7 +174,13 @@ async def _process_single_schedule(db, schedule: dict, today_str: str) -> dict:
                     "updated_at": datetime.now(timezone.utc).isoformat(),
                 }}
             )
-            logger.info(f"[SCHEDULER] Processed schedule {sid}: ${amount:.2f} → {txn_id}")
+            logger.info("scheduler_processed", extra={"schedule_id": sid, "amount": amount, "txn_id": txn_id})
+            # Bust dashboards so the church admin sees the recurring charge.
+            try:
+                from core.realtime import bust_donation_caches
+                await bust_donation_caches(tenant_id)
+            except Exception:
+                pass
             return {"status": "success", "message": result.message, "donation_id": donation_id}
 
         else:
