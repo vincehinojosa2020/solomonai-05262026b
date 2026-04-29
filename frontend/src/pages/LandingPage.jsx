@@ -4,10 +4,20 @@ import { ArrowRight, Check, X, Play, Menu, Loader2, Shield, Clock, Headphones } 
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
+// Airbnb-inspired palette: Rausch red + Hof dark gray + Foggy secondary
+// + Babu teal as trust accent. Inspired by airbnb.com brand system.
 const S = {
-  navy: '#0f172a', navyLight: '#1e293b', blue: '#3b82f6', gold: '#f59e0b',
-  grayLight: '#f8fafc', white: '#ffffff', textDark: '#0f172a', textGray: '#6b7280', border: '#e5e7eb',
-  textMuted: '#94a3b8',
+  navy: '#222222',          // Hof — primary text + dark surfaces
+  navyLight: '#484848',     // softer dark for secondary surfaces
+  blue: '#FF385C',          // Rausch — Airbnb's signature pink-red, primary CTA
+  blueHover: '#E31C5F',     // hover state
+  gold: '#00A699',          // Babu — teal accent for trust / secondary highlights
+  grayLight: '#F7F7F7',     // Airbnb's section background
+  white: '#FFFFFF',
+  textDark: '#222222',
+  textGray: '#717171',      // Foggy — Airbnb's secondary text
+  border: '#DDDDDD',        // Airbnb's standard border
+  textMuted: '#B0B0B0',
 };
 
 export default function LandingPage() {
@@ -56,7 +66,7 @@ export default function LandingPage() {
       `}</style>
 
       {/* NAV */}
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: 'rgba(15,23,42,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }} data-testid="landing-header">
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: 'rgba(34,34,34,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }} data-testid="landing-header">
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: 6 }} data-testid="landing-logo">
             <span style={{ fontSize: 18, fontWeight: 200, letterSpacing: 6, color: '#fff' }}>SOLOMON</span>
@@ -73,7 +83,7 @@ export default function LandingPage() {
           </button>
         </div>
         {mobileMenuOpen && (
-          <div className="lp-mobile-menu" style={{ background: 'rgba(15,23,42,0.98)', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '16px 24px' }} data-testid="mobile-menu">
+          <div className="lp-mobile-menu" style={{ background: 'rgba(34,34,34,0.98)', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '16px 24px' }} data-testid="mobile-menu">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <Link to="/demo" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: 15, fontWeight: 500, color: '#cbd5e1', textDecoration: 'none', padding: '8px 0', display: 'flex', alignItems: 'center', gap: 8 }}><Play style={{ width: 14, height: 14 }} /> Watch Demo</Link>
               <Link to="/login" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: 15, fontWeight: 600, color: '#fff', textDecoration: 'none', padding: '10px 0', borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 4 }}>Log In</Link>
@@ -271,7 +281,7 @@ export default function LandingPage() {
 
       {/* LEAD CAPTURE MODAL */}
       {showLeadForm && (
-        <div onClick={() => { if (!leadSubmitted) setShowLeadForm(false); }} style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }} data-testid="lead-capture-overlay">
+        <div onClick={() => { if (!leadSubmitted) setShowLeadForm(false); }} style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(34,34,34,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }} data-testid="lead-capture-overlay">
           <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 20, maxWidth: 480, width: '100%', padding: '40px 36px', position: 'relative', boxShadow: '0 24px 64px rgba(0,0,0,0.2)' }}>
             {!leadSubmitted && (
               <button onClick={() => setShowLeadForm(false)} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: 4 }} data-testid="lead-form-close">
