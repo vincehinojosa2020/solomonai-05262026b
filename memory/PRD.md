@@ -1,5 +1,34 @@
 # Solomon AI — Product Requirements Document
 
+## Session — Apr 29, 2026 — Sprint #9 Observability & Backups (BLOCKER #9) ✅
+
+**All 9 production-audit BLOCKERs are now resolved.** Solomon AI is launch-ready.
+
+### Sprint #9 deliverables
+- **Health endpoints (`server.py:47-84`)** — shallow `/api/health`, deep `/api/health?deep=true` (mongo ping w/ 250ms timeout, sentry status, environment, version, uptime), and `/api/health/launch-check` for the Emergent deployment probe. 503 on mongo failure.
+- **JSON structured logging (`core/observability.py`)** — python-json-logger formatter on stdout. Every record carries `timestamp/level/logger/message/correlation_id/tenant_id/user_id/endpoint`.
+- **Correlation IDs** — `CorrelationIdMiddleware` mints/echoes `X-Request-ID`, propagates via contextvars; emits `request_completed` log with `duration_ms` per request. Auth middleware calls `set_request_user(user)` to populate tenant/user vars.
+- **Sentry APM** — `init_sentry()` short-circuits when `SENTRY_DSN=` empty (current state). `sentry_scope_middleware` tags `tenant_id/user_id/correlation_id` on every event. `before_send` final scrub. `send_default_pii=False` since we strip manually anyway. Vince to add real DSN at launch.
+- **PII redaction filter** — `_PiiRedactionFilter` on every log handler scrubs emails / 13-19 digit PANs / SSNs / `sk_live_*` Stripe keys at format time. Defense-in-depth pairing with the f-string sweep.
+- **PII log sweep** — converted 30+ f-string log lines across `routes/auth.py`, `routes/portal.py`, `routes/admin_groups.py`, `routes/admin_events.py`, `routes/admin_media.py`, `routes/stripe_connect.py`, `routes/stripe_elements.py`, `routes/solomon.py`, `routes/sms_routes.py`, `routes/public_api.py`, `routes/competitive_intel.py`, `routes/platform.py`, and `server.py` to structured `extra={...}` form. No more `f"User {email}..."` in source.
+- **Error sanitizer (`core/errors.py`)** — `client_error()` helper logs full exception server-side with correlation_id, returns generic message + cid to clients (prevents stack-trace leaks).
+- **Backup script (`scripts/backup.sh`)** — mongodump w/ gzip, integrity verify (`mongorestore --dryRun`), retention pruning, S3 upload hook. Smoke-tested locally (301MB dump in 24s).
+- **Env additions** — `SENTRY_DSN=`, `APP_VERSION=2.0.0`, `LOG_LEVEL=INFO`, `SENTRY_TRACES_SAMPLE_RATE=0.05`.
+- **Hot-fix** — fixed unrelated f-string syntax errors in `routes/stripe_connect.py` and `routes/stripe_elements.py` that were blocking backend import.
+
+### Verified — iteration_109
+- **19/19 backend tests PASS, 0 critical, 0 minor.**
+- Tested: shallow/deep/launch-check health endpoints, X-Request-ID propagation, JSON log shape, PII regex scrub at formatter, structured login warnings (`auth_login_failed` log line does NOT contain input email), Sentry-skip-on-empty-DSN, Stripe webhook bad-signature 400, regression on `/auth/login`, `/platform/stats`, `/portal/me`, `/portal/giving/history`, `/stripe/create-payment-intent`, and `backup.sh` end-to-end.
+- Reusable regression file: `/app/backend/tests/test_sprint9_observability_iter109.py`.
+
+### Action items for Vince at launch
+1. Create the Sentry project at https://sentry.io → grab DSN → set `SENTRY_DSN=https://...` in production `.env` and restart (no code change needed).
+2. Schedule `scripts/backup.sh --retain-days 30 --upload s3` via cron (recommended hourly).
+3. Point external monitor (UptimeRobot / Pingdom) at `/api/health?deep=true` — page on 503.
+
+---
+
+
 ## Session — Apr 28, 2026 (BLOCKER #1 + #3 sprint) — Stripe Connect + StripeAdapter
 
 ### BLOCKER #1 — Stripe Connect per tenant ✅
