@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://observability-sprint.preview.emergentagent.com/api
+https://startup-automation.preview.emergentagent.com/api
 ```
 
 ### Authentication

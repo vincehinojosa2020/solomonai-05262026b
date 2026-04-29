@@ -38,7 +38,7 @@ except Exception:
 import sys
 sys.path.insert(0, "/app/backend")
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://observability-sprint.preview.emergentagent.com").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://startup-automation.preview.emergentagent.com").rstrip("/")
 ADMIN_EMAIL = "admin@solomonai.us"
 ADMIN_PASSWORD = "Demo2026!"
 MEMBER_EMAIL = "member@abundant.church"

@@ -14,7 +14,7 @@ You have direct API access to Solomon AI's church management system. You can rea
 
 # API CONNECTION DETAILS
 
-**Base URL:** `https://observability-sprint.preview.emergentagent.com/api/v1/agent`
+**Base URL:** `https://startup-automation.preview.emergentagent.com/api/v1/agent`
 
 **Authentication:** Bearer Token
 ```
@@ -194,7 +194,7 @@ When you're ready, try these commands to verify everything works:
 **User:** "Check for new visitors this week"
 
 **Agent Actions:**
-1. GET https://observability-sprint.preview.emergentagent.com/api/v1/agent/visitors?days=7
+1. GET https://startup-automation.preview.emergentagent.com/api/v1/agent/visitors?days=7
    Headers: Authorization: Bearer sk_solomon_ZF1-R6IhcSqLGn3dm1NjyXHVguxYJorGBgD7MKN49og
 
 2. Parse response and format:

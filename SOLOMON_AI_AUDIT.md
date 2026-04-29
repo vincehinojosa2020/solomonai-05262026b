@@ -329,7 +329,7 @@
 - **No cloud object storage** (S3, GCS) configured. Uploaded files are on local disk — **will be lost on pod restart**.
 
 ### Networking
-- External URL: `https://observability-sprint.preview.emergentagent.com` (preview)
+- External URL: `https://startup-automation.preview.emergentagent.com` (preview)
 - SSL: Handled by Kubernetes ingress (automatic)
 - CORS: Configured via `CORS_ORIGINS` in `.env`
 

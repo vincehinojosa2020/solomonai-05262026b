@@ -45,7 +45,7 @@ metadata:
 
     # OR, if you want to enforce CORS at the edge (defense-in-depth):
     # nginx.ingress.kubernetes.io/enable-cors: "true"
-    # nginx.ingress.kubernetes.io/cors-allow-origin: "https://solomonai.us,https://www.solomonai.us,https://observability-sprint.preview.emergentagent.com"
+    # nginx.ingress.kubernetes.io/cors-allow-origin: "https://solomonai.us,https://www.solomonai.us,https://startup-automation.preview.emergentagent.com"
     # nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
     # nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS"
     # nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization, Content-Type, X-Requested-With"

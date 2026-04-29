@@ -1,181 +1,161 @@
-<analysis><handoff summary>
-**original_problem_statement**: 
-SOLOMON AI — THE COMPLETE BUILD PROMPT. The user has provided a massive multi-phase sprint directive to push Solomon AI into a demo-ready, production-grade SaaS. The goal is to close the plumbing gap (data disconnected from frontend views), upgrade Ask Solomon into a true executive assistant (streaming, UK voice TTS, generating real PPTX/PDF deliverables, MCP scaffolding), and achieve functional parity with Stripe (for Platform Admins) and SecureGive (for Church Admins). Do NOT change the visual design language.
+<analysis>**original_problem_statement**: 
+The user (Vince) initially requested the completion of Sprint #9 (Observability & Backups) to resolve the final production blocker before launch. This evolved into an urgent live launch readiness audit focusing on real-time donation visibility, cache-busting, database indexing for performance, a Launch Status widget, an Airbnb-themed landing page update, and a comprehensive platform brief for the CEO. Finally, the user reported a critical bug on production where the giving page showed Online giving coming soon due to missing Stripe Connect IDs in the production database, demanding an automated startup script to seed them.
 
-PRODUCT REQUIREMENTS: 
-1. Fix 12 specific P0 plumbing and UI gaps (Transactions showing 0, Donors showing 0, Attendance loading infinitely, Church drill-through page missing, etc.).
-2. Upgrade Solomon AI (Streaming responses, Text-to-Speech, actual file generation like PPTX/DOCX/PDF).
-3. Build Stripe/SecureGive parity features (Payout drill-downs, Fund reconciliation, Monday Morning summary emails).
+PRODUCT REQUIREMENTS: Complete Sprint 9 without cutting corners. Ensure the platform can handle 1,000 concurrent donors at <2s latency with zero double charges and 100% visibility within 3 seconds. Fix the production giving page coming soon blocker by automatically seeding the 9 known Connect Account IDs on backend startup.
 
 **User's preferred language**: English (INSTRUCT next agent to respond in the user's preferred language only)
 
 **what currently exists?** 
-A functional monorepo (React + FastAPI + MongoDB). The user successfully demoed the portal after previous fixes: Watch page is in dark mode with Pastor Charles Nieman videos, Cafe/Merch checkout flows are flattened and use saved cards via Solomon Pay. Frank Luntz-style persuasive giving copy, Round Up, Cover Fees, and Giving Streak features are fully implemented and tested. Multi-campus dashboards aggregate accurately across Abundant East, West, and Downtown. FIX 5 (YTD Revenue calculation bug) and FIX 10 (Removing public team section) are complete.
+A production-ready FastAPI + React + MongoDB church management platform. Sprint 9 (Observability) is complete with PII stripped from logs and Sentry DSN fully wired. Hot paths are indexed and optimized for scale. Real-time cache busting is centralized in . The giving page correctly leverages Stripe Elements based on the presence of a Connect account ID. A comprehensive platform brief () has been generated.
 
 **Last working item**: 
-    - Last item agent was working: Investigating the root causes for FIX 1 (Transactions tab shows 0 records), FIX 2 (Donors module shows 0), and FIX 3 (Attendance report infinite loading). The backend has millions of records, but the data is not mapping correctly to the frontend components (, , ).
+    - Last item agent was working: Implementing an automated, idempotent startup function in  to seed 9 hardcoded Stripe Connect account IDs into the production MongoDB database.
     - Status: IN PROGRESS
     - Agent Testing Done: N
-    - Which testing method agent to use? both (Frontend screenshot testing and curl for backend API validation).
+    - Which testing method agent to use? backend testing agent or manual curl to verify  returns  after startup.
     - User Testing Done: N
 
 **All Pending/In progress Issue list**:  
-  Issue 1: FIX 1 - Transactions Tab Shows 0 Records (P0)
-     - Attempted fixes: Agent verified backend  exists and has 3M records.
-     - Next debug checklist: Check  to ensure it is consuming the paginated response properly and rendering the table.
-     - Why fix this issue and what will be achieved with the fix? Solves a massive data plumbing gap where the ledger is broken despite dashboard showing millions in GMV.
+  Issue 1: Auto-seed Stripe Connect IDs on Startup (P0)
+     - Attempted fixes: Agent previously provided Current Mongosh Log ID:	69f25fce0b8d0382833d88b2
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.8.2
+Using MongoDB:		7.0.31
+Using Mongosh:		2.8.2
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+
+To help improve our products, anonymous usage data is collected and sent to MongoDB periodically (https://www.mongodb.com/legal/privacy-policy).
+You can opt-out by running the disableTelemetry() command.
+
+------
+   The server generated these startup warnings when booting
+   2026-04-29T19:45:15.509+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2026-04-29T19:45:17.261+00:00: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+   2026-04-29T19:45:17.261+00:00: You are running this process as the root user, which is not recommended
+   2026-04-29T19:45:17.261+00:00: Soft rlimits for open file descriptors too low
+------
+
+test>  commands and a manual  endpoint. The user explicitly rejected manual steps and demanded this logic run automatically in 's  event.
+     - Next debug checklist: Check . In the  event (or ), implement logic to check if  has a . If null/missing, update all 9 tenants with their respective hardcoded  IDs, set , and set .
+     - Why fix this issue and what will be achieved with the fix? Production MongoDB lacks Stripe Connect IDs, causing the public giving pages to show coming soon. The user refuses to run manual DB scripts. This auto-seed fixes the production state immediately upon deployment.
      - Status: IN PROGRESS
      - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? both
+     - Should Test frontend/backend/both after fix? backend
 
-  Issue 2: FIX 2 - Donors Module Shows 0 (P0)
-     - Attempted fixes: Investigated . Noticed  is 0 and  is empty.
-     - Next debug checklist: Fix backend aggregation in  to correctly map  and returning recurring donors. Verify  mapping.
-     - Why fix this issue and what will be achieved with the fix? Bridges the UI gap to show the 35,000+ total donors seeded in the database.
-     - Status: IN PROGRESS
-     - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? both
-
-  Issue 3: FIX 3 - Attendance Report Infinite Loading (P0)
-     - Attempted fixes: Checked . Found no  data points are returned despite frontend expecting it.
-     - Next debug checklist: Update backend attendance aggregation to return realistic  seeded data. Fix .
-     - Status: IN PROGRESS
-     - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? both
-
-  Issue 4: FIX 4 - Church Detail Drill-Through Page Missing (P0)
-     - Attempted fixes: None.
-     - Next debug checklist: Build  with Church name, Health Score, 12-month giving chart, Member Roster, Top Donors, Recent Transactions.
-     - Status: NOT STARTED
-     - Should Test frontend/backend/both after fix? both
-
-  Issue 5: FIX 6, 7, 8, 9, 11, 12 - Public Site & Security Polish (P1)
-     - Attempted fixes: None.
-     - Next debug checklist: Clear pre-filled login email (), build , ,  pages, update copyright to dynamic year, add God Mode screenshot to hero, build , wire Calendly CTA and forgot password flow.
-     - Status: NOT STARTED
-
-**In progress Task List**: 
-  Task 1: Ask Solomon AI Upgrade (The Executive Assistant)
-     - Where to resume: Implement  for Anthropic API. Scaffold/integrate Text-to-Speech (English UK voice). Build/Scaffold PPTX, DOCX, XLSX, PDF generation using Python libraries (or provide honest fallback/documentation if environment restricts it). Scaffold MCP tool architecture.
-     - What will be achieved with this? Upgrades Solomon from a chatbot to an executive assistant.
-     - Status: NOT STARTED
-     - Should Test frontend/backend/both after fix? both
+**In progress Task List**: None outside of Issue 1.
 
 **Upcoming and Future Tasks**
-    Upcoming Tasks:
-    - P0: Automated Monday Morning Platform Summary Email (SecureGive parity).
-    - P1: Payout Drill-Down (click payout -> see every transaction).
-    - P1: Fund reconciliation view & Fund-specific direct links.
-    - P1: CSV Import wizard for Planning Center migrations.
-    - P1: Stripe parity scaffold (Fraud risk scoring, Disputes/Chargebacks UI).
-    
     Future Tasks:
-    - P2: Custom Report Builder full implementation & PDF export.
-    - P2: Apple/Google Pay live integration (currently mocked).
-    - P3: Split oversized components (, ).
+    - P2: Migrate frontend from  (CRA) to Vite (EXPLICITLY DEFERRED BY USER until after launch).
+    - P2: Add Impersonate button to God Mode Churches tab to allow platform admins to log in as church admins easily.
+    - P2: Destructive action hook on  to dump tenant data to JSON/S3 before purging.
+    - P2: ElevenLabs TTS upgrade for Ask Solomon AI (EXPLICITLY DEFERRED BY USER).
 
 **Completed work in this session**
-- Watch Page dark Masterclass theme & Pastor Charles Nieman video seeding (DONE)
-- Flat Cafe & Merch navigation (DONE)
-- Multi-campus access for Shannon/Jacob (aggregate All Campuses view working) (DONE)
-- Saved card Solomon Pay checkout flow for Cafe, Merch, and Give pages (DONE)
-- Frank Luntz-style persuasive giving copy added to checkout (DONE)
-- Round Up & Cover Processing Fees toggles with dynamic calculation (DONE)
-- 14-Week Giving Streak badge logic and seeded history (DONE)
-- Deployment blocker fix (CORS origin env config in ) (DONE)
-- FIX 5: YTD Revenue calculation bug (Fixed fallback logic for missing ) (DONE)
-- FIX 10: Removed Team section from public site to ensure anonymity (DONE)
+- Completed Sprint #9: Replaced f-string PII logs with structured kwargs across all routes () (DONE)
+- Implemented deep health check at  with timeout protection (DONE)
+- Centralized cache busting in  for immediate donation visibility (DONE)
+- Added  to the God Mode dashboard (DONE)
+- Fixed silent frontend failure throwing 404s on the Platform Churches drill-through (DONE)
+- Optimized Atlas performance by replacing aggregate queries with  and adding compound MongoDB indexes (DONE)
+- Fixed Stripe Elements gate in  to rely on  instead of just  (DONE)
+- Fixed  to query for both  and  status so all donations appear (DONE)
+- Updated  to match Airbnb's color palette (Rausch red, Hof black, Foggy grey) (DONE)
+- Authored a comprehensive 470-line  for the CEO's Claude Desktop context (DONE)
 
 **Earlier issues found/mentioned but not fixed**
-   - Issue 1: Oversized React Components (, ). Deferred to avoid regression risks during demo prep.
+None.
 
 **Known issue recurrence from previous fork**
-  - Issue recurrence in previous fork: None. Rate limits remain disabled for demo stability. Do not re-enable.
+  - Issue recurrence in previous fork: None
   - Recurrence count: 0
   - Status: RESOLVED
 
 **Code Architecture**
-- Monorepo:  (FastAPI) +  (React 18).
-- Database: MongoDB via Motor.
-- Endpoints strictly prefixed with . Frontend runs on port 3000, backend on 8001 via Supervisor.
+- : Centralized cache-busting and realtime metrics (New).
+- : API entry point and startup events (currently being modified for auto-seeding).
+- , , : Core routing and stats delivery.
 
 **Key Technical Concepts**
-- **God Mode Caching**:  prevents DB timeouts.
-- **Solomon Pay**: Custom payment gateway simulation ().
-- **Anthropic Claude 4.5**: Core for Solomon AI insights ().
+- **Real-Time Visibility**: Achieved by immediately invalidating cache records in  whenever a donation is confirmed, enabling the frontend's 10-second polling to pick up changes instantly.
+- **Stripe Connect Onboarding Gate**: Public giving forms only render if a  exists in the database.
 
 **key DB schema**
-  - : {tenant_id, person_id, amount, fee_amount (sometimes missing in seeded data), donation_date}
-  - : Platform users.
-  - : Donor profiles used in giving history ().
+  - : Needs , , and  correctly seeded for giving pages to function.
 
 **changes in tech stack**
-  - None.
+  - None
 
 **All files of reference** 
-  -  (Target for FIX 1)
-  -  (Target for FIX 2)
-  -  (Target for FIX 3)
-  -  (Backend logic for stats/transactions/donors)
-  -  (Backend logic for attendance)
+  -  (Currently being edited for DB seeding)
+  -  (New - cache busting)
+  -  (New)
+  -  (New - CEO context doc)
+  -  (New - Load testing report)
+  -  (Updated colors)
 
 **Areas that need refactoring**: 
--  and  component mapping to backend API structures.
+None identified currently.
 
 **key api endpoints**
   - 
   - 
-  - 
+  -  (Dictates if giving form loads)
 
 **Critical Info for New Agent** 
-- **THE HONESTY PACT:** The user explicitly requested absolute transparency regarding Solomon AI deliverable generation. If the environment does not support , , or real PDF generation easily, DO NOT fake it. Build the scaffold, document the limitations, and provide a clear Coming Soon or Requires Microservice message. 
-- **UI Constraints:** Do NOT change the visual design language (colors, fonts, layouts) while building Stripe/SecureGive parity features. Same car, better engine.
-- You MUST prioritize Fixes 1, 2, 3, and 4 (the plumbing gaps) before attempting the AI upgrades.
+- **DO NOT suggest manual database interventions.** The user explicitly stated they cannot use browser consoles or command-line tools for production. You *must* automate the DB updates via  startup code.
+- **Production vs. Preview**: The production Atlas MongoDB is completely separate from the preview MongoDB. The preview instance has Stripe IDs seeded; production *does not*. This is why the user is demanding the startup auto-seed.
+- The 9 explicitly provided  IDs in the last user message must be hardcoded into the  startup function as requested.
 
 **documents and test reports created in this job** 
-  -  (Updated)
-  -  (Updated)
   - 
   - 
+  - 
+  - 
+  -  (Updated)
+  -  (Updated)
 
 **Last 10 User Messages and any pending HUMAN messages** 
- - *User*: yes to round up feature... also ask would you like to help with processing fees a la frank luntz -> *Agent*: Built and tested Round Up & Cover Fees logic with new copy.
- - *User*: yes to giving streak... allow me to press give and solomon pay process a payment -> *Agent*: Built 14-week giving streak, wired up Solomon Pay to use saved cards on PortalGive.
- - *User*: is there an issue with deployment? its been 47 minutes -> *Agent*: Fixed CORS origins deployment blocker in .
- - *User*: *[Massive Prompt: SOLOMON AI — THE COMPLETE BUILD PROMPT]* -> *Agent*: Executed comprehensive audit.
- - *User*: proceed -> *Agent*: Fixed FIX 5 (YTD Revenue).
- - *User*: FIX 10... remove this section. we do not want to mention anything on public site about founders -> *Agent*: Removed team section.
- - *User*: FIX 1: Transactions frontend wiring... FIX 2... FIX 3... FIX 4... FIX 6-8 -> *Agent*: Started investigating frontend/backend disparities for Fixes 1, 2, and 3.
+1. *User*: Urgently reported  shows coming soon.
+2. *Agent*: Fixed strict gate logic in  and demonstrated it working on preview.
+3. *User*: Asked for the landing page to match the Airbnb color scheme.
+4. *Agent*: Implemented Rausch red and Hof black palette changes.
+5. *User*: Requested full platform QC check and report table.
+6. *Agent*: Ran 18 checks, all passed.
+7. *User*: Requested a comprehensive text brief for their CEO to load into Claude Desktop.
+8. *Agent*: Created .
+9. *User*: Stated the giving page *still* shows coming soon on prod; asked to run manual update queries.
+10. *Agent*: Explained it cannot access prod Atlas; provided exact mongosh commands and an endpoint for the user to execute themselves.
+11. *User*: (Pending) Refused manual steps. Demanded the agent add logic directly to  startup to auto-seed the 9 Connect IDs implicitly on boot, and then deploy.
 
 **Project Health Check:**
-- Broken: Transactions tab UI, Donors tab UI, Attendance UI.
-- Mocked: Real payment processing, Apple Pay, Text-to-Speech (currently relies on generic Web Speech API if ElevenLabs unavailable).
+- Broken: Production giving pages (due to missing DB records).
 
 **3rd Party Integrations** 
-  • Anthropic Claude Sonnet 4.5 (Solomon AI) — *uses Emergent LLM Key*
-  • OpenAI Whisper (Voice Input) — *uses Emergent LLM Key*
-  • Google OAuth (Auth) — *requires User API Key*
-  • Twilio (SMS) — *requires User API Key*
+  • Anthropic Claude Sonnet 4.5 — *uses Emergent LLM Key*
+  • Stripe (Payments) — *requires User API Key*
+  • Resend (Email) — *requires User API Key*
+  • Sentry (APM) — *requires User DSN*
 
 **Testing status**
-  - Testing agent used after significant changes: YES (For checkout flows iteration 87, 88). NOT YET USED for the Complete Build Prompt sprint.
+  - Testing agent used after significant changes: YES (iterations 109, 110).
   - Troubleshoot agent used after agent stuck in loop: NO
+  - Test files created: , 
+  - Known regressions: None
 
 **Credentials to test flow:**
-  - Admin (God Mode):  / 
-  - Church Admin:  / 
-  - Member (Demo):  / 
+  - Platform Admin:  / 
+  - Church Admin (Eden):  / 
+  - Stripe Test Card: 
 
 **What agent forgot to execute**
-The agent ran out of time while diagnosing the exact payload mismatch between the backend endpoints (, , ) and the respective React components. The fixes need to be written into the React files and backend files to close this plumbing gap.
+The agent ran out of context right after viewing  to add the requested auto-seed logic.
 
 **Debugging checklist for current issue**
-    Issue: Frontend missing data for Transactions, Donors, and Attendance (Fixes 1, 2, 3)
-    Frontend files to check: 
-    -  (Ensure it maps the response correctly to the table state)
-    - 
-    - 
+    Issue: Auto-seed Stripe Connect IDs on Startup
     Backend files to check: 
-    -  (Check paginated transaction payload and donor  grouping)
-    -  (Ensure  array returns realistic dummy attendance data, not 0)
-</handoff summary></analysis>
+    - Add the hardcoded dictionary mapping  -> , etc., inside  or .
+    - Query DB to check if  has .
+    - If null, execute an  loop or  for the 9 tenants to set , , and .
+    - Make sure the logic is idempotent so it safely ignores already-seeded databases on future restarts.</analysis>

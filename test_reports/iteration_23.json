@@ -35,7 +35,7 @@
     },
     "sw_registration": {
       "status": "PASSED",
-      "details": "Console logs confirm: 'SW registered: https://observability-sprint.preview.emergentagent.com/'"
+      "details": "Console logs confirm: 'SW registered: https://startup-automation.preview.emergentagent.com/'"
     },
     "pwa_install_prompt_component": {
       "status": "PASSED (component exists)",

@@ -9,7 +9,7 @@ import requests
 import os
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://observability-sprint.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://startup-automation.preview.emergentagent.com')
 
 # Test credentials
 CHURCH_ADMIN = {"email": "shannonnieman1030@gmail.com", "password": os.environ.get("TEST_PASSWORD", "Demo2026!")}
