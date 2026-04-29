@@ -203,7 +203,7 @@ async def admin_register_for_event(request: Request, event_id: str, reg_data: Ad
     await db.event_registrations.insert_one(registration)
     await db.events.update_one({"id": event_id}, {"$inc": {"registration_count": 1}})
     
-    logger.info(f"Admin registered {reg_data.name} for event {event['name']}")
+    logger.info("admin_event_registration_created", extra={"tenant_id": tenant_id, "event_id": event_id, "registration_id": registration["id"]})
     
     return {"message": f"Registered {reg_data.name} for {event['name']}", "registration_id": registration["id"]}
 
@@ -297,7 +297,7 @@ async def create_event(request: Request, event_data: EventCreate):
     
     await db.events.insert_one(new_event)
     
-    logger.info(f"Event created: {new_event['name']} for tenant {tenant_id}")
+    logger.info("event_created", extra={"tenant_id": tenant_id, "event_id": new_event.get("id")})
     
     return {
         "message": "Event created successfully",

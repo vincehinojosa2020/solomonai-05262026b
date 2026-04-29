@@ -15,7 +15,7 @@ import stripe
 from dotenv import dotenv_values
 
 BASE_URL = os.environ.get(
-    "REACT_APP_BACKEND_URL", "https://exec-metrics-hub.preview.emergentagent.com"
+    "REACT_APP_BACKEND_URL", "https://observability-sprint.preview.emergentagent.com"
 ).rstrip("/")
 ADMIN_EMAIL = "admin@solomonai.us"
 ADMIN_PASS = os.environ.get("TEST_PASSWORD", "Demo2026!")

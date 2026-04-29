@@ -65,9 +65,9 @@ IS_TEST_MODE = STRIPE_API_KEY.startswith("sk_test_") or not STRIPE_LIVE
 
 if STRIPE_API_KEY:
     stripe.api_key = STRIPE_API_KEY
-    logger.info(f"Stripe configured (len={len(STRIPE_API_KEY)}, prefix={STRIPE_API_KEY[:8]}, test_mode={IS_TEST_MODE})")
+    logger.info("stripe_configured", extra={"key_len": len(STRIPE_API_KEY), "test_mode": IS_TEST_MODE})
 else:
-    logger.warning("Stripe API key missing — /api/stripe/* endpoints will 500")
+    logger.warning("stripe_api_key_missing")
 
 # Solomon platform fee (passed to the donor if they opt to cover)
 PLATFORM_FEE_RATE = 0.019   # 1.9%
@@ -187,7 +187,8 @@ async def create_payment_intent(payload: CreatePaymentIntentRequest):
     try:
         tenant = await require_active_connect_account(db, tenant["id"])
     except PaymentConfigError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        from core.errors import client_error as _ce
+        raise _ce(status_code=400, user_message="Invalid payment request.", log_message="stripe_elements.bad_request", exc=e)
     connect_account_id = tenant["stripe_connect_account_id"]
     fee_schedule = get_fee_schedule(tenant)
 
@@ -254,8 +255,8 @@ async def create_payment_intent(payload: CreatePaymentIntentRequest):
             idempotency_key=idempotency_key,
         )
     except stripe.error.StripeError as e:
-        logger.error(f"Stripe create intent failed: {e}")
-        raise HTTPException(502, f"Stripe error: {e.user_message or str(e)}")
+        logger.error("stripe_create_intent_failed", extra={"exc_type": type(e).__name__, "tenant_id": tenant.get("id")})
+        raise HTTPException(502, "Stripe error")
 
     # Pre-create a pending payment_transactions row (MANDATED by integration playbook)
     await db.payment_transactions.insert_one({
@@ -312,7 +313,7 @@ async def confirm_donation(payload: ConfirmDonationRequest):
         else:
             intent = stripe.PaymentIntent.retrieve(payload.payment_intent_id)
     except stripe.error.StripeError as e:
-        raise HTTPException(502, f"Stripe error: {e.user_message or str(e)}")
+        raise HTTPException(502, "Stripe error")
 
     if intent.metadata.get("tenant_id") != tenant["id"]:
         # Refuse cross-tenant confirmation attempts
@@ -358,7 +359,7 @@ async def confirm_donation(payload: ConfirmDonationRequest):
         if intent.latest_charge:
             ch_id = intent.latest_charge
     except stripe.error.StripeError as e:
-        logger.warning(f"Could not fetch payment method: {e}")
+        logger.warning("stripe_fetch_payment_method_failed", extra={"exc_type": type(e).__name__})
 
     md = intent.metadata or {}
     base_cents = int(md.get("base_amount_cents") or intent.amount)
@@ -433,7 +434,7 @@ async def get_payment_intent_status(intent_id: str):
     try:
         intent = stripe.PaymentIntent.retrieve(intent_id)
     except stripe.error.StripeError as e:
-        raise HTTPException(404, f"Stripe error: {e.user_message or str(e)}")
+        raise HTTPException(404, "Stripe error")
     return {
         "id": intent.id,
         "status": intent.status,
@@ -497,7 +498,7 @@ async def create_recurring_setup_intent(payload: CreateRecurringSetupRequest):
                 stripe_account=connect_account_id,
             )
         except stripe.error.StripeError as e:
-            raise HTTPException(502, f"Stripe error: {e.user_message or str(e)}")
+            raise HTTPException(502, "Stripe error")
         customer_id = customer.id
         await db.recurring_donors.update_one(
             {"tenant_id": tenant["id"], "donor_email": email},
@@ -524,7 +525,7 @@ async def create_recurring_setup_intent(payload: CreateRecurringSetupRequest):
             stripe_account=connect_account_id,
         )
     except stripe.error.StripeError as e:
-        raise HTTPException(502, f"Stripe error: {e.user_message or str(e)}")
+        raise HTTPException(502, "Stripe error")
 
     return {
         "client_secret": si.client_secret,
@@ -580,7 +581,7 @@ async def confirm_recurring_setup(payload: ConfirmRecurringRequest):
             stripe_account=connect_account_id,
         )
     except stripe.error.StripeError as e:
-        raise HTTPException(502, f"Stripe error: {e.user_message or str(e)}")
+        raise HTTPException(502, "Stripe error")
 
     if si.status != "succeeded":
         raise HTTPException(400, f"SetupIntent not succeeded (status={si.status})")
@@ -675,7 +676,7 @@ async def stripe_balance():
     try:
         bal = stripe.Balance.retrieve()
     except stripe.error.StripeError as e:
-        raise HTTPException(502, f"Stripe error: {e.user_message or str(e)}")
+        raise HTTPException(502, "Stripe error")
 
     available_cents = sum(a.amount for a in bal.available)
     pending_cents = sum(a.amount for a in bal.pending)
@@ -716,7 +717,7 @@ async def create_stripe_payout(payload: PayoutRequest):
         available_cents = sum(a.amount for a in bal.available)
         pending_cents = sum(p.amount for p in bal.pending)
     except stripe.error.StripeError as e:
-        raise HTTPException(502, f"Stripe balance error: {e.user_message or str(e)}")
+        raise HTTPException(502, "Stripe balance error")
 
     # Amount to pay out — default is full available; in test mode fall back
     # to pending if available is zero so the demo-time click still produces
@@ -746,8 +747,8 @@ async def create_stripe_payout(payload: PayoutRequest):
         # row in the history table. Not allowed in live mode — would be a
         # silent failure for real money.
         if not IS_TEST_MODE:
-            raise HTTPException(502, f"Stripe payout error: {e.user_message or str(e)}")
-        logger.warning(f"Stripe rejected test payout ({e.user_message}); simulating record for demo")
+            raise HTTPException(502, "Stripe payout error")
+        logger.warning("stripe_test_payout_simulated", extra={"exc_type": type(e).__name__})
         payout_id = f"po_simulated_{int(datetime.now(timezone.utc).timestamp())}"
         payout_status = "pending"
         arrival = int(datetime.now(timezone.utc).timestamp()) + 2 * 24 * 3600
@@ -855,7 +856,7 @@ async def platform_transactions(
     try:
         intents = stripe.PaymentIntent.list(**params)
     except stripe.error.StripeError as e:
-        raise HTTPException(502, f"Stripe error: {e.user_message or str(e)}")
+        raise HTTPException(502, "Stripe error")
 
     # Tenant lookup — one-shot load so we can enrich rows without per-row DB hit
     tenants = await db.tenants.find({}, {"_id": 0, "id": 1, "name": 1, "slug": 1}).to_list(None)
@@ -925,7 +926,7 @@ async def platform_transactions(
         from core.stripe_sync import backfill_from_intents
         asyncio.ensure_future(backfill_from_intents(intents.data))
     except Exception as e:
-        logger.warning(f"[platform_transactions] backfill schedule failed: {e}")
+        logger.warning("platform_transactions_backfill_failed", extra={"exc_type": type(e).__name__})
 
     return result
 

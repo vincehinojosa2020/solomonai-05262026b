@@ -194,8 +194,9 @@ async def solomon_chat(request: Request, payload: SolomonChatRequest):
             pending_action=pending_action
         )
     except Exception as e:
-        logger.error(f"Solomon AI error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Solomon AI error: {str(e)}")
+        logger.error(f"Solomon AI error: {type(e).__name__}")
+        from core.errors import client_error
+        raise client_error(status_code=500, user_message="Solomon AI is temporarily unavailable.", log_message="solomon.ai_failed", exc=e)
 
 
 @router.post("/solomon/chat/stream")
@@ -397,8 +398,9 @@ async def voice_transcribe(request: Request):
         transcript = response.text if hasattr(response, 'text') else str(response)
         return {"transcript": transcript, "duration_seconds": len(content) / 16000}
     except Exception as e:
-        logger.error(f"Whisper transcription error: {e}")
-        raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
+        logger.error("whisper_transcription_failed", extra={"exc_type": type(e).__name__})
+        from core.errors import client_error
+        raise client_error(status_code=500, user_message="Audio transcription failed.", log_message="solomon.transcription_failed", exc=e)
     finally:
         import os as _os
         _os.unlink(tmp_path)

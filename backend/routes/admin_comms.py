@@ -132,8 +132,13 @@ async def send_sms(sms: SMSRequest):
         }
         
     except Exception as e:
-        logger.error(f"SMS send error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        from core.errors import client_error
+        raise client_error(
+            status_code=500,
+            user_message="SMS send failed. Please try again.",
+            log_message="admin_comms.sms_send_failed",
+            exc=e,
+        )
 
 
 @router.post("/sms/bulk")

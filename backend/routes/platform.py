@@ -56,7 +56,7 @@ async def reset_eden_church(request: Request):
             request=request,
         )
     except Exception as e:
-        logger.warning(f"eden reset audit_log failed (non-fatal): {e}")
+        logger.warning("eden_reset_audit_log_failed", extra={"exc_type": type(e).__name__})
     return result
 
 
@@ -115,8 +115,9 @@ async def get_platform_stats(request: Request):
             "_message": "Platform stats are being computed. Please refresh in 30 seconds."
         }
     except Exception as e:
-        logger.error(f"Platform stats error: {e}")
-        raise HTTPException(status_code=500, detail=f"Stats computation error: {str(e)[:200]}")
+        logger.error("platform_stats_error", extra={"exc_type": type(e).__name__})
+        from core.errors import client_error
+        raise client_error(status_code=500, user_message="Failed to compute platform statistics.", log_message="platform.stats_failed", exc=e)
 
 
 async def _get_real_campuses_fast():
@@ -323,16 +324,16 @@ async def _save_platform_stats_cache(data: dict) -> None:
         payload = {**data, "id": "global", "updated_at": datetime.now(timezone.utc).isoformat()}
         await db.platform_stats_cache.replace_one({"id": "global"}, payload, upsert=True)
     except Exception as exc:
-        logger.warning(f"[stats_cache] save failed: {exc}")
+        logger.warning("stats_cache_save_failed", extra={"exc_type": type(exc).__name__})
 
 
 async def _refresh_platform_stats_cache() -> None:
     try:
         result = await _compute_platform_stats_fast()
         await _save_platform_stats_cache(result)
-        logger.info("[stats_cache] refreshed")
+        logger.info("stats_cache_refreshed")
     except Exception as exc:
-        logger.error(f"[stats_cache] refresh failed: {exc}")
+        logger.error("stats_cache_refresh_failed", extra={"exc_type": type(exc).__name__})
 
 
 @router.get("/platform/activity-feed")
@@ -2358,7 +2359,7 @@ async def seed_church_members(tenant_id: str, church_name: str, count: int = 500
     if attendance_records:
         await db.attendance.insert_many(attendance_records)
     
-    logger.info(f"Seeded {len(people)} members for {church_name}")
+    logger.info("members_seeded", extra={"count": len(people)})
     return len(people)
 
 # ============== SUMMIT ENHANCEMENTS - SERVICE MODE & ATTENDANCE STREAKS ==============
@@ -2930,7 +2931,7 @@ async def create_church_onboarding(request: Request, payload: ChurchOnboardingRe
             connect_onboarding_url = link.url
         except Exception as e:
             # Fail-soft: tenant still gets created, admin retries Connect later.
-            logger.warning(f"[onboarding] Stripe Connect provisioning failed for {tenant_id}: {e}")
+            logger.warning("connect_provisioning_failed", extra={"tenant_id": tenant_id, "exc_type": type(e).__name__})
 
     tenant = {
         "id": tenant_id,
@@ -3001,7 +3002,7 @@ async def create_church_onboarding(request: Request, payload: ChurchOnboardingRe
             stats = await _compute_platform_stats_fast()
             await _save_platform_stats_cache(stats)
         except Exception as e:
-            logger.warning("platform_stats_cache rebuild after onboarding failed: %s", e)
+            logger.warning("platform_stats_cache_rebuild_failed", extra={"exc_type": type(e).__name__})
     asyncio.ensure_future(_rebuild_cache_bg())
 
     return {
@@ -3107,7 +3108,7 @@ async def delete_church_cascading(request: Request, tenant_id: str, dry_run: boo
             res = await db[coll].delete_many({"tenant_id": tenant_id})
             deleted[coll] = res.deleted_count
         except Exception as e:
-            logger.warning("delete_church cascade: %s failed: %s", coll, e)
+            logger.warning("delete_church_cascade_failed", extra={"collection": coll, "exc_type": type(e).__name__})
             deleted[coll] = 0
 
     # Kill sessions then delete users (order matters for the JWT/session middleware)
@@ -3137,7 +3138,7 @@ async def delete_church_cascading(request: Request, tenant_id: str, dry_run: boo
             stats = await _compute_platform_stats_fast()
             await _save_platform_stats_cache(stats)
         except Exception as e:
-            logger.warning("cache rebuild after delete failed: %s", e)
+            logger.warning("cache_rebuild_after_delete_failed", extra={"exc_type": type(e).__name__})
     asyncio.ensure_future(_rebuild_bg())
 
     return {
@@ -4047,13 +4048,13 @@ async def send_monday_morning_summary(request: Request):
                 timeout=15
             )
         if resp.status_code in (200, 201):
-            logger.info(f"Monday summary sent to {recipients}")
+            logger.info("monday_summary_sent", extra={"recipient_count": len(recipients)})
             return {"success": True, "message": f"Summary email sent to {', '.join(recipients)}"}
         else:
             return {"success": False, "message": f"Email API returned {resp.status_code}: {resp.text[:200]}"}
     except Exception as e:
-        logger.error(f"Failed to send summary email: {e}")
-        return {"success": False, "message": f"Email send failed: {str(e)}"}
+        logger.error("platform_email_send_failed", extra={"exc_type": type(e).__name__})
+        return {"success": False, "message": "Email send failed. Please try again."}
 
 
 # ═══════════════════ PLATFORM DONOR ANALYTICS ═══════════════════
@@ -4220,16 +4221,16 @@ async def _save_donor_stats_cache(data: dict) -> None:
     try:
         await db.platform_donors_cache.replace_one({"id": "global"}, {**data, "id": "global"}, upsert=True)
     except Exception as exc:
-        logger.warning(f"[donors_cache] save failed: {exc}")
+        logger.warning("donors_cache_save_failed", extra={"exc_type": type(exc).__name__})
 
 
 async def _refresh_donor_stats_cache() -> None:
     try:
         result = await _compute_donor_stats_fast()
         await _save_donor_stats_cache(result)
-        logger.info("[donors_cache] refreshed")
+        logger.info("donors_cache_refreshed")
     except Exception as exc:
-        logger.error(f"[donors_cache] refresh failed: {exc}")
+        logger.error("donors_cache_refresh_failed", extra={"exc_type": type(exc).__name__})
 
 
 # ═══════════════════ PLATFORM IMPERSONATE ═══════════════════

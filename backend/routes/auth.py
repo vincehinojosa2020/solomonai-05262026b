@@ -101,7 +101,7 @@ async def exchange_session(request: SessionRequest, response: Response):
         }
         
     except httpx.RequestError as e:
-        logger.error(f"Auth request failed: {e}")
+        logger.error("auth_request_failed", extra={"exc_type": type(e).__name__})
         raise HTTPException(status_code=500, detail="Auth service unavailable")
 
 
@@ -348,12 +348,12 @@ async def email_password_login(request: Request, payload: EmailLoginRequest, res
     
     user_doc = await db.users.find_one({"email": login_email}, {"_id": 0})
     if not user_doc:
-        logging.warning(f"[AUTH] Login failed - user not found: {login_email}")
+        logging.warning("auth_login_failed", extra={"reason": "user_not_found"})
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
     stored_hash = user_doc.get("password_hash")
     if not stored_hash:
-        logging.warning(f"[AUTH] Login failed - no password_hash for: {login_email}")
+        logging.warning("auth_login_failed", extra={"reason": "no_password_hash", "user_id": user_doc.get("user_id")})
         raise HTTPException(status_code=401, detail="Password login not enabled for this account")
     
     # Verify password — support both bcrypt and legacy SHA256
@@ -370,7 +370,7 @@ async def email_password_login(request: Request, payload: EmailLoginRequest, res
         needs_rehash = password_valid  # Migrate on successful login
     
     if not password_valid:
-        logging.warning(f"[AUTH] Login failed - password mismatch for: {login_email}")
+        logging.warning("auth_login_failed", extra={"reason": "password_mismatch", "user_id": user_doc.get("user_id")})
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
     # Auto-migrate from SHA256 to bcrypt on successful login
@@ -380,7 +380,7 @@ async def email_password_login(request: Request, payload: EmailLoginRequest, res
             {"user_id": user_doc["user_id"]},
             {"$set": {"password_hash": new_hash}}
         )
-        logging.info(f"[AUTH] Migrated password to bcrypt for: {login_email}")
+        logging.info("auth_password_migrated", extra={"user_id": user_doc.get("user_id")})
     
     # Session management: limit to 5 concurrent sessions
     existing = await db.user_sessions.count_documents({"user_id": user_doc["user_id"]})
@@ -558,7 +558,7 @@ async def register_user(request: UserRegistrationRequest, response: Response):
         max_age=7 * 24 * 60 * 60
     )
     
-    logger.info(f"New user registered: {request.email} at {church_name}")
+    logger.info("user_registered", extra={"tenant_id": tenant_id, "user_id": user_id})
     
     # Send welcome email from Solomon AI (non-blocking)
     asyncio.create_task(send_welcome_email(request.email, request.first_name, church_name))
@@ -680,8 +680,8 @@ async def forgot_password(request: Request):
                     },
                     timeout=10
                 )
-                logger.info(f"Password reset email sent to {email}")
+                logger.info("password_reset_email_sent", extra={"user_id": user.get("user_id")})
         except Exception as e:
-            logger.error(f"Failed to send password reset email: {e}")
+            logger.error("password_reset_email_failed", extra={"exc_type": type(e).__name__, "user_id": user.get("user_id")})
 
     return {"message": "If an account exists, reset instructions have been sent."}

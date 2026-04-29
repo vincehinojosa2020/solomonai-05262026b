@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://exec-metrics-hub.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://observability-sprint.preview.emergentagent.com')
 
 # Test credentials
 SHANNON_EMAIL = "shannonnieman1030@gmail.com"

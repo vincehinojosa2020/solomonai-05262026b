@@ -140,7 +140,7 @@ async def create_media_video(request: Request, video_data: MediaVideoCreate):
     
     await db.media_videos.insert_one(new_video.model_dump())
     
-    logger.info(f"Video created: {new_video.title} ({youtube_id}) for tenant {tenant_id}")
+    logger.info("media_video_created", extra={"tenant_id": tenant_id, "video_id": new_video.id, "youtube_id": youtube_id})
     
     return {
         "message": "Video added successfully",

@@ -348,7 +348,7 @@ async def create_tenant(request: Request, tenant_data: TenantBase):
     }
     
     await db.tenants.insert_one(tenant)
-    logger.info(f"New tenant created: {tenant['name']} ({tenant['subdomain']})")
+    logger.info("tenant_created", extra={"tenant_id": tenant["id"], "subdomain": tenant["subdomain"]})
     
     return {"message": "Tenant created", "tenant_id": tenant["id"], "subdomain": tenant["subdomain"]}
 

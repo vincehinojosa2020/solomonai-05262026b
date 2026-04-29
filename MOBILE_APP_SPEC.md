@@ -3,7 +3,7 @@
 
 ### Backend API Base URL
 ```
-https://exec-metrics-hub.preview.emergentagent.com/api
+https://observability-sprint.preview.emergentagent.com/api
 ```
 
 ### Authentication

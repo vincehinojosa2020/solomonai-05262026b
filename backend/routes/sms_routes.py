@@ -36,7 +36,7 @@ async def incoming_sms(request: Request):
         reply = result.get("reply", "")
         return f'<?xml version="1.0" encoding="UTF-8"?><Response><Message>{reply}</Message></Response>'
     except Exception as e:
-        logger.error(f"Incoming SMS error: {e}")
+        logger.error("incoming_sms_failed", extra={"exc_type": type(e).__name__})
         return '<?xml version="1.0" encoding="UTF-8"?><Response></Response>'
 
 

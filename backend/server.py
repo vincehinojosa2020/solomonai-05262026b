@@ -11,6 +11,7 @@ from starlette.middleware.cors import CORSMiddleware
 from pathlib import Path
 from datetime import datetime, timezone
 import os
+import time as _time
 import uuid
 import logging
 import asyncio
@@ -18,22 +19,64 @@ import asyncio
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-from core import db, client, DEFAULT_TENANT_ID, get_current_member_user, require_permission, logger
+# ─── Observability layer (BLOCKER #9) ──────────────────────────────────
+# Initialize logging + Sentry FIRST so every subsequent import logs
+# through the JSON formatter and reports exceptions to Sentry.
+from core.observability import (  # noqa: E402
+    setup_logging, init_sentry,
+    CorrelationIdMiddleware, sentry_scope_middleware,
+    get_correlation_id,
+)
+setup_logging()
+init_sentry()
+
+from core import db, client, DEFAULT_TENANT_ID, get_current_member_user, require_permission, logger  # noqa: E402
+
+# Process start time for uptime calc on /api/health
+_PROCESS_START_TS = _time.time()
+APP_VERSION = os.environ.get("APP_VERSION", "2.0.0")
 
 # ═══ FastAPI App ═══
 app = FastAPI(title="Solomon AI Church Management API")
 
 # ═══ Health endpoints — registered FIRST, before all other imports ═══
-# These must respond in <100ms before Atlas connects. Registered at app level
-# so they work even if route module imports are still in progress.
-
+# Shallow probe (default): returns instantly, no DB call. Used by load
+# balancers + Stripe-style external monitors that just need a 200.
+# Deep probe (?deep=true): pings Mongo + reports uptime + version. Used
+# by paging / on-call dashboards where 'mongo down' must trigger.
 @app.get("/health")
 async def _health_root():
     return {"status": "ok"}
 
+
 @app.get("/api/health")
-async def _health_api():
-    return {"status": "ok", "version": "2.0.0"}
+async def _health_api(deep: bool = False):
+    payload = {
+        "status": "ok",
+        "version": APP_VERSION,
+        "uptime_s": round(_time.time() - _PROCESS_START_TS, 1),
+    }
+    if not deep:
+        return payload
+    # Deep check: mongo ping (fail-fast 250ms timeout)
+    payload["checks"] = {}
+    try:
+        t0 = _time.perf_counter()
+        await asyncio.wait_for(client.admin.command("ping"), timeout=0.25)
+        payload["checks"]["mongo"] = {
+            "status": "ok",
+            "latency_ms": round((_time.perf_counter() - t0) * 1000, 1),
+        }
+    except Exception as e:
+        payload["status"] = "degraded"
+        payload["checks"]["mongo"] = {"status": "down", "error": type(e).__name__}
+        return JSONResponse(status_code=503, content=payload)
+    payload["checks"]["sentry"] = {
+        "status": "configured" if os.environ.get("SENTRY_DSN") else "disabled",
+    }
+    payload["environment"] = os.environ.get("ENVIRONMENT", "development")
+    return payload
+
 
 @app.get("/api/health/launch-check")
 async def _health_launch_check():
@@ -42,6 +85,13 @@ async def _health_launch_check():
 
 
 # ═══ Middleware ═══
+# Order matters — Starlette runs them outside-in. CorrelationId first so
+# every downstream log gets a request id. Then sentry scope picks up that
+# id. Then auth/security.
+app.add_middleware(CorrelationIdMiddleware)
+app.middleware("http")(sentry_scope_middleware)
+
+
 @app.middleware("http")
 async def security_headers_middleware(request: Request, call_next):
     response = await call_next(request)
@@ -55,11 +105,22 @@ async def security_headers_middleware(request: Request, call_next):
 
 @app.exception_handler(500)
 async def structured_500_handler(request: Request, exc):
-    cid = f"req_{uuid.uuid4().hex[:12]}"
-    logger.error(f"[{cid}] Internal error: {exc}")
+    # Use the per-request correlation id rather than minting a new one — the
+    # client may already be looking at it in their X-Request-ID header.
+    cid = get_correlation_id()
+    logger.error(
+        "internal_server_error",
+        extra={
+            "exc_type": type(exc).__name__,
+            "path": request.url.path,
+        },
+        exc_info=exc,
+    )
     return JSONResponse(status_code=500, content={
-        "error": "INTERNAL_ERROR", "message": "Something went wrong on our end. Please try again, or reach out at support@solomonai.us.",
-        "code": 500, "correlation_id": cid,
+        "error": "INTERNAL_ERROR",
+        "message": "Something went wrong on our end. Please try again, or reach out at support@solomonai.us.",
+        "code": 500,
+        "correlation_id": cid,
     })
 
 
@@ -247,28 +308,28 @@ async def _deferred_startup() -> None:
             from core.seed import ensure_mobile_demo_accounts
             await ensure_mobile_demo_accounts()
         except Exception as exc:
-            logger.warning(f"[startup] ensure_mobile_demo_accounts skipped: {exc}")
+            logger.warning("startup_ensure_mobile_demo_accounts_skipped", extra={"exc_type": type(exc).__name__})
 
         await asyncio.sleep(1)   # yield between every operation
 
         try:
             await seed_vol_data()
         except Exception as exc:
-            logger.warning(f"[startup] seed_vol_data skipped: {exc}")
+            logger.warning("startup_seed_vol_data_skipped", extra={"exc_type": type(exc).__name__})
 
         await asyncio.sleep(1)
 
         try:
             await seed_academy_course()
         except Exception as exc:
-            logger.warning(f"[startup] seed_academy_course skipped: {exc}")
+            logger.warning("startup_seed_academy_course_skipped", extra={"exc_type": type(exc).__name__})
 
         await asyncio.sleep(1)
 
         try:
             await seed_academy_courses_v2()
         except Exception as exc:
-            logger.warning(f"[startup] seed_academy_courses_v2 skipped: {exc}")
+            logger.warning("startup_seed_academy_courses_v2_skipped", extra={"exc_type": type(exc).__name__})
 
         await asyncio.sleep(1)
 
@@ -287,9 +348,9 @@ async def _deferred_startup() -> None:
                     "Fresh deploy from empty state."
                 )
             elif recovery.get("action") == "error":
-                logger.error(f"[startup] emergency_seed error: {recovery.get('error')}")
+                logger.error("startup_emergency_seed_error", extra={"error": str(recovery.get("error"))[:200]})
             else:
-                logger.info(f"[startup] emergency_seed: {recovery.get('reason')} ({recovery.get('count')} tenants)")
+                logger.info("startup_emergency_seed", extra={"reason": recovery.get("reason"), "count": recovery.get("count")})
 
             # Self-healing pass: backfill missing slug/subdomain on every boot
             # so the public give-page URL works even on legacy seeds.
@@ -310,7 +371,7 @@ async def _deferred_startup() -> None:
                 await db.donations.create_index([("payment_source", 1), ("donor_email", 1)], name="ix_stripe_donor", background=True)
                 await db.donations.create_index([("payment_source", 1), ("created_at", -1)], name="ix_stripe_created", background=True)
             except Exception as e:
-                logger.warning(f"[startup] donations index creation skipped: {e}")
+                logger.warning("startup_donations_index_skipped", extra={"exc_type": type(e).__name__})
 
             # ── Stripe → Mongo backfill (boot + every 60s) ─────────────
             # Paranoid sync: if the frontend's confirm-donation call never
@@ -324,7 +385,7 @@ async def _deferred_startup() -> None:
                 from core.stripe_sync import sync_recent
                 added_now = await sync_recent(hours=72, limit=100)
                 if added_now:
-                    logger.warning(f"[startup] stripe_sync backfilled {added_now} missing donations on boot")
+                    logger.warning("startup_stripe_sync_backfilled", extra={"count": added_now})
 
                 async def _stripe_sync_loop():
                     while True:
@@ -332,14 +393,14 @@ async def _deferred_startup() -> None:
                         try:
                             n = await sync_recent(hours=24, limit=100)
                             if n:
-                                logger.info(f"[stripe_sync_loop] backfilled {n} donations")
+                                logger.info("stripe_sync_loop_backfilled", extra={"count": n})
                         except Exception as e:
-                            logger.warning(f"[stripe_sync_loop] tick failed: {e}")
+                            logger.warning("stripe_sync_loop_tick_failed", extra={"exc_type": type(e).__name__})
                 asyncio.ensure_future(_stripe_sync_loop())
             except Exception as e:
-                logger.warning(f"[startup] stripe_sync init failed: {e}")
+                logger.warning("startup_stripe_sync_init_failed", extra={"exc_type": type(e).__name__})
         except Exception as exc:
-            logger.warning(f"[startup] emergency_seed skipped: {exc}")
+            logger.warning("startup_emergency_seed_skipped", extra={"exc_type": type(exc).__name__})
 
         # ── Eden Church auto-seed (runs ONCE per deploy; flagged in DB) ──
         try:
@@ -351,9 +412,9 @@ async def _deferred_startup() -> None:
                     f"legacy tenant(s). State: {result.get('state')}"
                 )
             else:
-                logger.info(f"[startup] Eden Church auto-seed skipped: {result.get('reason')}")
+                logger.info("startup_eden_auto_seed_skipped", extra={"reason": result.get("reason")})
         except Exception as exc:
-            logger.warning(f"[startup] eden_auto_seed skipped: {exc}")
+            logger.warning("startup_eden_auto_seed_skipped", extra={"exc_type": type(exc).__name__})
 
         await asyncio.sleep(1)
 
@@ -403,14 +464,14 @@ async def _deferred_startup() -> None:
                 upsert=True,
             )
         except Exception as exc:
-            logger.warning(f"[startup] kids team seed skipped: {exc}")
+            logger.warning("startup_kids_team_seed_skipped", extra={"exc_type": type(exc).__name__})
 
         await asyncio.sleep(1)
 
         try:
             await _seed_demo_quality_data()
         except Exception as exc:
-            logger.warning(f"[startup] demo quality data skipped: {exc}")
+            logger.warning("startup_demo_quality_data_skipped", extra={"exc_type": type(exc).__name__})
 
         logger.info("[startup] Deferred seed complete")
 
@@ -421,11 +482,11 @@ async def _deferred_startup() -> None:
             start_scheduler(db)
             logger.info("[startup] Recurring giving scheduler started")
         except Exception as exc:
-            logger.error(f"[startup] Scheduler start failed (non-fatal): {exc}")
+            logger.error("startup_scheduler_start_failed", extra={"exc_type": type(exc).__name__})
 
     except Exception as exc:
         # Outermost catch — nothing should ever escape to the server process
-        logger.error(f"[startup] _deferred_startup crashed (non-fatal): {exc}")
+        logger.error("startup_deferred_startup_crashed", extra={"exc_type": type(exc).__name__})
 
 
 @app.on_event("shutdown")

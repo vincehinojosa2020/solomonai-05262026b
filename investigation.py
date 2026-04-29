@@ -7,7 +7,7 @@ import asyncio
 import aiohttp
 import json
 
-BASE_URL = "https://exec-metrics-hub.preview.emergentagent.com/api"
+BASE_URL = "https://observability-sprint.preview.emergentagent.com/api"
 
 async def investigate_data():
     """Get detailed data from key endpoints"""

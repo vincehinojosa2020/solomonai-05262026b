@@ -218,8 +218,8 @@ One concrete 48-hour play."""
     try:
         digest = await chat.send_message(UserMessage(text=prompt))
     except Exception as e:
-        logger.error("Claude digest failed for rank=%s: %s", body.rank, e)
-        raise HTTPException(502, f"Claude digest failed: {e}")
+        logger.error("competitive_intel_digest_failed", extra={"rank": body.rank, "exc_type": type(e).__name__})
+        raise HTTPException(502, "Claude digest failed")
 
     saved_at = datetime.now(timezone.utc).isoformat()
     await db.competitor_pins.update_one(

@@ -229,6 +229,12 @@ async def get_current_admin_user(request: Request):
         raise HTTPException(status_code=403, detail="Admin access required")
     if user.get("role") != "platform_admin" and not user.get("tenant_id"):
         raise HTTPException(status_code=403, detail="Tenant context required for admin access")
+    # Populate observability scope for downstream logs/Sentry
+    try:
+        from core.observability import set_request_user
+        set_request_user(user)
+    except Exception:
+        pass
     return user
 
 
@@ -256,6 +262,12 @@ async def get_current_portal_user(request: Request):
     user = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0})
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
+    # Populate observability scope for downstream logs/Sentry
+    try:
+        from core.observability import set_request_user
+        set_request_user(user)
+    except Exception:
+        pass
     return user
 
 # Alias for backward compat

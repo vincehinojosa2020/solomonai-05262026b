@@ -85,7 +85,7 @@ async def create_group(request: Request, group_data: GroupCreate):
     
     await db.groups.insert_one(new_group.model_dump())
     
-    logger.info(f"Group created: {new_group.name} for tenant {tenant_id}")
+    logger.info("group_created", extra={"tenant_id": tenant_id, "group_id": new_group.id})
     
     return {
         "message": "Group created successfully",
@@ -212,7 +212,7 @@ async def admin_add_member_to_group(request: Request, group_id: str, member_data
     await db.group_members.insert_one(new_membership)
     await db.groups.update_one({"id": group_id}, {"$inc": {"member_count": 1}})
     
-    logger.info(f"Admin added {person.get('email', member_data.person_id)} to group {group['name']}")
+    logger.info("group_member_added_by_admin", extra={"tenant_id": tenant_id, "group_id": group_id, "person_id": member_data.person_id})
     
     return {
         "message": f"Added {person.get('first_name', '')} {person.get('last_name', '')} to {group['name']}",
@@ -244,7 +244,7 @@ async def admin_remove_member_from_group(request: Request, group_id: str, person
     
     await db.groups.update_one({"id": group_id}, {"$inc": {"member_count": -1}})
     
-    logger.info(f"Admin removed person {person_id} from group {group['name']}")
+    logger.info("group_member_removed_by_admin", extra={"tenant_id": tenant_id, "group_id": group_id, "person_id": person_id})
     
     return {"message": "Member removed from group"}
 

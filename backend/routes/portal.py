@@ -2120,7 +2120,7 @@ async def request_to_join_group(request: Request, group_id: str):
     # Update group member count
     await db.groups.update_one({"id": group_id}, {"$inc": {"member_count": 1}})
     
-    logger.info(f"User {user['email']} joined group {group['name']}")
+    logger.info("group_member_joined", extra={"tenant_id": user.get("tenant_id"), "user_id": user.get("user_id"), "group_id": group["id"]})
     
     return {"message": f"You have joined {group['name']}!"}
 
@@ -2500,7 +2500,7 @@ async def register_for_event(request: Request, event_id: str):
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"Event payment error: {e}")
+            logger.error("event_payment_failed", extra={"tenant_id": tenant_id, "event_id": event_id, "user_id": user["user_id"], "exc_type": type(e).__name__})
             raise HTTPException(status_code=402, detail="Payment could not be processed. Please check your card.")
 
         # Record transaction
@@ -2544,7 +2544,7 @@ async def register_for_event(request: Request, event_id: str):
     await db.event_registrations.insert_one(registration)
     await db.events.update_one({"id": event_id}, {"$inc": {"registration_count": 1}})
 
-    logger.info(f"[EVENT] {user.get('email')} registered for {event['name']} (${amount:.2f})")
+    logger.info("event_registered", extra={"tenant_id": tenant_id, "event_id": event_id, "user_id": user["user_id"], "amount": amount})
 
     # Push notification
     try:

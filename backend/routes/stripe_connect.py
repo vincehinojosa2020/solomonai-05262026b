@@ -150,8 +150,9 @@ async def create_giving_checkout(request: Request, payload: GivingCheckoutReques
         }
 
     except Exception as e:
-        logger.error(f"Stripe checkout creation failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Payment processing error: {str(e)}")
+        logger.error("stripe_checkout_creation_failed", extra={"exc_type": type(e).__name__})
+        from core.errors import client_error
+        raise client_error(status_code=500, user_message="Payment processing failed. Please try again.", log_message="stripe_connect.payment_failed", exc=e)
 
 
 # ═══ Checkout Status Polling ═══
@@ -216,8 +217,9 @@ async def get_checkout_status(request: Request, session_id: str):
         }
 
     except Exception as e:
-        logger.error(f"Stripe status check failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Status check error: {str(e)}")
+        logger.error("stripe_status_check_failed", extra={"exc_type": type(e).__name__})
+        from core.errors import client_error
+        raise client_error(status_code=500, user_message="Status check failed.", log_message="stripe_connect.status_check_failed", exc=e)
 
 
 # ═══ Webhook Handler ═══
@@ -265,7 +267,7 @@ async def stripe_webhook(request: Request):
             logger.warning("[stripe_webhook] invalid payload")
             raise HTTPException(status_code=400, detail="Invalid payload")
         except stripe.error.SignatureVerificationError:
-            logger.warning(f"[stripe_webhook] bad signature from {request.client.host if request.client else '?'}")
+            logger.warning("stripe_webhook_bad_signature", extra={"client": request.client.host if request.client else "?"})
             raise HTTPException(status_code=400, detail="Invalid signature")
 
     event_id = event.get("id") if isinstance(event, dict) else event["id"]
@@ -275,7 +277,7 @@ async def stripe_webhook(request: Request):
     # ── 3. Idempotency: have we processed this event already? ──
     seen = await db.stripe_webhook_events.find_one({"event_id": event_id}, {"_id": 0})
     if seen:
-        logger.info(f"[stripe_webhook] already processed {event_id} ({event_type})")
+        logger.info("stripe_webhook_duplicate", extra={"event_id": event_id, "event_type": event_type})
         return {"received": True, "duplicate": True}
 
     # Record-then-process so a crash mid-handler still leaves a marker.
@@ -377,7 +379,7 @@ async def stripe_webhook(request: Request):
                 if new_status == CONNECT_STATUS_ACTIVE and not tenant_doc.get("stripe_connect_onboarded_at"):
                     update["stripe_connect_onboarded_at"] = datetime.now(timezone.utc).isoformat()
                 await db.tenants.update_one({"id": tenant_doc["id"]}, {"$set": update})
-                logger.info(f"[stripe_webhook] account.updated → tenant {tenant_doc['id']} → {new_status}")
+                logger.info("stripe_webhook_account_updated", extra={"tenant_id": tenant_doc["id"], "connect_status": new_status})
 
         elif event_type == "account.application.deauthorized":
             # Tenant disconnected the Connect account from our platform.
@@ -403,7 +405,7 @@ async def stripe_webhook(request: Request):
                         }},
                         upsert=True,
                     )
-                    logger.error(f"[stripe_webhook] CONNECT DEAUTHORIZED for tenant {tenant_doc['id']}")
+                    logger.error("stripe_webhook_connect_deauthorized", extra={"tenant_id": tenant_doc["id"]})
 
         # Mark event processed
         await db.stripe_webhook_events.update_one(
@@ -415,7 +417,7 @@ async def stripe_webhook(request: Request):
     except Exception as e:
         # Don't 500 — Stripe will retry, and we have the event_id recorded
         # so the next retry's idempotency check still fires. Just log.
-        logger.error(f"[stripe_webhook] processing {event_id} ({event_type}) failed: {e}")
+        logger.error("stripe_webhook_processing_failed", extra={"event_id": event_id, "event_type": event_type, "exc_type": type(e).__name__})
         return {"received": True, "error": "processing_deferred"}
 
 
@@ -482,9 +484,9 @@ async def _send_receipt(txn: dict):
                 },
                 timeout=10
             )
-        logger.info(f"Receipt sent to {email} for ${amount}")
+        logger.info("stripe_receipt_sent", extra={"amount": amount})
     except Exception as e:
-        logger.error(f"Receipt email failed: {e}")
+        logger.error("stripe_receipt_email_failed", extra={"exc_type": type(e).__name__})
 
 
 
@@ -537,12 +539,12 @@ async def start_connect_onboarding(tenant_id: str, request: Request):
                 }},
             )
         except stripe.error.StripeError as e:
-            raise HTTPException(status_code=502, detail=f"Stripe error: {e.user_message or str(e)}")
+            raise HTTPException(status_code=502, detail="Stripe error")
 
     try:
         link = await create_account_link(account_id, base_url)
     except stripe.error.StripeError as e:
-        raise HTTPException(status_code=502, detail=f"Stripe link error: {e.user_message or str(e)}")
+        raise HTTPException(status_code=502, detail="Stripe link error")
 
     return {
         "tenant_id": tenant_id,
@@ -589,7 +591,7 @@ async def connect_dashboard_link(tenant_id: str, request: Request):
         from core.connect import _run_stripe
         link = await _run_stripe(stripe.Account.create_login_link, acct_id)
     except stripe.error.StripeError as e:
-        raise HTTPException(status_code=502, detail=f"Stripe error: {e.user_message or str(e)}")
+        raise HTTPException(status_code=502, detail="Stripe error")
     return {"url": link.url}
 
 
