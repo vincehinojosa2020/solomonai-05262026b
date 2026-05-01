@@ -1,5 +1,19 @@
 # Solomon AI — Product Requirements Document
 
+## Session — May 1, 2026 — Auto-Seed Slug Alignment + Workers Decision
+
+**Slug alignment shipped**:
+- `core/connect_seed.py` now also enforces canonical public-URL slugs via `CANONICAL_SLUGS` map.
+- On boot, the seed re-aligns any tenant whose slug drifted from the friendlier form (e.g. `abundant` → `abundant-church`, `pottershouse` → `potters-house`).
+- Backwards-compatible: `_tenant_by_slug` still searches `slug ∪ subdomain ∪ id`, so old URLs (`/give/abundant`, `/give/pottershouse`) keep working.
+- Verified preview: all 9 churches now resolve at the friendly slug; restart log emits `updated=2 skipped=7 not_found=0`.
+
+**Uvicorn workers in production — blocked by platform**:
+- Support agent confirmed: Emergent's prod deployment auto-generates the supervisor config; modifying `/etc/supervisor/conf.d/supervisord.conf` in the preview pod does **not** propagate to prod.
+- No documented Emergent knob (env var, deploy YAML) for `--workers N`.
+- Path forward: Vince must email **support@emergent.sh** with job_id `c760a2ac-73a2-49a8-b8ef-61d51f9b5783` requesting `--workers 2` (or replica scaling) for prod.
+- Until then: preview ramp ceiling = single-pod ~700 RPS / 5K concurrent applies to prod too.
+
 ## Session — Apr 29, 2026 — Auto-Seed Stripe Connect IDs on Boot ✅ SHIPPED
 
 **Problem**: Production Atlas tenants shipped with `stripe_connect_account_id=null`, so every public giving page rendered "Online giving coming soon". Vince refused manual mongosh / curl steps — needed self-healing on boot.

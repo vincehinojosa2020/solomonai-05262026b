@@ -36,6 +36,26 @@ CANONICAL_CONNECT_ACCOUNTS: dict[str, str] = {
 }
 
 
+# ── Canonical public-URL slugs ──────────────────────────────────────────
+# Some tenants were seeded with abbreviated slugs (e.g. abundant-church-001
+# was stored as `slug='abundant'`) which broke the friendlier public URL
+# Vince hands out (`solomonai.us/give/abundant-church`). The Stripe lookup
+# `_tenant_by_slug` already searches slug ∪ subdomain ∪ id with $or, so we
+# can safely *promote* the slug while leaving subdomain intact — every
+# legacy URL keeps working.
+CANONICAL_SLUGS: dict[str, str] = {
+    "eden-church-001":        "eden-church",
+    "abundant-church-001":    "abundant-church",
+    "abundant-east-001":      "abundant-east",
+    "abundant-downtown-001":  "abundant-downtown",
+    "abundant-west-001":      "abundant-west",
+    "potters-house-001":      "potters-house",
+    "cityreach-001":          "cityreach",
+    "hillcountry-001":        "hillcountry",
+    "cristoviene-001":        "cristoviene",
+}
+
+
 async def seed_connect_accounts() -> dict:
     """
     Ensure every canonical tenant has its Stripe Connect ID + active status
@@ -51,7 +71,7 @@ async def seed_connect_accounts() -> dict:
     for tenant_id, account_id in CANONICAL_CONNECT_ACCOUNTS.items():
         existing = await db.tenants.find_one(
             {"id": tenant_id},
-            {"_id": 0, "id": 1, "name": 1,
+            {"_id": 0, "id": 1, "name": 1, "slug": 1,
              "stripe_connect_account_id": 1, "stripe_connect_status": 1,
              "accepts_payments": 1},
         )
@@ -62,15 +82,21 @@ async def seed_connect_accounts() -> dict:
             })
             continue
 
+        canonical_slug = CANONICAL_SLUGS.get(tenant_id)
         before = {
             "stripe_connect_account_id": existing.get("stripe_connect_account_id"),
             "stripe_connect_status": existing.get("stripe_connect_status"),
             "accepts_payments": existing.get("accepts_payments"),
+            "slug": existing.get("slug"),
         }
+        slug_correct = (
+            canonical_slug is None or before["slug"] == canonical_slug
+        )
         if (
             before["stripe_connect_account_id"] == account_id
             and before["stripe_connect_status"] == "active"
             and before["accepts_payments"] is True
+            and slug_correct
         ):
             summary.append({
                 "tenant_id": tenant_id, "name": existing.get("name"),
@@ -79,23 +105,26 @@ async def seed_connect_accounts() -> dict:
             })
             continue
 
+        update_doc = {
+            "stripe_connect_account_id": account_id,
+            "stripe_connect_status": "active",
+            "stripe_connect_onboarded_at": now_iso,
+            "accepts_payments": True,
+        }
+        if canonical_slug and before["slug"] != canonical_slug:
+            update_doc["slug"] = canonical_slug
+
         result = await db.tenants.update_one(
             {"id": tenant_id},
-            {"$set": {
-                "stripe_connect_account_id": account_id,
-                "stripe_connect_status": "active",
-                "stripe_connect_onboarded_at": now_iso,
-                "accepts_payments": True,
-            }},
+            {"$set": update_doc},
         )
         summary.append({
             "tenant_id": tenant_id, "name": existing.get("name"),
             "action": "updated" if result.modified_count else "no-op",
             "before": before,
             "after": {
-                "stripe_connect_account_id": account_id,
-                "stripe_connect_status": "active",
-                "accepts_payments": True,
+                **{k: v for k, v in update_doc.items()
+                   if k != "stripe_connect_onboarded_at"},
             },
         })
 
