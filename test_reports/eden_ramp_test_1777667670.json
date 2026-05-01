@@ -1,0 +1,126 @@
+{
+  "ts": "2026-05-01T20:34:30.945753+00:00",
+  "ramp": [
+    {
+      "n": 1000,
+      "rps": 570.8,
+      "elapsed_s": 1.75,
+      "succ": 1000,
+      "fail": 0,
+      "err_pct": 0.0,
+      "p50": 1566.8,
+      "p95": 1664.3,
+      "p99": 1673.6,
+      "max": 1681.8,
+      "err_types": {},
+      "status": "PASS"
+    },
+    {
+      "n": 2000,
+      "rps": 723.5,
+      "elapsed_s": 2.76,
+      "succ": 2000,
+      "fail": 0,
+      "err_pct": 0.0,
+      "p50": 2485.9,
+      "p95": 2686.6,
+      "p99": 2704.8,
+      "max": 2719.4,
+      "err_types": {},
+      "status": "PASS"
+    },
+    {
+      "n": 3000,
+      "rps": 710.8,
+      "elapsed_s": 4.22,
+      "succ": 3000,
+      "fail": 0,
+      "err_pct": 0.0,
+      "p50": 3797.9,
+      "p95": 4062.5,
+      "p99": 4089.7,
+      "max": 4109.5,
+      "err_types": {},
+      "status": "PASS"
+    },
+    {
+      "n": 5000,
+      "rps": 698.7,
+      "elapsed_s": 7.16,
+      "succ": 5000,
+      "fail": 0,
+      "err_pct": 0.0,
+      "p50": 6439.9,
+      "p95": 6883.9,
+      "p99": 6928.4,
+      "max": 6954.1,
+      "err_types": {},
+      "status": "PASS"
+    },
+    {
+      "n": 7500,
+      "rps": 711.1,
+      "elapsed_s": 10.55,
+      "succ": 7500,
+      "fail": 0,
+      "err_pct": 0.0,
+      "p50": 9433.0,
+      "p95": 10094.7,
+      "p99": 10164.6,
+      "max": 10188.6,
+      "err_types": {},
+      "status": "FAIL (p95)"
+    }
+  ],
+  "breaking_point": {
+    "level": 7500,
+    "reason": "FAIL (p95)",
+    "metrics": {
+      "n": 7500,
+      "rps": 711.1,
+      "elapsed_s": 10.55,
+      "succ": 7500,
+      "fail": 0,
+      "err_pct": 0.0,
+      "p50": 9433.0,
+      "p95": 10094.7,
+      "p99": 10164.6,
+      "max": 10188.6,
+      "err_types": {},
+      "status": "FAIL (p95)"
+    }
+  },
+  "last_passing_level": 5000,
+  "sustain": {
+    "duration_s": 60,
+    "target_rps": 5000,
+    "total": 40000,
+    "succ": 40000,
+    "fail": 0,
+    "actual_rps": 666.7,
+    "p50": 6931.6,
+    "p95": 8309.5,
+    "p99": 8504.4
+  },
+  "recovery": {
+    "n": 100,
+    "succ": 100,
+    "fail": 0,
+    "p50": 2.1,
+    "p95": 2.5,
+    "max": 5.5
+  },
+  "health_during_test": {
+    "polls": 108,
+    "fails": 0,
+    "p50": 4.6317140077007934,
+    "p95": 7.740436994936317,
+    "max": 767.2495170118054
+  },
+  "integrity": {
+    "ramp_rows_in_db": 58600,
+    "unique_pis": 58600,
+    "duplicates": 0
+  },
+  "rows_cleaned": 58600
+}

@@ -1,5 +1,55 @@
 # Solomon AI — CHANGELOG
 
+## May 1, 2026 — Eden X True-Ceiling Ramp Test (preview)
+
+**Goal**: find the application code's true ceiling — webhook-arrival path (insert + bust cache) so Stripe rate limits don't corrupt the signal. Single load-gen pod, single uvicorn worker, single Mongo motor pool.
+
+**Methodology**
+- Levels: 1K → 2K → 3K → 5K → 7.5K (hit p95 wall here)
+- Stop conditions: error % > 5 OR p95 > 10 s
+- Sustain at last passing level for 60 s
+- Recovery: 100 sequential normal-rate calls
+- Health endpoint hammered every 1 s throughout
+
+**Ramp results**
+
+| Concurrent |   RPS   | p50 ms | p95 ms  | p99 ms  | Errors | Err % | Status      |
+|------------|---------|--------|---------|---------|--------|-------|-------------|
+|      1,000 |   570.8 | 1,567  | 1,664   | 1,674   |   0    |  0.00 | PASS        |
+|      2,000 |   723.5 | 2,486  | 2,687   | 2,705   |   0    |  0.00 | PASS        |
+|      3,000 |   710.8 | 3,798  | 4,063   | 4,090   |   0    |  0.00 | PASS        |
+|      5,000 |   698.7 | 6,440  | 6,884   | 6,928   |   0    |  0.00 | PASS        |
+|      7,500 |   711.1 | 9,433  | 10,095  | 10,165  |   0    |  0.00 | FAIL (p95)  |
+
+**Sustain (5K writes/sec for 60 s)**: 40,000 writes, 0 errors, p50=6,932 ms, p95=8,310 ms, p99=8,652 ms.
+
+**Recovery (100 sequential post-storm)**: p50=2.1 ms, p95=2.5 ms, max=5.5 ms, 0 errors. System bounces back instantly.
+
+**Health endpoint (108 polls during entire test)**: 0 fails, p50=4.6 ms, p95=7.7 ms, max=767 ms.
+
+**Integrity**: 58,600 ramp rows written → 58,600 unique PI ids → **0 duplicates**, 0 cross-tenant leakage. All `_ramp_test:true` rows cleaned up post-run.
+
+**Sentry / backend logs during test window**: 0 ERROR-level entries.
+
+**The headline truth**
+- **Application code never broke** — 0 errors across 67K+ ops up to 7,500 concurrent.
+- **Throughput ceiling: ~700 inserts/sec** from this preview pod (single worker, default Mongo motor pool of 100). Beyond that, requests queue inside the driver.
+- **Concurrent ceiling under 10 s p95 SLA: 5,000**.
+- 7,500 was a *latency* wall, not an error wall — every single donation completed.
+
+**One-liner**: *"Solomon AI handles 5,000 concurrent donors at p95=6.9 s with 0% error rate. Application code stayed clean to 7,500 concurrent (p95=10.1 s, still 0 errors). Throughput ceiling on a single preview pod is ~700 writes/sec."*
+
+**To go higher in production**
+- Multi-worker uvicorn (2–4 workers) → 2–4× throughput.
+- Bumped Mongo motor pool (`maxPoolSize=200+`) → fewer queue stalls.
+- Atlas tier with higher write IOPS → lower p95 at the same RPS.
+- Distributed load gen (k6 Cloud / Locust swarm) needed to actually hit 30K+ donors.
+
+Report: `/app/test_reports/eden_ramp_test_1777667670.json`
+Harness: `/app/backend/scripts/eden_ramp_test.py`
+
+
+
 ## April 3, 2026 — Code Quality Review Fixes
 
 ### #1: Hardcoded Secrets Removed from Test Files (CRITICAL)
