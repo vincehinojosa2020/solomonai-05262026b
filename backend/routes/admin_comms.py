@@ -19,6 +19,7 @@ from core import (
 )
 from core.helpers import serialize_doc
 from models.schemas import Communication, Attendance, Event, Group, Tenant, BulkSMSRequest, SMSRequest
+from routes.portal import SUNDAY_MORNING_NOTIFICATIONS
 
 PRAYER_CATEGORIES = [
     {"id": "general", "name": "General", "icon": "prayer"},

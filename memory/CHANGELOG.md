@@ -1,5 +1,19 @@
 # Solomon AI — CHANGELOG
 
+## May 8, 2026 — F821 Undefined-Name Fixes (backend)
+
+Cleared 5 latent NameError bombs ruff caught in the routes layer. Pure import additions, no behavior changes.
+
+| File                        | Missing name                  | Resolution |
+|-----------------------------|-------------------------------|------------|
+| `routes/admin_checkins.py`  | `send_push_notification`      | `from routes.push import send_push_notification` |
+| `routes/admin_checkins.py`  | `secrets`                     | `import secrets` |
+| `routes/admin_comms.py`     | `SUNDAY_MORNING_NOTIFICATIONS` (×3 refs) | `from routes.portal import SUNDAY_MORNING_NOTIFICATIONS` |
+
+`ruff check --select F821` on both files: ✅ all checks passed. Backend restarted clean. Both impacted code paths (parent push on child checkout, family-registration temp password generation, Sunday-morning push templates listing/sending) now have the names they reference at module load.
+
+
+
 ## May 8, 2026 — Sonatype Vulnerability Patch (backend)
 
 **Scope**: Sonatype IQ flagged 5 direct deps. Patched 3 cleanly, 1 was already at latest, 1 blocked by Emergent platform pin.
