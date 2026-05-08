@@ -1,5 +1,29 @@
 # Solomon AI — CHANGELOG
 
+## May 8, 2026 — Sonatype Vulnerability Patch (backend)
+
+**Scope**: Sonatype IQ flagged 5 direct deps. Patched 3 cleanly, 1 was already at latest, 1 blocked by Emergent platform pin.
+
+| Package           | Before  | After   | Status                                              |
+|-------------------|---------|---------|-----------------------------------------------------|
+| pandas            | 3.0.1   | 3.0.2   | ✅ Patched (CVE-2020-13091)                          |
+| python-multipart  | 0.0.26  | 0.0.27  | ✅ Patched (CVE-2026-42561, CVE-2026-7246)           |
+| click             | 8.3.1   | 8.3.3   | ✅ Patched (CVE-2025-45768, CVE-2026-7246)           |
+| jq                | 1.11.0  | 1.11.0  | ⚠️ Already at latest PyPI release — no fix available yet (CVE-2026-33948 unpatched upstream) |
+| litellm           | 1.80.0  | 1.80.0  | 🚫 BLOCKED — `emergentintegrations==0.1.2` (latest) hard-pins `litellm @ internal-asset/litellm-1.80.0-py3-none-any.whl` and `openai==1.99.9`. CVE-2026-35029, CVE-2026-40217, CVE-2026-42271 still present. |
+
+**Blocker escalation path**: litellm patch requires Emergent platform team to ship a new emergentintegrations release bundling a CVE-fixed litellm wheel. Email support@emergent.sh with Sonatype scan + job ID per support_agent guidance.
+
+**Smoke tests after upgrade**:
+- `GET /api/health` → 200 (`{"status":"ok","version":"2.0.0"}`)
+- Platform admin login (`admin@solomonai.us`) → 200, full permissions returned
+- Church admin login (`christopher@eden-x.io`) → 200, role=church_admin
+- `POST /api/stripe/create-payment-intent` on `eden-church` (Connect direct charge, $25, application_fee=$0.78) → 200, PI created on connected account `acct_1TRVWmJyE7zM7lxV`
+
+Backend booted clean — no import errors, no dep-resolver conflicts. `requirements.txt` regenerated via `pip freeze`.
+
+
+
 ## May 1, 2026 — Eden X True-Ceiling Ramp Test (preview)
 
 **Goal**: find the application code's true ceiling — webhook-arrival path (insert + bust cache) so Stripe rate limits don't corrupt the signal. Single load-gen pod, single uvicorn worker, single Mongo motor pool.

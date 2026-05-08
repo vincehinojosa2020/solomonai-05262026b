@@ -1,5 +1,15 @@
 # Solomon AI — Product Requirements Document
 
+## Session — May 8, 2026 — Sonatype Vulnerability Patch ✅ PARTIAL
+
+Patched 3 of 5 flagged direct dependencies (pandas 3.0.2, python-multipart 0.0.27, click 8.3.3). Backend boots clean; smoke tests on health, both admin logins, and Stripe Connect PI creation all pass.
+
+**Blocked**: litellm 1.80.0 cannot be upgraded — `emergentintegrations==0.1.2` (latest) hard-pins the 1.80.0 wheel from Emergent's internal CDN. Requires Emergent platform team to ship a patched bundle. **Action: Vince must email support@emergent.sh** with the Sonatype scan + job ID, per support_agent guidance.
+
+**Already at latest**: jq 1.11.0 is the most recent PyPI release; CVE-2026-33948 has no upstream fix yet — track the GitHub repo for new release.
+
+
+
 ## Session — May 1, 2026 — Auto-Seed Slug Alignment + Workers Decision
 
 **Slug alignment shipped**:
