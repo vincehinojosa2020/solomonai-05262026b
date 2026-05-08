@@ -77,7 +77,7 @@ class TestStripeCheckoutGiving:
             "amount": 50.00,
             "fund_name": "General Fund",
             "cover_fees": False,
-            "origin_url": "https://startup-automation.preview.emergentagent.com"
+            "origin_url": "https://compliance-check-143.preview.emergentagent.com"
         }
         
         response = authenticated_client.post(f"{BASE_URL}/api/stripe/checkout/giving", json=payload)
@@ -111,7 +111,7 @@ class TestStripeCheckoutGiving:
             "amount": 25.00,
             "fund_name": "Building Fund",
             "cover_fees": False,
-            "origin_url": "https://startup-automation.preview.emergentagent.com"
+            "origin_url": "https://compliance-check-143.preview.emergentagent.com"
         }
         
         response = authenticated_client.post(f"{BASE_URL}/api/stripe/checkout/giving", json=payload)
@@ -139,7 +139,7 @@ class TestStripeCheckoutGiving:
             "amount": base_amount,
             "fund_name": "General Fund",
             "cover_fees": True,
-            "origin_url": "https://startup-automation.preview.emergentagent.com"
+            "origin_url": "https://compliance-check-143.preview.emergentagent.com"
         }
         
         response = authenticated_client.post(f"{BASE_URL}/api/stripe/checkout/giving", json=payload)
@@ -168,7 +168,7 @@ class TestStripeCheckoutGiving:
             "amount": 0.50,  # Below minimum
             "fund_name": "General Fund",
             "cover_fees": False,
-            "origin_url": "https://startup-automation.preview.emergentagent.com"
+            "origin_url": "https://compliance-check-143.preview.emergentagent.com"
         }
         
         response = authenticated_client.post(f"{BASE_URL}/api/stripe/checkout/giving", json=payload)
@@ -191,7 +191,7 @@ class TestStripeCheckoutStatus:
             "amount": 10.00,
             "fund_name": "General Fund",
             "cover_fees": False,
-            "origin_url": "https://startup-automation.preview.emergentagent.com"
+            "origin_url": "https://compliance-check-143.preview.emergentagent.com"
         }
         
         create_response = authenticated_client.post(f"{BASE_URL}/api/stripe/checkout/giving", json=payload)

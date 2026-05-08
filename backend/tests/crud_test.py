@@ -2,7 +2,7 @@
 import requests
 import json
 
-API = "https://startup-automation.preview.emergentagent.com/api"
+API = "https://compliance-check-143.preview.emergentagent.com/api"
 AT = open("/tmp/admin_token").read().strip()
 MT = open("/tmp/member_token").read().strip()
 PT = open("/tmp/platform_token").read().strip()
