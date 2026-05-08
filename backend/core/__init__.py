@@ -30,8 +30,11 @@ client = AsyncIOMotorClient(
     serverSelectionTimeoutMS=5000,    # was 30000 — reduced to fail fast
     connectTimeoutMS=10000,           # was 20000
     socketTimeoutMS=30000,            # was 45000
-    # ── Pool: small pool keeps cold-start fast ───────────────────────────
-    maxPoolSize=5,
+    # ── Pool: sized for Sunday-morning concurrency ──────────────────────
+    # Was 5 (kept cold-start fast but capped throughput at ~700 RPS — see
+    # eden_ramp_test, May 1 2026). 100 lifts the ceiling to ~14k RPS while
+    # still negligible for cold-start (Atlas only opens connections lazily).
+    maxPoolSize=100,
     minPoolSize=0,
     maxIdleTimeMS=60000,
     # ── Reliability ──────────────────────────────────────────────────────

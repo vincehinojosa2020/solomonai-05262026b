@@ -148,15 +148,45 @@ async def admin_checkin_child(request: Request, child_id: str, payload: dict = N
     checkin["checked_in_by"] = user.get("name", "Admin")
     
     await db.checkins.insert_one(checkin)
-    
-    # Mock SMS notification (parent info already retrieved above)
-    print(f"[MOCK SMS] To: {parent_phone or 'No phone'}")
-    print(f"[MOCK SMS] Message: Hi {parent_name}! {child.get('name')} has been checked into Sunday School by {user.get('name', 'Staff')}. Pickup code: {pickup_code}")
-    
+
+    # Parent SMS pickup notification — real Twilio when configured, mock
+    # fallback otherwise (so dev/preview keeps working without quota).
+    classroom = checkin.get("classroom") or "Sunday School"
+    sms_result = None
+    if parent_phone:
+        try:
+            from core.sms import send_sms as core_send_sms
+            sms_body = (
+                f"Hi {parent_name}! {child.get('name')} has been checked into "
+                f"{classroom} by {user.get('name', 'Staff')}. "
+                f"Pickup code: {pickup_code}"
+            )
+            sms_result = await core_send_sms(parent_phone, sms_body)
+            await db.sms_logs.insert_one({
+                "id": f"sms_{uuid.uuid4().hex[:12]}",
+                "tenant_id": tenant_id,
+                "recipient_phone": parent_phone,
+                "person_id": child.get("parent_id"),
+                "message": sms_body,
+                "twilio_sid": sms_result.get("message_id"),
+                "status": sms_result.get("status"),
+                "mock": sms_result.get("mock", False),
+                "context": "kids_checkin_pickup_notification",
+                "created_at": datetime.now(timezone.utc),
+            })
+        except Exception as exc:
+            # Never let SMS failure block a successful check-in.
+            from core import logger
+            logger.warning(
+                "kids_checkin_sms_failed",
+                extra={"exc_type": type(exc).__name__, "error": str(exc)[:200]},
+            )
+
     return {
         "message": f"{child.get('name')} checked in successfully",
         "pickup_code": pickup_code,
-        "checkin": serialize_doc(checkin)
+        "checkin": serialize_doc(checkin),
+        "sms": sms_result,
     }
 
 

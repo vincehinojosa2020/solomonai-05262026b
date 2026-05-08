@@ -35,7 +35,27 @@ async def solomonpay_dashboard(request: Request, source: Optional[str] = None):
       * "stripe" → only real Stripe PaymentIntents (test or live)
       * "demo"   → only seeded/fake data (payment_source != stripe)
       * None     → all donations (default)
+
+    Defensive: every aggregation has an empty-result fallback (returns 0 / []
+    instead of NoneType errors). The whole handler is wrapped to log the real
+    exception (not just a 500) so prod data-shape bugs surface in Sentry.
     """
+    try:
+        return await _solomonpay_dashboard_impl(request, source)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error(
+            "solomonpay_dashboard_failed",
+            extra={"exc_type": type(exc).__name__, "error": str(exc)[:300], "source": source},
+            exc_info=True,
+        )
+        # Re-raise so Sentry captures it; the global error middleware turns it
+        # into the standard {"error": "INTERNAL_ERROR", ...} envelope.
+        raise
+
+
+async def _solomonpay_dashboard_impl(request: Request, source: Optional[str]):
     user = await _get_admin(request)
     tenant_id = user.get("tenant_id") or DEFAULT_TENANT_ID
     now = datetime.now(timezone.utc)
@@ -89,8 +109,19 @@ async def solomonpay_dashboard(request: Request, source: Optional[str] = None):
         mr = await db.donations.aggregate(mp).to_list(1)
         trend.append({"month": ms, "total": round(mr[0]["total"], 2) if mr else 0, "count": mr[0]["count"] if mr else 0})
 
-    # Recent 20 transactions
+    # Recent 20 transactions — defensive: per-row try/except so one corrupt
+    # legacy row can't take down the whole dashboard.
     recent = await db.donations.find({**src, "tenant_id": tenant_id}, {"_id": 0}).sort("created_at", -1).limit(20).to_list(20)
+    safe_recent = []
+    for d in recent:
+        try:
+            safe_recent.append(serialize_doc(d))
+        except Exception as row_err:
+            logger.warning(
+                "solomonpay_dashboard_skipped_row",
+                extra={"exc_type": type(row_err).__name__,
+                       "donation_id": d.get("id") or d.get("transaction_id")},
+            )
 
     # Counts by source (for the UI toggle badge)
     stripe_count = await db.donations.count_documents({"tenant_id": tenant_id, "payment_source": "stripe"})
@@ -99,7 +130,7 @@ async def solomonpay_dashboard(request: Request, source: Optional[str] = None):
     return {
         "today": today, "week": week, "month": month, "ytd": ytd,
         "active_recurring": recurring_count, "avg_gift": avg_gift, "top_fund": top_fund,
-        "trend": trend, "recent_transactions": [serialize_doc(d) for d in recent],
+        "trend": trend, "recent_transactions": safe_recent,
         "source_filter": source or "all",
         "source_counts": {"stripe": stripe_count, "demo": demo_count, "total": stripe_count + demo_count},
     }

@@ -89,99 +89,95 @@ async def get_leadership_notes(
 
 @router.post("/sms/send")
 async def send_sms(sms: SMSRequest):
-    """Send an SMS to a single recipient"""
-    # Check if Twilio is configured
-    twilio_sid = os.environ.get("TWILIO_ACCOUNT_SID")
-    twilio_token = os.environ.get("TWILIO_AUTH_TOKEN")
-    twilio_phone = os.environ.get("TWILIO_PHONE_NUMBER")
-    
-    if not all([twilio_sid, twilio_token, twilio_phone]):
-        # Return mock response for demo
-        return {
-            "status": "queued",
-            "message_id": f"mock_{uuid.uuid4().hex[:12]}",
-            "to": sms.recipient_phone,
-            "mock": True,
-            "note": "Twilio not configured - this is a simulated response"
-        }
-    
+    """Send an SMS to a single recipient. Routes through `core.sms.send_sms`,
+    which falls back to a mock response when Twilio env vars are missing
+    (so dev/preview keeps working without burning live SMS quota)."""
+    from core.sms import send_sms as core_send_sms
+
+    res = await core_send_sms(sms.recipient_phone, sms.message)
+
+    # Log every send attempt — real OR mock — for the church-admin audit
+    # trail. Mock sends still get a row so admins can see what would have
+    # gone out in test mode.
     try:
-        client = TwilioClient(twilio_sid, twilio_token)
-        message = client.messages.create(
-            body=sms.message,
-            from_=twilio_phone,
-            to=sms.recipient_phone
-        )
-        
-        # Log SMS
         await db.sms_logs.insert_one({
             "id": f"sms_{uuid.uuid4().hex[:12]}",
             "tenant_id": DEFAULT_TENANT_ID,
             "recipient_phone": sms.recipient_phone,
             "person_id": sms.person_id,
             "message": sms.message,
-            "twilio_sid": message.sid,
-            "status": message.status,
-            "created_at": datetime.now(timezone.utc)
+            "twilio_sid": res.get("message_id"),
+            "status": res.get("status"),
+            "mock": res.get("mock", False),
+            "created_at": datetime.now(timezone.utc),
         })
-        
-        return {
-            "status": message.status,
-            "message_id": message.sid,
-            "to": sms.recipient_phone
-        }
-        
-    except Exception as e:
+    except Exception:
+        pass  # logging is best-effort; never block the SMS response on it
+
+    if res.get("status") == "failed":
         from core.errors import client_error
         raise client_error(
             status_code=500,
             user_message="SMS send failed. Please try again.",
             log_message="admin_comms.sms_send_failed",
-            exc=e,
         )
+    return res
 
 
 @router.post("/sms/bulk")
 async def send_bulk_sms(bulk_sms: BulkSMSRequest):
-    """Send SMS to a group or list of people"""
+    """Send SMS to a group or list of people. Paces sends at 5/sec to stay
+    under Twilio's account rate limit; falls back to mock response when
+    Twilio env vars are missing."""
+    from core.sms import send_bulk_sms as core_send_bulk
+
     # Get recipients
     recipients = []
-    
     if bulk_sms.group_id:
-        # Get group members
         group_members = await db.group_members.find(
             {"group_id": bulk_sms.group_id},
             {"person_id": 1, "_id": 0}
         ).to_list(1000)
-        
+
         person_ids = [m["person_id"] for m in group_members]
         people = await db.people.find(
             {"id": {"$in": person_ids}, "phone": {"$ne": None}},
             {"id": 1, "phone": 1, "first_name": 1, "_id": 0}
         ).to_list(1000)
-        
-        recipients = [{"phone": p["phone"], "name": p["first_name"], "person_id": p["id"]} for p in people if p.get("phone")]
-    
-    # Check Twilio config
-    twilio_sid = os.environ.get("TWILIO_ACCOUNT_SID")
-    
-    if not twilio_sid:
-        # Return mock response
-        return {
-            "status": "queued",
-            "total_recipients": len(recipients),
-            "messages_sent": len(recipients),
-            "mock": True,
-            "note": "Twilio not configured - this is a simulated response"
-        }
-    
-    # TODO: Implement actual bulk SMS with Twilio
-    return {
-        "status": "queued",
-        "total_recipients": len(recipients),
-        "messages_sent": len(recipients),
-        "batch_id": f"batch_{uuid.uuid4().hex[:12]}"
-    }
+
+        recipients = [{"phone": p["phone"], "name": p["first_name"], "person_id": p["id"]}
+                      for p in people if p.get("phone")]
+
+    if not recipients:
+        return {"status": "queued", "total_recipients": 0, "sent": 0,
+                "failed": 0, "results": []}
+
+    summary = await core_send_bulk(recipients, bulk_sms.message)
+
+    # Audit trail: one row per recipient.
+    try:
+        rows = []
+        now = datetime.now(timezone.utc)
+        for r, out in zip(recipients, summary.get("results", [])):
+            res = out.get("result", {})
+            rows.append({
+                "id": f"sms_{uuid.uuid4().hex[:12]}",
+                "tenant_id": DEFAULT_TENANT_ID,
+                "recipient_phone": r.get("phone"),
+                "person_id": r.get("person_id"),
+                "message": bulk_sms.message,
+                "twilio_sid": res.get("message_id"),
+                "status": res.get("status"),
+                "batch_id": summary.get("batch_id"),
+                "mock": res.get("mock", False),
+                "created_at": now,
+            })
+        if rows:
+            await db.sms_logs.insert_many(rows)
+    except Exception:
+        pass
+
+    return summary
 
 
 @router.get("/sms/templates")

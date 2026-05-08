@@ -84,15 +84,42 @@ async def send_welcome_email(email: str, first_name: str, church_name: str = "yo
 
 
 # ═══ Serialization ═══
-def serialize_doc(doc: dict) -> dict:
-    """Remove MongoDB _id and convert datetime objects"""
+def serialize_doc(doc):
+    """Convert a Mongo doc into a JSON-safe dict.
+
+    Handles types that FastAPI's default JSONEncoder chokes on:
+      * `_id` (ObjectId) — stripped entirely
+      * datetime → ISO 8601 string
+      * ObjectId → str(...) (for non-`_id` fields like created_by, parent_id)
+      * Decimal128 → float (legacy donation rows may carry this)
+      * Nested dicts and lists are walked recursively.
+
+    Why: a single legacy donation row with a stray ObjectId in a sub-field
+    would 500 the entire dashboard endpoint with no body — exactly the
+    production bug observed on /api/admin/solomonpay/dashboard May 1 2026.
+    """
     if doc is None:
         return None
-    result = {k: v for k, v in doc.items() if k != '_id'}
-    for key, value in result.items():
-        if isinstance(value, datetime):
-            result[key] = value.isoformat()
-    return result
+    return _to_jsonable(doc)
+
+
+def _to_jsonable(v):
+    if isinstance(v, dict):
+        return {k: _to_jsonable(val) for k, val in v.items() if k != "_id"}
+    if isinstance(v, list):
+        return [_to_jsonable(x) for x in v]
+    if isinstance(v, datetime):
+        return v.isoformat()
+    # bson types — import lazily so this helper stays usable in non-Mongo contexts
+    try:
+        from bson import ObjectId, Decimal128
+        if isinstance(v, ObjectId):
+            return str(v)
+        if isinstance(v, Decimal128):
+            return float(v.to_decimal())
+    except Exception:
+        pass
+    return v
 
 
 def duration_to_seconds(duration_label: Optional[str], duration_seconds: Optional[int] = None) -> int:
