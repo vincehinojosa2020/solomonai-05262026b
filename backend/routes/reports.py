@@ -537,7 +537,7 @@ async def report_executive_summary(request: Request):
 
 
 @router.get("/reports/{report_type}/export")
-async def export_report_csv(report_type: str, format: str = "csv", start_date: str = None, end_date: str = None):
+async def export_report_csv(request: Request, report_type: str, format: str = "csv", start_date: str = None, end_date: str = None):
     """Export any report as CSV."""
     import io, csv
     if format != "csv":

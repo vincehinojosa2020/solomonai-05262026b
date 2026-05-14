@@ -9,6 +9,7 @@ import os
 
 from database import db
 from auth import get_current_user
+from core import get_current_portal_user
 
 router = APIRouter(prefix="/push", tags=["push"])
 

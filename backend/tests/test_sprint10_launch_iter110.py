@@ -39,10 +39,10 @@ import sys
 sys.path.insert(0, "/app/backend")
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://compliance-check-143.preview.emergentagent.com").rstrip("/")
-ADMIN_EMAIL = "admin@solomonai.us"
-ADMIN_PASSWORD = "Demo2026!"
-MEMBER_EMAIL = "member@abundant.church"
-MEMBER_PASSWORD = "Demo2026!"
+ADMIN_EMAIL = os.environ.get("TEST_ADMIN_EMAIL", "admin@solomonai.us")
+ADMIN_PASSWORD = os.environ.get("TEST_ADMIN_PASSWORD", "Demo2026!")
+MEMBER_EMAIL = os.environ.get("TEST_MEMBER_EMAIL", "member@abundant.church")
+MEMBER_PASSWORD = os.environ.get("TEST_MEMBER_PASSWORD", "Demo2026!")
 
 
 # ─────────────────────────── fixtures ───────────────────────────

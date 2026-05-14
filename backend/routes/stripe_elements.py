@@ -806,7 +806,9 @@ from core import get_current_admin_user  # noqa: E402
 
 # In-process cache for the platform list endpoint (60 s) to avoid hammering
 # Stripe on every dashboard open. Keyed by a tuple of the filter args.
-_PLATFORM_TXN_CACHE: dict[tuple, tuple[float, dict]] = {}
+# Shared with core/realtime.py via core/cache_state.py to avoid a routes↔core
+# circular import.
+from core.cache_state import _PLATFORM_TXN_CACHE, _STATS_CACHE  # noqa: E402
 _PLATFORM_TXN_TTL_SECONDS = 60
 
 
@@ -947,7 +949,6 @@ async def platform_transactions(
     return result
 
 
-_STATS_CACHE: dict = {"ts": 0.0, "data": None}
 _STATS_TTL_SECONDS = 30.0
 
 

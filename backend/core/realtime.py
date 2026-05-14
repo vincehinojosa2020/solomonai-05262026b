@@ -48,7 +48,7 @@ async def bust_donation_caches(tenant_id: Optional[str] = None) -> None:
     try:
         # ── 1. Process-local in-memory caches (instant) ─────────────
         try:
-            from routes.stripe_elements import _STATS_CACHE, _PLATFORM_TXN_CACHE
+            from core.cache_state import _STATS_CACHE, _PLATFORM_TXN_CACHE
             _STATS_CACHE["ts"] = 0.0
             _STATS_CACHE["data"] = None
             _PLATFORM_TXN_CACHE.clear()

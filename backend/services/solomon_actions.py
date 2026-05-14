@@ -676,44 +676,5 @@ class SolomonActionExecutor:
                 }
 
 
-        existing = await db.checkins.find_one(
-            {"child_id": child["id"], "status": "checked_in"}, {"_id": 0}
-        )
-        if existing:
-            return {
-                "success": True,
-                "message": f"{child['name']} is already checked in! Pickup code: {existing.get('pickup_code', 'N/A')}",
-                "navigate": "/portal/kids",
-            }
-
-        import secrets
-        import string
-        pickup_code = "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(4))
-        classroom = params.get("classroom", "Sunday School")
-
-        user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
-        checkin = {
-            "id": str(uuid.uuid4()),
-            "tenant_id": tenant_id,
-            "child_id": child["id"],
-            "child_name": child.get("name", child_name),
-            "parent_user_id": user_id,
-            "parent_name": user.get("name", "Parent") if user else "Parent",
-            "parent_phone": user.get("phone", "") if user else "",
-            "pickup_code": pickup_code,
-            "classroom": classroom,
-            "status": "checked_in",
-            "source": "solomon_ai",
-            "checked_in_at": datetime.now(timezone.utc).isoformat(),
-        }
-        await db.checkins.insert_one(checkin)
-        return {
-            "success": True,
-            "message": f"{child['name']} is checked in to {classroom}! Pickup code: {pickup_code}",
-            "pickup_code": pickup_code,
-            "navigate": "/portal/kids",
-        }
-
-
 # Singleton
 action_executor = SolomonActionExecutor()

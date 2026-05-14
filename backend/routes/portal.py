@@ -16,6 +16,7 @@ from core import (
     require_tenant, audit_log, check_idempotency, store_idempotency,
     logger,
 )
+from routes.push import send_push_notification
 from core.helpers import (
     serialize_doc, DEFAULT_MERCH_EMBED_URL, DEFAULT_NEXT_STEPS_URL,
     evaluate_member_next_steps_membership, get_next_steps_required_course_ids,

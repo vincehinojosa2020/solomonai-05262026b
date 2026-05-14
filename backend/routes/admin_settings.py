@@ -2,6 +2,7 @@
 from fastapi import APIRouter, HTTPException, Request, Query
 from datetime import datetime, timezone, timedelta
 from typing import Optional, List, Dict, Any
+from urllib.parse import quote
 import uuid
 import json
 import io

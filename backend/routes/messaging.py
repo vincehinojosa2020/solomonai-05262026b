@@ -7,6 +7,7 @@ import uuid
 
 from database import db
 from auth import get_current_user
+from core import get_current_portal_user
 
 router = APIRouter(prefix="/groups", tags=["groups"])
 

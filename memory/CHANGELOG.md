@@ -1,5 +1,43 @@
 # Solomon AI — CHANGELOG
 
+## May 14, 2026 — Code-Quality Sweep P0a+P0b+P0c
+
+Triaged a code-quality report against the actual codebase. Pushed back on inflated counts (39→15 F821, "circular" import that wasn't actually breaking, false-positive "sensitive storage" claims). Shipped the real fixes; documented why the rest were skipped.
+
+### P0a — F821 undefined names (all 15 cleared)
+- `routes/admin_settings.py` — added `from urllib.parse import quote` (QR generator)
+- `routes/auth.py` — added `import asyncio` (welcome-email background task)
+- `routes/messaging.py` — added `from core import get_current_portal_user` (×3 refs)
+- `routes/push.py` — added `from core import get_current_portal_user` (subscribe/unsubscribe)
+- `routes/portal.py` — added `from routes.push import send_push_notification` (event RSVP push)
+- `routes/reports.py` — `export_report_csv()` was calling `_resolve_report_tenant(request)` without `request` in its signature; added `request: Request` as first param
+- `services/solomon_actions.py` — **deleted 37 lines of dead code** (lines 678–715 were orphan kids-checkin logic after a return in `_generate_statement`; never reachable; referenced undefined `child` and `child_name`)
+
+### P0b — Test-credential env-ization
+`tests/test_sprint10_launch_iter110.py:42-45` → `os.environ.get("TEST_ADMIN_EMAIL", ...)` etc. for the 4 admin/member fixtures. Cosmetic (creds already public in `test_credentials.md`).
+
+### P0c — Cache coupling cleanup (no behavior change)
+The "circular import" claim was lazy-loaded and didn't actually fail at boot, but the coupling between `routes/stripe_elements.py` and `core/realtime.py` was real. Extracted both hot-path caches to a neutral module:
+- New: `core/cache_state.py` owns `_STATS_CACHE` (30 s TTL) and `_PLATFORM_TXN_CACHE` (60 s TTL)
+- `routes/stripe_elements.py` now imports them from `core.cache_state` (same objects, same behavior)
+- `core/realtime.py` busts them via `core.cache_state` instead of reaching into `routes/`
+
+**Verification**:
+- `ruff check --select F821 .` → All checks passed
+- Backend restart: clean, no traceback
+- `GET /api/health` → 200
+- `python -c "import core.realtime, routes.stripe_elements"` → OK; both modules see the *same* `_STATS_CACHE`/`_PLATFORM_TXN_CACHE` objects (verified by `is` check)
+- End-to-end `bust_donation_caches('eden-x')` → STATS reset to ts=0/data=None, TXN cleared
+- Stripe Connect direct-charge PI ($10 → eden-church) → 200
+
+### Deliberately deferred (with reasoning in PRD)
+- **"222 missing hook deps"** — blanket adding deps causes infinite re-renders. Needs per-call surgical review; multi-session work.
+- **"Sensitive data in storage"** — the flagged keys are UI dismissal flags + donation form drafts + last-visited tab. Not PII, not card data. The XSS framing in the report is wrong.
+- **"192 insecure `random` in seed scripts"** — demo data generation; cryptographic randomness is overkill.
+- Complexity/oversized-component refactors (helpers_ai, AppShell, SolomonChat, etc.)
+
+
+
 ## May 8, 2026 — F821 Undefined-Name Fixes (backend)
 
 Cleared 5 latent NameError bombs ruff caught in the routes layer. Pure import additions, no behavior changes.
