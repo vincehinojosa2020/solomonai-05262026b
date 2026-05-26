@@ -1,0 +1,89 @@
+# Builds the app + scans with Sonatype Lifecycle.
+
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (Python 3.11)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+
+      # Two lines in requirements.txt point to Emergent's private server,
+      # which GitHub can't reach. We skip them ONLY during this build.
+      - name: Skip Emergent-only lines for this build
+        run: grep -v -E '^(emergentintegrations|litellm[[:space:]]*@)' requirements.txt > requirements.ci.txt
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.ci.txt
+
+      - name: Compile
+        run: python -m compileall -q .
+
+  frontend:
+    name: Frontend (Node 20)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install
+        run: yarn install --network-timeout 600000
+
+      - name: Build
+        run: yarn build
+        env:
+          CI: false
+
+  # ──────────────────────────────────────────────────────────────────
+  # SONATYPE LIFECYCLE SCAN
+  # Sends your manifests to your local Lifecycle (via ngrok tunnel).
+  # ──────────────────────────────────────────────────────────────────
+  sonatype-scan:
+    name: Sonatype Lifecycle Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Evaluate with Sonatype Lifecycle
+        uses: sonatype/actions/evaluate@v1
+        with:
+          iq-server-url: ${{ secrets.LIFECYCLE_URL }}
+          username: ${{ secrets.LIFECYCLE_USERNAME }}
+          password: ${{ secrets.LIFECYCLE_PASSWORD }}
+          application-id: solomonai-05262026__vincehinojosa2020
+          scan-targets: |
+            backend/requirements.txt
+            frontend/package.json
+          # Uncomment later to fail the build on policy violations:
+          # fail-on-policy-warnings: true
