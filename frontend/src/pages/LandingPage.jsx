@@ -4,20 +4,19 @@ import { ArrowRight, Check, X, Play, Menu, Loader2, Shield, Clock, Headphones } 
 import { API_URL } from '@/lib/utils';
 import { toast } from 'sonner';
 
-// Airbnb-inspired palette: Rausch red + Hof dark gray + Foggy secondary
-// + Babu teal as trust accent. Inspired by airbnb.com brand system.
+// Solomon AI palette: navy + blue + white + gold accent
 const S = {
-  navy: '#222222',          // Hof — primary text + dark surfaces
-  navyLight: '#484848',     // softer dark for secondary surfaces
-  blue: '#FF385C',          // Rausch — Airbnb's signature pink-red, primary CTA
-  blueHover: '#E31C5F',     // hover state
-  gold: '#00A699',          // Babu — teal accent for trust / secondary highlights
-  grayLight: '#F7F7F7',     // Airbnb's section background
+  navy: '#0f172a',          // primary dark surfaces + headlines
+  navyLight: '#1e293b',     // softer dark for secondary surfaces
+  blue: '#3b82f6',          // primary CTA blue
+  blueHover: '#2563eb',     // hover state
+  gold: '#f59e0b',          // gold accent for trust / secondary highlights
+  grayLight: '#f8fafc',     // section background
   white: '#FFFFFF',
-  textDark: '#222222',
-  textGray: '#717171',      // Foggy — Airbnb's secondary text
-  border: '#DDDDDD',        // Airbnb's standard border
-  textMuted: '#B0B0B0',
+  textDark: '#0f172a',
+  textGray: '#64748b',      // secondary text
+  border: '#e2e8f0',        // standard border
+  textMuted: '#94a3b8',
 };
 
 export default function LandingPage() {
