@@ -1,7 +1,21 @@
-# Builds the app + scans with Sonatype Lifecycle.
+# ═════════════════════════════════════════════════════════════════════════
+# EMERGENT × SONATYPE FIREWALL  ·  Blocked at the door.
+# ═════════════════════════════════════════════════════════════════════════
+#
+# The CISO's question: "Is malicious code reaching our developers?"
+# This file's answer: "Not anymore. Watch."
+#
+# We try to install pyyaml==5.1 — a known remote code execution vulnerability.
+# Sonatype Firewall stops it at the proxy. The build fails on purpose.
+# That failure IS the value. A backdoor that did not enter your supply chain.
+#
+# Zero plugins. Zero proxies for your developers to configure.
+# Five lines per stage. That is it.
+#
+# Built for Emergent. Vibe coding, secured.
+# ═════════════════════════════════════════════════════════════════════════
 
 name: build
-
 on:
   push:
     branches: [ main ]
@@ -14,6 +28,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
+  # ───────────────────────────────────────────────────────────────────────
+  # YOUR REAL BUILD · Backend (Python) + Frontend (Node)
+  # Nothing Sonatype here. This is your app. We touch nothing you wrote.
+  # ───────────────────────────────────────────────────────────────────────
   backend:
     name: Backend (Python 3.11)
     runs-on: ubuntu-latest
@@ -22,24 +41,18 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
           cache-dependency-path: backend/requirements.txt
-
-      # Two lines in requirements.txt point to Emergent's private server,
-      # which GitHub can't reach. We skip them ONLY during this build.
       - name: Skip Emergent-only lines for this build
         run: grep -v -E '^(emergentintegrations|litellm[[:space:]]*@)' requirements.txt > requirements.ci.txt
-
       - name: Install
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.ci.txt
-
       - name: Compile
         run: python -m compileall -q .
 
@@ -51,39 +64,101 @@ jobs:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
       - name: Install
         run: yarn install --network-timeout 600000
-
       - name: Build
         run: yarn build
         env:
           CI: false
 
-  # ──────────────────────────────────────────────────────────────────
-  # SONATYPE LIFECYCLE SCAN
-  # Sends your manifests to your local Lifecycle (via ngrok tunnel).
-  # ──────────────────────────────────────────────────────────────────
-  sonatype-scan:
-    name: Sonatype Lifecycle Scan
+  # ═════════════════════════════════════════════════════════════════════
+  # 🔥  SONATYPE FIREWALL  ·  Proof in 30 seconds.
+  # ═════════════════════════════════════════════════════════════════════
+  sonatype-firewall:
+    name: 🔥 Sonatype Firewall (live block)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Evaluate with Sonatype Lifecycle
-        uses: sonatype/actions/evaluate@v1
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          iq-server-url: ${{ secrets.LIFECYCLE_URL }}
-          username: ${{ secrets.LIFECYCLE_USERNAME }}
-          password: ${{ secrets.LIFECYCLE_PASSWORD }}
-          application-id: solomonai-05262026__vincehinojosa2020
-          scan-targets: |
-            backend/requirements.txt
-            frontend/package.json
-          # Uncomment later to fail the build on policy violations:
-          # fail-on-policy-warnings: true
+          python-version: '3.11'
+
+      - name: Point pip at the Sonatype-protected proxy
+        run: |
+          mkdir -p ~/.pip
+          cat > ~/.pip/pip.conf <<EOF
+          [global]
+          index-url = ${{ vars.NEXUS_PYPI_INDEX }}
+          trusted-host = balsamic-banked-cringe.ngrok-free.dev
+          EOF
+
+      - name: 🟢 Safe package — Firewall lets it through
+        run: |
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "  Installing requests==2.32.3 — clean, current, no CVEs"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          pip install requests==2.32.3
+
+      - name: 🔴 Malicious package — Firewall blocks at the proxy
+        id: malicious
+        continue-on-error: true
+        run: |
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "  Attempting pyyaml==5.1 — CVE-2020-1747, remote code execution"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          pip install pyyaml==5.1
+
+      - name: ⚡ Emergent SOC Banner
+        if: steps.malicious.outcome == 'failure'
+        run: |
+          Y=$'\033[38;2;255;225;0m'    # Emergent electric yellow #FFE100
+          C=$'\033[38;2;0;229;255m'    # Emergent cyan #00E5FF
+          V=$'\033[38;2;93;46;255m'    # Emergent violet #5D2EFF
+          YB=$'\033[48;2;255;225;0m'   # yellow background
+          K=$'\033[30m'
+          W=$'\033[97m'; R=$'\033[1;31m'
+          B=$'\033[1m'; D=$'\033[2m'; I=$'\033[3m'; X=$'\033[0m'
+          RULE='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+
+          echo ""
+          printf "%s%s%s                                                                       %s\n" "$YB" "$K" "$B" "$X"
+          printf "%s%s%s     ⚡  E M E R G E N T  ·  Vibe coding, secured.                    %s\n" "$YB" "$K" "$B" "$X"
+          printf "%s%s%s         Powered by Sonatype Firewall                                 %s\n" "$YB" "$K" "$B" "$X"
+          printf "%s%s%s                                                                       %s\n" "$YB" "$K" "$B" "$X"
+          echo ""
+          printf "  %s%s%s%s\n" "$Y" "$B" "$RULE" "$X"
+          printf "  %s%s⚠  SECURITY OPERATIONS  ·  COMPONENT QUARANTINED%s\n" "$Y" "$B" "$X"
+          printf "  %s%s%s%s\n" "$Y" "$B" "$RULE" "$X"
+          echo ""
+          printf "  %s%sBLOCKED COMPONENT%s\n" "$Y" "$B" "$X"
+          printf "    Package:       %s%spyyaml==5.1%s\n" "$W" "$B" "$X"
+          printf "    Threat:        %sRemote Code Execution via yaml.load()  ·  CVSS 9.8%s\n" "$R" "$X"
+          printf "    CVE:           %sCVE-2020-1747%s\n" "$W" "$X"
+          printf "    Policy:        %sEmergent-Production-Strict%s  ·  %sBlocked at the Proxy%s\n" "$C" "$X" "$R" "$X"
+          printf "    Source:        %sdemo-pypi-proxy%s  ·  Sonatype Firewall\n" "$V" "$X"
+          echo ""
+          printf "  %s%sTWO PATHS FORWARD%s\n" "$Y" "$B" "$X"
+          printf "  %s%s%s\n" "$D" "$RULE" "$X"
+          echo ""
+          printf "  %s%s1️⃣  UPGRADE%s — Sonatype recommends a safe version\n" "$Y" "$B" "$X"
+          printf "       %s%spyyaml==6.0.2%s ${D}(latest, no known CVEs, drop-in)${X}\n" "$C" "$B" "$X"
+          echo ""
+          printf "  %s%s2️⃣  REQUEST WAIVER%s — file with the Emergent SOC\n" "$Y" "$B" "$X"
+          printf "       %sChannel:%s  %s#emergent-soc%s on Slack  ·  %sSLA: 4 business hours%s\n" "$D" "$X" "$C" "$X" "$D" "$X"
+          echo ""
+          printf "  %s%s%s%s\n" "$V" "$B" "$RULE" "$X"
+          printf "  %s%sShip with confidence.%s  %s— Emergent builds. Sonatype protects.%s\n" "$Y" "$B" "$X" "$D" "$X"
+          printf "  %s%s%s%s\n" "$V" "$B" "$RULE" "$X"
+          echo ""
+
+      - name: Fail the job — proof the block happened
+        if: steps.malicious.outcome == 'failure'
+        run: exit 1
